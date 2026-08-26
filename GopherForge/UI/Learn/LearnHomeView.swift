@@ -4,6 +4,7 @@ import SwiftUI
 struct LearnHomeView: View {
     @State private var mastery: [ConceptMastery] = []
     @State private var completed: Set<String> = []
+    @State private var openedScreen: LaunchOptions.Screen?
     private let store = LearningProgressStore()
 
     var body: some View {
@@ -47,7 +48,16 @@ struct LearnHomeView: View {
             }
         }
         .navigationTitle("Learn")
-        .task { await reload() }
+        .navigationDestination(item: $openedScreen) { screen in
+            switch screen {
+            case .lab: ConcurrencyLabView()
+            case .review: ReviewView()
+            }
+        }
+        .task {
+            await reload()
+            openedScreen = LaunchOptions.initialScreen
+        }
     }
 
     private var weakest: [ConceptMastery] {

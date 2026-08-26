@@ -8,7 +8,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var workspace = WorkspaceModel()
-    @State private var section: AppSection? = .projects
+    @State private var navigation = AppNavigation()
 
     var body: some View {
         Group {
@@ -20,12 +20,13 @@ struct ContentView: View {
         }
         .tint(GopherForgeTheme.accent)
         .environment(workspace)
+        .environment(navigation)
         .task { await workspace.prepare() }
     }
 
     private var regularLayout: some View {
         NavigationSplitView {
-            List(selection: $section) {
+            List(selection: sidebarSelection) {
                 ForEach(AppSection.allCases) { item in
                     NavigationLink(value: item) {
                         Label(item.title, systemImage: item.systemImage)
@@ -36,21 +37,39 @@ struct ContentView: View {
             .listStyle(.sidebar)
         } detail: {
             NavigationStack {
-                destination(for: section ?? .projects)
+                destination(for: navigation.section)
             }
         }
+        .navigationSplitViewStyle(.balanced)
     }
 
     private var compactLayout: some View {
-        TabView(selection: $section) {
+        TabView(selection: tabSelection) {
             ForEach(AppSection.allCases) { item in
                 NavigationStack {
                     destination(for: item)
                 }
                 .tabItem { Label(item.title, systemImage: item.systemImage) }
-                .tag(AppSection?.some(item))
+                .tag(item)
             }
         }
+    }
+
+    /// The sidebar's selection is optional because a split view can have
+    /// none; the app always has a section, so the two are bridged here rather
+    /// than making every screen deal with nil.
+    private var sidebarSelection: Binding<AppSection?> {
+        Binding(
+            get: { navigation.section },
+            set: { if let value = $0 { navigation.section = value } }
+        )
+    }
+
+    private var tabSelection: Binding<AppSection> {
+        Binding(
+            get: { navigation.section },
+            set: { navigation.section = $0 }
+        )
     }
 
     @ViewBuilder

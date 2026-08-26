@@ -13,9 +13,15 @@ struct ConcurrencyLabView: View {
                     .font(.headline)
                     .fixedSize(horizontal: false, vertical: true)
 
+                if !model.canRun {
+                    Label(model.toolchainDetail, systemImage: "exclamationmark.triangle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
                 predictionSection
 
-                LessonCodeBlock(title: "The program", code: model.scenario.source)
+                CodeBlock(title: "The program", code: model.scenario.source)
 
                 if let trace = model.trace {
                     ConcurrencyTraceView(trace: trace)
@@ -26,7 +32,7 @@ struct ConcurrencyLabView: View {
                 }
 
                 if !model.programOutput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    LessonCodeBlock(title: "Program output", code: model.programOutput)
+                    CodeBlock(title: "Program output", code: model.programOutput)
                 }
 
                 if let failureDetail = model.failureDetail {
@@ -50,7 +56,7 @@ struct ConcurrencyLabView: View {
                         Label("Run", systemImage: "play.fill")
                     }
                 }
-                .disabled(model.isRunning)
+                .disabled(model.isRunning || !model.canRun)
             }
         }
     }

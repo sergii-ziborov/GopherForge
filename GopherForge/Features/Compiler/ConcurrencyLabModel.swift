@@ -14,6 +14,7 @@ final class ConcurrencyLabModel {
     var hasPredicted = false
 
     private let compiler: WasmGoCompiler
+    private let toolchain: ToolchainStatus
 
     init(
         scenario: ConcurrencyLabScenario = ConcurrencyLabScenario.unbufferedRendezvous,
@@ -21,6 +22,15 @@ final class ConcurrencyLabModel {
     ) {
         self.scenario = scenario
         self.compiler = compiler
+        toolchain = compiler.probe()
+    }
+
+    /// The lab runs real programs, so it offers Run only when there is a real
+    /// toolchain to run them with.
+    var canRun: Bool { toolchain.isReady }
+
+    var toolchainDetail: String {
+        "\(toolchain.label). \(toolchain.detail)"
     }
 
     func select(_ scenario: ConcurrencyLabScenario) {

@@ -18,6 +18,7 @@ final class LessonModel {
     private let compiler: WasmGoCompiler
     private let analyzer: IdiomAnalyzer
     private let store: LearningProgressStore
+    private let toolchain: ToolchainStatus
     private var attempts = 0
 
     init(
@@ -30,8 +31,16 @@ final class LessonModel {
         self.compiler = compiler
         self.analyzer = analyzer
         self.store = store
+        toolchain = compiler.probe()
         editorText = LessonModel.starter(for: lesson)
     }
+
+    /// A compile lesson is verified by the real toolchain, so without one there
+    /// is nothing to check and the app says so rather than offering a button
+    /// that can only fail.
+    var canCheck: Bool { lesson.requiresCompiler && toolchain.isReady && !isChecking }
+
+    var toolchainDetail: String { "\(toolchain.label). \(toolchain.detail)" }
 
     func check() async {
         guard case let .compile(_, hiddenTest) = lesson.task, !isChecking else { return }

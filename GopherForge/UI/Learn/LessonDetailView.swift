@@ -18,6 +18,12 @@ struct LessonDetailView: View {
                 explanation
                 taskSection
 
+                if lesson.requiresCompiler, !model.canCheck, !model.isChecking {
+                    Label(model.toolchainDetail, systemImage: "exclamationmark.triangle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
                 if let result = model.result {
                     LessonVerdictView(result: result, solution: lesson.idiomaticSolution)
                 }
@@ -38,7 +44,7 @@ struct LessonDetailView: View {
                             Label("Check", systemImage: "checkmark.diamond")
                         }
                     }
-                    .disabled(model.isChecking)
+                    .disabled(!model.canCheck)
                 }
             }
         }
@@ -67,17 +73,17 @@ struct LessonDetailView: View {
     private var taskSection: some View {
         switch lesson.task {
         case let .guidedTyping(target):
-            LessonCodeBlock(title: "Type this until it is automatic", code: target)
+            CodeBlock(title: "Type this until it is automatic", code: target)
         case let .fillGaps(template, blanks):
             VStack(alignment: .leading, spacing: 8) {
-                LessonCodeBlock(title: "Fill the gaps", code: template)
+                CodeBlock(title: "Fill the gaps", code: template)
                 Text("Missing: \(blanks.joined(separator: ", "))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         case let .predict(source, question, answer):
             VStack(alignment: .leading, spacing: 8) {
-                LessonCodeBlock(title: "Predict the output", code: source)
+                CodeBlock(title: "Predict the output", code: source)
                 Text(question).font(.callout.weight(.medium))
                 DisclosureGroup("Show the answer") {
                     Text(answer)
@@ -103,27 +109,6 @@ struct LessonDetailView: View {
     }
 }
 
-/// A read-only code sample.
-struct LessonCodeBlock: View {
-    let title: String
-    let code: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-            Text(code)
-                .font(.caption.monospaced())
-                .textSelection(.enabled)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-    }
-}
-
 /// What the toolchain said, and only then the idiomatic answer.
 struct LessonVerdictView: View {
     let result: CompilationResult
@@ -145,7 +130,7 @@ struct LessonVerdictView: View {
             }
 
             if result.succeeded, let solution {
-                LessonCodeBlock(title: "How Go would usually write it", code: solution)
+                CodeBlock(title: "How Go would usually write it", code: solution)
             }
         }
         .padding(12)
