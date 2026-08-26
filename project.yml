@@ -1,0 +1,194 @@
+name: GopherForge
+
+options:
+  bundleIdPrefix: com.sergiiziborov
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    SUPPORTS_MACCATALYST: NO
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+packages:
+  WasmKit:
+    url: https://github.com/swiftwasm/WasmKit.git
+    exactVersion: 0.3.1
+  SwiftSystem:
+    url: https://github.com/apple/swift-system.git
+    exactVersion: 1.8.1
+  ZIPFoundation:
+    url: https://github.com/weichsel/ZIPFoundation.git
+    exactVersion: 0.9.20
+
+targets:
+  GopherForge:
+    type: application
+    platform: iOS
+    sources:
+      - path: GopherForge
+        excludes:
+          - Resources/Toolchain
+      - path: GopherForge/Resources/Toolchain
+        type: folder
+        buildPhase: resources
+      - path: GopherForgeShared
+    info:
+      path: GopherForge/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: GopherForge
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationCategoryType: public.app-category.developer-tools
+        LSSupportsOpeningDocumentsInPlace: true
+        NSHumanReadableCopyright: "© 2026 Serhii Ziborov. All rights reserved."
+        UIFileSharingEnabled: true
+        UIApplicationSupportsIndirectInputEvents: true
+        UILaunchScreen: {}
+        UIRequiresFullScreen: false
+        UIUserInterfaceStyle: Automatic
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: GopherForge Project
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Owner
+            LSItemContentTypes:
+              - com.sergiiziborov.gopherforge.project
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: com.sergiiziborov.gopherforge.project
+            UTTypeDescription: GopherForge Go Project
+            UTTypeConformsTo:
+              - com.apple.package
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - gopherforgeproject
+    dependencies:
+      - target: GopherForgeShare
+        embed: true
+      - package: WasmKit
+        product: WasmKit
+      - package: WasmKit
+        product: WasmKitWASI
+      - package: SwiftSystem
+        product: SystemPackage
+      - package: ZIPFoundation
+        product: ZIPFoundation
+    preBuildScripts:
+      - name: Prepare bundled Go toolchain
+        script: |
+          "$SRCROOT/scripts/fetch_toolchain.sh"
+        basedOnDependencyAnalysis: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge
+        PRODUCT_NAME: GopherForge
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_ENTITLEMENTS: GopherForge/GopherForge.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: GopherForge
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIRequiresFullScreen: NO
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        CODE_SIGN_STYLE: Automatic
+
+  GopherForgeShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: GopherForgeShare
+        excludes:
+          - Info.plist
+      - path: GopherForgeShared
+    info:
+      path: GopherForgeShare/Info.plist
+      properties:
+        CFBundleDisplayName: GopherForge
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        ITSAppUsesNonExemptEncryption: false
+        NSHumanReadableCopyright: "© 2026 Serhii Ziborov. All rights reserved."
+        NSExtension:
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsText: true
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge.Share
+        PRODUCT_NAME: GopherForgeShare
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_ENTITLEMENTS: GopherForgeShare/GopherForgeShare.entitlements
+        CODE_SIGN_STYLE: Automatic
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+
+  GopherForgeTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: GopherForgeTests
+    dependencies:
+      - target: GopherForge
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeTests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  GopherForge:
+    build:
+      targets:
+        GopherForge: all
+        GopherForgeTests: [test]
+    run:
+      config: Release
+    test:
+      targets:
+        - name: GopherForgeTests
+          skippedTests:
+            - BundledCompilerGateTests/testBundledGoReportsUnusedVariable()
+            - BundledCompilerGateTests/testBundledGoCompilesAndRunsRepairedProgram()
+            - BundledCompilerGateTests/testBundledGoCompilesMultiPackageProject()
+            - BundledCompilerGateTests/testBundledGoRunsPackageTests()
+            - BundledCompilerGateTests/testBundledGoSurvivesRepeatedBuilds()
+            - BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()
+
+  GopherForgeCompilerGate:
+    build:
+      targets:
+        GopherForge: all
+        GopherForgeTests: [test]
+    test:
+      environmentVariables:
+        GOPHERFORGE_RUN_COMPILER_GATE: "1"
+      targets:
+        - name: GopherForgeTests
+          selectedTests:
+            - BundledCompilerGateTests/testBundledGoReportsUnusedVariable()
+            - BundledCompilerGateTests/testBundledGoCompilesAndRunsRepairedProgram()
+            - BundledCompilerGateTests/testBundledGoCompilesMultiPackageProject()
+            - BundledCompilerGateTests/testBundledGoRunsPackageTests()
+            - BundledCompilerGateTests/testBundledGoSurvivesRepeatedBuilds()
+            - BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()

@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+.env
+.artifact-cache/
+.build/
+DerivedData*/
+GopherForge.xcodeproj/
+GopherForge/Resources/Toolchain/go-wasm-*/
+GopherForge/Resources/Toolchain/.stage.*/
+*.xcresult
