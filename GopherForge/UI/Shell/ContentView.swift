@@ -8,7 +8,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var workspace = WorkspaceModel()
-    @State private var section: AppSection = .projects
+    @State private var section: AppSection? = .projects
 
     var body: some View {
         Group {
@@ -25,16 +25,18 @@ struct ContentView: View {
 
     private var regularLayout: some View {
         NavigationSplitView {
-            List(AppSection.allCases, selection: $section) { item in
-                NavigationLink(value: item) {
-                    Label(item.title, systemImage: item.systemImage)
+            List(selection: $section) {
+                ForEach(AppSection.allCases) { item in
+                    NavigationLink(value: item) {
+                        Label(item.title, systemImage: item.systemImage)
+                    }
                 }
             }
             .navigationTitle("GopherForge")
             .listStyle(.sidebar)
         } detail: {
             NavigationStack {
-                destination(for: section)
+                destination(for: section ?? .projects)
             }
         }
     }
@@ -46,7 +48,7 @@ struct ContentView: View {
                     destination(for: item)
                 }
                 .tabItem { Label(item.title, systemImage: item.systemImage) }
-                .tag(item)
+                .tag(AppSection?.some(item))
             }
         }
     }

@@ -6,9 +6,11 @@ import Foundation
 /// than requiring `-json`, which is not guaranteed to be available in every
 /// bundled-toolchain configuration.
 enum GoTestOutputParser {
-    private static let casePattern =
+    // See GoDiagnosticParser: immutable compiled literals, kept concrete so
+    // the named captures survive.
+    nonisolated(unsafe) private static let casePattern =
         /^\s*---\s+(?<outcome>PASS|FAIL|SKIP):\s+(?<name>\S+)\s+\((?<elapsed>[\d.]+)s\)/
-    private static let packagePattern = /^(?<status>ok|FAIL|\?)\s+(?<package>\S+)/
+    nonisolated(unsafe) private static let packagePattern = /^(?<status>ok|FAIL|\?)\s+(?<package>\S+)/
 
     static func parse(stdout: String) -> [GoTestResult] {
         var results: [GoTestResult] = []

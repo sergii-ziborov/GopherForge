@@ -15,7 +15,46 @@ enum CourseUnitConcurrency {
         and why "who closes this channel" is a design question rather than a \
         detail.
         """,
-        lessons: [goroutinesHaveNoHandle, senderOwnsClose, selectAndContext]
+        lessons: [unbufferedRendezvous, goroutinesHaveNoHandle, senderOwnsClose, selectAndContext]
+    )
+
+    static let unbufferedRendezvous = Lesson(
+        id: "concurrency.unbuffered-rendezvous",
+        title: "An unbuffered channel is a meeting",
+        objective: "Say what blocks, and for how long, on a channel with no buffer.",
+        explanation: """
+        A send on an unbuffered channel does not complete until a receiver \
+        takes the value, and a receive does not complete until a sender \
+        provides one. It is a rendezvous, not a mailbox.
+
+        This is why the classic first Go deadlock is one line long: send on an \
+        unbuffered channel from the only goroutine there is, and nobody can \
+        ever arrive to meet it. The runtime notices that every goroutine is \
+        asleep and stops the program, which is a much better failure than a \
+        silent hang.
+        """,
+        conceptTags: [GoConcept.deadlock, GoConcept.selectBranch],
+        task: .predict(
+            source: """
+            package main
+
+            func main() {
+            \tready := make(chan string)
+            \tready <- "hello"
+            \tprintln(<-ready)
+            }
+            """,
+            question: "What happens, and would a buffer of one change it?",
+            answer: """
+            It deadlocks: fatal error: all goroutines are asleep - deadlock!
+
+            The send blocks waiting for a receiver, and the only goroutine that \
+            could receive is the one already blocked sending. make(chan string, 1) \
+            would let the send complete into the buffer, and the program would \
+            print hello.
+            """
+        ),
+        idiomaticSolution: nil
     )
 
     static let goroutinesHaveNoHandle = Lesson(

@@ -44,12 +44,12 @@ struct GoCodeCompletion: Sendable {
 }
 
 private extension GoCodeCompletion {
-    struct Template {
+    struct Template: Sendable {
         let trigger: String
         let title: String
         let detail: String
         let conceptTag: String?
-        let body: (String) -> String
+        let body: @Sendable (String) -> String
 
         func matches(_ trimmed: String) -> Bool {
             !trimmed.isEmpty && trigger.hasPrefix(trimmed)

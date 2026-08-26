@@ -13,11 +13,16 @@ struct NewProjectSheet: View {
                 Section("Name") {
                     TextField("Project name", text: $name)
                         .autocorrectionDisabled()
-                    LabeledContent("Module path", value: ProjectTemplate.modulePath(for: name))
-                        .font(.caption.monospaced())
+                    HStack {
+                        Text("Module path")
+                        Spacer()
+                        Text(ProjectTemplate.modulePath(for: name))
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
-                Section("Template") {
+                Section {
                     ForEach(ProjectTemplate.all) { item in
                         Button {
                             template = item
@@ -43,6 +48,8 @@ struct NewProjectSheet: View {
                         }
                         .buttonStyle(.plain)
                     }
+                } header: {
+                    Text("Template")
                 } footer: {
                     Text("Every template builds offline against the bundled standard library and declares no dependencies.")
                 }

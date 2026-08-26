@@ -5,7 +5,7 @@ import Foundation
 /// The whole toolchain lives under `Resources/Toolchain/<tag>/`, staged at build
 /// time by `scripts/fetch_toolchain.sh`. The running app never downloads
 /// compiler components, so this type only ever reads.
-struct GoToolchainLocator: Sendable {
+struct GoToolchainLocator {
     struct Layout: Sendable {
         let root: URL
         /// The WASI-hosted Go toolchain driver: build, vet, test and format all

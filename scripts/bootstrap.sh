@@ -9,9 +9,7 @@ if ! command -v xcodegen >/dev/null 2>&1; then
   exit 1
 fi
 
-# The toolchain step is allowed to fail while Gate A is open: the project must
-# still generate and build with the bundled compiler reported as missing.
-"$SCRIPT_DIR/fetch_toolchain.sh" || echo "Continuing without a bundled Go toolchain (Gate A open)." >&2
+"$SCRIPT_DIR/fetch_toolchain.sh"
 xcodegen generate --spec "$PROJECT_ROOT/project.yml" --project "$PROJECT_ROOT"
 
 echo "Generated $PROJECT_ROOT/GopherForge.xcodeproj"

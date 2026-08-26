@@ -11,7 +11,9 @@ set -euo pipefail
 # Unlike the Rust sibling there is no public prebuilt release to point at yet:
 # hosting the Go compiler itself in WebAssembly is this project's Gate A
 # feasibility spike (docs/DEVICE-GATE.md). Until that spike produces a pinned
-# artifact, this script fails closed rather than staging a placeholder.
+# artifact this script stages nothing and says so, and the app reports the
+# toolchain as missing. Once one is pinned, every failure below is fatal: a
+# placeholder must never reach the bundle.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -65,7 +67,10 @@ in the same interpreter it uses for the programs it builds.
 Until then the app builds and runs with the bundled toolchain reported as
 missing, which every compiler gate treats as a failure rather than a skip.
 MESSAGE
-  exit 1
+  # An unconfigured toolchain is a known project state while Gate A is open,
+  # so it does not fail the build. A configured but unverifiable one does:
+  # everything below this point refuses rather than stages something unproven.
+  exit 0
 fi
 
 find_zstd() {

@@ -15,8 +15,12 @@ enum GoModParser {
         var openBlock: Directive?
 
         for rawLine in source.split(whereSeparator: \.isNewline) {
-            let line = stripComment(from: String(rawLine))
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            // Structure is decided on the comment-free text, but entries are
+            // handed the original: `// indirect` is a marker, not a comment,
+            // and stripping it here would erase it before it is read.
+            let uncommented = stripComment(from: String(rawLine))
+            let trimmed = uncommented.trimmingCharacters(in: .whitespaces)
+            let entry = String(rawLine).trimmingCharacters(in: .whitespaces)
             guard !trimmed.isEmpty else { continue }
 
             if let block = openBlock {
@@ -24,7 +28,7 @@ enum GoModParser {
                     openBlock = nil
                     continue
                 }
-                append(trimmed, to: block, requirements: &requirements, replacements: &replacements)
+                append(entry, to: block, requirements: &requirements, replacements: &replacements)
                 continue
             }
 
@@ -45,7 +49,7 @@ enum GoModParser {
                 toolchain = fields[1]
             case .require, .replace:
                 append(
-                    fields.dropFirst().joined(separator: " "),
+                    entry.split(separator: " ", maxSplits: 1).dropFirst().joined(),
                     to: directive,
                     requirements: &requirements,
                     replacements: &replacements

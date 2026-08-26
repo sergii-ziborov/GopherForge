@@ -36,9 +36,12 @@ final class CourseCatalogTests: XCTestCase {
         }
     }
 
-    func testConcurrencyLessonsHaveALabScenario() {
+    /// A lab scenario teaches a concept by showing it run. If no lesson also
+    /// teaches it, review can never schedule practice for what the lab just
+    /// demonstrated, which is how a concept quietly becomes unreachable.
+    func testEveryLabConceptIsAlsoTaughtByALesson() {
         let labTags = Set(ConcurrencyLabScenario.all.flatMap(\.conceptTags))
-        let unitTags = GoCourseCatalog.unit(id: "concurrency")?.conceptTags ?? []
-        XCTAssertFalse(labTags.intersection(unitTags).isEmpty)
+        let untaught = labTags.subtracting(GoCourseCatalog.taughtConcepts)
+        XCTAssertTrue(untaught.isEmpty, "lab concepts with no lesson: \(untaught.sorted())")
     }
 }

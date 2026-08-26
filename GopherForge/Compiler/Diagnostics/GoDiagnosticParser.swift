@@ -6,9 +6,12 @@ import Foundation
 /// located findings (`./main.go:6:2: declared and not used: x`) and indented
 /// continuation notes that belong to the finding above them.
 enum GoDiagnosticParser {
-    private static let locationPattern =
+    // A compiled regex literal is an immutable value; Regex simply is not
+    // marked Sendable. The concrete type is kept rather than erased to
+    // RegexComponent because the named captures below depend on it.
+    nonisolated(unsafe) private static let locationPattern =
         /^(?<file>[^\s:][^:]*\.go):(?<line>\d+)(?::(?<column>\d+))?:\s*(?<message>.*)$/
-    private static let packageBannerPattern = /^#\s+(?<package>\S+)/
+    nonisolated(unsafe) private static let packageBannerPattern = /^#\s+(?<package>\S+)/
 
     static func parse(
         stderr: String,
