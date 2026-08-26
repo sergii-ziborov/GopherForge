@@ -52,7 +52,14 @@ Concretely, the app currently contains:
   the reason shown on every item;
 - four project templates that build offline with no dependencies at all;
 - a Share Extension that queues GitHub URLs through an App Group and never
-  tries to foreground the host app.
+  tries to foreground the host app, plus a launch-time drain that surfaces what
+  it queued;
+- Files import of a folder or a `.gopherforgeproject` package, opening the
+  module root rather than the checkout root, bounded in file count and size.
+
+Anything that needs the toolchain says so rather than offering a button that
+can only fail: Build, Run, Test, the lab and every compile lesson are disabled
+with the toolchain's own reason shown while none is staged.
 
 The toolchain is staged **at build time**, verified by SHA-256, and copied into
 the app bundle. The running app never downloads compiler components.
