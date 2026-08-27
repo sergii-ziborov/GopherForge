@@ -31,6 +31,14 @@ struct GoToolStep: Equatable {
     let generatedFiles: [String: String]
     /// What this step is for, in the words the UI would use.
     let label: String
+    /// The file this step produces, when it produces one. Carried rather than
+    /// parsed back out of the argv, which would make the cache depend on
+    /// reading flags correctly.
+    var outputPath: String?
+    /// Identifies the output's inputs completely, when it can. A step with a
+    /// key can be skipped whenever a previous build already produced the same
+    /// bytes; a step without one always runs.
+    var cacheKey: String?
 }
 
 /// An ordered set of steps and what they produce.

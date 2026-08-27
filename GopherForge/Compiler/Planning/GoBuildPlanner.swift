@@ -13,6 +13,9 @@ struct GoBuildPlanner {
     let languageVersion: String
     /// Import paths with staged export data in the bundled GOROOT.
     let standardLibrary: Set<String>
+    /// Identifies the toolchain, so a Go upgrade invalidates every cached
+    /// artifact rather than mixing objects from two compilers.
+    var toolchainTag: String = ""
 
     func plan(phase: CompilationResult.Phase, files: [String: String]) throws -> GoBuildPlan {
         let graph = try GoPackageGraph.build(
@@ -23,8 +26,15 @@ struct GoBuildPlanner {
 
         return switch phase {
         case .test: testPlan(graph: graph, files: files)
-        case .run: buildPlan(graph: graph, output: GoGuestPath.runProgram, keepProduct: true)
-        case .build: buildPlan(graph: graph, output: GoGuestPath.program(for: "build", suffix: ""), keepProduct: false)
+        case .run:
+            buildPlan(graph: graph, files: files, output: GoGuestPath.runProgram, keepProduct: true)
+        case .build:
+            buildPlan(
+                graph: graph,
+                files: files,
+                output: GoGuestPath.program(for: "build", suffix: ""),
+                keepProduct: false
+            )
         case .vet: vetPlan(graph: graph)
         case .format: formatPlan()
         case .setup: GoBuildPlan(steps: [], products: [])
@@ -33,9 +43,15 @@ struct GoBuildPlanner {
 
     // MARK: - Build and run
 
-    private func buildPlan(graph: GoPackageGraph, output: String, keepProduct: Bool) -> GoBuildPlan {
+    private func buildPlan(
+        graph: GoPackageGraph,
+        files: [String: String],
+        output: String,
+        keepProduct: Bool
+    ) -> GoBuildPlan {
         var steps: [GoToolStep] = []
         var archives: [String: String] = [:]
+        var dependencyKeys: [String: String] = [:]
         let entryPoint = graph.mainPackage
 
         for package in graph.packages where !package.goFiles.isEmpty {
@@ -46,13 +62,15 @@ struct GoBuildPlanner {
             // else. Nothing can import a main package, so it is also the one
             // archive no import configuration needs to name.
             let isEntryPoint = package.importPath == entryPoint?.importPath
-            steps.append(
-                compileStep(
-                    package: package,
-                    archives: archives,
-                    packagePath: isEntryPoint ? "main" : package.importPath
-                )
+            let step = compileStep(
+                package: package,
+                archives: archives,
+                packagePath: isEntryPoint ? "main" : package.importPath,
+                files: files,
+                dependencyKeys: dependencyKeys
             )
+            steps.append(step)
+            dependencyKeys[package.importPath] = step.cacheKey
             if !isEntryPoint {
                 archives[package.importPath] = GoGuestPath.archive(for: package.importPath)
             }
@@ -139,7 +157,9 @@ struct GoBuildPlanner {
         package: GoPackage,
         archives: [String: String],
         suffix: String = "",
-        packagePath: String? = nil
+        packagePath: String? = nil,
+        files: [String: String] = [:],
+        dependencyKeys: [String: String] = [:]
     ) -> GoToolStep {
         let configuration = GoGuestPath.importConfiguration(for: package.importPath, suffix: suffix)
         let output = GoGuestPath.archive(for: package.importPath + suffix)
@@ -150,7 +170,15 @@ struct GoBuildPlanner {
                 "-lang", languageVersion, "-importcfg", configuration, "-complete", "-pack",
             ] + package.goFiles.map(GoGuestPath.source),
             generatedFiles: [configuration: importConfiguration(archives: archives)],
-            label: "compile \(package.importPath)\(suffix.isEmpty ? "" : " [test]")"
+            label: "compile \(package.importPath)\(suffix.isEmpty ? "" : " [test]")",
+            outputPath: output,
+            cacheKey: files.isEmpty ? nil : GoStepFingerprint.key(
+                toolchainTag: toolchainTag,
+                languageVersion: languageVersion,
+                packagePath: (packagePath ?? package.importPath) + suffix,
+                sources: package.goFiles.reduce(into: [:]) { $0[$1] = files[$1] },
+                dependencyKeys: package.imports.sorted().compactMap { dependencyKeys[$0] }
+            )
         )
     }
 

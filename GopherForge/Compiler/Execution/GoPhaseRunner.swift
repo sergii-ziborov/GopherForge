@@ -15,6 +15,7 @@ struct GoPhaseRunner {
     let goVersion: String
     /// Resolves and parses a tool's module; the caller owns the cache.
     let module: (GoToolStep.Tool) throws -> Module
+    let artifacts: GoStepArtifactCache?
     let onProgress: GoBuildProgressHandler
 
     func run(
@@ -35,12 +36,13 @@ struct GoPhaseRunner {
         defer { stager.remove(job) }
 
         do {
-            let session = GoToolSession(
+            var session = GoToolSession(
                 module: module,
                 layout: layout,
                 job: job,
                 sources: project,
                 goVersion: goVersion,
+                artifacts: artifacts,
                 onProgress: onProgress
             )
             let outcome = try session.run(plan: plan, phase: phase)

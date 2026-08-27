@@ -23,6 +23,10 @@ struct CompilationResult: Sendable {
     /// What `gofmt` rewrote, project-relative. Empty for every other phase,
     /// and empty for a format run that found nothing to change.
     let formattedFiles: [String: String]
+    /// Packages a previous build had already compiled, so this one did not.
+    /// Reported rather than kept private: an incremental build that claims to
+    /// be one should be able to say how much it skipped.
+    let reusedSteps: Int
 
     init(
         succeeded: Bool,
@@ -34,7 +38,8 @@ struct CompilationResult: Sendable {
         duration: Duration,
         detail: String,
         tests: [GoTestResult] = [],
-        formattedFiles: [String: String] = [:]
+        formattedFiles: [String: String] = [:],
+        reusedSteps: Int = 0
     ) {
         self.succeeded = succeeded
         self.phase = phase
@@ -46,6 +51,7 @@ struct CompilationResult: Sendable {
         self.detail = detail
         self.tests = tests
         self.formattedFiles = formattedFiles
+        self.reusedSteps = reusedSteps
     }
 
     var blockingDiagnostics: [GoDiagnostic] {

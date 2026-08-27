@@ -25,6 +25,7 @@ final class WasmGoCompiler: @unchecked Sendable {
     private var modules: [String: Module] = [:]
     private var indexes: [String: GoStandardLibraryIndex] = [:]
     private var caches: [String: GoArtifactCache] = [:]
+    private var stepCaches: [String: GoStepArtifactCache] = [:]
 
     init(bundle: Bundle = .main) {
         locator = GoToolchainLocator(bundle: bundle)
@@ -38,18 +39,23 @@ final class WasmGoCompiler: @unchecked Sendable {
     /// by the compiler gate so that a build it asserts on is one that actually
     /// happened rather than one that was remembered.
     func clearBuildCache() {
-        let existing = lock.withLock { Array(caches.values) }
-        for cache in existing { cache.clear() }
+        let programs = lock.withLock { Array(caches.values) }
+        let steps = lock.withLock { Array(stepCaches.values) }
+        for cache in programs { cache.clear() }
+        for cache in steps { cache.clear() }
         // A tag with no cache yet still has a directory from a previous run.
         if let layout = locator.resolve() {
             GoArtifactCache(toolchainTag: layout.tag).clear()
+            GoStepArtifactCache(toolchainTag: layout.tag).clear()
         }
     }
 
-    /// Bytes the build cache currently occupies.
+    /// Bytes the build cache currently occupies: finished programs and the
+    /// per-package archives that make the next build fast.
     var buildCacheByteCount: Int64 {
         guard let layout = locator.resolve() else { return 0 }
         return artifactCache(for: layout.tag).storedByteCount
+            + stepCache(for: layout.tag).storedByteCount
     }
 
     func format(
@@ -199,6 +205,7 @@ final class WasmGoCompiler: @unchecked Sendable {
             clock: clock,
             goVersion: locator.probe().goVersion,
             module: { [self] tool in try module(for: tool, in: layout) },
+            artifacts: stepCache(for: layout.tag),
             onProgress: onProgress
         )
     }
@@ -212,7 +219,8 @@ final class WasmGoCompiler: @unchecked Sendable {
             languageVersion: GoToolchainLocator.languageVersion(
                 fromGoVersion: locator.probe().goVersion
             ),
-            standardLibrary: standardLibrary(for: layout).importPaths
+            standardLibrary: standardLibrary(for: layout).importPaths,
+            toolchainTag: layout.tag
         )
     }
 
@@ -232,6 +240,15 @@ final class WasmGoCompiler: @unchecked Sendable {
             let index = GoStandardLibraryIndex.load(packageRoot: layout.standardLibraryPackages)
             indexes[layout.tag] = index
             return index
+        }
+    }
+
+    private func stepCache(for tag: String) -> GoStepArtifactCache {
+        lock.withLock {
+            if let cache = stepCaches[tag] { return cache }
+            let cache = GoStepArtifactCache(toolchainTag: tag)
+            stepCaches[tag] = cache
+            return cache
         }
     }
 

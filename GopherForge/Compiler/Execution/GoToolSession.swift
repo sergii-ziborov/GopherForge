@@ -20,6 +20,8 @@ struct GoToolSession {
         var formattedFiles: [String: String] = [:]
         /// The step that failed, for a message that names it.
         var failedStep: String?
+        /// Steps satisfied from a previous build rather than run again.
+        var reusedSteps: [String] = []
 
         func result(phase: CompilationResult.Phase, duration: Duration) -> CompilationResult {
             CompilationResult(
@@ -32,7 +34,8 @@ struct GoToolSession {
                 duration: duration,
                 detail: detail(for: phase),
                 tests: tests,
-                formattedFiles: formattedFiles
+                formattedFiles: formattedFiles,
+                reusedSteps: reusedSteps.count
             )
         }
 
@@ -40,7 +43,11 @@ struct GoToolSession {
             if let first = diagnostics.first(where: \.isBlocking) { return first.message }
             if succeeded {
                 return switch phase {
-                case .build: "The real bundled toolchain accepted the package."
+                case .build:
+                    reusedSteps.isEmpty
+                        ? "The real bundled toolchain accepted the package."
+                        : "Accepted. \(reusedSteps.count) package\(reusedSteps.count == 1 ? "" : "s") "
+                            + "were unchanged and reused."
                 case .vet: "go vet found nothing to report."
                 case .format:
                     formattedFiles.isEmpty
@@ -67,15 +74,21 @@ struct GoToolSession {
     let job: GoWorkspaceStager.Layout
     let sources: GoSourceSnapshot
     let goVersion: String
+    /// Compiled archives kept between builds, so an unchanged package is not
+    /// compiled again.
+    let artifacts: GoStepArtifactCache?
     /// Called as each step begins, from the queue the build runs on.
     var onProgress: GoBuildProgressHandler = { _ in }
+    /// Steps that were satisfied from the cache rather than run. Reported so a
+    /// claim about incremental builds can be checked rather than believed.
+    private(set) var reusedStepLabels: [String] = []
 
     enum SessionError: Error, Equatable {
         case unresolvableGuestPath(String)
         case toolNotBundled(String)
     }
 
-    func run(plan: GoBuildPlan, phase: CompilationResult.Phase) throws -> Outcome {
+    mutating func run(plan: GoBuildPlan, phase: CompilationResult.Phase) throws -> Outcome {
         var diagnostics: [GoDiagnostic] = []
         var stdout = ""
         var stderr = ""
@@ -84,6 +97,7 @@ struct GoToolSession {
             onProgress(
                 GoBuildProgress(label: step.label, step: index + 1, totalSteps: plan.steps.count)
             )
+            if try reuseCachedArtifact(for: step) { continue }
             try write(step.generatedFiles)
             let (exitCode, output) = try invoke(step: step, phase: phase)
             let reported = step.tool.writesDiagnosticsToStandardOutput
@@ -100,6 +114,8 @@ struct GoToolSession {
                 sourceLines: sources.sourceLines
             )
 
+            if exitCode == 0 { rememberArtifact(of: step) }
+
             guard exitCode == 0, !diagnostics.contains(where: \.isBlocking) else {
                 return Outcome(
                     succeeded: false,
@@ -107,7 +123,8 @@ struct GoToolSession {
                     diagnostics: diagnostics,
                     output: WasiProcessRunner.Output(stdout: stdout, stderr: stderr),
                     tests: [],
-                    failedStep: step.label
+                    failedStep: step.label,
+                    reusedSteps: reusedStepLabels
                 )
             }
         }
@@ -176,6 +193,41 @@ struct GoToolSession {
         }
     }
 
+    /// Puts a previously built archive where this step would have written it,
+    /// and reports whether that happened.
+    ///
+    /// Nothing else in the build knows the difference: the next step reads the
+    /// same path it always reads, and its own key already accounts for this
+    /// package's contents.
+    private mutating func reuseCachedArtifact(for step: GoToolStep) throws -> Bool {
+        guard let key = step.cacheKey,
+              let output = step.outputPath,
+              let data = artifacts?.archive(for: key),
+              let url = job.hostURL(forGuestPath: output)
+        else {
+            return false
+        }
+        try FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try data.write(to: url, options: .atomic)
+        reusedStepLabels.append(step.label)
+        return true
+    }
+
+    /// Remembers what a step produced, so the next build can skip it.
+    private func rememberArtifact(of step: GoToolStep) {
+        guard let key = step.cacheKey,
+              let output = step.outputPath,
+              let url = job.hostURL(forGuestPath: output),
+              let data = try? Data(contentsOf: url)
+        else {
+            return
+        }
+        artifacts?.store(data, for: key)
+    }
+
     private func write(_ files: [String: String]) throws {
         for (guestPath, contents) in files.sorted(by: { $0.key < $1.key }) {
             guard let url = job.hostURL(forGuestPath: guestPath) else {
@@ -203,7 +255,8 @@ struct GoToolSession {
             exitCode: 0,
             diagnostics: diagnostics,
             output: WasiProcessRunner.Output(stdout: stdout, stderr: stderr),
-            tests: []
+            tests: [],
+            reusedSteps: reusedStepLabels
         )
 
         if phase == .format {
