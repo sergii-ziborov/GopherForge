@@ -10,6 +10,9 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
+    # The signing identity present on this Mac. Automatic signing resolves the
+    # profile from it, so a device build needs no per-target setup.
+    DEVELOPMENT_TEAM: XMS5ZC28UJ
     IPHONEOS_DEPLOYMENT_TARGET: "18.0"
     TARGETED_DEVICE_FAMILY: "1,2"
     SUPPORTS_MACCATALYST: NO

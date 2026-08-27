@@ -111,10 +111,22 @@ and runs with the compiler reported as missing. That state is visible in the
 Build banner and in Settings, and every compiler gate treats it as a failure
 rather than a skip.
 
-For a signed physical build, select the same Apple development team for the
-`GopherForge` and `GopherForgeShare` targets, register
-`group.com.sergiiziborov.GopherForge`, and regenerate both provisioning
-profiles.
+### On a device
+
+The signing team is already in `project.yml`, and Xcode provisions both the app
+and its extension automatically. Plug the iPhone or iPad in, unlock it, trust
+the Mac, then:
+
+```bash
+./scripts/install_device.sh
+```
+
+It finds the connected device, builds signed, installs and launches. Pass a
+device identifier from `xcrun devicectl list devices` to choose between several.
+
+Everything the compiler gate can only prove on real hardware — airplane mode,
+the thermal envelope, stopping a runaway program — is listed in
+[docs/DEVICE-GATE.md](docs/DEVICE-GATE.md).
 
 ## Verification
 
