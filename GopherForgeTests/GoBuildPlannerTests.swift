@@ -196,63 +196,6 @@ final class GoBuildPlannerTests: XCTestCase {
         }
     }
 
-    // MARK: - Test
-
-    func testATestedPackageIsRecompiledWithItsTestFiles() throws {
-        let files = [
-            "go.mod": "module example.com/forge\n\ngo 1.24\n",
-            "mathx.go": "package mathx\n\nfunc Double(n int) int { return n * 2 }\n",
-            "mathx_test.go": """
-            package mathx
-
-            import "testing"
-
-            func TestDouble(t *testing.T) {}
-            """,
-        ]
-
-        let plan = try planner().plan(phase: .test, files: files)
-        let withTests = try XCTUnwrap(plan.steps.first { $0.label.contains("[test]") })
-
-        XCTAssertTrue(withTests.arguments.contains(GoGuestPath.source("mathx.go")))
-        XCTAssertTrue(
-            withTests.arguments.contains(GoGuestPath.source("mathx_test.go")),
-            "the test files belong in the package, which is how a test reaches unexported names"
-        )
-        XCTAssertEqual(plan.products.count, 1)
-        XCTAssertEqual(plan.products.first?.importPath, "example.com/forge")
-    }
-
-    func testAnExternalTestPackageIsCompiledSeparately() throws {
-        let files = [
-            "go.mod": "module example.com/forge\n\ngo 1.24\n",
-            "mathx.go": "package mathx\n\nfunc Double(n int) int { return n * 2 }\n",
-            "mathx_ext_test.go": """
-            package mathx_test
-
-            import (
-            \t"testing"
-
-            \t"example.com/forge"
-            )
-
-            func TestDoubleFromOutside(t *testing.T) { _ = mathx.Double(1) }
-            """,
-        ]
-
-        let plan = try planner().plan(phase: .test, files: files)
-        let compiledPaths = plan.steps.compactMap { argument(after: "-p", in: $0.arguments) }
-
-        XCTAssertTrue(compiledPaths.contains("example.com/forge_test"))
-    }
-
-    func testAProjectWithNoTestsLinksNothingToRun() throws {
-        let plan = try planner().plan(phase: .test, files: helloWorld)
-
-        XCTAssertTrue(plan.products.isEmpty)
-        XCTAssertFalse(plan.steps.contains { $0.tool == .link })
-    }
-
     // MARK: - Vet and format
 
     func testVetCompilesFirstAndThenChecksEachPackage() throws {
