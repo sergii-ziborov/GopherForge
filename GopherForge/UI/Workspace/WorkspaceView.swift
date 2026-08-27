@@ -19,7 +19,7 @@ struct WorkspaceView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ToolchainBanner(status: workspace.toolchain)
+            ToolchainBanner(status: workspace.toolchain, progress: workspace.runningStep)
 
             if let terminal {
                 if horizontalSizeClass == .regular {
@@ -138,23 +138,60 @@ private struct PhaseButton: View {
     }
 }
 
-/// Says what compiler is present, and says it plainly when none is.
+/// Says what compiler is present, says it plainly when none is, and while a
+/// build runs says what it is doing.
+///
+/// The last part is not decoration. A build inside an interpreter takes
+/// seconds; the first device build was reported as "nothing compiles" because
+/// nothing on screen distinguished working from stuck.
 private struct ToolchainBanner: View {
     let status: ToolchainStatus
+    let progress: GoBuildProgress?
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: status.isReady ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
-                .foregroundStyle(status.isReady ? Color.green : Color.orange)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(status.label).font(.footnote.weight(.medium))
-                Text(status.detail).font(.caption2).foregroundStyle(.secondary)
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Image(systemName: status.isReady ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
+                    .foregroundStyle(status.isReady ? Color.green : Color.orange)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(status.label).font(.footnote.weight(.medium))
+                    Text(status.detail).font(.caption2).foregroundStyle(.secondary)
+                }
+                Spacer()
             }
-            Spacer()
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            if let progress {
+                BuildProgressRow(progress: progress)
+            }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
         .background(.bar)
         .accessibilityIdentifier(AccessibilityID.toolchainBanner)
+    }
+}
+
+/// One line naming the step, and a bar showing how much of the plan is left.
+private struct BuildProgressRow: View {
+    let progress: GoBuildProgress
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 6) {
+                ProgressView().controlSize(.mini)
+                Text(progress.summary)
+                    .font(.caption2.monospaced())
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Spacer()
+            }
+            ProgressView(value: progress.fraction)
+                .progressViewStyle(.linear)
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 6)
+        .accessibilityIdentifier(AccessibilityID.buildProgress)
+        .accessibilityLabel("Building: \(progress.summary)")
+        .transition(.opacity)
     }
 }

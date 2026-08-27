@@ -52,36 +52,61 @@ final class WasmGoCompiler: @unchecked Sendable {
         return artifactCache(for: layout.tag).storedByteCount
     }
 
-    func format(project: GoSourceSnapshot) async -> CompilationResult {
-        await perform(phase: .format, project: project)
+    func format(
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler = { _ in }
+    ) async -> CompilationResult {
+        await perform(phase: .format, project: project, onProgress: onProgress)
     }
 
-    func vet(project: GoSourceSnapshot) async -> CompilationResult {
-        await perform(phase: .vet, project: project)
+    func vet(
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler = { _ in }
+    ) async -> CompilationResult {
+        await perform(phase: .vet, project: project, onProgress: onProgress)
     }
 
-    func build(project: GoSourceSnapshot) async -> CompilationResult {
-        await perform(phase: .build, project: project)
+    func build(
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler = { _ in }
+    ) async -> CompilationResult {
+        await perform(phase: .build, project: project, onProgress: onProgress)
     }
 
-    func run(project: GoSourceSnapshot) async -> CompilationResult {
-        await perform(phase: .run, project: project)
+    func run(
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler = { _ in }
+    ) async -> CompilationResult {
+        await perform(phase: .run, project: project, onProgress: onProgress)
     }
 
-    func test(project: GoSourceSnapshot) async -> CompilationResult {
-        await perform(phase: .test, project: project)
+    func test(
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler = { _ in }
+    ) async -> CompilationResult {
+        await perform(phase: .test, project: project, onProgress: onProgress)
     }
 
-    private func perform(phase: CompilationResult.Phase, project: GoSourceSnapshot) async -> CompilationResult {
+    private func perform(
+        phase: CompilationResult.Phase,
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler
+    ) async -> CompilationResult {
         await withCheckedContinuation { continuation in
             queue.async { [self] in
                 assert(!Thread.isMainThread, "The bundled toolchain must never execute on the UI thread")
-                continuation.resume(returning: execute(phase: phase, project: project))
+                continuation.resume(
+                    returning: execute(phase: phase, project: project, onProgress: onProgress)
+                )
             }
         }
     }
 
-    private func execute(phase: CompilationResult.Phase, project: GoSourceSnapshot) -> CompilationResult {
+    private func execute(
+        phase: CompilationResult.Phase,
+        project: GoSourceSnapshot,
+        onProgress: @escaping GoBuildProgressHandler
+    ) -> CompilationResult {
         let started = clock.now
         guard let layout = locator.resolve() else {
             return .failure(phase: .setup, detail: "Bundled Go toolchain is missing.")
@@ -110,7 +135,7 @@ final class WasmGoCompiler: @unchecked Sendable {
             return cached
         }
 
-        return runner(for: layout).run(
+        return runner(for: layout, onProgress: onProgress).run(
             plan,
             phase: phase,
             project: project,
@@ -164,13 +189,17 @@ final class WasmGoCompiler: @unchecked Sendable {
 
     // MARK: - Shared state
 
-    private func runner(for layout: GoToolchainLocator.Layout) -> GoPhaseRunner {
+    private func runner(
+        for layout: GoToolchainLocator.Layout,
+        onProgress: @escaping GoBuildProgressHandler
+    ) -> GoPhaseRunner {
         GoPhaseRunner(
             layout: layout,
             stager: stager,
             clock: clock,
             goVersion: locator.probe().goVersion,
-            module: { [self] tool in try module(for: tool, in: layout) }
+            module: { [self] tool in try module(for: tool, in: layout) },
+            onProgress: onProgress
         )
     }
 

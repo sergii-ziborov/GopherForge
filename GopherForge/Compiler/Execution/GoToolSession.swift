@@ -67,6 +67,8 @@ struct GoToolSession {
     let job: GoWorkspaceStager.Layout
     let sources: GoSourceSnapshot
     let goVersion: String
+    /// Called as each step begins, from the queue the build runs on.
+    var onProgress: GoBuildProgressHandler = { _ in }
 
     enum SessionError: Error, Equatable {
         case unresolvableGuestPath(String)
@@ -78,7 +80,10 @@ struct GoToolSession {
         var stdout = ""
         var stderr = ""
 
-        for step in plan.steps {
+        for (index, step) in plan.steps.enumerated() {
+            onProgress(
+                GoBuildProgress(label: step.label, step: index + 1, totalSteps: plan.steps.count)
+            )
             try write(step.generatedFiles)
             let (exitCode, output) = try invoke(step: step, phase: phase)
             let reported = step.tool.writesDiagnosticsToStandardOutput

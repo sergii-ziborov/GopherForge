@@ -26,4 +26,5 @@ enum AccessibilityID {
     static let lessonCheck = "lesson.check"
     static let settingsToolchainStatus = "settings.toolchainStatus"
     static let settingsClearCache = "settings.clearCache"
+    static let buildProgress = "workspace.buildProgress"
 }

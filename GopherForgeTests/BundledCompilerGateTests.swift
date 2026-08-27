@@ -165,6 +165,48 @@ final class BundledCompilerGateTests: XCTestCase {
         XCTAssertTrue(result.tests.allPassed, report(result))
     }
 
+    /// The first device build was reported as "nothing compiles". It was
+    /// compiling; nothing on screen said so. This asserts the app has something
+    /// to say while it works.
+    func testABuildReportsEveryStepItTakes() async throws {
+        let snapshot = GoSourceSnapshot(
+            files: [
+                "go.mod": GoLanguage.module("example.com/forge"),
+                "main.go": "package main\n\nimport (\n\t\"fmt\"\n\n\t\"example.com/forge/greet\"\n)\n\nfunc main() { fmt.Println(greet.Message()) }\n",
+                "greet/greet.go": "package greet\n\nfunc Message() string { return \"hi\" }\n",
+            ],
+            packagePattern: ".",
+            entryFile: "main.go"
+        )
+
+        let collected = ProgressCollector()
+        let result = await compiler.build(project: snapshot) { collected.append($0) }
+        XCTAssertTrue(result.succeeded, report(result))
+
+        let progress = collected.reported
+        XCTAssertGreaterThanOrEqual(progress.count, 3, "two packages and a link is three steps")
+        XCTAssertEqual(progress.map(\.step), Array(1...progress.count), "steps should arrive in order")
+        XCTAssertEqual(progress.last?.step, progress.last?.totalSteps, "the last step should finish the plan")
+        XCTAssertTrue(
+            progress.contains { $0.label.contains("example.com/forge/greet") },
+            "a step should name the package it is compiling, got: \(progress.map(\.label))"
+        )
+        XCTAssertEqual(progress.first?.fraction ?? 0, 1.0 / Double(progress.count), accuracy: 0.001)
+    }
+
+    /// The handler is called from the compiler's own queue, so collecting has
+    /// to be safe from there rather than only from the test's actor.
+    private final class ProgressCollector: @unchecked Sendable {
+        private let lock = NSLock()
+        private var storage: [GoBuildProgress] = []
+
+        var reported: [GoBuildProgress] { lock.withLock { storage } }
+
+        func append(_ progress: GoBuildProgress) {
+            lock.withLock { storage.append(progress) }
+        }
+    }
+
     func testBundledGoSurvivesRepeatedBuilds() async throws {
         let snapshot = GoSourceSnapshot.singleFile("""
         package main

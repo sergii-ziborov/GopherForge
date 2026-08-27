@@ -15,6 +15,7 @@ struct GoPhaseRunner {
     let goVersion: String
     /// Resolves and parses a tool's module; the caller owns the cache.
     let module: (GoToolStep.Tool) throws -> Module
+    let onProgress: GoBuildProgressHandler
 
     func run(
         _ plan: GoBuildPlan,
@@ -39,7 +40,8 @@ struct GoPhaseRunner {
                 layout: layout,
                 job: job,
                 sources: project,
-                goVersion: goVersion
+                goVersion: goVersion,
+                onProgress: onProgress
             )
             let outcome = try session.run(plan: plan, phase: phase)
             guard outcome.succeeded else {
@@ -110,6 +112,13 @@ struct GoPhaseRunner {
             )
         }
 
+        onProgress(
+            GoBuildProgress(
+                label: "run \(plan.products.count) test binar\(plan.products.count == 1 ? "y" : "ies")",
+                step: plan.steps.count + 1,
+                totalSteps: plan.steps.count + 1
+            )
+        )
         let report = GoTestBinaryRunner(job: job).run(products: plan.products)
         return CompilationResult(
             succeeded: report.allPassed,

@@ -15,6 +15,10 @@ final class WorkspaceModel {
     private(set) var idiomFindings: [IdiomFinding] = []
     private(set) var isRunning = false
     private(set) var runningPhase: CompilationResult.Phase?
+    /// What the toolchain is doing right now, or nil between runs. A build on a
+    /// phone takes seconds, and a spinner that says nothing for that long reads
+    /// as a button that does not work.
+    private(set) var runningStep: GoBuildProgress?
 
     var selectedFile: String = "main.go"
     var editorText: String = ""
@@ -101,6 +105,7 @@ final class WorkspaceModel {
         defer {
             isRunning = false
             runningPhase = nil
+            runningStep = nil
         }
 
         let snapshot = project.snapshot(packagePattern: phase == .run ? "." : "./...")
@@ -146,12 +151,18 @@ final class WorkspaceModel {
         phase: CompilationResult.Phase,
         snapshot: GoSourceSnapshot
     ) async -> CompilationResult {
-        switch phase {
-        case .format: await compiler.format(project: snapshot)
-        case .vet: await compiler.vet(project: snapshot)
-        case .build: await compiler.build(project: snapshot)
-        case .run: await compiler.run(project: snapshot)
-        case .test: await compiler.test(project: snapshot)
+        // The compiler reports from its own queue and must stay unaware that a
+        // main actor exists, so the hop happens here, once, for every phase.
+        let report: GoBuildProgressHandler = { [weak self] progress in
+            Task { @MainActor in self?.runningStep = progress }
+        }
+
+        return switch phase {
+        case .format: await compiler.format(project: snapshot, onProgress: report)
+        case .vet: await compiler.vet(project: snapshot, onProgress: report)
+        case .build: await compiler.build(project: snapshot, onProgress: report)
+        case .run: await compiler.run(project: snapshot, onProgress: report)
+        case .test: await compiler.test(project: snapshot, onProgress: report)
         case .setup: .failure(phase: .setup, detail: "Setup is not a runnable phase.")
         }
     }
