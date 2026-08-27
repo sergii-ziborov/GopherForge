@@ -62,6 +62,13 @@ struct ProjectsHomeView: View {
                 }
                 .disabled(workspace.project == nil)
                 .accessibilityIdentifier(AccessibilityID.packagesEntry)
+
+                if let project = workspace.project, let archive = exportURL(for: project) {
+                    ShareLink(item: archive) {
+                        Label("Export \(project.name) as .tar.gz", systemImage: "square.and.arrow.up")
+                    }
+                    .accessibilityIdentifier(AccessibilityID.exportProject)
+                }
             } footer: {
                 Text(workspace.project == nil
                     ? "Open a project first; a package is installed into one."
@@ -95,7 +102,13 @@ struct ProjectsHomeView: View {
         .navigationDestination(isPresented: $isShowingPackages) { PackageBrowserView() }
         .fileImporter(
             isPresented: $isImporting,
-            allowedContentTypes: [.folder, GopherForgeProjectDocument.contentType],
+            allowedContentTypes: [
+                .folder,
+                GopherForgeProjectDocument.contentType,
+                // A tar.gz is what the rest of the world already opens, so it
+                // is what an exported project should be able to come back as.
+                .gzip,
+            ],
             allowsMultipleSelection: false
         ) { result in
             handleImport(result)
@@ -107,6 +120,26 @@ struct ProjectsHomeView: View {
             if LaunchOptions.initialScreen == .packages, workspace.project != nil {
                 isShowingPackages = true
             }
+        }
+    }
+
+    /// Writes the archive to a temporary file for the share sheet, which needs
+    /// something on disk rather than bytes in memory.
+    ///
+    /// Nil rather than an error if it cannot be written: the row simply does
+    /// not appear, which is better than a button that fails when pressed.
+    private func exportURL(for project: GopherForgeProject) -> URL? {
+        let name = ProjectArchiveNaming.archiveName(for: project.name)
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(name)
+        do {
+            let root = ProjectArchiveNaming.rootDirectory(for: project.name)
+            let data = try ProjectArchive.gzip(
+                ProjectArchive.tar(files: project.files, root: root)
+            )
+            try data.write(to: url, options: .atomic)
+            return url
+        } catch {
+            return nil
         }
     }
 
@@ -137,12 +170,28 @@ struct ProjectsHomeView: View {
         defer { if needsScope { url.stopAccessingSecurityScopedResource() } }
 
         do {
-            let project = url.pathExtension == "gopherforgeproject"
-                ? try GopherForgeProjectDocument.read(from: url)
-                : try LocalProjectLoader().load(from: url)
-            open(project)
+            open(try loadProject(at: url))
         } catch {
             importFailure = error.localizedDescription
+        }
+    }
+
+    private func loadProject(at url: URL) throws -> GopherForgeProject {
+        switch url.pathExtension.lowercased() {
+        case "gopherforgeproject":
+            return try GopherForgeProjectDocument.read(from: url)
+        case "gz", "tgz":
+            let files = try ProjectArchive.files(
+                fromTar: ProjectArchive.gunzip(try Data(contentsOf: url))
+            )
+            return GopherForgeProject(
+                name: ProjectArchiveNaming.projectName(fromArchive: url.lastPathComponent),
+                files: files,
+                entryFile: ProjectArchiveNaming.entryFile(in: files),
+                provenance: .files()
+            )
+        default:
+            return try LocalProjectLoader().load(from: url)
         }
     }
 

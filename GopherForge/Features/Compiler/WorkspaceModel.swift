@@ -22,6 +22,10 @@ final class WorkspaceModel {
 
     var selectedFile: String = "main.go"
     var editorText: String = ""
+    /// A line the editor should scroll to and highlight, set when a search
+    /// result is chosen and cleared once the editor has done it. Nil the rest
+    /// of the time, so nothing scrolls on an ordinary redraw.
+    private(set) var revealLine: Int?
 
     private let compiler: WasmGoCompiler
     private let analyzer: IdiomAnalyzer
@@ -74,6 +78,18 @@ final class WorkspaceModel {
         lastResult = nil
         compileAttempts = 0
         refreshIdioms()
+    }
+
+    /// Opens a file and, when a line is given, asks the editor to reveal it.
+    func select(file: String, revealingLine line: Int?) {
+        select(file: file)
+        revealLine = line
+    }
+
+    /// Called by the editor once it has scrolled, so a later redraw does not
+    /// yank the view back.
+    func clearReveal() {
+        revealLine = nil
     }
 
     func select(file: String) {

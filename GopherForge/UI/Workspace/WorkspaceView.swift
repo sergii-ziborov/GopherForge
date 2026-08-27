@@ -15,7 +15,11 @@ struct WorkspaceView: View {
     @State private var pane: WorkspacePane = .code
     @State private var dockPane: WorkspacePane = .problems
     @State private var terminal: ProjectTerminalSession?
-    @State private var isShowingFiles = false
+    /// The navigator's state. On iPad it is a column that can be collapsed; on
+    /// iPhone it is a drawer over the editor. One flag, because it is the same
+    /// question — is the file list showing — asked of two layouts.
+    @AppStorage("navigatorVisible") private var isNavigatorVisible = true
+    @State private var isDrawerOpen = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -34,14 +38,6 @@ struct WorkspaceView: View {
         .navigationTitle(workspace.project?.name ?? "Workspace")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
-        .sheet(isPresented: $isShowingFiles) {
-            NavigationStack {
-                ProjectFileTreeView()
-                    .navigationTitle("Files")
-                    .navigationBarTitleDisplayMode(.inline)
-            }
-            .presentationDetents([.medium, .large])
-        }
         .task {
             if terminal == nil { terminal = ProjectTerminalSession(workspace: workspace) }
         }
@@ -52,9 +48,12 @@ struct WorkspaceView: View {
     private func regularLayout(terminal: ProjectTerminalSession) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                ProjectFileTreeView()
-                    .frame(width: 240)
-                Divider()
+                if isNavigatorVisible {
+                    ProjectNavigatorView()
+                        .frame(width: 260)
+                        .transition(.move(edge: .leading).combined(with: .opacity))
+                    Divider()
+                }
                 WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
             }
 
@@ -72,7 +71,32 @@ struct WorkspaceView: View {
         }
     }
 
+    /// The drawer, over the editor rather than instead of it.
+    ///
+    /// A sheet covered the code someone was reading in order to let them choose
+    /// what to read. This keeps the editor on screen behind it, and a tap on
+    /// the dimmed part puts it away — which is what everything else on the
+    /// phone does.
     private func compactLayout(terminal: ProjectTerminalSession) -> some View {
+        ZStack(alignment: .leading) {
+            paneStack(terminal: terminal)
+
+            if isDrawerOpen {
+                Color.black.opacity(0.35)
+                    .ignoresSafeArea()
+                    .onTapGesture { withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = false } }
+                    .accessibilityLabel("Close files")
+                    .accessibilityAddTraits(.isButton)
+
+                ProjectNavigatorView { withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = false } }
+                    .frame(maxWidth: 320)
+                    .shadow(radius: 12)
+                    .transition(.move(edge: .leading))
+            }
+        }
+    }
+
+    private func paneStack(terminal: ProjectTerminalSession) -> some View {
         VStack(spacing: 0) {
             // The switcher sits directly under the banner rather than at the
             // bottom: on a phone the keyboard owns the bottom of the screen.
@@ -95,14 +119,19 @@ struct WorkspaceView: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        if horizontalSizeClass == .compact {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    isShowingFiles = true
-                } label: {
-                    Label("Files", systemImage: "sidebar.leading")
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    if horizontalSizeClass == .compact {
+                        isDrawerOpen.toggle()
+                    } else {
+                        isNavigatorVisible.toggle()
+                    }
                 }
+            } label: {
+                Label("Files", systemImage: "sidebar.leading")
             }
+            .accessibilityIdentifier(AccessibilityID.filesToggle)
         }
 
         ToolbarItemGroup(placement: .topBarTrailing) {

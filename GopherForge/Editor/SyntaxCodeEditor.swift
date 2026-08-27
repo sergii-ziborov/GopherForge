@@ -14,6 +14,11 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     /// Lines to mark, keyed by line number, for example the ones a diagnostic
     /// points at.
     var markedLines: Set<Int> = []
+    /// A line to scroll to and select, set when a search result is chosen.
+    /// Cleared through `onReveal` once it has happened, so an ordinary redraw
+    /// does not drag the reader back to it.
+    var revealLine: Int?
+    var onReveal: (() -> Void)?
     var onCaretLineChange: ((Int, String) -> Void)?
 
     func makeUIView(context: Context) -> UITextView {
@@ -49,6 +54,16 @@ struct SyntaxCodeEditor: UIViewRepresentable {
 
         context.coordinator.appliedFontSize = fontSize
         context.coordinator.appliedFileKind = fileKind
+
+        if let revealLine {
+            // After the text update, and on the next turn of the run loop:
+            // scrolling to a range the layout manager has not laid out yet
+            // lands in the wrong place.
+            DispatchQueue.main.async {
+                context.coordinator.reveal(line: revealLine, in: textView)
+                onReveal?()
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -170,6 +185,28 @@ struct SyntaxCodeEditor: UIViewRepresentable {
                     )
                 }
             )
+        }
+
+        /// Puts a line on screen and selects it, so a search result arrives
+        /// visible rather than merely open.
+        func reveal(line: Int, in textView: UITextView) {
+            let source = textView.text as NSString
+            var location = 0
+            var current = 1
+            while current < line, location < source.length {
+                let lineRange = source.lineRange(for: NSRange(location: location, length: 0))
+                location = NSMaxRange(lineRange)
+                current += 1
+            }
+            guard location <= source.length else { return }
+
+            let lineRange = source.lineRange(for: NSRange(location: location, length: 0))
+            let selection = NSRange(
+                location: lineRange.location,
+                length: max(0, lineRange.length - 1)
+            )
+            textView.selectedRange = selection
+            textView.scrollRangeToVisible(selection)
         }
 
         /// The text of the line the caret sits on, which is what the completion

@@ -19,7 +19,9 @@ struct WorkspacePaneContent: View {
                 text: $workspace.editorText,
                 fileKind: workspace.fileKind,
                 fontSize: fontSize,
-                markedLines: workspace.markedLines
+                markedLines: workspace.markedLines,
+                revealLine: workspace.revealLine,
+                onReveal: workspace.clearReveal
             )
             .accessibilityIdentifier(AccessibilityID.editor)
         case .problems:

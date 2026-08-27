@@ -54,6 +54,23 @@ struct PackageBrowserView: View {
                 }
             }
 
+            if !model.newSearchResults.isEmpty {
+                Section {
+                    ForEach(model.newSearchResults) { result in
+                        Button {
+                            Task { await model.resolve(path: result.path) }
+                        } label: {
+                            SearchResultRow(result: result)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(model.isBusy)
+                        .accessibilityIdentifier("package.\(result.path)")
+                    }
+                } header: {
+                    Text("From the Go ecosystem")
+                }
+            }
+
             Section {
                 ForEach(model.catalogMatches) { entry in
                     Button {
@@ -68,19 +85,28 @@ struct PackageBrowserView: View {
             } header: {
                 Text(model.query.isEmpty ? "Widely used" : "Matching")
             } footer: {
-                Text("Go has no package search API, so this is a starting list plus "
-                    + "anything you type in full. Every download is checked against the "
-                    + "official Go checksum database before a single file is written, and "
-                    + "the source is vendored into the project so builds stay offline.")
+                Text("Search matches package **names**, not descriptions — \"uuid\" finds "
+                    + "one, \"http router\" finds nothing. Type a module path in full to "
+                    + "install anything else. Every download is checked against the official "
+                    + "Go checksum database before a single file is written, and the source "
+                    + "is vendored into the project so builds stay offline.")
             }
         }
-        .searchable(text: $model.query, prompt: "Module path or keyword")
+        .searchable(text: $model.query, prompt: "Package name or module path")
+        .onChange(of: model.query) { _, _ in model.searchAfterTyping() }
         .autocorrectionDisabled()
         .textInputAutocapitalization(.never)
         .navigationTitle("Packages")
         .navigationBarTitleDisplayMode(.inline)
         .overlay {
             if model.isBusy { ProgressView().controlSize(.large) }
+        }
+        .overlay(alignment: .top) {
+            if model.isSearching {
+                ProgressView()
+                    .controlSize(.small)
+                    .padding(6)
+            }
         }
     }
 
@@ -105,6 +131,28 @@ private struct CatalogRow: View {
             Text(entry.blurb)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 2)
+        .contentShape(Rectangle())
+    }
+}
+
+/// A module the search found, with the version it is published at.
+private struct SearchResultRow: View {
+    let result: GoPackageSearchClient.Result
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "shippingbox")
+                .foregroundStyle(GopherForgeTheme.anvil)
+                .font(.caption)
+            Text(result.path).font(.callout.monospaced())
+            Spacer(minLength: 6)
+            if let version = result.defaultVersion {
+                Text(version)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(.vertical, 2)
         .contentShape(Rectangle())

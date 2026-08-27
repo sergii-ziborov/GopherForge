@@ -43,4 +43,7 @@ enum AccessibilityID {
     static let packageInstalled = "package.installed"
     static let packageSignals = "package.signals"
     static let packageError = "package.error"
+    static let fileSearch = "files.search"
+    static let filesToggle = "workspace.filesToggle"
+    static let exportProject = "projects.export"
 }

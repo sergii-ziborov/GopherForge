@@ -24,20 +24,56 @@ final class PackageInstallModel {
     private(set) var phase: Phase = .idle
     private(set) var resolved: Resolved?
     private(set) var selectedVersion: String?
+    private(set) var searchResults: [GoPackageSearchClient.Result] = []
+    private(set) var isSearching = false
 
     private let installer: GoPackageInstaller
     private let insightClient: GoPackageInsightClient
+    private let searchClient: GoPackageSearchClient
+    private var searchTask: Task<Void, Never>?
 
     init(
         installer: GoPackageInstaller = GoPackageInstaller(),
-        insightClient: GoPackageInsightClient = GoPackageInsightClient()
+        insightClient: GoPackageInsightClient = GoPackageInsightClient(),
+        searchClient: GoPackageSearchClient = GoPackageSearchClient()
     ) {
         self.installer = installer
         self.insightClient = insightClient
+        self.searchClient = searchClient
+    }
+
+    /// Searches after a pause, and abandons a search the typist has already
+    /// moved past. Without both, every keystroke is a request and the answers
+    /// arrive out of order.
+    func searchAfterTyping() {
+        searchTask?.cancel()
+        let text = trimmedQuery
+        guard text.count >= 2 else {
+            searchResults = []
+            isSearching = false
+            return
+        }
+
+        searchTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(350))
+            guard !Task.isCancelled, let self else { return }
+            isSearching = true
+            let found = await searchClient.search(text)
+            guard !Task.isCancelled else { return }
+            searchResults = found
+            isSearching = false
+        }
     }
 
     var catalogMatches: [GoPackageCatalog.Entry] {
         GoPackageCatalog.filtered(by: query)
+    }
+
+    /// Search results that are not already in the local list, so the same
+    /// module is not offered twice under two headings.
+    var newSearchResults: [GoPackageSearchClient.Result] {
+        let known = Set(catalogMatches.map(\.path))
+        return searchResults.filter { !known.contains($0.path) }
     }
 
     /// True when the text is a module path worth asking the proxy about.
