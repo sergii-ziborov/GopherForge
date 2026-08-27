@@ -11,14 +11,25 @@ struct SyntaxAttributedStringBuilder {
     var markedLines: Set<Int> = []
     var theme: GoSyntaxTheme = .standard
 
+    /// The attributes unhighlighted text wears.
+    ///
+    /// Shared with the editor's typing attributes: after the whole string is
+    /// replaced, the text view keeps the attributes of whatever token ended it,
+    /// and the next character typed would arrive in that colour.
+    static func baseAttributes(
+        fontSize: CGFloat,
+        theme: GoSyntaxTheme = .standard
+    ) -> [NSAttributedString.Key: Any] {
+        [
+            .font: UIFont.monospacedSystemFont(ofSize: fontSize, weight: .regular),
+            .foregroundColor: UIColor(theme.plain),
+        ]
+    }
+
     func build(_ source: String) -> NSAttributedString {
-        let font = UIFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         let attributed = NSMutableAttributedString(
             string: source,
-            attributes: [
-                .font: font,
-                .foregroundColor: UIColor(theme.plain),
-            ]
+            attributes: Self.baseAttributes(fontSize: fontSize, theme: theme)
         )
 
         for token in fileKind.tokens(in: source) {

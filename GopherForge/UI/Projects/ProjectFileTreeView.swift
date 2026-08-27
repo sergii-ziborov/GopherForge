@@ -27,19 +27,26 @@ struct ProjectFileTreeView: View {
     }
 
     private func row(for path: String) -> some View {
-        let kind = SourceFileKind.of(path: path)
+        let badge = SourceFileBadge.of(path: path)
         let name = path.split(separator: "/").last.map(String.init) ?? path
         let isSelected = workspace.selectedFile == path
 
         return HStack(spacing: 8) {
-            Image(systemName: kind.systemImage)
-                .foregroundStyle(name.hasSuffix("_test.go") ? Color.green : GopherForgeTheme.anvil)
+            // Fixed width so the names line up whatever symbol each row gets;
+            // a ragged left edge is harder to scan than no icons at all.
+            Image(systemName: badge.systemImage)
+                .foregroundStyle(badge.tint)
+                .font(.callout)
+                .frame(width: 20, alignment: .center)
+                .accessibilityHidden(true)
             Text(name)
                 .font(.callout)
                 .fontWeight(isSelected ? .semibold : .regular)
             Spacer()
         }
         .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(name), \(badge.accessibilityDescription)")
     }
 
     private var groups: [(directory: String, title: String, paths: [String])] {

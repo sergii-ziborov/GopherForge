@@ -65,9 +65,14 @@ struct SyntaxCodeEditor: UIViewRepresentable {
 
     @MainActor
     final class Coordinator: NSObject, UITextViewDelegate {
+        /// Long enough that a fast typist is never interrupted, short enough
+        /// that a word is coloured by the time the eye returns to it.
+        static let highlightDelay: TimeInterval = 0.12
+
         var parent: SyntaxCodeEditor
         var appliedFontSize: CGFloat = 0
         var appliedFileKind: SourceFileKind = .plain
+        private var pendingHighlight: DispatchWorkItem?
 
         init(parent: SyntaxCodeEditor) {
             self.parent = parent
@@ -85,6 +90,43 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
             reportCaretLine(in: textView)
+            // Typing is the one path where SwiftUI cannot ask for a
+            // re-highlight: the binding is already equal to the buffer by the
+            // time updateUIView runs, so it correctly decides nothing changed.
+            // Without this, everything the user types stays unstyled.
+            scheduleHighlight(of: textView)
+        }
+
+        /// Re-highlights shortly after typing stops.
+        ///
+        /// Not on every keystroke: replacing the whole attributed string costs
+        /// a full layout, and doing it mid-word on a long file is felt. A short
+        /// idle delay colours a word about as fast as the eye reaches it while
+        /// leaving fast typing alone.
+        private func scheduleHighlight(of textView: UITextView) {
+            pendingHighlight?.cancel()
+            let work = DispatchWorkItem { [weak self, weak textView] in
+                guard let self, let textView else { return }
+                applyHighlight(to: textView)
+            }
+            pendingHighlight = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDelay, execute: work)
+        }
+
+        private func applyHighlight(to textView: UITextView) {
+            // Mid-composition the text view owns a marked range, and replacing
+            // the string underneath it drops what is being composed.
+            guard textView.markedTextRange == nil else { return }
+
+            let selection = textView.selectedRange
+            textView.attributedText = highlighted(textView.text, fontSize: parent.fontSize)
+            textView.selectedRange = SyntaxCodeEditor.clamped(selection, in: textView.text)
+            // Setting attributedText replaces the typing attributes with those
+            // of the last token, so the next character would arrive wearing
+            // whatever colour the previous one had.
+            textView.typingAttributes = SyntaxAttributedStringBuilder.baseAttributes(
+                fontSize: parent.fontSize
+            )
         }
 
         func textViewDidChangeSelection(_ textView: UITextView) {

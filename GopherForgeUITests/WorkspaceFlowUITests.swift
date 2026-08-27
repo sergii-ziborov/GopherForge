@@ -181,8 +181,8 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testBuildActionsAreOfferedExactlyWhenTheToolchainIsThere() {
         launch(section: .build)
 
-        let banner = app.element(withIdentifier: AccessibilityIdentifier.toolchainBanner)
-        XCTAssertTrue(banner.waitForExistence(timeout: 10), "the banner should say what compiler is present")
+        let build = app.buttons["phase.build"]
+        XCTAssertTrue(build.waitForExistence(timeout: 10), "the build action should always be present")
         let isMissing = app.staticTexts["Toolchain missing"].exists
 
         for phase in ["build", "test", "run"] {
@@ -193,6 +193,15 @@ final class WorkspaceFlowUITests: XCTestCase {
                 "the \(phase) button should be enabled exactly when a toolchain is staged"
             )
         }
+
+        // A working compiler is not news, and a phone has no line to spare for
+        // it: the strip above the editor exists only when something is wrong or
+        // something is happening.
+        XCTAssertEqual(
+            app.element(withIdentifier: AccessibilityIdentifier.toolchainBanner).exists,
+            isMissing,
+            "the status strip should appear only when there is something to say"
+        )
     }
 
     /// Reachable on both layouts. iPad shows the tree beside the editor; iPhone
@@ -262,4 +271,5 @@ enum AccessibilityIdentifier {
     static let labEntry = "learn.lab"
     static let settingsToolchainStatus = "settings.toolchainStatus"
     static let hideKeyboard = "editor.hideKeyboard"
+    static let settingsAppearance = "settings.appearance"
 }

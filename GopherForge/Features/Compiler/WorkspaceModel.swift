@@ -26,16 +26,19 @@ final class WorkspaceModel {
     private let compiler: WasmGoCompiler
     private let analyzer: IdiomAnalyzer
     private let library: ProjectLibrary
+    private let progress: LearningProgressStore
     private var compileAttempts = 0
 
     init(
         compiler: WasmGoCompiler = WasmGoCompiler(),
         analyzer: IdiomAnalyzer = IdiomAnalyzer(),
-        library: ProjectLibrary = ProjectLibrary()
+        library: ProjectLibrary = ProjectLibrary(),
+        progress: LearningProgressStore = LearningProgressStore()
     ) {
         self.compiler = compiler
         self.analyzer = analyzer
         self.library = library
+        self.progress = progress
     }
 
     var fileKind: SourceFileKind {
@@ -123,6 +126,10 @@ final class WorkspaceModel {
             project: project,
             lastBuild: ProjectBuildRecord(result: result)
         )
+        // The library keeps the last build per project, which cannot answer
+        // "how much have you actually run". This is the counted record the
+        // badges read.
+        try? await progress.record(PracticeRun(result: result))
     }
 
     /// What the built-artifact cache occupies on this device.
@@ -135,6 +142,26 @@ final class WorkspaceModel {
     /// reclaimed, and so a build can be forced to happen for real.
     func clearBuildCache() {
         compiler.clearBuildCache()
+    }
+
+    /// Replaces the whole file set, which is what installing a package does.
+    ///
+    /// The open file is kept if it survived the change, so vendoring a
+    /// dependency does not move the user out of what they were editing.
+    func replaceFiles(with files: [String: String]) {
+        guard let project else { return }
+        let updated = GopherForgeProject(
+            name: project.name,
+            files: files,
+            entryFile: project.entryFile,
+            provenance: project.provenance
+        )
+        self.project = updated
+        if files[selectedFile] == nil {
+            selectedFile = updated.entryFile
+        }
+        editorText = files[selectedFile] ?? ""
+        refreshIdioms()
     }
 
     func applyIdiom(_ finding: IdiomFinding) {

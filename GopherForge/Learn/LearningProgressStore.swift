@@ -8,10 +8,17 @@ import Foundation
 actor LearningProgressStore {
     private struct State: Codable {
         var attempts: [LessonAttempt]
+        /// Optional so a file written before drills existed still decodes.
+        /// A new field that is not optional turns every old install's history
+        /// into a decode failure, which is a worse bug than a missing feature.
+        var drills: [MatchingDrillResult]?
+        var runs: [PracticeRun]?
     }
 
     private let storageURL: URL
     private let maximumAttempts = 500
+    private let maximumDrills = 500
+    private let maximumRuns = 1_000
     private var cachedState: State?
 
     init(storageURL: URL? = nil) {
@@ -63,12 +70,53 @@ actor LearningProgressStore {
         Set(try state().attempts.filter(\.succeeded).map(\.lessonID))
     }
 
+    // MARK: - Drills and runs
+
+    func drillResults() throws -> [MatchingDrillResult] {
+        try state().drills ?? []
+    }
+
+    func record(_ result: MatchingDrillResult) throws {
+        var current = try state()
+        var drills = current.drills ?? []
+        drills.append(result)
+        current.drills = Array(drills.suffix(maximumDrills))
+        try persist(current)
+    }
+
+    func practiceRuns() throws -> [PracticeRun] {
+        try state().runs ?? []
+    }
+
+    /// Only successful work is counted. A build that failed is evidence for
+    /// review, not something to award a badge for, and counting attempts would
+    /// make every badge a measure of persistence rather than of progress.
+    func record(_ run: PracticeRun) throws {
+        guard run.succeeded else { return }
+        var current = try state()
+        var runs = current.runs ?? []
+        runs.append(run)
+        current.runs = Array(runs.suffix(maximumRuns))
+        try persist(current)
+    }
+
+    /// Everything a badge is made of, assembled in one read so the Learn screen
+    /// does not hit the store four times to draw one list.
+    func learnerStats() throws -> LearnerStats {
+        LearnerStatsBuilder.build(
+            attempts: try attempts(),
+            mastery: try mastery(),
+            drills: try drillResults(),
+            runs: try practiceRuns()
+        )
+    }
+
     // MARK: - Storage
 
     private func state() throws -> State {
         if let cachedState { return cachedState }
         guard FileManager.default.fileExists(atPath: storageURL.path) else {
-            let empty = State(attempts: [])
+            let empty = State(attempts: [], drills: [], runs: [])
             cachedState = empty
             return empty
         }

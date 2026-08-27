@@ -8,6 +8,9 @@ struct GoPackage: Equatable {
     let directory: String
     /// The package clause its files agree on.
     let name: String
+    /// True for a package under `vendor/`, which is compiled like any other
+    /// but is never the module's own entry point.
+    let isVendored: Bool
     let goFiles: [String]
     /// `_test.go` files that share the package clause and are compiled into it.
     let internalTestFiles: [String]
@@ -16,7 +19,7 @@ struct GoPackage: Equatable {
     let imports: Set<String>
     let testImports: Set<String>
 
-    var isMain: Bool { name == "main" }
+    var isMain: Bool { name == "main" && !isVendored }
     var hasTests: Bool { !internalTestFiles.isEmpty || !externalTestFiles.isEmpty }
     var externalTestImportPath: String { importPath + "_test" }
 }
@@ -99,6 +102,7 @@ struct GoPackageGraph {
                 importPath: importPath(forDirectory: directory, modulePath: modulePath),
                 directory: directory,
                 name: name,
+                isVendored: directory.hasPrefix(GoVendorWriter.vendorDirectory + "/"),
                 goFiles: production,
                 internalTestFiles: internalTests,
                 externalTestFiles: external,
@@ -165,7 +169,15 @@ struct GoPackageGraph {
         return String(path[path.startIndex..<index])
     }
 
+    /// A vendored package keeps the import path it was published under, not
+    /// one derived from this module. `vendor/github.com/google/uuid` is
+    /// imported as `github.com/google/uuid`, which is the whole point of
+    /// vendoring: the code that imports it does not change.
     static func importPath(forDirectory directory: String, modulePath: String) -> String {
-        directory.isEmpty ? modulePath : "\(modulePath)/\(directory)"
+        let vendorPrefix = GoVendorWriter.vendorDirectory + "/"
+        if directory.hasPrefix(vendorPrefix) {
+            return String(directory.dropFirst(vendorPrefix.count))
+        }
+        return directory.isEmpty ? modulePath : "\(modulePath)/\(directory)"
     }
 }

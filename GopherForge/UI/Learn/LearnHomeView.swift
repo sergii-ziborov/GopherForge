@@ -4,6 +4,7 @@ import SwiftUI
 struct LearnHomeView: View {
     @State private var mastery: [ConceptMastery] = []
     @State private var completed: Set<String> = []
+    @State private var stats: LearnerStats = .empty
     @State private var openedScreen: LaunchOptions.Screen?
     private let store = LearningProgressStore()
 
@@ -22,6 +23,31 @@ struct LearnHomeView: View {
                     Label("Concurrency Lab", systemImage: "arrow.triangle.branch")
                 }
                 .accessibilityIdentifier(AccessibilityID.labEntry)
+                NavigationLink {
+                    MatchingDrillListView(onFinish: record)
+                } label: {
+                    Label("Drills", systemImage: "link")
+                }
+                .accessibilityIdentifier(AccessibilityID.drillsEntry)
+                NavigationLink {
+                    ExampleLibraryView()
+                } label: {
+                    Label("Examples", systemImage: "books.vertical")
+                }
+                .accessibilityIdentifier(AccessibilityID.examplesEntry)
+                NavigationLink {
+                    AchievementsView(stats: stats)
+                } label: {
+                    LabeledContent {
+                        Text("\(AchievementCatalog.unlocked(by: stats).count)"
+                            + " / \(AchievementCatalog.all.count)")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    } label: {
+                        Label("Achievements", systemImage: "rosette")
+                    }
+                }
+                .accessibilityIdentifier(AccessibilityID.achievementsEntry)
             } footer: {
                 Text("Review is chosen from what the compiler and the idiom coach saw you get wrong.")
             }
@@ -63,6 +89,15 @@ struct LearnHomeView: View {
         }
     }
 
+    /// A finished drill is evidence like any other: it feeds the badges, and
+    /// its wrong connections feed the same review queue a failed compile does.
+    private func record(_ result: MatchingDrillResult) {
+        Task {
+            try? await store.record(result)
+            await reload()
+        }
+    }
+
     private var weakest: [ConceptMastery] {
         mastery.sorted { $0.strength < $1.strength }.prefix(5).map { $0 }
     }
@@ -70,6 +105,7 @@ struct LearnHomeView: View {
     private func reload() async {
         mastery = (try? await store.mastery()) ?? []
         completed = (try? await store.completedLessonIDs()) ?? []
+        stats = (try? await store.learnerStats()) ?? .empty
     }
 }
 

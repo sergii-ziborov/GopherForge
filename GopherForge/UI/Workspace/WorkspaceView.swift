@@ -19,7 +19,7 @@ struct WorkspaceView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ToolchainBanner(status: workspace.toolchain, progress: workspace.runningStep)
+            WorkspaceStatusStrip(status: workspace.toolchain, progress: workspace.runningStep)
 
             if let terminal {
                 if horizontalSizeClass == .regular {
@@ -138,36 +138,46 @@ private struct PhaseButton: View {
     }
 }
 
-/// Says what compiler is present, says it plainly when none is, and while a
-/// build runs says what it is doing.
+/// The strip above the editor, which is usually nothing at all.
 ///
-/// The last part is not decoration. A build inside an interpreter takes
-/// seconds; the first device build was reported as "nothing compiles" because
-/// nothing on screen distinguished working from stuck.
-private struct ToolchainBanner: View {
+/// A working compiler is not news. Saying "Bundled Go 1.24.2" on every screen
+/// spends a line of a phone's height on a fact that does not change and that
+/// Settings already reports. So this appears only when it has something to
+/// say: that no compiler is staged, which is the only explanation for the
+/// disabled buttons, or that a build is running, which is the difference
+/// between working and stuck.
+private struct WorkspaceStatusStrip: View {
     let status: ToolchainStatus
     let progress: GoBuildProgress?
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Image(systemName: status.isReady ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
-                    .foregroundStyle(status.isReady ? Color.green : Color.orange)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(status.label).font(.footnote.weight(.medium))
-                    Text(status.detail).font(.caption2).foregroundStyle(.secondary)
-                }
-                Spacer()
+        if !status.isReady || progress != nil {
+            VStack(spacing: 0) {
+                if !status.isReady { MissingToolchainRow(status: status) }
+                if let progress { BuildProgressRow(progress: progress) }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-
-            if let progress {
-                BuildProgressRow(progress: progress)
-            }
+            .background(.bar)
+            .accessibilityIdentifier(AccessibilityID.toolchainBanner)
         }
-        .background(.bar)
-        .accessibilityIdentifier(AccessibilityID.toolchainBanner)
+    }
+}
+
+/// Why every build action is unavailable, in the toolchain's own words.
+private struct MissingToolchainRow: View {
+    let status: ToolchainStatus
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(Color.orange)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(status.label).font(.footnote.weight(.medium))
+                Text(status.detail).font(.caption2).foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
     }
 }
 
@@ -189,7 +199,7 @@ private struct BuildProgressRow: View {
                 .progressViewStyle(.linear)
         }
         .padding(.horizontal, 12)
-        .padding(.bottom, 6)
+        .padding(.vertical, 6)
         .accessibilityIdentifier(AccessibilityID.buildProgress)
         .accessibilityLabel("Building: \(progress.summary)")
         .transition(.opacity)

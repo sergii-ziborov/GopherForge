@@ -5,12 +5,23 @@ struct SettingsView: View {
     @Environment(WorkspaceModel.self) private var workspace
     @AppStorage("editorFontSize") private var fontSize: Double = 14
     @AppStorage("keepAwakeDuringBuilds") private var keepAwake = false
+    @AppStorage(AppearanceMode.storageKey) private var appearance = AppearanceMode.system.rawValue
     /// Read once when the screen appears rather than on every redraw: it walks
     /// a directory, and Settings redraws for every stepper tick.
     @State private var cacheByteCount: Int64 = 0
 
     var body: some View {
         Form {
+            Section("Appearance") {
+                Picker("Theme", selection: $appearance) {
+                    ForEach(AppearanceMode.allCases) { mode in
+                        Label(mode.title, systemImage: mode.systemImage).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier(AccessibilityID.settingsAppearance)
+            }
+
             Section("Editor") {
                 Stepper(value: $fontSize, in: 11...22, step: 1) {
                     LabeledContent("Text size", value: "\(Int(fontSize)) pt")
@@ -45,25 +56,6 @@ struct SettingsView: View {
                 }
             }
 
-            Section("Boundaries") {
-                BoundaryRow(
-                    supported: true,
-                    text: "The compiler ships inside the app and runs with no network."
-                )
-                BoundaryRow(
-                    supported: true,
-                    text: "Programs run in a sandbox with one writable directory and no network."
-                )
-                BoundaryRow(
-                    supported: false,
-                    text: "cgo is not supported: it needs a native C toolchain."
-                )
-                BoundaryRow(
-                    supported: false,
-                    text: "Modules are not downloaded; dependencies must be vendored."
-                )
-            }
-
             Section("About") {
                 LabeledContent("Product", value: "GopherForge")
                 Text("Forge real Go, anywhere.")
@@ -84,20 +76,5 @@ struct SettingsView: View {
             fromByteCount: workspace.toolchain.toolSize,
             countStyle: .file
         )
-    }
-}
-
-private struct BoundaryRow: View {
-    let supported: Bool
-    let text: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: supported ? "checkmark.circle.fill" : "minus.circle.fill")
-                .foregroundStyle(supported ? Color.green : Color.secondary)
-            Text(text)
-                .font(.caption)
-                .fixedSize(horizontal: false, vertical: true)
-        }
     }
 }

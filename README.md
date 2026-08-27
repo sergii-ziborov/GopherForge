@@ -43,6 +43,15 @@ Concretely, the app currently contains:
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
+- a matching drill — terms on the left, meanings on the right, tiles of one
+  fixed height so nothing moves while your thumb is reaching — whose wrong
+  connections feed the same review queue a failed compile does;
+- achievements earned by compiling, running, testing and fixing, each showing
+  its own counter so a locked one says what is left rather than hiding it;
+- an example library of small programs that each show one thing, and that the
+  compiler gate compiles, runs and checks the output of on every run;
+- package installation: resolve a module, see its popularity, licence and
+  OpenSSF Scorecard, and vendor a checksum-verified copy into the project;
 - a `UITextView` editor with Go and `go.mod` syntax highlighting, marked
   diagnostic lines, and an accessory row with three fixed regions: suggestions,
   a scrolling set of the symbols Go needs, and a control that puts the keyboard
@@ -86,8 +95,13 @@ bundle. The running app never downloads compiler components.
 ## Boundaries, stated up front
 
 - **cgo is not supported.** It needs a native C toolchain.
-- **Modules are not downloaded.** `GOPROXY=off` inside the sandbox, so a project
-  with requirements must vendor them.
+- **A package is installed once, then it is source.** The Packages screen
+  resolves a module through `proxy.golang.org`, checks the download against
+  `sum.golang.org` before writing anything, and vendors the result into the
+  project. The compiler still runs with `GOPROXY=off`: it never sees a network,
+  and every build after an install is offline. What is not done is verifying
+  the checksum database's signed transparency-log proof — the trust there is
+  TLS to the official endpoint, and that limit is stated in the app.
 - **No network from a guest program.** One writable preopen, `/sandbox`, and no
   network imports.
 - **`GOOS=wasip1`, not `js/wasm`.** The memo this product came from assumed a

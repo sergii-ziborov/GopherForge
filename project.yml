@@ -212,6 +212,10 @@ schemes:
             - BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()
             - BundledCompilerGateTests/testGeneratedModulesNeverAskForMoreGoThanIsBundled()
             - BundledCompilerGateTests/testABuildReportsEveryStepItTakes()
+            - BundledCompilerGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
+            - BundledCompilerGateTests/testExampleIdentifiersAreUnique()
+            - BundledCompilerGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
+            - BundledCompilerGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()
 
   GopherForgeCompilerGate:
     build:
@@ -233,3 +237,7 @@ schemes:
             - BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()
             - BundledCompilerGateTests/testGeneratedModulesNeverAskForMoreGoThanIsBundled()
             - BundledCompilerGateTests/testABuildReportsEveryStepItTakes()
+            - BundledCompilerGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
+            - BundledCompilerGateTests/testExampleIdentifiersAreUnique()
+            - BundledCompilerGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
+            - BundledCompilerGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()

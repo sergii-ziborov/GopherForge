@@ -53,6 +53,21 @@ struct ProjectsHomeView: View {
                 .accessibilityIdentifier(AccessibilityID.openFolder)
             }
 
+            Section {
+                NavigationLink {
+                    PackageBrowserView()
+                } label: {
+                    Label("Add a package", systemImage: "shippingbox")
+                }
+                .disabled(workspace.project == nil)
+                .accessibilityIdentifier(AccessibilityID.packagesEntry)
+            } footer: {
+                Text(workspace.project == nil
+                    ? "Open a project first; a package is installed into one."
+                    : "Downloads are checked against the Go checksum database and vendored "
+                        + "into the project, so builds stay offline afterwards.")
+            }
+
             if !recents.isEmpty {
                 Section("Recent") {
                     ForEach(recents) { item in

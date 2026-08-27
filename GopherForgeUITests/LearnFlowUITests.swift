@@ -33,7 +33,7 @@ final class LearnFlowUITests: XCTestCase {
         launch(arguments: ["-GopherForgeSection", "learn"])
 
         let unit = app.buttons["unit.concurrency"]
-        XCTAssertTrue(unit.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.waitForElement(unit), "the course list should reach every unit")
         unit.tap()
 
         XCTAssertTrue(
@@ -46,7 +46,9 @@ final class LearnFlowUITests: XCTestCase {
     func testOpeningALessonShowsItsTaskAndHidesTheAnswer() {
         launch(arguments: ["-GopherForgeSection", "learn"])
 
-        app.buttons["unit.concurrency"].tap()
+        let unit = app.buttons["unit.concurrency"]
+        XCTAssertTrue(app.waitForElement(unit))
+        unit.tap()
         let lesson = app.buttons["lesson.concurrency.unbuffered-rendezvous"]
         XCTAssertTrue(lesson.waitForExistence(timeout: 10))
         lesson.tap()
@@ -112,7 +114,7 @@ final class LearnFlowUITests: XCTestCase {
         attachScreenshot(named: "14-lab-prediction")
     }
 
-    func testSettingsReportsTheToolchainAndTheBoundaries() {
+    func testSettingsReportsTheToolchainAndOffersTheTheme() {
         launch(arguments: ["-GopherForgeSection", "settings"])
 
         let status = app.element(withIdentifier: AccessibilityIdentifier.settingsToolchainStatus)
@@ -123,12 +125,8 @@ final class LearnFlowUITests: XCTestCase {
             "settings should name what is actually there, got: \(status.label)"
         )
         XCTAssertTrue(
-            app.waitForElement(
-                app.staticTexts.containing(
-                    NSPredicate(format: "label CONTAINS 'cgo is not supported'")
-                ).element
-            ),
-            "settings should state the boundaries"
+            app.waitForElement(app.element(withIdentifier: AccessibilityIdentifier.settingsAppearance)),
+            "settings should offer the theme"
         )
         attachScreenshot(named: "15-settings")
     }
