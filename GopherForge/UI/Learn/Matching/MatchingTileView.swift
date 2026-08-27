@@ -10,6 +10,10 @@ import SwiftUI
 struct MatchingTileView: View {
     let text: String
     let state: MatchingDrillSession.TileState
+    /// Set on the button itself. An identifier applied to a wrapper does not
+    /// reliably reach the control inside it, and a tile nothing can address is
+    /// a tile no test can tap.
+    let identifier: String
     let action: () -> Void
 
     var body: some View {
@@ -35,6 +39,7 @@ struct MatchingTileView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier)
         .disabled(state == .matched)
         .animation(.easeOut(duration: 0.15), value: state)
         .accessibilityLabel(text)

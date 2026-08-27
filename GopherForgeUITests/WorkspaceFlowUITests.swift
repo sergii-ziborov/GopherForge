@@ -272,4 +272,6 @@ enum AccessibilityIdentifier {
     static let settingsToolchainStatus = "settings.toolchainStatus"
     static let hideKeyboard = "editor.hideKeyboard"
     static let settingsAppearance = "settings.appearance"
+    static let drillBoard = "drill.board"
+    static let exampleOpen = "example.open"
 }

@@ -10,6 +10,10 @@ enum LaunchOptions {
     enum Screen: String {
         case lab
         case review
+        case drills
+        case achievements
+        case examples
+        case packages
     }
 
     private static let sectionArgument = "-GopherForgeSection"

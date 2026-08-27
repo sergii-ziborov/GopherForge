@@ -77,16 +77,22 @@ struct MatchingDrillView: View {
                 }
             }
         }
+        // A container rather than a leaf: the tiles inside it stay separately
+        // addressable, which a plain identifier on a stack does not guarantee.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier(AccessibilityID.drillBoard)
     }
 
     @ViewBuilder
     private func tile(_ tile: MatchingDrillSession.Tile?) -> some View {
         if let tile {
-            MatchingTileView(text: tile.text, state: session.state(of: tile)) {
+            MatchingTileView(
+                text: tile.text,
+                state: session.state(of: tile),
+                identifier: "drill.tile.\(tile.id)"
+            ) {
                 session.select(tile)
             }
-            .accessibilityIdentifier("drill.tile.\(tile.id)")
         } else {
             // Only reachable if the two sides ever differ in count, which the
             // model forbids. An empty slot keeps the grid rather than shifting.

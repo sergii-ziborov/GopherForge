@@ -6,6 +6,7 @@ import SwiftUI
 /// product on its own rather than showing an empty list.
 struct ProjectsHomeView: View {
     @Environment(WorkspaceModel.self) private var workspace
+    @State private var isShowingPackages = false
     @Environment(AppNavigation.self) private var navigation
     @State private var recents: [ProjectLibraryItem] = []
     @State private var pendingImports: [PendingImportDrain.Pending] = []
@@ -91,6 +92,7 @@ struct ProjectsHomeView: View {
             }
         }
         .navigationTitle("Projects")
+        .navigationDestination(isPresented: $isShowingPackages) { PackageBrowserView() }
         .fileImporter(
             isPresented: $isImporting,
             allowedContentTypes: [.folder, GopherForgeProjectDocument.contentType],
@@ -98,7 +100,14 @@ struct ProjectsHomeView: View {
         ) { result in
             handleImport(result)
         }
-        .task { await reload() }
+        .task {
+            await reload()
+            // Automation opens the package browser directly; the section it
+            // belongs to is this one, so the destination lives here.
+            if LaunchOptions.initialScreen == .packages, workspace.project != nil {
+                isShowingPackages = true
+            }
+        }
     }
 
     private func open(_ project: GopherForgeProject) {

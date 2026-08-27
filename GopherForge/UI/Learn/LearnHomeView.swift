@@ -81,6 +81,12 @@ struct LearnHomeView: View {
             switch screen {
             case .lab: ConcurrencyLabView()
             case .review: ReviewView()
+            case .drills: MatchingDrillListView(onFinish: record)
+            case .achievements: AchievementsView(stats: stats)
+            case .examples: ExampleLibraryView()
+            // Packages live on the Projects side; opening Learn at one would
+            // put a screen under a tab it does not belong to.
+            case .packages: EmptyView()
             }
         }
         .task {
