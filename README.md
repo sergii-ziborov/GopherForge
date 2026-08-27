@@ -43,13 +43,20 @@ Concretely, the app currently contains:
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
+- a course of 40 lessons across seven units, every code lesson shipping a
+  complete answer that a gate compiles against that lesson's own hidden test —
+  so a lesson nobody can solve fails the build rather than a learner;
+- a quiz closing each unit: one question at a time, four options, and the
+  explanation the moment an answer is committed rather than at the end;
 - a matching drill — terms on the left, meanings on the right, tiles of one
   fixed height so nothing moves while your thumb is reaching — whose wrong
   connections feed the same review queue a failed compile does;
 - achievements earned by compiling, running, testing and fixing, each showing
   its own counter so a locked one says what is left rather than hiding it;
-- an example library of small programs that each show one thing, and that the
-  compiler gate compiles, runs and checks the output of on every run;
+- an example library: single-idea programs, five multi-package projects, one
+  that renders a PNG the app displays, and one with `go-cmp` already vendored
+  so it builds offline against a real dependency. A gate compiles, runs and
+  checks the output of every one of them;
 - package installation: resolve a module, see its popularity, licence and
   OpenSSF Scorecard, and vendor a checksum-verified copy into the project;
 - a `UITextView` editor with Go and `go.mod` syntax highlighting, marked

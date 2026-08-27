@@ -12,5 +12,6 @@ enum GoExampleLibraryProjects {
         GoExampleProjectLedger.ledger,
         GoExampleProjectPipeline.pipeline,
         GoExampleProjectPlot.plot,
+        GoExampleProjectDiff.diff,
     ]
 }

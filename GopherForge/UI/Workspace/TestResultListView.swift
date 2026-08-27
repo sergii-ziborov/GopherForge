@@ -10,6 +10,8 @@ struct TestResultListView: View {
                 systemImage: "checkmark.diamond",
                 title: "No tests have run",
                 message: "Add a _test.go file and run Test."
+            ,
+                tint: WorkspacePane.tests.tint
             )
         } else {
             List {

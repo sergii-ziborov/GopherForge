@@ -14,7 +14,9 @@ struct OutputStreamView: View {
                     systemImage: "terminal",
                     title: "Nothing has run yet",
                     message: "Run the program to see its output here."
-                )
+                ,
+                tint: WorkspacePane.output.tint
+            )
             )
         }
 

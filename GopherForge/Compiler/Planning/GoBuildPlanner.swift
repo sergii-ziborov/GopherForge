@@ -16,12 +16,16 @@ struct GoBuildPlanner {
     /// Identifies the toolchain, so a Go upgrade invalidates every cached
     /// artifact rather than mixing objects from two compilers.
     var toolchainTag: String = ""
+    /// Decides which files are in the build. Nil means every `.go` file is,
+    /// which is only right for content this app authored itself.
+    var constraint: GoBuildConstraint?
 
     func plan(phase: CompilationResult.Phase, files: [String: String]) throws -> GoBuildPlan {
         let graph = try GoPackageGraph.build(
             files: files,
             modulePath: modulePath,
-            standardLibrary: standardLibrary
+            standardLibrary: standardLibrary,
+            constraint: constraint
         )
 
         return switch phase {
@@ -229,9 +233,14 @@ struct GoBuildPlanner {
     /// Handing the compiler the whole list rather than a computed minimum is
     /// deliberate: it reads only what it needs, and a missing indirect entry
     /// fails a build in a way no user of a teaching app could diagnose.
+    ///
+    /// `unsafe` is deliberately absent: the compiler provides it, there is no
+    /// archive for it, and naming a file that does not exist would fail the
+    /// build rather than help it.
     func importConfiguration(archives: [String: String]) -> String {
         var entries = archives
-        for path in standardLibrary where entries[path] == nil {
+        for path in standardLibrary
+        where entries[path] == nil && !GoStandardLibraryIndex.compilerProvided.contains(path) {
             entries[path] = GoGuestPath.standardLibraryArchive(for: path)
         }
         return GoImportConfiguration.render(entries)

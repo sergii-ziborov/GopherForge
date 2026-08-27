@@ -219,8 +219,11 @@ final class WasmGoCompiler: @unchecked Sendable {
             languageVersion: GoToolchainLocator.languageVersion(
                 fromGoVersion: locator.probe().goVersion
             ),
-            standardLibrary: standardLibrary(for: layout).importPaths,
-            toolchainTag: layout.tag
+            standardLibrary: standardLibrary(for: layout).resolvableImportPaths,
+            toolchainTag: layout.tag,
+            constraint: GoBuildConstraint(
+                environment: .wasip1(goVersion: locator.probe().goVersion)
+            )
         )
     }
 

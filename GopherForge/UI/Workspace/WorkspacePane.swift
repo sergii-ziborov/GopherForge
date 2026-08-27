@@ -37,6 +37,20 @@ enum WorkspacePane: String, CaseIterable, Identifiable {
         }
     }
 
+    /// The colour this pane is recognised by. Problems are orange, tests are
+    /// green, and the rest take the app's own tints — so the switcher can be
+    /// read by shape at a glance rather than by reading six words.
+    var tint: Color {
+        switch self {
+        case .code: GopherForgeTheme.anvil
+        case .problems: .orange
+        case .output: .teal
+        case .tests: .green
+        case .idioms: .yellow
+        case .terminal: .purple
+        }
+    }
+
     /// On iPad the editor is always on screen, so the dock offers everything
     /// except the code itself.
     static var dockPanes: [WorkspacePane] {

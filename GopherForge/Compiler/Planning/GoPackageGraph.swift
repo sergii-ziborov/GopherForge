@@ -52,9 +52,10 @@ struct GoPackageGraph {
     static func build(
         files: [String: String],
         modulePath: String,
-        standardLibrary: some Collection<String>
+        standardLibrary: some Collection<String>,
+        constraint: GoBuildConstraint? = nil
     ) throws -> GoPackageGraph {
-        let grouped = try group(files: files, modulePath: modulePath)
+        let grouped = try group(files: files, modulePath: modulePath, constraint: constraint)
         guard !grouped.isEmpty else { throw GraphError.noGoFiles }
 
         let byPath = Dictionary(uniqueKeysWithValues: grouped.map { ($0.importPath, $0) })
@@ -75,9 +76,20 @@ struct GoPackageGraph {
 
     // MARK: - Grouping
 
-    private static func group(files: [String: String], modulePath: String) throws -> [GoPackage] {
+    private static func group(
+        files: [String: String],
+        modulePath: String,
+        constraint: GoBuildConstraint?
+    ) throws -> [GoPackage] {
         var byDirectory: [String: [String]] = [:]
         for path in files.keys.sorted() where path.hasSuffix(".go") {
+            // A file excluded by a build tag is not in the package at all.
+            // Compiling both halves of a `debug_enable`/`debug_disable` pair
+            // redeclares every symbol in it, which is how this was found.
+            if let constraint,
+               !constraint.includes(path: path, source: files[path] ?? "") {
+                continue
+            }
             byDirectory[directory(of: path), default: []].append(path)
         }
 

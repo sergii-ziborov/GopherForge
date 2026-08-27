@@ -30,6 +30,9 @@ struct GoExample: Identifiable, Equatable, Sendable {
     /// and WASI has neither — but a program that draws into a buffer and writes
     /// a PNG runs perfectly, and the app shows what it drew.
     var producesImage: Bool = false
+    /// A module the app ships, vendored into this project when it is opened.
+    /// The example then builds offline against a real dependency.
+    var vendoredModule: VendoredModuleLoader.Bundled?
 
     var moduleName: String { modulePath }
 
@@ -37,7 +40,8 @@ struct GoExample: Identifiable, Equatable, Sendable {
         var all = extraFiles
         all["go.mod"] = GoLanguage.module(modulePath)
         all["main.go"] = source
-        return all
+        guard let vendoredModule else { return all }
+        return VendoredModuleLoader().vendoring(vendoredModule, into: all)
     }
 
     var isProject: Bool { !extraFiles.isEmpty }

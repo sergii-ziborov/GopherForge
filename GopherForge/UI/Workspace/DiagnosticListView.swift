@@ -10,6 +10,8 @@ struct DiagnosticListView: View {
                 systemImage: "checkmark.circle",
                 title: "No problems",
                 message: "Build, vet or test to see what the toolchain says."
+            ,
+                tint: WorkspacePane.problems.tint
             )
         } else {
             List(diagnostics) { diagnostic in
@@ -56,12 +58,16 @@ struct EmptyDockMessage: View {
     let systemImage: String
     let title: String
     let message: String
+    /// The pane's own colour, so an empty panel still says which one it is.
+    var tint: Color = .secondary
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             Image(systemName: systemImage)
                 .font(.title2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(tint)
+                .frame(width: 52, height: 52)
+                .background(tint.opacity(0.12), in: Circle())
             Text(title).font(.callout.weight(.medium))
             Text(message)
                 .font(.caption)

@@ -11,6 +11,8 @@ struct IdiomFindingListView: View {
                 systemImage: "wand.and.stars",
                 title: "Nothing to suggest",
                 message: "The idiom coach reads the code as you type."
+            ,
+                tint: WorkspacePane.idioms.tint
             )
         } else {
             List(findings) { finding in

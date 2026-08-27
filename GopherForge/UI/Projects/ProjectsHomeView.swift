@@ -40,7 +40,7 @@ struct ProjectsHomeView: View {
                     Button {
                         open(template.project(named: template.title))
                     } label: {
-                        TemplateRow(template: template)
+                        TemplateTile(template: template)
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier(AccessibilityID.template(template.id))
@@ -222,44 +222,30 @@ private struct WelcomeCard: View {
     }
 }
 
-private struct TemplateRow: View {
-    let template: ProjectTemplate
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: template.systemImage)
-                .foregroundStyle(GopherForgeTheme.ember)
-                .frame(width: 24)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(template.title).font(.callout.weight(.medium))
-                Text(template.summary)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            Spacer()
-        }
-        .contentShape(Rectangle())
-    }
-}
-
 private struct ProjectRow: View {
     let item: ProjectLibraryItem
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack(spacing: 6) {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "folder.fill")
+                .font(.callout)
+                .foregroundStyle(GopherForgeTheme.anvil)
+                .frame(width: 28, height: 28)
+                .background(GopherForgeTheme.anvil.opacity(0.14), in: RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
                 Text(item.project.name).font(.callout.weight(.medium))
-                Spacer()
-                if let build = item.lastBuild {
-                    Image(systemName: build.succeeded ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .foregroundStyle(GopherForgeTheme.statusColor(succeeded: build.succeeded))
-                }
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                // The last build as a chip rather than a bare tick: "3 tests"
+                // and "build failed" are different facts, and a tick says
+                // neither of them.
+                BuildOutcomeChip(record: item.lastBuild)
             }
-            Text(subtitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, 2)
         .contentShape(Rectangle())
     }
 

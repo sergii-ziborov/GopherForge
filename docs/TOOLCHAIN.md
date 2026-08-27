@@ -47,6 +47,7 @@ this app builds are not large:
 | `GoBuildPlanner` | Turns a graph and a phase into an ordered list of `compile`/`link`/`vet`/`gofmt` invocations, in guest paths. |
 | `GoTestFunctionScanner`, `GoTestMainGenerator` | Find `TestXxx`/`BenchmarkXxx`/`ExampleXxx`/`FuzzXxx` and write the `_testmain.go` that turns a package into a test binary — the same file `go test` generates, including how a custom `TestMain` takes over. |
 | `GoVetConfiguration` | The unit-check JSON `cmd/vet` requires. `vet` refuses to be handed source files; `go vet` hands it this instead, and so do we. |
+| `GoBuildConstraint` | Decides which files are in the build: `//go:build`, the older `// +build`, and the `_GOOS`/`_GOARCH` filename rules. Without it a package that ships two mutually exclusive implementations compiles both, and every symbol in it is declared twice. |
 | `GoPlanFailureReader` | Says why a project could not be planned, in a sentence, because these failures happen before any tool runs and so have no compiler message to show. |
 
 A plan is data. It names a tool, an argv and the files that must exist in the
@@ -92,6 +93,14 @@ both cost real time and neither is documented anywhere obvious.
 `go build` relays them to stderr, which is why nobody notices. Reading the
 wrong stream means a build that fails with a perfectly good `declared and not
 used` in hand and no diagnostics to show for it.
+
+**Build tags are not optional.** `go-cmp` ships `debug_enable.go` and
+`debug_disable.go`, guarded by `//go:build cmp_debug` and its negation, and so
+does much of the standard library. A planner that compiles every `.go` file in
+a directory compiles both and redeclares every symbol. The same pass also has
+to know that `unsafe` is resolvable but has no archive: it is a name the
+compiler understands, not a library, and pointing an import configuration at a
+file that does not exist fails the build.
 
 **The entry point is compiled as `main`, not under its import path.** The
 linker resolves `main.main` by package path, so compiling the entry point with

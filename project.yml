@@ -55,7 +55,14 @@ targets:
       - path: GopherForge
         excludes:
           - Resources/Toolchain
+          - Resources/VendoredModules
       - path: GopherForge/Resources/Toolchain
+        type: folder
+        buildPhase: resources
+      # A folder reference rather than a group: these are Go sources that must
+      # reach the bundle with their directory structure intact, because the
+      # structure is the import path.
+      - path: GopherForge/Resources/VendoredModules
         type: folder
         buildPhase: resources
       - path: GopherForgeShared
