@@ -27,8 +27,17 @@ Concretely, the app currently contains:
 
 - an adaptive native `Projects / Build / Learn / Settings` shell — sidebar on
   iPad, tab bar on iPhone;
+- a workspace that changes shape by device: iPad shows the file tree, the editor
+  and a dock at once, while iPhone becomes full-height
+  `Code / Problems / Output / Tests / Idioms / Terminal` tabs with the switcher
+  at the top, where the keyboard cannot bury it;
+- a project console that maps `go build`, `go run`, `go test`, `go vet`,
+  `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
+  operations — app-scoped, never a shell;
 - a `UITextView` editor with Go and `go.mod` syntax highlighting, marked
-  diagnostic lines, and a keyboard row carrying tab, braces, `:=` and `<-`;
+  diagnostic lines, and an accessory row with three fixed regions: suggestions,
+  a scrolling set of the symbols Go needs, and a control that puts the keyboard
+  away;
 - a compiler layer that stages a project into a job sandbox, runs one WASI
   module per phase, and parses what it wrote — format, vet, build, run, test;
 - Go's plain-text diagnostics parsed for real, including package banners,

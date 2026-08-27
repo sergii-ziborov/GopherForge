@@ -108,34 +108,35 @@ struct SyntaxCodeEditor: UIViewRepresentable {
             onCaretLineChange(lineNumber, lineText)
         }
 
-        /// Go needs these characters constantly and iOS buries all of them.
+        /// The accessory owns its own layout and suggestion menu; the editor
+        /// only supplies what it alone knows: the caret's line.
         func makeAccessoryView(for textView: UITextView) -> UIView {
-            let symbols = ["\t", "{", "}", "(", ")", "[", "]", ":=", "<-", "*", "&", "\"", "`"]
-            let stack = UIStackView()
-            stack.axis = .horizontal
-            stack.distribution = .fillEqually
-            stack.spacing = 4
-            stack.frame = CGRect(x: 0, y: 0, width: 0, height: 44)
+            GoKeyboardAccessoryView(
+                onInsert: { [weak textView] text in
+                    textView?.insertText(text)
+                },
+                onDismiss: { [weak textView] in
+                    textView?.resignFirstResponder()
+                },
+                suggestions: { [weak self, weak textView] in
+                    guard let self, let textView else { return [] }
+                    return GoCodeCompletion().suggestions(
+                        for: GoCodeCompletion.Context(
+                            line: currentLine(in: textView),
+                            fileKind: parent.fileKind
+                        )
+                    )
+                }
+            )
+        }
 
-            for symbol in symbols {
-                let button = UIButton(type: .system)
-                button.setTitle(symbol == "\t" ? "⇥" : symbol, for: .normal)
-                button.titleLabel?.font = .monospacedSystemFont(ofSize: 15, weight: .medium)
-                button.addAction(
-                    UIAction { [weak textView] _ in
-                        textView?.insertText(symbol)
-                    },
-                    for: .touchUpInside
-                )
-                stack.addArrangedSubview(button)
-            }
-
-            let container = UIView(frame: stack.frame)
-            container.backgroundColor = .secondarySystemBackground
-            stack.frame = container.bounds
-            stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            container.addSubview(stack)
-            return container
+        /// The text of the line the caret sits on, which is what the completion
+        /// table matches against.
+        private func currentLine(in textView: UITextView) -> String {
+            let source = textView.text as NSString
+            let caret = min(textView.selectedRange.location, source.length)
+            let lineRange = source.lineRange(for: NSRange(location: caret, length: 0))
+            return source.substring(with: lineRange).trimmingCharacters(in: .newlines)
         }
     }
 }

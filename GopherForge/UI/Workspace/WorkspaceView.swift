@@ -1,36 +1,35 @@
 import SwiftUI
 
-/// The Build side: file tree, editor and the result dock.
+/// The Build side.
+///
+/// Two layouts, because the right answer differs by device. On iPad there is
+/// room for the file tree, the editor and a dock at once. On iPhone a split
+/// gives a cramped editor above a cramped panel and serves neither, so the
+/// workspace becomes full-height tabs with the switcher at the top, where a
+/// thumb reaches it.
 struct WorkspaceView: View {
     @Environment(WorkspaceModel.self) private var workspace
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage("editorFontSize") private var fontSize: Double = 14
+
+    @State private var pane: WorkspacePane = .code
+    @State private var dockPane: WorkspacePane = .problems
+    @State private var terminal: ProjectTerminalSession?
     @State private var isShowingFiles = false
 
     var body: some View {
-        @Bindable var workspace = workspace
-
         VStack(spacing: 0) {
             ToolchainBanner(status: workspace.toolchain)
 
-            HStack(spacing: 0) {
+            if let terminal {
                 if horizontalSizeClass == .regular {
-                    ProjectFileTreeView()
-                        .frame(width: 240)
-                    Divider()
+                    regularLayout(terminal: terminal)
+                } else {
+                    compactLayout(terminal: terminal)
                 }
-
-                SyntaxCodeEditor(
-                    text: $workspace.editorText,
-                    fileKind: workspace.fileKind,
-                    fontSize: fontSize,
-                    markedLines: workspace.markedLines
-                )
-                .accessibilityIdentifier(AccessibilityID.editor)
+            } else {
+                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-
-            Divider()
-            BuildDockView()
         }
         .navigationTitle(workspace.project?.name ?? "Workspace")
         .navigationBarTitleDisplayMode(.inline)
@@ -43,7 +42,56 @@ struct WorkspaceView: View {
             }
             .presentationDetents([.medium, .large])
         }
+        .task {
+            if terminal == nil { terminal = ProjectTerminalSession(workspace: workspace) }
+        }
     }
+
+    // MARK: - Layouts
+
+    private func regularLayout(terminal: ProjectTerminalSession) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                ProjectFileTreeView()
+                    .frame(width: 240)
+                Divider()
+                WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
+            }
+
+            Divider()
+
+            VStack(spacing: 0) {
+                WorkspacePanePicker(selection: $dockPane, panes: WorkspacePane.dockPanes)
+                    .padding(8)
+                Divider()
+                WorkspacePaneContent(pane: dockPane, terminal: terminal, fontSize: fontSize)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            }
+            .frame(height: 280)
+            .background(Color(.secondarySystemBackground))
+        }
+    }
+
+    private func compactLayout(terminal: ProjectTerminalSession) -> some View {
+        VStack(spacing: 0) {
+            // The switcher sits directly under the banner rather than at the
+            // bottom: on a phone the keyboard owns the bottom of the screen.
+            ScrollView(.horizontal, showsIndicators: false) {
+                WorkspacePanePicker(selection: $pane, panes: WorkspacePane.allCases)
+                    .frame(minWidth: 520)
+                    .padding(.horizontal, 8)
+            }
+            .padding(.vertical, 6)
+            .background(Color(.secondarySystemBackground))
+
+            Divider()
+
+            WorkspacePaneContent(pane: pane, terminal: terminal, fontSize: fontSize)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+    }
+
+    // MARK: - Toolbar
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {

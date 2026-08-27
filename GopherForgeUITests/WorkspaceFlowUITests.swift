@@ -66,18 +66,97 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "03-typed")
     }
 
-    func testDockTabsSwitch() {
+    /// Reported from a real phone: without this the keyboard covers half the
+    /// file and nothing on screen puts it away.
+    func testKeyboardCanBeDismissedFromItsOwnRow() {
         launch(section: .build)
 
-        let dock = app.segmentedControls[AccessibilityIdentifier.dockPicker]
-        XCTAssertTrue(dock.waitForExistence(timeout: 10))
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.tap()
 
-        for title in ["Output", "Tests", "Idioms", "Problems"] {
-            let button = dock.buttons.element(boundBy: dockIndex(of: title))
-            button.tap()
-            XCTAssertTrue(button.isSelected, "\(title) should become the selected dock tab")
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        XCTAssertTrue(hide.waitForExistence(timeout: 5), "the accessory row should offer a way out")
+
+        hide.tap()
+        // The row belongs to the keyboard, so its disappearance is the signal
+        // that works whether or not a hardware keyboard is attached.
+        XCTAssertTrue(
+            hide.waitForNonExistence(timeout: 5),
+            "tapping hide should put the keyboard away"
+        )
+        attachScreenshot(named: "06-keyboard-dismissed")
+    }
+
+    func testAccessoryRowOffersGoSymbols() {
+        launch(section: .build)
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.tap()
+
+        // The two Go needs most and iOS buries deepest.
+        for symbol in [":=", "<-"] {
+            XCTAssertTrue(
+                app.buttons[symbol].waitForExistence(timeout: 5),
+                "the accessory row should offer \(symbol)"
+            )
         }
-        attachScreenshot(named: "04-dock")
+
+        let before = editor.value as? String ?? ""
+        app.buttons[":="].tap()
+        XCTAssertEqual(
+            (editor.value as? String ?? "").count,
+            before.count + 2,
+            "tapping a symbol should insert it"
+        )
+    }
+
+    func testEveryPaneCanBeSelected() {
+        launch(section: .build)
+
+        let picker = app.segmentedControls[AccessibilityIdentifier.dockPicker]
+        XCTAssertTrue(picker.waitForExistence(timeout: 10))
+
+        for title in ["Output", "Tests", "Idioms", "Terminal", "Problems"] {
+            let button = picker.buttons.matching(
+                NSPredicate(format: "label BEGINSWITH %@", title)
+            ).firstMatch
+            XCTAssertTrue(button.exists, "\(title) should be offered")
+            button.tap()
+            XCTAssertTrue(button.isSelected, "\(title) should become the selected pane")
+        }
+        attachScreenshot(named: "04-panes")
+    }
+
+    /// The console is app-scoped: it must answer, and it must never claim to
+    /// have run something the toolchain cannot.
+    func testTerminalAnswersAndRefusesWithoutAToolchain() {
+        launch(section: .build)
+
+        let picker = app.segmentedControls[AccessibilityIdentifier.dockPicker]
+        XCTAssertTrue(picker.waitForExistence(timeout: 10))
+        picker.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Terminal'")).firstMatch.tap()
+
+        let input = app.textFields["terminal.input"]
+        XCTAssertTrue(input.waitForExistence(timeout: 5), "the console should offer a prompt")
+
+        // Submitting resigns focus, so each command taps the field again
+        // rather than assuming the caret stayed put.
+        send("pwd", to: input)
+        XCTAssertTrue(
+            app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'playground'")).element
+                .waitForExistence(timeout: 5),
+            "pwd should print the module path"
+        )
+
+        send("go build", to: input)
+        XCTAssertTrue(
+            app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Toolchain missing'")).element
+                .waitForExistence(timeout: 5),
+            "go build should refuse while no toolchain is staged"
+        )
+        attachScreenshot(named: "07-terminal")
     }
 
     /// Every action that needs the toolchain must be unavailable while none is
@@ -123,8 +202,9 @@ final class WorkspaceFlowUITests: XCTestCase {
         app.launch()
     }
 
-    private func dockIndex(of title: String) -> Int {
-        ["Problems", "Output", "Tests", "Idioms"].firstIndex(of: title) ?? 0
+    private func send(_ command: String, to field: XCUIElement) {
+        field.tap()
+        field.typeText(command + "\n")
     }
 
     private func attachScreenshot(named name: String) {
@@ -149,4 +229,5 @@ enum AccessibilityIdentifier {
     static let reviewEntry = "learn.review"
     static let labEntry = "learn.lab"
     static let settingsToolchainStatus = "settings.toolchainStatus"
+    static let hideKeyboard = "editor.hideKeyboard"
 }
