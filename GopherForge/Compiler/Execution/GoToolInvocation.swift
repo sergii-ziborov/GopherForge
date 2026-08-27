@@ -1,61 +1,31 @@
 import Foundation
 
-/// Builds the argv and environment for one toolchain phase.
+/// The environment every toolchain step runs under.
 ///
-/// Every phase runs the same bundled driver; only the sub-command differs, so
-/// the mapping lives in one place and stays easy to audit against what the app
-/// claims it runs.
+/// The argv of a step is the build planner's business — it differs per package
+/// and per phase — but the environment is the same for all of them, so it lives
+/// here where it can be read in one go and audited against what the app claims.
 enum GoToolInvocation {
-    /// Guest paths inside the job sandbox. They are fixed so that diagnostics
-    /// always come back with the same prefix and can be normalised.
-    enum GuestPath {
-        static let work = "/work"
-        static let goroot = "/goroot"
-        static let cache = "/cache"
-        static let temp = "/tmp"
-    }
-
-    static func arguments(for phase: CompilationResult.Phase, packagePattern: String = "./...") -> [String] {
-        switch phase {
-        case .format:
-            ["go", "fmt", packagePattern]
-        case .vet:
-            ["go", "vet", packagePattern]
-        case .build:
-            // -o discards the binary: the build phase only has to prove the
-            // package graph type-checks and links.
-            ["go", "build", "-o", "/dev/null", packagePattern]
-        case .run:
-            ["go", "build", "-o", "\(GuestPath.work)/program.wasm", "."]
-        case .test:
-            ["go", "test", packagePattern]
-        case .setup:
-            ["go", "version"]
-        }
-    }
-
     /// The guest environment.
     ///
     /// `GOOS=wasip1` matters: the app runs guest programs under WASI in the
     /// same interpreter it uses for the toolchain, so user programs are built
-    /// for the platform they will actually execute on. `GOFLAGS=-mod=mod`
-    /// keeps builds working from the bundled module cache without a network.
+    /// for the platform they will actually execute on.
     static func environment(goVersion: String) -> [String: String] {
         [
-            "GOROOT": GuestPath.goroot,
-            "GOCACHE": GuestPath.cache,
-            "GOMODCACHE": "\(GuestPath.cache)/mod",
-            "GOTMPDIR": GuestPath.temp,
+            "GOROOT": GoGuestPath.goroot,
+            "GOCACHE": GoGuestPath.cache,
+            "GOMODCACHE": "\(GoGuestPath.cache)/mod",
+            "GOTMPDIR": GoGuestPath.temp,
             "GOOS": "wasip1",
             "GOARCH": "wasm",
-            "GOFLAGS": "-mod=mod",
             // No network is reachable from the sandbox; make that explicit so
-            // the toolchain fails fast with a clear message instead of hanging
-            // on a proxy dial that can never succeed.
+            // anything that would reach for one fails fast with a clear message
+            // instead of hanging on a dial that can never succeed.
             "GOPROXY": "off",
             "GOTOOLCHAIN": "local",
             "GOVERSION": goVersion,
-            "HOME": GuestPath.work,
+            "HOME": GoGuestPath.work,
         ]
     }
 

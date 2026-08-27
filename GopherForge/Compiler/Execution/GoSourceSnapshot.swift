@@ -26,7 +26,7 @@ struct GoSourceSnapshot: Sendable, Equatable {
     static func singleFile(_ source: String, moduleName: String = "playground") -> GoSourceSnapshot {
         GoSourceSnapshot(
             files: [
-                "go.mod": "module \(moduleName)\n\ngo 1.27\n",
+                "go.mod": GoLanguage.module(moduleName),
                 "main.go": source,
             ],
             packagePattern: ".",

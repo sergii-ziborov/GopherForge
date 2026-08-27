@@ -3,9 +3,11 @@ import WasmKit
 
 /// The app's entry point to the bundled Go toolchain.
 ///
-/// Every phase follows the same shape — stage the project, run the driver,
-/// parse what it wrote — so this type stays an orchestrator and delegates the
-/// staging, invocation, execution and caching to their own components.
+/// Every phase follows the same shape — plan the work, check the cache, run the
+/// plan — so this type stays an orchestrator. Planning is
+/// `GoBuildPlanner`'s, running is `GoPhaseRunner`'s, and what lives here is the
+/// state all jobs share: the parsed tool modules, the standard-library index
+/// and the artifact caches.
 ///
 /// The toolchain runs synchronously inside the Wasm interpreter, below the
 /// UI's quality of service, so scrolling and animation stay responsive while a
@@ -20,7 +22,8 @@ final class WasmGoCompiler: @unchecked Sendable {
     private let clock = ContinuousClock()
     private let stager = GoWorkspaceStager()
     private let lock = NSLock()
-    private var cachedDriver: Module?
+    private var modules: [String: Module] = [:]
+    private var indexes: [String: GoStandardLibraryIndex] = [:]
     private var caches: [String: GoArtifactCache] = [:]
 
     init(bundle: Bundle = .main) {
@@ -29,6 +32,24 @@ final class WasmGoCompiler: @unchecked Sendable {
 
     func probe() -> ToolchainStatus {
         locator.probe()
+    }
+
+    /// Forgets every built artifact. Used by Settings to reclaim storage, and
+    /// by the compiler gate so that a build it asserts on is one that actually
+    /// happened rather than one that was remembered.
+    func clearBuildCache() {
+        let existing = lock.withLock { Array(caches.values) }
+        for cache in existing { cache.clear() }
+        // A tag with no cache yet still has a directory from a previous run.
+        if let layout = locator.resolve() {
+            GoArtifactCache(toolchainTag: layout.tag).clear()
+        }
+    }
+
+    /// Bytes the build cache currently occupies.
+    var buildCacheByteCount: Int64 {
+        guard let layout = locator.resolve() else { return 0 }
+        return artifactCache(for: layout.tag).storedByteCount
     }
 
     func format(project: GoSourceSnapshot) async -> CompilationResult {
@@ -65,88 +86,50 @@ final class WasmGoCompiler: @unchecked Sendable {
         guard let layout = locator.resolve() else {
             return .failure(phase: .setup, detail: "Bundled Go toolchain is missing.")
         }
+
+        let plan: GoBuildPlan
+        do {
+            plan = try planner(for: layout, project: project).plan(phase: phase, files: project.files)
+        } catch let error as GoPackageGraph.GraphError {
+            return .failure(
+                phase: .setup,
+                detail: GoPlanFailureReader.describe(error),
+                duration: started.duration(to: clock.now)
+            )
+        } catch {
+            return .failure(
+                phase: .setup,
+                detail: "Could not work out how to build this project: \(error)",
+                duration: started.duration(to: clock.now)
+            )
+        }
+
         let cache = artifactCache(for: layout.tag)
         let key = cache.key(phase: phase, files: project.files)
-
-        if let cached = cachedResult(phase: phase, key: key, cache: cache, started: started, layout: layout) {
+        if let cached = cachedResult(phase: phase, key: key, cache: cache, started: started) {
             return cached
         }
 
-        let jobLayout: GoWorkspaceStager.Layout
-        do {
-            jobLayout = try stager.createLayout(named: UUID().uuidString)
-            try stager.stage(files: project.files, into: jobLayout.work)
-        } catch let error as GoWorkspaceStager.StagingError {
-            guard case let .invalidPath(path) = error else {
-                return .failure(phase: .setup, detail: "Invalid project layout.")
-            }
-            return .failure(
-                phase: .setup,
-                detail: "Invalid project path: \(path)",
-                duration: started.duration(to: clock.now)
-            )
-        } catch {
-            return .failure(
-                phase: .setup,
-                detail: "Could not create the compiler sandbox: \(error.localizedDescription)",
-                duration: started.duration(to: clock.now)
-            )
-        }
-        defer { stager.remove(jobLayout) }
-
-        do {
-            let session = GoToolSession(
-                driver: try driverModule(at: layout.driver),
-                goVersion: locator.probe().goVersion,
-                layout: layout,
-                job: jobLayout,
-                sources: project
-            )
-            let outcome = try session.run(phase: phase, packagePattern: project.packagePattern)
-            let elapsed = started.duration(to: clock.now)
-
-            guard phase == .run, outcome.succeeded else {
-                if outcome.succeeded { cache.rememberAcceptedBuild(for: key) }
-                return outcome.result(phase: phase, duration: elapsed)
-            }
-
-            let programURL = jobLayout.work.appendingPathComponent("program.wasm")
-            guard let programData = try? Data(contentsOf: programURL) else {
-                return .failure(
-                    phase: .build,
-                    detail: "The toolchain reported success but emitted no program.wasm.",
-                    stderr: outcome.output.stderr,
-                    duration: elapsed
-                )
-            }
-            let programModule = try parseWasm(bytes: [UInt8](programData))
-            cache.store(programData: programData, module: programModule, for: key)
-
-            return try GoProgramRunner(job: jobLayout).run(
-                module: programModule,
-                diagnostics: outcome.diagnostics,
-                started: started,
-                clock: clock,
-                successDetail: "Compiled and executed locally inside the bounded WasmKit sandbox."
-            )
-        } catch {
-            return .failure(
-                phase: phase,
-                detail: "Native toolchain runtime failed: \(error)",
-                duration: started.duration(to: clock.now)
-            )
-        }
+        return runner(for: layout).run(
+            plan,
+            phase: phase,
+            project: project,
+            cache: cache,
+            key: key,
+            started: started
+        )
     }
+
+    // MARK: - Cache
 
     private func cachedResult(
         phase: CompilationResult.Phase,
         key: String,
         cache: GoArtifactCache,
-        started: ContinuousClock.Instant,
-        layout: GoToolchainLocator.Layout
+        started: ContinuousClock.Instant
     ) -> CompilationResult? {
         switch phase {
-        case .build, .vet, .format:
+        case .build, .vet:
             guard cache.hasAcceptedBuild(for: key) else { return nil }
             return CompilationResult(
                 succeeded: true,
@@ -160,20 +143,66 @@ final class WasmGoCompiler: @unchecked Sendable {
             )
         case .run:
             guard let module = cache.module(for: key),
-                  let jobLayout = try? stager.createLayout(named: UUID().uuidString)
+                  let job = try? stager.createLayout(named: UUID().uuidString)
             else {
                 return nil
             }
-            defer { stager.remove(jobLayout) }
-            return try? GoProgramRunner(job: jobLayout).run(
+            defer { stager.remove(job) }
+            return try? GoProgramRunner(job: job).run(
                 module: module,
                 diagnostics: [],
                 started: started,
                 clock: clock,
                 successDetail: "Executed a cached local build artifact inside the bounded WasmKit sandbox."
             )
-        case .test, .setup:
+        // Formatting rewrites files, so a cache hit would hide the rewrite;
+        // tests are re-run because their output is the point.
+        case .format, .test, .setup:
             return nil
+        }
+    }
+
+    // MARK: - Shared state
+
+    private func runner(for layout: GoToolchainLocator.Layout) -> GoPhaseRunner {
+        GoPhaseRunner(
+            layout: layout,
+            stager: stager,
+            clock: clock,
+            goVersion: locator.probe().goVersion,
+            module: { [self] tool in try module(for: tool, in: layout) }
+        )
+    }
+
+    private func planner(
+        for layout: GoToolchainLocator.Layout,
+        project: GoSourceSnapshot
+    ) -> GoBuildPlanner {
+        GoBuildPlanner(
+            modulePath: modulePath(of: project),
+            languageVersion: GoToolchainLocator.languageVersion(
+                fromGoVersion: locator.probe().goVersion
+            ),
+            standardLibrary: standardLibrary(for: layout).importPaths
+        )
+    }
+
+    private func modulePath(of project: GoSourceSnapshot) -> String {
+        guard let source = project.files["go.mod"],
+              let module = GoModParser.parse(source),
+              !module.modulePath.isEmpty
+        else {
+            return "playground"
+        }
+        return module.modulePath
+    }
+
+    private func standardLibrary(for layout: GoToolchainLocator.Layout) -> GoStandardLibraryIndex {
+        lock.withLock {
+            if let index = indexes[layout.tag] { return index }
+            let index = GoStandardLibraryIndex.load(packageRoot: layout.standardLibraryPackages)
+            indexes[layout.tag] = index
+            return index
         }
     }
 
@@ -186,10 +215,15 @@ final class WasmGoCompiler: @unchecked Sendable {
         }
     }
 
-    private func driverModule(at url: URL) throws -> Module {
-        if let cachedDriver = lock.withLock({ cachedDriver }) { return cachedDriver }
+    /// Parsing a 38 MB module is the single most expensive thing the app does,
+    /// so each tool is parsed once and reused for every job after that.
+    private func module(for tool: GoToolStep.Tool, in layout: GoToolchainLocator.Layout) throws -> Module {
+        if let cached = lock.withLock({ modules[tool.rawValue] }) { return cached }
+        guard let url = layout.module(for: tool) else {
+            throw GoToolSession.SessionError.toolNotBundled(tool.rawValue)
+        }
         let module = try parseWasm(bytes: [UInt8](Data(contentsOf: url)))
-        lock.withLock { cachedDriver = module }
+        lock.withLock { modules[tool.rawValue] = module }
         return module
     }
 }

@@ -22,7 +22,7 @@ final class LearnFlowUITests: XCTestCase {
         ]
         for unit in units {
             XCTAssertTrue(
-                app.buttons["unit.\(unit)"].waitForExistence(timeout: 10),
+                app.waitForElement(app.buttons["unit.\(unit)"]),
                 "unit \(unit) should be listed"
             )
         }
@@ -74,7 +74,10 @@ final class LearnFlowUITests: XCTestCase {
         attachScreenshot(named: "12-lesson")
     }
 
-    func testLabRunsOnlyWithAToolchain() {
+    /// The lab compiles and runs real code, so Run is offered exactly when a
+    /// compiler is staged — never as a button that can only fail, and never
+    /// withheld once there is something behind it.
+    func testLabRunsExactlyWhenTheToolchainIsThere() {
         launch(arguments: ["-GopherForgeSection", "learn", "-GopherForgeScreen", "lab"])
 
         let picker = app.buttons[AccessibilityIdentifier.labScenarioPicker]
@@ -82,7 +85,10 @@ final class LearnFlowUITests: XCTestCase {
 
         let run = app.buttons[AccessibilityIdentifier.labRun]
         XCTAssertTrue(run.exists)
-        XCTAssertFalse(run.isEnabled, "the lab must not offer Run without a toolchain")
+        XCTAssertEqual(
+            run.isEnabled, !isToolchainMissing,
+            "the lab's Run should follow the toolchain, not a fixed expectation"
+        )
         attachScreenshot(named: "13-lab")
     }
 
@@ -109,14 +115,19 @@ final class LearnFlowUITests: XCTestCase {
     func testSettingsReportsTheToolchainAndTheBoundaries() {
         launch(arguments: ["-GopherForgeSection", "settings"])
 
-        let status = app.descendants(matching: .any)[AccessibilityIdentifier.settingsToolchainStatus]
+        let status = app.element(withIdentifier: AccessibilityIdentifier.settingsToolchainStatus)
         XCTAssertTrue(status.waitForExistence(timeout: 10), "settings should report the toolchain")
+        let reported = status.label + (status.value as? String ?? "")
         XCTAssertTrue(
-            (status.label + (status.value as? String ?? "")).contains("Toolchain missing"),
-            "settings should report the toolchain honestly, got: \(status.label)"
+            reported.contains("Toolchain missing") || reported.contains("Bundled Go"),
+            "settings should name what is actually there, got: \(status.label)"
         )
         XCTAssertTrue(
-            app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'cgo is not supported'")).element.exists,
+            app.waitForElement(
+                app.staticTexts.containing(
+                    NSPredicate(format: "label CONTAINS 'cgo is not supported'")
+                ).element
+            ),
             "settings should state the boundaries"
         )
         attachScreenshot(named: "15-settings")
@@ -127,6 +138,13 @@ final class LearnFlowUITests: XCTestCase {
     private func launch(arguments: [String]) {
         app.launchArguments = arguments
         app.launch()
+    }
+
+    /// Read from the app rather than assumed, because both states are real: a
+    /// checkout that has run `scripts/build_toolchain.sh` has a compiler, and a
+    /// machine with no Go does not.
+    private var isToolchainMissing: Bool {
+        app.staticTexts["Toolchain missing"].exists
     }
 
     private func attachScreenshot(named name: String) {

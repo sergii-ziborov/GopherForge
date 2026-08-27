@@ -3,39 +3,56 @@
 What can only be claimed from a physical iPhone or iPad, and what has to happen
 before any of it can be attempted.
 
-## Gate A — the toolchain exists at all
+## Gate A — the toolchain exists at all — CLOSED 2026-08-27
 
-This is the open gate, and it is upstream of everything else here.
+This was the open gate, and it is now shut. The full account is in
+`docs/TOOLCHAIN.md`; the short version is that it needed no patched Go.
 
-The Rust sibling could point at a published WASI build of `rustc`. Go has no
-equivalent: the toolchain has been hosted in WebAssembly before — the archived
-Static Go Playground did it for the Go 1.13–1.18 era — but that work targeted a
-browser and is years behind current Go.
+The gate was written expecting a fork. It asked whether hosting the Go
+toolchain in WebAssembly would need a deep, long-lived fork across the
+compiler, linker and runtime, and said that if it did, the product stays
+possible but stops being a small-team product.
 
-This product needs something narrower and, in one respect, easier:
+It does not. `cmd/compile`, `cmd/link`, `cmd/vet` and `cmd/gofmt` all
+cross-compile to `wasip1/wasm` from a stock Go release with **no patches at
+all**, and all four run under WasmKit. What cannot work is `cmd/go`: it builds
+by spawning those tools as child processes, and WASI has no way to spawn
+anything. So the app does not bundle `cmd/go`. It works out the package order
+itself — `GopherForge/Compiler/Planning` — and calls the tools directly.
 
-- `GOOS=wasip1` rather than `js/wasm`, because the app runs guest code under
-  WASI in WasmKit and has no JavaScript engine. Go has supported wasip1 as a
-  first-class port since 1.21;
-- the toolchain driver itself hosted as a wasip1 program, which is the part the
-  upstream project does not support as a normal configuration;
-- a bundled GOROOT with the standard library, and a build cache that survives
-  between runs.
+That trade is the whole result. The app takes on the ordering, the import
+configurations and the generated test main, and in exchange a new Go release is
+a re-run of `scripts/build_toolchain.sh` rather than a rebase.
 
-Gate A passes when, from a clean checkout on a Mac:
+Measured on an M-series Mac, Go 1.24.2, WasmKit 0.3.1 interpreter:
 
-1. a pinned artifact builds `gotool.wasm` and a matching `goroot/`;
-2. `scripts/fetch_toolchain.sh` stages it, verified by SHA-256;
-3. `hello.go` compiles and runs in the Simulator;
-4. a two-package module inside one `go.mod` compiles and runs;
-5. `go test` reports per-case results;
-6. the build cache makes an unchanged second run substantially faster;
-7. the patch set against upstream Go is small enough to rebase on a release.
+| | |
+| --- | --- |
+| build the artifact | ~15 s |
+| `compile.wasm` / `link.wasm` | 38 MB / 10 MB — 5.8 MB / 2.0 MB compressed |
+| standard library export data | 114 MB, 333 packages — 17.7 MB compressed |
+| hello-world compile | ~1.4 s |
+| hello-world link | ~1.4 s |
 
-If item 7 fails — if this needs a deep, long-lived fork across the compiler,
-linker and runtime — the product is still possible but stops being a
-small-team product. That is a re-scoring decision, not an engineering detail,
-and it should be taken explicitly.
+The seven items the gate asked for:
+
+1. a pinned artifact builds `compile.wasm`, `link.wasm` and a matching
+   `goroot/` — **yes**, `scripts/build_toolchain.sh`;
+2. `scripts/fetch_toolchain.sh` stages it, verified by SHA-256, or builds one
+   when none exists — **yes**;
+3. `hello.go` compiles and runs in the Simulator — **yes**;
+4. a two-package module inside one `go.mod` compiles and runs — **yes**;
+5. `go test` reports per-case results — **yes**, including a deliberate failure
+   at the right file and line;
+6. an unchanged second run is substantially faster — **yes**, through the
+   artifact cache;
+7. the patch set against upstream Go is small enough to rebase on a release —
+   **there is no patch set**.
+
+Every one of these is covered by `BundledCompilerGateTests`, which runs under
+the `GopherForgeCompilerGate` scheme. A missing toolchain fails those tests
+rather than skipping them: "we could not check" and "it works" must never look
+the same.
 
 ## Gate B — the physical device
 
@@ -44,8 +61,8 @@ presented as if it had.
 
 1. **Airplane mode before launch.** Not "network unused" — actually offline,
    enabled before the app starts, for the whole session.
-2. **Reported toolchain.** The Build banner names `gotool.wasm` and its Go
-   version, and Settings shows the driver size.
+2. **Reported toolchain.** The Build banner names the bundled Go version, and
+   Settings shows the size of `compile.wasm` and `link.wasm`.
 3. **A real diagnostic.** An unused variable produces `declared and not used`
    at the correct line and column, and the editor marks that line.
 4. **A real run.** The repaired program compiles and prints its output.

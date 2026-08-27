@@ -17,6 +17,27 @@ struct GoWorkspaceStager {
         let temp: URL
         let cache: URL
         let sandbox: URL
+
+        /// Translates a path the plan expressed in guest terms into the host
+        /// file the app should write or read.
+        ///
+        /// Only the directories actually preopened for the job resolve, and
+        /// each component is checked the same way a staged project path is, so
+        /// a plan cannot name a host file outside the sandbox even if a project
+        /// managed to smuggle a traversal into an import path.
+        func hostURL(forGuestPath guestPath: String) -> URL? {
+            let roots = [
+                "/work": work,
+                "/tmp": temp,
+                "/cache": cache,
+            ]
+            for (prefix, root) in roots where guestPath == prefix || guestPath.hasPrefix(prefix + "/") {
+                let relative = String(guestPath.dropFirst(prefix.count + 1))
+                if relative.isEmpty { return root }
+                return GoWorkspaceStager.resolve(relativePath: relative, under: root)
+            }
+            return nil
+        }
     }
 
     private let fileManager: FileManager

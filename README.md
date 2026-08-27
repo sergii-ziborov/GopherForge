@@ -18,10 +18,19 @@ The hard product gate for this repository is:
 > Can a bundled Go toolchain type-check, test and run Go locally inside an
 > iPhone/iPad app while offline?
 
-**That gate is open.** Hosting the Go compiler itself in WebAssembly is this
-project's Gate A, and it has no published artifact yet — see
-[docs/DEVICE-GATE.md](docs/DEVICE-GATE.md). Everything downstream of the
-toolchain is built and tested; the toolchain slot is empty and says so.
+**In the Simulator, yes.** Hosting the Go compiler itself in WebAssembly was
+this project's Gate A, and it closed on 2026-08-27 — with no patched Go at all.
+`cmd/compile`, `cmd/link`, `cmd/vet` and `cmd/gofmt` cross-compile to
+`wasip1/wasm` from a stock release and run under WasmKit; what cannot work is
+`cmd/go`, which builds by spawning those tools as child processes, and WASI has
+no way to spawn anything. So the app does the ordering itself and calls the
+tools directly. A new Go release is a fifteen-second rebuild, not a rebase —
+see [docs/TOOLCHAIN.md](docs/TOOLCHAIN.md).
+
+What is still unproven is everything only real hardware can answer: the offline
+claim, the thermal and memory envelope, and stopping a runaway program. That is
+Gate B, in [docs/DEVICE-GATE.md](docs/DEVICE-GATE.md), and a Simulator run must
+never be presented as if it had settled it.
 
 Concretely, the app currently contains:
 
@@ -70,8 +79,9 @@ Anything that needs the toolchain says so rather than offering a button that
 can only fail: Build, Run, Test, the lab and every compile lesson are disabled
 with the toolchain's own reason shown while none is staged.
 
-The toolchain is staged **at build time**, verified by SHA-256, and copied into
-the app bundle. The running app never downloads compiler components.
+The toolchain is staged **at build time** — built from the Go on the machine,
+or unpacked from a pinned archive verified by SHA-256 — and copied into the app
+bundle. The running app never downloads compiler components.
 
 ## Boundaries, stated up front
 
@@ -84,6 +94,9 @@ the app bundle. The running app never downloads compiler components.
   browser; this app has no JavaScript engine, so both the toolchain and the
   programs it builds target WASI and run in the same interpreter. There is no
   `wasm_exec.js` anywhere in the repository.
+- **No `cmd/go` in the bundle, on purpose.** It builds by spawning the compiler
+  and the linker, and WASI cannot spawn. The app plans the build itself, which
+  is what keeps the bundled Go unpatched.
 
 ## License and ownership
 
@@ -115,10 +128,19 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
   build
 ```
 
-`bootstrap.sh` continues when no toolchain artifact is pinned, so the app builds
-and runs with the compiler reported as missing. That state is visible in the
-Build banner and in Settings, and every compiler gate treats it as a failure
-rather than a skip.
+The first build stages the toolchain. With Go installed it is built here, from
+that release, in about fifteen seconds:
+
+```bash
+scripts/build_toolchain.sh
+```
+
+That output is roughly 180 MB and is deliberately not committed: it is build
+artefacts cut from an unpatched Go, so it is something to reproduce rather than
+to store. On a machine with no Go and no pinned artifact, `bootstrap.sh`
+continues anyway and the app runs with the compiler reported as missing. That
+state is visible in the Build banner and in Settings, and every compiler gate
+treats it as a failure rather than a skip.
 
 ### On a device
 
@@ -151,25 +173,44 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
 
 That scheme runs both suites. The UI tests drive the real app in the Simulator:
 they open a template and check it lands in the editor, type into the buffer,
-switch dock tabs, select a file in the tree, walk the course into a lesson, and
-assert that every action needing the toolchain is disabled while none is
-staged. They address elements by accessibility identifier rather than by
-visible text, so a copy edit cannot silently stop a test from checking
-anything.
+switch panes, select a file in the tree, walk the course into a lesson, dismiss
+the keyboard from its own row, and assert that every action needing the compiler
+is offered exactly when a compiler is staged — written as that invariant rather
+than as one configuration, because both states are real. They address elements
+by accessibility identifier rather than by visible text, so a copy edit cannot
+silently stop a test from checking anything.
 
 Run the real bundled-toolchain gates with the dedicated scheme, which requires a
-staged toolchain:
+staged toolchain and its own configuration:
 
 ```bash
 DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForgeCompilerGate \
+  -configuration Gate \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
   test
 ```
 
-No performance numbers are published in this README yet, because none have been
-measured on this product. Crabrix's numbers are Crabrix's.
+`Gate` is a third configuration and it earns its place: these tests run a real
+Go build inside the Wasm interpreter, which is unusably slow unoptimised, and
+they cannot run in plain Release because `@testable import` needs a testability
+a shipped binary should not carry. Each run also clears the build cache first —
+a cached artifact makes a build that never happened look exactly like one that
+did.
+
+Measured on an M-series Mac in the Simulator, Go 1.24.2, cold cache:
+
+| | |
+| --- | --- |
+| hello-world: compile, link and run | 3.2 s |
+| two-package module | 3.9 s |
+| `declared and not used` reported | 0.4 s |
+| table-driven `go test`, per-case results | 6.9 s |
+| three repeated runs, cache warm after the first | 2.5 s total |
+
+These are Simulator numbers on a Mac and nothing more. What a phone does is
+Gate B, and no number here anticipates it.
 
 ## Success criteria
 
@@ -177,7 +218,8 @@ The compiler gate passes only when all of these are demonstrated on a physical
 iPhone or iPad:
 
 1. airplane mode is enabled before launch;
-2. the app reports a bundled `gotool.wasm` and its Go version;
+2. the app reports the bundled `compile.wasm` and `link.wasm` and their Go
+   version;
 3. **Build** produces a real `declared and not used` diagnostic at the right
    line and column;
 4. the repaired program compiles and **Run** prints its output;

@@ -7,6 +7,17 @@ options:
   createIntermediateGroups: true
   generateEmptyDirectories: true
 
+# A third configuration, and it earns its place. The compiler gates run a real
+# Go build inside the Wasm interpreter, which is unusably slow unoptimised — a
+# Debug gate run reads as a hang rather than a measurement. They cannot run in
+# Release either, because `@testable import` needs testability, which a shipped
+# binary should not carry. `Gate` is Release plus testability: fast enough to
+# measure, and never the thing that ships.
+configs:
+  Debug: debug
+  Release: release
+  Gate: release
+
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -17,6 +28,13 @@ settings:
     TARGETED_DEVICE_FAMILY: "1,2"
     SUPPORTS_MACCATALYST: NO
     ENABLE_USER_SCRIPT_SANDBOXING: NO
+  configs:
+    Gate:
+      SWIFT_ENABLE_TESTABILITY: YES
+      ENABLE_TESTABILITY: YES
+      # One slice, because the gate only ever runs on the machine that built
+      # it and the second architecture doubles a Release build for nothing.
+      ONLY_ACTIVE_ARCH: YES
 
 packages:
   WasmKit:
@@ -192,6 +210,7 @@ schemes:
             - BundledCompilerGateTests/testBundledGoRunsPackageTests()
             - BundledCompilerGateTests/testBundledGoSurvivesRepeatedBuilds()
             - BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()
+            - BundledCompilerGateTests/testGeneratedModulesNeverAskForMoreGoThanIsBundled()
 
   GopherForgeCompilerGate:
     build:
@@ -199,6 +218,7 @@ schemes:
         GopherForge: all
         GopherForgeTests: [test]
     test:
+      config: Gate
       environmentVariables:
         GOPHERFORGE_RUN_COMPILER_GATE: "1"
       targets:
@@ -210,3 +230,4 @@ schemes:
             - BundledCompilerGateTests/testBundledGoRunsPackageTests()
             - BundledCompilerGateTests/testBundledGoSurvivesRepeatedBuilds()
             - BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()
+            - BundledCompilerGateTests/testGeneratedModulesNeverAskForMoreGoThanIsBundled()

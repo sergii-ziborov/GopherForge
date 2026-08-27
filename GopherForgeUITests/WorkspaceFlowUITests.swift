@@ -129,9 +129,10 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "04-panes")
     }
 
-    /// The console is app-scoped: it must answer, and it must never claim to
-    /// have run something the toolchain cannot.
-    func testTerminalAnswersAndRefusesWithoutAToolchain() {
+    /// The console is app-scoped: it must answer questions it can answer from
+    /// the project alone, and it must never claim to have run something the
+    /// toolchain cannot.
+    func testTerminalAnswersFromTheProjectAndNeverInvents() {
         launch(section: .build)
 
         let picker = app.segmentedControls[AccessibilityIdentifier.dockPicker]
@@ -150,36 +151,67 @@ final class WorkspaceFlowUITests: XCTestCase {
             "pwd should print the module path"
         )
 
-        send("go build", to: input)
+        // `ls` is answered from the open project, so it holds whether or not a
+        // compiler is staged — which is what makes it the right thing to assert
+        // in a UI test. Whether `go build` compiles or refuses is the compiler
+        // gate's question, and it is asked there.
+        send("ls", to: input)
         XCTAssertTrue(
-            app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Toolchain missing'")).element
+            app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'main.go'")).element
                 .waitForExistence(timeout: 5),
-            "go build should refuse while no toolchain is staged"
+            "ls should list the project's own files"
+        )
+
+        send("nonsense", to: input)
+        XCTAssertTrue(
+            app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'not something this console runs'"))
+                .element.waitForExistence(timeout: 5),
+            "an unknown command should be refused rather than guessed at"
         )
         attachScreenshot(named: "07-terminal")
     }
 
-    /// Every action that needs the toolchain must be unavailable while none is
-    /// staged, rather than failing after the user commits to it.
-    func testBuildActionsAreUnavailableWithoutAToolchain() {
+    /// The invariant, not a snapshot of one configuration: an action that needs
+    /// the compiler is offered exactly when the compiler is there, and never
+    /// offered as a button that can only fail.
+    ///
+    /// This has to be written as an invariant because both states are real. A
+    /// checkout with `scripts/build_toolchain.sh` run has a compiler; a CI
+    /// machine with no Go does not, and the app must be honest in both.
+    func testBuildActionsAreOfferedExactlyWhenTheToolchainIsThere() {
         launch(section: .build)
 
-        XCTAssertTrue(
-            app.staticTexts["Toolchain missing"].waitForExistence(timeout: 10),
-            "the banner should name the missing toolchain"
-        )
+        let banner = app.element(withIdentifier: AccessibilityIdentifier.toolchainBanner)
+        XCTAssertTrue(banner.waitForExistence(timeout: 10), "the banner should say what compiler is present")
+        let isMissing = app.staticTexts["Toolchain missing"].exists
+
         for phase in ["build", "test", "run"] {
             let button = app.buttons["phase.\(phase)"]
-            XCTAssertTrue(button.exists, "the \(phase) button should be present")
-            XCTAssertFalse(button.isEnabled, "the \(phase) button should be disabled without a toolchain")
+            XCTAssertTrue(button.exists, "the \(phase) button should be present either way")
+            XCTAssertEqual(
+                button.isEnabled, !isMissing,
+                "the \(phase) button should be enabled exactly when a toolchain is staged"
+            )
         }
     }
 
+    /// Reachable on both layouts. iPad shows the tree beside the editor; iPhone
+    /// has no room for it and puts it behind the Files control, so the test
+    /// opens it the way a person on that device would rather than assuming the
+    /// wide layout.
     func testFileTreeSwitchesTheOpenFile() {
         launch(section: .build)
 
         let goMod = app.buttons["file.go.mod"]
-        XCTAssertTrue(goMod.waitForExistence(timeout: 10), "go.mod should be listed in the tree")
+        if !goMod.waitForExistence(timeout: 10) {
+            let files = app.buttons["Files"]
+            XCTAssertTrue(
+                files.waitForExistence(timeout: 5),
+                "a layout with no visible tree must offer a way to open one"
+            )
+            files.tap()
+        }
+        XCTAssertTrue(goMod.waitForExistence(timeout: 5), "go.mod should be listed in the tree")
         goMod.tap()
 
         let editor = app.textViews[AccessibilityIdentifier.editor]

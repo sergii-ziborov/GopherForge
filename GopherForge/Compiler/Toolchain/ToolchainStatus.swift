@@ -7,7 +7,8 @@ import Foundation
 /// every compiler gate rather than quietly falling back to a stub.
 struct ToolchainStatus: Sendable, Equatable {
     let isReady: Bool
-    let driverSize: Int64
+    /// The bundled tools' size on disk, which is what Settings reports.
+    let toolSize: Int64
     /// The Go release the bundled toolchain was built from, for example
     /// `go1.27`. Reported verbatim from the staged toolchain marker so the UI
     /// can never claim a version the artifact does not carry.
@@ -17,9 +18,9 @@ struct ToolchainStatus: Sendable, Equatable {
 
     static let missing = ToolchainStatus(
         isReady: false,
-        driverSize: 0,
+        toolSize: 0,
         goVersion: "",
         label: "Toolchain missing",
-        detail: "Run scripts/bootstrap.sh before building."
+        detail: "Run scripts/build_toolchain.sh, then rebuild the app."
     )
 }

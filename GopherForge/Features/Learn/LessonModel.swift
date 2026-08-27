@@ -49,7 +49,7 @@ final class LessonModel {
 
         let snapshot = GoSourceSnapshot(
             files: [
-                "go.mod": "module lesson\n\ngo 1.27\n",
+                "go.mod": GoLanguage.module("lesson"),
                 "main.go": editorText,
                 "lesson_test.go": hiddenTest,
             ],

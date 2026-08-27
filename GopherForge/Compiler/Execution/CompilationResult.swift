@@ -20,6 +20,9 @@ struct CompilationResult: Sendable {
     let duration: Duration
     let detail: String
     let tests: [GoTestResult]
+    /// What `gofmt` rewrote, project-relative. Empty for every other phase,
+    /// and empty for a format run that found nothing to change.
+    let formattedFiles: [String: String]
 
     init(
         succeeded: Bool,
@@ -30,7 +33,8 @@ struct CompilationResult: Sendable {
         stderr: String,
         duration: Duration,
         detail: String,
-        tests: [GoTestResult] = []
+        tests: [GoTestResult] = [],
+        formattedFiles: [String: String] = [:]
     ) {
         self.succeeded = succeeded
         self.phase = phase
@@ -41,6 +45,7 @@ struct CompilationResult: Sendable {
         self.duration = duration
         self.detail = detail
         self.tests = tests
+        self.formattedFiles = formattedFiles
     }
 
     var blockingDiagnostics: [GoDiagnostic] {

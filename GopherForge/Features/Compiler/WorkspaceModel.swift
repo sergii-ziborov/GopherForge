@@ -111,13 +111,25 @@ final class WorkspaceModel {
         if phase == .format, result.succeeded {
             // gofmt rewrites files in place; the editor must show what the
             // toolchain produced rather than what the user typed.
-            await reloadFormattedSource()
+            apply(formattedFiles: result.formattedFiles)
         }
 
         try? await library.record(
             project: project,
             lastBuild: ProjectBuildRecord(result: result)
         )
+    }
+
+    /// What the built-artifact cache occupies on this device.
+    var buildCacheByteCount: Int64 {
+        compiler.buildCacheByteCount
+    }
+
+    /// Forgets every built artifact. The next build recompiles from source,
+    /// which is slower and is the point: this is here so storage can be
+    /// reclaimed, and so a build can be forced to happen for real.
+    func clearBuildCache() {
+        compiler.clearBuildCache()
     }
 
     func applyIdiom(_ finding: IdiomFinding) {
@@ -144,10 +156,29 @@ final class WorkspaceModel {
         }
     }
 
-    private func reloadFormattedSource() async {
-        // The formatter runs in the job sandbox, which is removed afterwards,
-        // so the app re-reads nothing: this hook exists for the phase where a
-        // formatted buffer is returned rather than written in place.
+    /// Takes what gofmt wrote in the job sandbox and makes it the project.
+    ///
+    /// Only the files the formatter actually rewrote are touched, so a run
+    /// that changed nothing leaves every buffer — and the caret in the open
+    /// one — exactly where it was.
+    private func apply(formattedFiles: [String: String]) {
+        guard var project, !formattedFiles.isEmpty else { return }
+        var files = project.files
+        var changed = false
+        for (path, contents) in formattedFiles where files[path] != contents {
+            files[path] = contents
+            changed = true
+        }
+        guard changed else { return }
+
+        project = GopherForgeProject(
+            name: project.name,
+            files: files,
+            entryFile: project.entryFile,
+            provenance: project.provenance
+        )
+        self.project = project
+        if let reformatted = files[selectedFile] { editorText = reformatted }
         refreshIdioms()
     }
 

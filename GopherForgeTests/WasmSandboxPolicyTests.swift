@@ -27,6 +27,17 @@ final class WasmSandboxPolicyTests: XCTestCase {
         XCTAssertEqual(limiter.deniedResource, .memory)
     }
 
+    /// Both numbers come from linked artifacts, not from taste: a Go
+    /// hello-world needs 5,740 table entries and a test binary 6,966. A limit
+    /// under those stops every Go program before it starts.
+    func testAUserProgramLimitFitsARealGoBinary() {
+        XCTAssertGreaterThan(WasmSandboxPolicy.userProgramTableElementLimit, 6_966)
+        XCTAssertGreaterThan(
+            WasmSandboxPolicy.toolchainTableElementLimit,
+            WasmSandboxPolicy.userProgramTableElementLimit
+        )
+    }
+
     func testTableGrowthPastTheLimitIsDenied() throws {
         let limiter = WasmSandboxResourceLimiter()
         XCTAssertFalse(

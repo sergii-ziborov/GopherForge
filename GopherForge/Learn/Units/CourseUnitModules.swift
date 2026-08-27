@@ -36,7 +36,7 @@ enum CourseUnitModules {
             // go.mod
             module example.com/forge
 
-            go 1.27
+            go 1.24
 
             // internal/build/build.go
             package build

@@ -5,15 +5,44 @@ import Foundation
 /// The whole toolchain lives under `Resources/Toolchain/<tag>/`, staged at build
 /// time by `scripts/fetch_toolchain.sh`. The running app never downloads
 /// compiler components, so this type only ever reads.
+///
+/// There is no `go` driver in the bundle, and that is the design rather than an
+/// omission: `cmd/go` builds by spawning `compile` and `link` as child
+/// processes, which WASI cannot do. The app orders the build itself and runs
+/// the two tools directly, which is why the bundled Go needs no patches at all.
 struct GoToolchainLocator {
     struct Layout: Sendable {
         let root: URL
-        /// The WASI-hosted Go toolchain driver: build, vet, test and format all
-        /// go through this one module.
-        let driver: URL
-        /// Bundled GOROOT: standard library sources and export data.
+        /// `cmd/compile`, built for `wasip1/wasm`.
+        let compiler: URL
+        /// `cmd/link`, built for `wasip1/wasm`.
+        let linker: URL
+        /// `cmd/vet`, present only when the artifact carries it.
+        let vet: URL?
+        /// `cmd/gofmt`, present only when the artifact carries it.
+        let formatter: URL?
+        /// Bundled GOROOT: `VERSION` and the staged standard-library archives.
         let goroot: URL
         let tag: String
+
+        var standardLibraryPackages: URL {
+            goroot
+                .appendingPathComponent("pkg", isDirectory: true)
+                .appendingPathComponent("wasip1_wasm", isDirectory: true)
+        }
+
+        /// The module a step needs, or nil when the artifact does not carry
+        /// that tool. `compile` and `link` are always present; `vet` and
+        /// `gofmt` are optional, and a plan that needs a missing one is
+        /// refused rather than silently reported as a pass.
+        func module(for tool: GoToolStep.Tool) -> URL? {
+            switch tool {
+            case .compile: compiler
+            case .link: linker
+            case .vet: vet
+            case .format: formatter
+            }
+        }
     }
 
     private let bundle: Bundle
@@ -41,39 +70,60 @@ struct GoToolchainLocator {
         )) ?? []
 
         for directory in candidates.sorted(by: { $0.lastPathComponent > $1.lastPathComponent }) {
-            let driver = directory.appendingPathComponent("gotool.wasm")
-            let goroot = directory.appendingPathComponent("goroot", isDirectory: true)
-            let marker = directory.appendingPathComponent(".complete")
-            guard fileManager.fileExists(atPath: marker.path),
-                  fileManager.fileExists(atPath: driver.path),
-                  isDirectory(goroot)
-            else {
-                continue
-            }
-            return Layout(
-                root: directory,
-                driver: driver,
-                goroot: goroot,
-                tag: directory.lastPathComponent
-            )
+            if let layout = layout(at: directory) { return layout }
         }
         return nil
+    }
+
+    private func layout(at directory: URL) -> Layout? {
+        let compiler = directory.appendingPathComponent("compile.wasm")
+        let linker = directory.appendingPathComponent("link.wasm")
+        let goroot = directory.appendingPathComponent("goroot", isDirectory: true)
+        let marker = directory.appendingPathComponent(".complete")
+
+        guard fileManager.fileExists(atPath: marker.path),
+              fileManager.fileExists(atPath: compiler.path),
+              fileManager.fileExists(atPath: linker.path),
+              isDirectory(goroot)
+        else {
+            return nil
+        }
+
+        return Layout(
+            root: directory,
+            compiler: compiler,
+            linker: linker,
+            vet: optional(directory.appendingPathComponent("vet.wasm")),
+            formatter: optional(directory.appendingPathComponent("gofmt.wasm")),
+            goroot: goroot,
+            tag: directory.lastPathComponent
+        )
     }
 
     func probe() -> ToolchainStatus {
         guard let layout = resolve() else { return .missing }
 
-        let size = (try? layout.driver.resourceValues(forKeys: [.fileSizeKey]).fileSize)
-            .map(Int64.init) ?? 0
+        let size = [layout.compiler, layout.linker]
+            .compactMap { try? $0.resourceValues(forKeys: [.fileSizeKey]).fileSize }
+            .reduce(0) { $0 + Int64($1) }
         let version = goVersion(in: layout) ?? layout.tag
 
         return ToolchainStatus(
             isReady: true,
-            driverSize: size,
+            toolSize: size,
             goVersion: version,
-            label: "Bundled gotool.wasm",
-            detail: "WasmKit interpreter · fully local · \(version) · GOOS=wasip1"
+            label: "Bundled Go \(shortVersion(version))",
+            detail: "compile + link · WasmKit interpreter · fully local · GOOS=wasip1"
         )
+    }
+
+    /// The `-lang` value the compiler is given: the release without its patch
+    /// number, which is what Go's language-version flag accepts.
+    static func languageVersion(fromGoVersion version: String) -> String {
+        let digits = version.drop(while: { !$0.isNumber })
+        let parts = digits.split(separator: ".")
+        guard parts.count >= 2 else { return "go1.21" }
+        return "go\(parts[0]).\(parts[1])"
     }
 
     /// The staged GOROOT carries the release it was cut from in `VERSION`,
@@ -85,6 +135,14 @@ struct GoToolchainLocator {
             .split(separator: "\n")
             .first
             .map { String($0).trimmingCharacters(in: .whitespaces) }
+    }
+
+    private func shortVersion(_ version: String) -> String {
+        version.hasPrefix("go") ? String(version.dropFirst(2)) : version
+    }
+
+    private func optional(_ url: URL) -> URL? {
+        fileManager.fileExists(atPath: url.path) ? url : nil
     }
 
     private func isDirectory(_ url: URL) -> Bool {

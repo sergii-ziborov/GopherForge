@@ -7,7 +7,7 @@ import Foundation
 /// any other trap at the call site, so the reason is recorded here and read
 /// back after the failure to produce an honest message.
 final class WasmSandboxResourceLimiter: ResourceLimiter, @unchecked Sendable {
-    enum DeniedResource: Equatable {
+    enum DeniedResource: String, Equatable {
         case memory
         case table
     }

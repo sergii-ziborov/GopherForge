@@ -5,6 +5,9 @@
 .build/
 DerivedData*/
 GopherForge.xcodeproj/
-GopherForge/Resources/Toolchain/go-wasm-*/
-GopherForge/Resources/Toolchain/.stage.*/
+# The bundled toolchain is built, not committed: scripts/build_toolchain.sh
+# produces ~180 MB from a stock Go release in about fifteen seconds, and a
+# binary artifact in git would be a copy of Go that nobody rebases.
+GopherForge/Resources/Toolchain/*/
+GopherForge/Resources/Toolchain/*.staging.*/
 *.xcresult

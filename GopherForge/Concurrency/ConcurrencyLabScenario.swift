@@ -20,7 +20,7 @@ struct ConcurrencyLabScenario: Identifiable, Sendable {
     var snapshot: GoSourceSnapshot {
         GoSourceSnapshot(
             files: [
-                "go.mod": "module lab\n\ngo 1.27\n",
+                "go.mod": GoLanguage.module("lab"),
                 "lab.go": ConcurrencyLabScenario.instrumentation,
                 "main.go": source,
             ],

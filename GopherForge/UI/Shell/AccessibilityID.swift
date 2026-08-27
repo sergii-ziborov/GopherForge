@@ -25,4 +25,5 @@ enum AccessibilityID {
     static let labPrediction = "lab.prediction"
     static let lessonCheck = "lesson.check"
     static let settingsToolchainStatus = "settings.toolchainStatus"
+    static let settingsClearCache = "settings.clearCache"
 }

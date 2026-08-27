@@ -76,6 +76,37 @@ final class GoArtifactCache: @unchecked Sendable {
         }
     }
 
+    /// Drops everything remembered, in memory and on disk.
+    ///
+    /// Two callers need this and both are real. A user reclaiming storage is
+    /// one. The other is the compiler gate: a cached artifact makes a build
+    /// that never happened look exactly like one that did, so a gate that can
+    /// pass on a remembered program is not a gate at all.
+    func clear() {
+        lock.withLock {
+            parsedModules.removeAll()
+            acceptedBuildKeys.removeAll()
+        }
+        guard let directory = cacheDirectory else { return }
+        try? fileManager.removeItem(at: directory)
+    }
+
+    /// What the stored artifacts occupy, so the user can be told before being
+    /// asked whether to remove them.
+    var storedByteCount: Int64 {
+        guard let directory = cacheDirectory,
+              let entries = try? fileManager.contentsOfDirectory(
+                  at: directory,
+                  includingPropertiesForKeys: [.fileSizeKey]
+              )
+        else {
+            return 0
+        }
+        return entries.reduce(0) { total, url in
+            total + Int64((try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0)
+        }
+    }
+
     private var cacheDirectory: URL? {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first?
             .appendingPathComponent("GopherForgeCompiler", isDirectory: true)

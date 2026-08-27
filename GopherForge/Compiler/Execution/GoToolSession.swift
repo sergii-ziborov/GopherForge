@@ -1,7 +1,13 @@
 import Foundation
 import WasmKit
 
-/// One invocation of the bundled toolchain driver for one phase.
+/// Runs a build plan: one WASI invocation per step, in order, stopping at the
+/// first failure.
+///
+/// The session owns no policy. What to build and in what order is the
+/// planner's; how to sandbox an invocation is the runner's. This type only
+/// materialises each step's generated files, runs it, and turns what the tools
+/// wrote into something the UI can show.
 struct GoToolSession {
     struct Outcome {
         let succeeded: Bool
@@ -9,6 +15,11 @@ struct GoToolSession {
         let diagnostics: [GoDiagnostic]
         let output: WasiProcessRunner.Output
         let tests: [GoTestResult]
+        /// Files gofmt rewrote, project-relative, so the editor can show what
+        /// the formatter produced.
+        var formattedFiles: [String: String] = [:]
+        /// The step that failed, for a message that names it.
+        var failedStep: String?
 
         func result(phase: CompilationResult.Phase, duration: Duration) -> CompilationResult {
             CompilationResult(
@@ -20,7 +31,8 @@ struct GoToolSession {
                 stderr: diagnostics.isEmpty ? output.stderr : "",
                 duration: duration,
                 detail: detail(for: phase),
-                tests: tests
+                tests: tests,
+                formattedFiles: formattedFiles
             )
         }
 
@@ -30,7 +42,10 @@ struct GoToolSession {
                 return switch phase {
                 case .build: "The real bundled toolchain accepted the package."
                 case .vet: "go vet found nothing to report."
-                case .format: "Formatting applied by the bundled gofmt."
+                case .format:
+                    formattedFiles.isEmpty
+                        ? "Every file was already gofmt-clean."
+                        : "gofmt rewrote \(formattedFiles.count) file\(formattedFiles.count == 1 ? "" : "s")."
                 case .test: "\(tests.passedCount) of \(tests.count) tests passed."
                 default: "Completed."
                 }
@@ -38,89 +53,178 @@ struct GoToolSession {
             if phase == .test, tests.failedCount > 0 {
                 return "\(tests.failedCount) of \(tests.count) tests failed."
             }
+            if let failedStep {
+                return "Failed at \(failedStep) (exit \(exitCode.map(String.init) ?? "trap"))."
+            }
             return "The toolchain exited with code \(exitCode.map(String.init) ?? "unknown")."
         }
     }
 
-    let driver: Module
-    let goVersion: String
+    /// Resolves and parses a tool's module. Kept as a closure so the compiler
+    /// can cache modules across jobs without this type knowing how.
+    let module: (GoToolStep.Tool) throws -> Module
     let layout: GoToolchainLocator.Layout
     let job: GoWorkspaceStager.Layout
     let sources: GoSourceSnapshot
+    let goVersion: String
 
-    func run(phase: CompilationResult.Phase, packagePattern: String) throws -> Outcome {
-        let runner = WasiProcessRunner(captureDirectory: job.jobRoot, capturePrefix: "toolchain")
+    enum SessionError: Error, Equatable {
+        case unresolvableGuestPath(String)
+        case toolNotBundled(String)
+    }
+
+    func run(plan: GoBuildPlan, phase: CompilationResult.Phase) throws -> Outcome {
+        var diagnostics: [GoDiagnostic] = []
+        var stdout = ""
+        var stderr = ""
+
+        for step in plan.steps {
+            try write(step.generatedFiles)
+            let (exitCode, output) = try invoke(step: step, phase: phase)
+            let reported = step.tool.writesDiagnosticsToStandardOutput
+                ? output.stdout + output.stderr
+                : output.stderr
+            // A tool's stdout is never the user's program output — that comes
+            // from running what was linked — so it is only kept where it
+            // carries something the caller needs, which is gofmt's file list.
+            if step.tool == .format { stdout += output.stdout }
+            stderr += reported
+            diagnostics += GoDiagnosticParser.parse(
+                stderr: reported,
+                origin: step.tool == .vet ? .vet : .compiler,
+                sourceLines: sources.sourceLines
+            )
+
+            guard exitCode == 0, !diagnostics.contains(where: \.isBlocking) else {
+                return Outcome(
+                    succeeded: false,
+                    exitCode: exitCode,
+                    diagnostics: diagnostics,
+                    output: WasiProcessRunner.Output(stdout: stdout, stderr: stderr),
+                    tests: [],
+                    failedStep: step.label
+                )
+            }
+        }
+
+        return try finish(plan: plan, phase: phase, diagnostics: diagnostics, stdout: stdout, stderr: stderr)
+    }
+
+    // MARK: - Steps
+
+    private func invoke(
+        step: GoToolStep,
+        phase: CompilationResult.Phase
+    ) throws -> (UInt32, WasiProcessRunner.Output) {
+        guard layout.module(for: step.tool) != nil else {
+            throw SessionError.toolNotBundled(step.tool.rawValue)
+        }
+
+        let runner = WasiProcessRunner(captureDirectory: job.jobRoot, capturePrefix: step.tool.rawValue)
         let invocation = WasiProcessRunner.Invocation(
-            arguments: GoToolInvocation.arguments(for: phase, packagePattern: packagePattern),
+            arguments: step.arguments,
             environment: GoToolInvocation.environment(goVersion: goVersion),
             preopens: [
-                GoToolInvocation.GuestPath.work: job.work.path,
-                GoToolInvocation.GuestPath.temp: job.temp.path,
-                GoToolInvocation.GuestPath.cache: job.cache.path,
-                GoToolInvocation.GuestPath.goroot: layout.goroot.path,
+                GoGuestPath.work: job.work.path,
+                GoGuestPath.temp: job.temp.path,
+                GoGuestPath.cache: job.cache.path,
+                GoGuestPath.goroot: layout.goroot.path,
             ],
-            memoryLimitBytes: WasmSandboxPolicy.toolchainMemoryLimitBytes
+            memoryLimitBytes: WasmSandboxPolicy.toolchainMemoryLimitBytes,
+            tableElementLimit: WasmSandboxPolicy.toolchainTableElementLimit
         )
 
         do {
-            let (exitCode, output) = try runner.run(module: driver, invocation: invocation)
-            return outcome(phase: phase, exitCode: exitCode, output: output)
+            return try runner.run(module: try module(step.tool), invocation: invocation)
         } catch let failure as WasiProcessRunner.RunFailure {
-            return try trappedOutcome(phase: phase, failure: failure)
+            return try recover(from: failure, step: step, phase: phase)
         }
-    }
-
-    private func outcome(
-        phase: CompilationResult.Phase,
-        exitCode: UInt32,
-        output: WasiProcessRunner.Output
-    ) -> Outcome {
-        let diagnostics = GoDiagnosticParser.parse(
-            stderr: output.stderr,
-            origin: phase == .vet ? .vet : .compiler,
-            sourceLines: sources.sourceLines
-        )
-        let tests = phase == .test ? GoTestOutputParser.parse(stdout: output.stdout) : []
-        let blocked = diagnostics.contains(where: \.isBlocking)
-        return Outcome(
-            succeeded: exitCode == 0 && !blocked,
-            exitCode: exitCode,
-            diagnostics: diagnostics,
-            output: output,
-            tests: tests
-        )
     }
 
     /// A trap that still produced diagnostics is a compile failure the user can
     /// act on, not an interpreter error; only a trap with nothing to show is
     /// reported as a toolchain fault.
-    private func trappedOutcome(
-        phase: CompilationResult.Phase,
-        failure: WasiProcessRunner.RunFailure
-    ) throws -> Outcome {
-        let output: WasiProcessRunner.Output
+    private func recover(
+        from failure: WasiProcessRunner.RunFailure,
+        step: GoToolStep,
+        phase: CompilationResult.Phase
+    ) throws -> (UInt32, WasiProcessRunner.Output) {
         switch failure {
-        case let .limitExceeded(_, captured): output = captured
+        case let .limitExceeded(resource, captured):
+            // The guest is denied before it runs, so it writes nothing. Saying
+            // so here is the difference between a limit the user can read about
+            // and a build that fails in silence.
+            let note = "\(step.label): the sandbox denied more \(resource.rawValue) "
+                + "than the toolchain is allowed.\n"
+            return (1, WasiProcessRunner.Output(
+                stdout: captured.stdout,
+                stderr: captured.stderr + note
+            ))
         case let .trapped(error, captured):
-            output = captured
             let parsed = GoDiagnosticParser.parse(
-                stderr: captured.stderr,
+                stderr: captured.stdout + captured.stderr,
                 origin: phase == .vet ? .vet : .compiler,
                 sourceLines: sources.sourceLines
             )
             if parsed.isEmpty { throw error }
+            return (1, captured)
         }
+    }
 
-        return Outcome(
-            succeeded: false,
-            exitCode: nil,
-            diagnostics: GoDiagnosticParser.parse(
-                stderr: output.stderr,
-                origin: phase == .vet ? .vet : .compiler,
-                sourceLines: sources.sourceLines
-            ),
-            output: output,
+    private func write(_ files: [String: String]) throws {
+        for (guestPath, contents) in files.sorted(by: { $0.key < $1.key }) {
+            guard let url = job.hostURL(forGuestPath: guestPath) else {
+                throw SessionError.unresolvableGuestPath(guestPath)
+            }
+            try FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try Data(contents.utf8).write(to: url, options: .atomic)
+        }
+    }
+
+    // MARK: - Results
+
+    private func finish(
+        plan: GoBuildPlan,
+        phase: CompilationResult.Phase,
+        diagnostics: [GoDiagnostic],
+        stdout: String,
+        stderr: String
+    ) throws -> Outcome {
+        var outcome = Outcome(
+            succeeded: true,
+            exitCode: 0,
+            diagnostics: diagnostics,
+            output: WasiProcessRunner.Output(stdout: stdout, stderr: stderr),
             tests: []
         )
+
+        if phase == .format {
+            outcome.formattedFiles = readFormattedFiles(listedIn: stdout)
+        }
+
+        return outcome
+    }
+
+    /// `gofmt -l -w` prints the files it rewrote. Reading only those back keeps
+    /// an untouched buffer untouched, so formatting never disturbs a file it
+    /// had no changes for.
+    private func readFormattedFiles(listedIn stdout: String) -> [String: String] {
+        var formatted: [String: String] = [:]
+        for line in stdout.split(separator: "\n") {
+            let guestPath = String(line).trimmingCharacters(in: .whitespaces)
+            guard !guestPath.isEmpty,
+                  let url = job.hostURL(forGuestPath: guestPath),
+                  let data = try? Data(contentsOf: url)
+            else {
+                continue
+            }
+            let relative = ProjectPathNormalizer.normalize(guestPath)
+            guard sources.files[relative] != nil else { continue }
+            formatted[relative] = String(decoding: data, as: UTF8.self)
+        }
+        return formatted
     }
 }

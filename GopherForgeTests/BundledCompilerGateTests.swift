@@ -18,6 +18,38 @@ final class BundledCompilerGateTests: XCTestCase {
             "Run the GopherForgeCompilerGate scheme to execute the bundled-toolchain gates."
         )
         compiler = WasmGoCompiler()
+        // Cold, every time. A cached artifact makes a build that never happened
+        // look exactly like one that did, and these are the tests that must be
+        // able to tell those apart.
+        compiler.clearBuildCache()
+    }
+
+    /// A generated `go.mod` is a promise about which language rules apply, and
+    /// a module asking for a version the bundled compiler does not have is
+    /// refused outright. This is the assertion that stops the two drifting.
+    func testGeneratedModulesNeverAskForMoreGoThanIsBundled() throws {
+        let bundled = compiler.probe()
+        XCTAssertTrue(bundled.isReady, "this gate needs a staged toolchain")
+
+        let declared = try XCTUnwrap(Self.majorMinor(of: GoLanguage.declaredModuleVersion))
+        let available = try XCTUnwrap(Self.majorMinor(of: bundled.goVersion))
+
+        XCTAssertFalse(
+            available.lexicographicallyPrecedes(declared),
+            "generated modules declare go \(GoLanguage.declaredModuleVersion) "
+                + "but the bundle carries \(bundled.goVersion)"
+        )
+    }
+
+    /// `go1.24.2` and `1.24` both reduce to `[1, 24]`, which is the only part
+    /// a `go` line in a module can express.
+    private static func majorMinor(of version: String) -> [Int]? {
+        let numbers = version
+            .drop(while: { !$0.isNumber })
+            .split(separator: ".")
+            .compactMap { Int($0) }
+        guard numbers.count >= 2 else { return nil }
+        return Array(numbers.prefix(2))
     }
 
     func testBundledGoReportsUnusedVariable() async throws {
@@ -37,7 +69,7 @@ final class BundledCompilerGateTests: XCTestCase {
         XCTAssertFalse(result.succeeded)
         XCTAssertTrue(
             result.diagnostics.contains { $0.conceptTag == GoConcept.varsUnused },
-            "expected a declared-and-not-used diagnostic, got: \(result.diagnostics.map(\.message))"
+            "expected a declared-and-not-used diagnostic, got: \(report(result))"
         )
     }
 
@@ -54,14 +86,14 @@ final class BundledCompilerGateTests: XCTestCase {
 
         let result = await compiler.run(project: snapshot)
 
-        XCTAssertTrue(result.succeeded, result.detail)
-        XCTAssertTrue(result.stdout.contains("forge"))
+        XCTAssertTrue(result.succeeded, report(result))
+        XCTAssertTrue(result.stdout.contains("forge"), report(result))
     }
 
     func testBundledGoCompilesMultiPackageProject() async throws {
         let snapshot = GoSourceSnapshot(
             files: [
-                "go.mod": "module example.com/forge\n\ngo 1.27\n",
+                "go.mod": GoLanguage.module("example.com/forge"),
                 "main.go": """
                 package main
 
@@ -90,14 +122,14 @@ final class BundledCompilerGateTests: XCTestCase {
 
         let result = await compiler.run(project: snapshot)
 
-        XCTAssertTrue(result.succeeded, result.detail)
-        XCTAssertTrue(result.stdout.contains("hello, gopher"))
+        XCTAssertTrue(result.succeeded, report(result))
+        XCTAssertTrue(result.stdout.contains("hello, gopher"), report(result))
     }
 
     func testBundledGoRunsPackageTests() async throws {
         let snapshot = GoSourceSnapshot(
             files: [
-                "go.mod": "module example.com/forge\n\ngo 1.27\n",
+                "go.mod": GoLanguage.module("example.com/forge"),
                 "reverse.go": """
                 package main
 
@@ -129,8 +161,8 @@ final class BundledCompilerGateTests: XCTestCase {
 
         let result = await compiler.test(project: snapshot)
 
-        XCTAssertTrue(result.succeeded, result.detail)
-        XCTAssertTrue(result.tests.allPassed)
+        XCTAssertTrue(result.succeeded, report(result))
+        XCTAssertTrue(result.tests.allPassed, report(result))
     }
 
     func testBundledGoSurvivesRepeatedBuilds() async throws {
@@ -142,7 +174,7 @@ final class BundledCompilerGateTests: XCTestCase {
 
         for cycle in 1...3 {
             let result = await compiler.run(project: snapshot)
-            XCTAssertTrue(result.succeeded, "cycle \(cycle): \(result.detail)")
+            XCTAssertTrue(result.succeeded, "cycle \(cycle): \(report(result))")
         }
     }
 
@@ -162,9 +194,41 @@ final class BundledCompilerGateTests: XCTestCase {
         let result = await compiler.run(project: snapshot)
 
         XCTAssertFalse(result.succeeded)
+        // Two shapes, both correct. Either the limiter refuses the growth and
+        // the app names the limit, or Go's own allocator sees the refusal first
+        // and reports running out of memory. What must never happen is the
+        // program getting the 128 MB it asked for.
+        let stoppedBySandbox = result.detail.contains("sandbox memory limit")
+        let stoppedByGuest = result.stderr.contains("out of memory")
         XCTAssertTrue(
-            result.detail.contains("sandbox memory limit"),
-            "expected the sandbox to stop the allocation, got: \(result.detail)"
+            stoppedBySandbox || stoppedByGuest,
+            "expected the sandbox to stop the allocation, got: \(report(result))"
         )
+        if let inUse = bytesInUse(reportedIn: result.stderr) {
+            XCTAssertLessThanOrEqual(
+                inUse,
+                WasmSandboxPolicy.userProgramMemoryLimitBytes,
+                "the program should have been stopped at the limit, not above it"
+            )
+        }
+    }
+
+    /// Go reports `(62750720 in use)` when it runs out; reading that back is
+    /// what turns "the program failed" into "the limit is what stopped it".
+    private func bytesInUse(reportedIn stderr: String) -> Int? {
+        guard let match = stderr.firstMatch(of: /\((?<bytes>\d+) in use\)/) else { return nil }
+        return Int(match.output.bytes)
+    }
+
+    /// A gate that fails has to say why. Without the toolchain's own output a
+    /// failure here reads as "the build failed", which is the one thing nobody
+    /// can act on.
+    private func report(_ result: CompilationResult) -> String {
+        """
+        \(result.detail)
+        stdout: \(result.stdout)
+        stderr: \(result.stderr)
+        diagnostics: \(result.diagnostics.map(\.message))
+        """
     }
 }
