@@ -12,7 +12,10 @@ enum CourseUnitModules {
         gap: once the module, the import path and the package directory line up \
         in your head, the commands stop needing to be memorised.
         """,
-        lessons: [importPathIsIdentity, exportedByCase, testsLiveNextToCode]
+        lessons: [
+            importPathIsIdentity, exportedByCase, testsLiveNextToCode,
+            packageNaming, initAndPackageState,
+        ]
     )
 
     static let importPathIsIdentity = Lesson(

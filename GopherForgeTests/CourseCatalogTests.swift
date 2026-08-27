@@ -26,6 +26,24 @@ final class CourseCatalogTests: XCTestCase {
         }
     }
 
+    /// A lesson with a hidden test nobody has ever passed is a dead end, and
+    /// the only cheap way to know is to keep a complete answer beside it.
+    func testEveryCompileLessonHasAVerifiedSolution() {
+        for lesson in GoCourseCatalog.lessons where lesson.requiresCompiler {
+            XCTAssertNotNil(
+                lesson.verifiedSolution,
+                "\(lesson.id) has no entry in LessonSolutionCatalog"
+            )
+        }
+    }
+
+    /// And nothing in the catalog should answer a lesson that no longer exists.
+    func testNoSolutionIsOrphaned() {
+        let lessonIDs = Set(GoCourseCatalog.lessons.map(\.id))
+        let orphans = LessonSolutionCatalog.coveredLessonIDs.subtracting(lessonIDs)
+        XCTAssertTrue(orphans.isEmpty, "solutions for lessons that do not exist: \(orphans.sorted())")
+    }
+
     func testCompileLessonsShipAHiddenTest() {
         for lesson in GoCourseCatalog.lessons where lesson.requiresCompiler {
             guard case let .compile(starter, hiddenTest) = lesson.task else {

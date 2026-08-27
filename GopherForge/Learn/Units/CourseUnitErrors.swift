@@ -12,7 +12,7 @@ enum CourseUnitErrors {
         built deliberately at each level that knows something the level below \
         did not.
         """,
-        lessons: [wrapWithContext, isAndAs, deferOrder]
+        lessons: [wrapWithContext, isAndAs, deferOrder, customErrorType, panicIsNotAnError]
     )
 
     static let wrapWithContext = Lesson(

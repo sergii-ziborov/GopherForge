@@ -15,7 +15,10 @@ enum CourseUnitConcurrency {
         and why "who closes this channel" is a design question rather than a \
         detail.
         """,
-        lessons: [unbufferedRendezvous, goroutinesHaveNoHandle, senderOwnsClose, selectAndContext]
+        lessons: [
+            unbufferedRendezvous, goroutinesHaveNoHandle, senderOwnsClose,
+            selectAndContext, mutexOrChannel, workerPool,
+        ]
     )
 
     static let unbufferedRendezvous = Lesson(
@@ -183,7 +186,7 @@ enum CourseUnitConcurrency {
 
             // waitFor should return ctx.Err() when the context is cancelled
             // before a value arrives.
-            func waitFor(values <-chan int, ctx context.Context) (int, error) {
+            func waitFor(ctx context.Context, values <-chan int) (int, error) {
             \treturn <-values, nil
             }
 
@@ -201,7 +204,7 @@ enum CourseUnitConcurrency {
             func TestWaitForCancelled(t *testing.T) {
             \tctx, cancel := context.WithCancel(context.Background())
             \tcancel()
-            \t_, err := waitFor(make(chan int), ctx)
+            \t_, err := waitFor(ctx, make(chan int))
             \tif !errors.Is(err, context.Canceled) {
             \t\tt.Fatalf("err = %v, want context.Canceled", err)
             \t}
@@ -210,7 +213,7 @@ enum CourseUnitConcurrency {
             func TestWaitForValue(t *testing.T) {
             \tvalues := make(chan int, 1)
             \tvalues <- 7
-            \tgot, err := waitFor(values, context.Background())
+            \tgot, err := waitFor(context.Background(), values)
             \tif err != nil || got != 7 {
             \t\tt.Fatalf("waitFor = %d, %v", got, err)
             \t}

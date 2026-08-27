@@ -17,7 +17,10 @@ enum CourseUnitStandardLibrary {
         types are real; only the transport is simulated, and every lesson says \
         so where it applies.
         """,
-        lessons: [readersAndWriters, jsonTags]
+        lessons: [
+            readersAndWriters, jsonTags,
+            timeAndDuration, sorting, contextInPractice,
+        ]
     )
 
     static let readersAndWriters = Lesson(

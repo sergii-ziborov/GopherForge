@@ -12,7 +12,10 @@ enum CourseUnitCore {
         Java, C# and Python each need one specific adjustment rather than a \
         general rewrite.
         """,
-        lessons: [zeroValues, shortDeclaration, multipleReturns, unusedIsAnError]
+        lessons: [
+            zeroValues, shortDeclaration, multipleReturns, unusedIsAnError,
+            constantsAndIota, switchWithoutBreak, conversionsAreExplicit,
+        ]
     )
 
     static let zeroValues = Lesson(

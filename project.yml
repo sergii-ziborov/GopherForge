@@ -216,6 +216,8 @@ schemes:
             - IncrementalBuildGateTests/testChangingADependencyRebuildsWhatImportsIt()
             - BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
             - BundledContentGateTests/testExampleIdentifiersAreUnique()
+            - LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()
+            - LessonSolutionGateTests/testAStarterDoesNotAlreadyPass()
             - BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
             - BundledContentGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()
 
@@ -243,5 +245,7 @@ schemes:
             - IncrementalBuildGateTests/testChangingADependencyRebuildsWhatImportsIt()
             - BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
             - BundledContentGateTests/testExampleIdentifiersAreUnique()
+            - LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()
+            - LessonSolutionGateTests/testAStarterDoesNotAlreadyPass()
             - BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
             - BundledContentGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()

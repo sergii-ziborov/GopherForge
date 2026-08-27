@@ -11,7 +11,10 @@ enum CourseUnitCollections {
         slice is a view over an array, not a list object, so two slices can \
         share memory and a third can silently observe your writes.
         """,
-        lessons: [lengthAndCapacity, appendAliasing, mapZeroValue, runesNotBytes]
+        lessons: [
+            lengthAndCapacity, appendAliasing, mapZeroValue, runesNotBytes,
+            boundsVersusCapacity, mapsAreUnordered, buildingStrings,
+        ]
     )
 
     static let lengthAndCapacity = Lesson(

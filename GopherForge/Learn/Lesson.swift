@@ -31,6 +31,14 @@ struct Lesson: Identifiable, Equatable, Sendable {
     /// The idiomatic answer, shown after the attempt rather than before it.
     let idiomaticSolution: String?
 
+    /// A complete `main.go` that passes this lesson's hidden test.
+    ///
+    /// Held apart from `idiomaticSolution`, which is a fragment written to be
+    /// read. This one is written to be compiled: `LessonSolutionGateTests`
+    /// builds it against the hidden test and requires the test to pass, which
+    /// is the only way to know a lesson is solvable at all.
+    var verifiedSolution: String? { LessonSolutionCatalog.solution(for: id) }
+
     var requiresCompiler: Bool {
         if case .compile = task { return true }
         return false

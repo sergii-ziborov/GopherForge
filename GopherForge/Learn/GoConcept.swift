@@ -38,6 +38,20 @@ enum GoConcept {
     static let goroutineLeak = "concurrency.goroutine-leak"
     static let waitGroup = "concurrency.waitgroup"
 
+    static let constants = "types.constants"
+    static let switchNoFallthrough = "control.switch"
+    static let conversion = "types.conversion"
+    static let mapOrder = "maps.order"
+    static let stringsBuilder = "strings.builder"
+    static let typeAssertion = "types.assertion"
+    static let embedding = "types.embedding"
+    static let customError = "errors.custom"
+    static let panicIsNotAnError = "errors.panic"
+    static let packageInit = "packages.init"
+    static let mutex = "concurrency.mutex"
+    static let stdlibTime = "stdlib.time"
+    static let stdlibSort = "stdlib.sort"
+
     static let stdlibIO = "stdlib.io"
     static let stdlibHTTP = "stdlib.http"
     static let stdlibJSON = "stdlib.json"
@@ -52,5 +66,8 @@ enum GoConcept {
         explicitErrorCheck, errorWrapping, errorSentinel, deferCleanup,
         deadlock, channelClose, selectBranch, contextCancel, contextFirstParameter,
         goroutineLeak, waitGroup, stdlibIO, stdlibHTTP, stdlibJSON, stdlibTesting,
+        constants, switchNoFallthrough, conversion, mapOrder, stringsBuilder,
+        typeAssertion, embedding, customError, panicIsNotAnError, packageInit,
+        mutex, stdlibTime, stdlibSort,
     ]
 }
