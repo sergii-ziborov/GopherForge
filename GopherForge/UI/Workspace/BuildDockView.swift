@@ -35,6 +35,7 @@ struct BuildDockView: View {
             }
             .pickerStyle(.segmented)
             .padding(8)
+            .accessibilityIdentifier(AccessibilityID.dockPicker)
 
             Divider()
 

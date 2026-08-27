@@ -128,6 +128,14 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
   test
 ```
 
+That scheme runs both suites. The UI tests drive the real app in the Simulator:
+they open a template and check it lands in the editor, type into the buffer,
+switch dock tabs, select a file in the tree, walk the course into a lesson, and
+assert that every action needing the toolchain is disabled while none is
+staged. They address elements by accessibility identifier rather than by
+visible text, so a copy edit cannot silently stop a test from checking
+anything.
+
 Run the real bundled-toolchain gates with the dedicated scheme, which requires a
 staged toolchain:
 

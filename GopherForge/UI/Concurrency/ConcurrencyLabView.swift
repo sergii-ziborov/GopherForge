@@ -57,6 +57,7 @@ struct ConcurrencyLabView: View {
                     }
                 }
                 .disabled(model.isRunning || !model.canRun)
+                .accessibilityIdentifier(AccessibilityID.labRun)
             }
         }
     }
@@ -75,6 +76,7 @@ struct ConcurrencyLabView: View {
             }
         }
         .pickerStyle(.menu)
+        .accessibilityIdentifier(AccessibilityID.labScenarioPicker)
     }
 
     private var predictionSection: some View {
@@ -90,6 +92,7 @@ struct ConcurrencyLabView: View {
             Text("Predict first, then open this")
                 .font(.callout.weight(.medium))
         }
+        .accessibilityIdentifier(AccessibilityID.labPrediction)
     }
 }
 

@@ -26,6 +26,7 @@ struct WorkspaceView: View {
                     fontSize: fontSize,
                     markedLines: workspace.markedLines
                 )
+                .accessibilityIdentifier(AccessibilityID.editor)
             }
 
             Divider()
@@ -85,6 +86,7 @@ private struct PhaseButton: View {
             }
         }
         .disabled(!workspace.canRun)
+        .accessibilityIdentifier(AccessibilityID.phase(phase))
     }
 }
 
@@ -105,5 +107,6 @@ private struct ToolchainBanner: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(.bar)
+        .accessibilityIdentifier(AccessibilityID.toolchainBanner)
     }
 }

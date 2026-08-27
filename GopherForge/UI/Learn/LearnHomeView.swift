@@ -15,11 +15,13 @@ struct LearnHomeView: View {
                 } label: {
                     Label("Review", systemImage: "arrow.trianglehead.counterclockwise")
                 }
+                .accessibilityIdentifier(AccessibilityID.reviewEntry)
                 NavigationLink {
                     ConcurrencyLabView()
                 } label: {
                     Label("Concurrency Lab", systemImage: "arrow.triangle.branch")
                 }
+                .accessibilityIdentifier(AccessibilityID.labEntry)
             } footer: {
                 Text("Review is chosen from what the compiler and the idiom coach saw you get wrong.")
             }
@@ -31,6 +33,7 @@ struct LearnHomeView: View {
                     } label: {
                         UnitRow(unit: unit, completed: completed)
                     }
+                    .accessibilityIdentifier(AccessibilityID.unit(unit.id))
                 }
             }
 

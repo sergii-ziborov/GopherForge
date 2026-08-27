@@ -36,6 +36,7 @@ struct UnitDetailView: View {
                             }
                         }
                     }
+                    .accessibilityIdentifier(AccessibilityID.lesson(lesson.id))
                 }
             }
         }

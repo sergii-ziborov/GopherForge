@@ -144,6 +144,19 @@ targets:
         APPLICATION_EXTENSION_API_ONLY: YES
         SKIP_INSTALL: YES
 
+  GopherForgeUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: GopherForgeUITests
+    dependencies:
+      - target: GopherForge
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: GopherForge
+
   GopherForgeTests:
     type: bundle.unit-test
     platform: iOS
@@ -162,10 +175,12 @@ schemes:
       targets:
         GopherForge: all
         GopherForgeTests: [test]
+        GopherForgeUITests: [test]
     run:
       config: Release
     test:
       targets:
+        - name: GopherForgeUITests
         - name: GopherForgeTests
           skippedTests:
             - BundledCompilerGateTests/testBundledGoReportsUnusedVariable()

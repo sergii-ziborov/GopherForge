@@ -18,6 +18,7 @@ struct ProjectFileTreeView: View {
                             row(for: path)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier(AccessibilityID.file(path))
                     }
                 }
             }

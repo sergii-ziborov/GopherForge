@@ -18,6 +18,7 @@ struct ProjectsHomeView: View {
             if recents.isEmpty {
                 Section {
                     WelcomeCard()
+                        .accessibilityIdentifier(AccessibilityID.welcomeCard)
                 }
             }
 
@@ -41,6 +42,7 @@ struct ProjectsHomeView: View {
                         TemplateRow(template: template)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier(AccessibilityID.template(template.id))
                 }
 
                 Button {
@@ -48,6 +50,7 @@ struct ProjectsHomeView: View {
                 } label: {
                     Label("Open a folder from Files", systemImage: "folder.badge.plus")
                 }
+                .accessibilityIdentifier(AccessibilityID.openFolder)
             }
 
             if !recents.isEmpty {

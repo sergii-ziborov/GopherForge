@@ -45,6 +45,7 @@ struct LessonDetailView: View {
                         }
                     }
                     .disabled(!model.canCheck)
+                    .accessibilityIdentifier(AccessibilityID.lessonCheck)
                 }
             }
         }

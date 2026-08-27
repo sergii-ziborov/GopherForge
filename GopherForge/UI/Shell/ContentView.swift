@@ -31,6 +31,7 @@ struct ContentView: View {
                     NavigationLink(value: item) {
                         Label(item.title, systemImage: item.systemImage)
                     }
+                    .accessibilityIdentifier(AccessibilityID.section(item))
                 }
             }
             .navigationTitle("GopherForge")
@@ -51,6 +52,7 @@ struct ContentView: View {
                 }
                 .tabItem { Label(item.title, systemImage: item.systemImage) }
                 .tag(item)
+                .accessibilityIdentifier(AccessibilityID.section(item))
             }
         }
     }

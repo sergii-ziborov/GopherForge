@@ -17,6 +17,7 @@ struct SettingsView: View {
 
             Section("Toolchain") {
                 LabeledContent("Status", value: workspace.toolchain.label)
+                    .accessibilityIdentifier(AccessibilityID.settingsToolchainStatus)
                 if workspace.toolchain.isReady {
                     LabeledContent("Go version", value: workspace.toolchain.goVersion)
                     LabeledContent("Driver size", value: formattedSize)
