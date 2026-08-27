@@ -47,7 +47,8 @@ enum LearnerStatsBuilder {
         attempts: [LessonAttempt],
         mastery: [ConceptMastery],
         drills: [MatchingDrillResult],
-        runs: [PracticeRun]
+        runs: [PracticeRun],
+        quizzes: [QuizResult] = []
     ) -> LearnerStats {
         var stats = LearnerStats()
 
@@ -66,11 +67,17 @@ enum LearnerStatsBuilder {
         stats.drillsCompleted = drills.count
         stats.drillsPerfect = drills.count(where: \.isPerfect)
 
+        // Counted by unit rather than by attempt: passing the same quiz five
+        // times is one thing learned, not five.
+        stats.quizzesPassed = Set(quizzes.filter(\.passed).map(\.unitID)).count
+        stats.quizzesPerfect = Set(quizzes.filter(\.isPerfect).map(\.unitID)).count
+
         stats.programsRun = runs.count(where: \.isProgramRun)
         stats.testsPassed = runs.reduce(0) { $0 + $1.testsPassed }
 
         stats.distinctActiveDays = distinctDays(
-            attempts.map(\.attemptedAt) + drills.map(\.completedAt) + runs.map(\.ranAt)
+            attempts.map(\.attemptedAt) + drills.map(\.completedAt)
+                + runs.map(\.ranAt) + quizzes.map(\.completedAt)
         )
 
         return stats

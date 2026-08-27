@@ -104,10 +104,75 @@ final class PracticeFlowUITests: XCTestCase {
         attachScreenshot(named: "18-example")
     }
 
+    /// A quiz answers, explains, and only then moves on.
+    func testAQuizExplainsBeforeItMovesOn() {
+        launch(screen: "course")
+
+        let unit = app.buttons["unit.errors"]
+        XCTAssertTrue(app.waitForElement(unit))
+        unit.tap()
+
+        let quiz = app.buttons[AccessibilityIdentifier.quizEntry]
+        XCTAssertTrue(app.waitForElement(quiz), "a unit should offer its quiz")
+        quiz.tap()
+
+        let firstOption = app.buttons["quiz.option.0"]
+        XCTAssertTrue(firstOption.waitForExistence(timeout: 10), "the quiz should show its options")
+
+        let continueButton = app.buttons[AccessibilityIdentifier.quizContinue]
+        XCTAssertFalse(continueButton.exists, "there is nothing to continue to before answering")
+
+        firstOption.tap()
+        XCTAssertTrue(
+            continueButton.waitForExistence(timeout: 5),
+            "answering should explain and offer the next question"
+        )
+        attachScreenshot(named: "19-quiz")
+
+        continueButton.tap()
+        XCTAssertTrue(
+            app.buttons["quiz.option.0"].waitForExistence(timeout: 5),
+            "continuing should show the next question"
+        )
+    }
+
+    /// Answering every question ends on a score, and the score is reachable.
+    func testAQuizEndsOnAScore() {
+        launch(screen: "course")
+
+        let unit = app.buttons["unit.interfaces"]
+        XCTAssertTrue(app.waitForElement(unit))
+        unit.tap()
+        let quiz = app.buttons[AccessibilityIdentifier.quizEntry]
+        XCTAssertTrue(app.waitForElement(quiz))
+        quiz.tap()
+
+        let summary = app.otherElements[AccessibilityIdentifier.quizSummary]
+        for _ in 0..<12 {
+            if summary.exists || app.buttons[AccessibilityIdentifier.quizRestart].exists { break }
+            let option = app.buttons["quiz.option.0"]
+            guard option.waitForExistence(timeout: 5) else { break }
+            option.tap()
+            let next = app.buttons[AccessibilityIdentifier.quizContinue]
+            guard next.waitForExistence(timeout: 5) else { break }
+            next.tap()
+        }
+
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.quizRestart].waitForExistence(timeout: 10),
+            "the quiz should end on a result with a way to try again"
+        )
+        attachScreenshot(named: "20-quiz-score")
+    }
+
     // MARK: - Helpers
 
     private func launch(screen: String) {
-        app.launchArguments = ["-GopherForgeSection", "learn", "-GopherForgeScreen", screen]
+        // "course" means the Learn list itself: the units are there, and a
+        // quiz is reached through the unit it closes.
+        app.launchArguments = screen == "course"
+            ? ["-GopherForgeSection", "learn"]
+            : ["-GopherForgeSection", "learn", "-GopherForgeScreen", screen]
         app.launch()
     }
 

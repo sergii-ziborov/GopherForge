@@ -136,6 +136,8 @@ final class AchievementTests: XCTestCase {
         )
     }
 
+    /// This is the test that catches a badge added against a statistic nothing
+    /// ever sets — which is exactly how it caught the quiz ones.
     func testEveryAchievementIsReachable() {
         var everything = LearnerStats()
         everything.lessonsPassed = 999
@@ -143,6 +145,8 @@ final class AchievementTests: XCTestCase {
         everything.conceptsMastered = 999
         everything.drillsCompleted = 999
         everything.drillsPerfect = 999
+        everything.quizzesPassed = 999
+        everything.quizzesPerfect = 999
         everything.programsRun = 999
         everything.testsPassed = 999
         everything.conceptsRepaired = 999

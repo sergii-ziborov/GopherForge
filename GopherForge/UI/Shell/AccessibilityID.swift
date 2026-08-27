@@ -46,4 +46,11 @@ enum AccessibilityID {
     static let fileSearch = "files.search"
     static let filesToggle = "workspace.filesToggle"
     static let exportProject = "projects.export"
+    static let outputImages = "output.images"
+    static let quizEntry = "unit.quiz"
+    static let quizProgress = "quiz.progress"
+    static let quizQuestion = "quiz.question"
+    static let quizContinue = "quiz.continue"
+    static let quizSummary = "quiz.summary"
+    static let quizRestart = "quiz.restart"
 }

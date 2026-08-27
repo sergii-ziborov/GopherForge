@@ -55,7 +55,12 @@ struct LearnHomeView: View {
             Section("Course") {
                 ForEach(GoCourseCatalog.units) { unit in
                     NavigationLink {
-                        UnitDetailView(unit: unit, completed: completed)
+                        UnitDetailView(
+                            unit: unit,
+                            completed: completed,
+                            onQuizFinished: record,
+                            onDrillFinished: record
+                        )
                     } label: {
                         UnitRow(unit: unit, completed: completed)
                     }
@@ -104,6 +109,15 @@ struct LearnHomeView: View {
         }
     }
 
+    /// A quiz is evidence like any other: it feeds the badges, and its wrong
+    /// answers feed the same review queue a failed compile does.
+    private func record(_ result: QuizResult) {
+        Task {
+            try? await store.record(result)
+            await reload()
+        }
+    }
+
     private var weakest: [ConceptMastery] {
         mastery.sorted { $0.strength < $1.strength }.prefix(5).map { $0 }
     }
@@ -115,21 +129,50 @@ struct LearnHomeView: View {
     }
 }
 
+/// A unit in the course list.
+///
+/// Colour and a symbol per unit, because six grey rows of text are hard to tell
+/// apart at a glance and this is a list people come back to daily. The ring
+/// carries the progress, so how far through it is readable before the words.
 private struct UnitRow: View {
     let unit: CourseUnit
     let completed: Set<String>
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(unit.title).font(.callout.weight(.medium))
-            Text(unit.summary)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            Text("\(doneCount) of \(unit.lessons.count) lessons")
+        HStack(alignment: .top, spacing: 12) {
+            UnitProgressRing(
+                fraction: unit.lessons.isEmpty ? 0 : Double(doneCount) / Double(unit.lessons.count),
+                symbol: CourseUnitStyle.symbol(for: unit.id)
+            )
+            .frame(width: 38, height: 38)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(unit.title).font(.callout.weight(.medium))
+                Text(unit.summary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 8) {
+                    Text("\(doneCount) of \(unit.lessons.count) lessons")
+                    if let quiz = QuizCatalog.quiz(forUnit: unit.id) {
+                        Label("\(quiz.questions.count)", systemImage: "checklist")
+                    }
+                    if !MatchingDrillCatalog.drills(forUnit: unit.id).isEmpty {
+                        Image(systemName: "link")
+                    }
+                }
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+            }
         }
+        .padding(.vertical, 3)
+        .listRowBackground(
+            LinearGradient(
+                colors: CourseUnitStyle.gradient(for: unit.id),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
     }
 
     private var doneCount: Int {

@@ -14,6 +14,8 @@ struct LearnerStats: Equatable, Sendable {
     var conceptsMastered = 0
     var drillsCompleted = 0
     var drillsPerfect = 0
+    var quizzesPassed = 0
+    var quizzesPerfect = 0
     var programsRun = 0
     var testsPassed = 0
     /// Concepts that were mistaken at least once and later mastered. The
@@ -35,6 +37,8 @@ struct Achievement: Identifiable, Equatable, Sendable {
         case conceptsMastered(Int)
         case drillsCompleted(Int)
         case drillsPerfect(Int)
+        case quizzesPassed(Int)
+        case quizzesPerfect(Int)
         case programsRun(Int)
         case testsPassed(Int)
         case conceptsRepaired(Int)
@@ -44,7 +48,8 @@ struct Achievement: Identifiable, Equatable, Sendable {
             switch self {
             case let .lessonsPassed(n), let .lessonsPassedFirstTry(n),
                  let .conceptsMastered(n), let .drillsCompleted(n),
-                 let .drillsPerfect(n), let .programsRun(n),
+                 let .drillsPerfect(n), let .quizzesPassed(n),
+                 let .quizzesPerfect(n), let .programsRun(n),
                  let .testsPassed(n), let .conceptsRepaired(n),
                  let .activeDays(n):
                 n
@@ -58,6 +63,8 @@ struct Achievement: Identifiable, Equatable, Sendable {
             case .conceptsMastered: stats.conceptsMastered
             case .drillsCompleted: stats.drillsCompleted
             case .drillsPerfect: stats.drillsPerfect
+            case .quizzesPassed: stats.quizzesPassed
+            case .quizzesPerfect: stats.quizzesPerfect
             case .programsRun: stats.programsRun
             case .testsPassed: stats.testsPassed
             case .conceptsRepaired: stats.conceptsRepaired

@@ -13,6 +13,7 @@ actor LearningProgressStore {
         /// into a decode failure, which is a worse bug than a missing feature.
         var drills: [MatchingDrillResult]?
         var runs: [PracticeRun]?
+        var quizzes: [QuizResult]?
     }
 
     private let storageURL: URL
@@ -84,6 +85,18 @@ actor LearningProgressStore {
         try persist(current)
     }
 
+    func quizResults() throws -> [QuizResult] {
+        try state().quizzes ?? []
+    }
+
+    func record(_ result: QuizResult) throws {
+        var current = try state()
+        var quizzes = current.quizzes ?? []
+        quizzes.append(result)
+        current.quizzes = Array(quizzes.suffix(maximumDrills))
+        try persist(current)
+    }
+
     func practiceRuns() throws -> [PracticeRun] {
         try state().runs ?? []
     }
@@ -107,7 +120,8 @@ actor LearningProgressStore {
             attempts: try attempts(),
             mastery: try mastery(),
             drills: try drillResults(),
-            runs: try practiceRuns()
+            runs: try practiceRuns(),
+            quizzes: try quizResults()
         )
     }
 
@@ -116,7 +130,7 @@ actor LearningProgressStore {
     private func state() throws -> State {
         if let cachedState { return cachedState }
         guard FileManager.default.fileExists(atPath: storageURL.path) else {
-            let empty = State(attempts: [], drills: [], runs: [])
+            let empty = State(attempts: [], drills: [], runs: [], quizzes: [])
             cachedState = empty
             return empty
         }

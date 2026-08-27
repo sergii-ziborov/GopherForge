@@ -27,6 +27,9 @@ struct CompilationResult: Sendable {
     /// Reported rather than kept private: an incremental build that claims to
     /// be one should be able to say how much it skipped.
     let reusedSteps: Int
+    /// Images the program wrote into its sandbox, collected before the sandbox
+    /// was removed.
+    let artifacts: GoProgramArtifacts
 
     init(
         succeeded: Bool,
@@ -39,7 +42,8 @@ struct CompilationResult: Sendable {
         detail: String,
         tests: [GoTestResult] = [],
         formattedFiles: [String: String] = [:],
-        reusedSteps: Int = 0
+        reusedSteps: Int = 0,
+        artifacts: GoProgramArtifacts = .empty
     ) {
         self.succeeded = succeeded
         self.phase = phase
@@ -52,6 +56,7 @@ struct CompilationResult: Sendable {
         self.tests = tests
         self.formattedFiles = formattedFiles
         self.reusedSteps = reusedSteps
+        self.artifacts = artifacts
     }
 
     var blockingDiagnostics: [GoDiagnostic] {

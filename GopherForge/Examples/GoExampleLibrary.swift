@@ -7,7 +7,10 @@ import Foundation
 /// project's size limit before it was interesting.
 enum GoExampleLibrary {
     static let all: [GoExample] =
-        GoExampleLibraryCore.all + GoExampleLibraryConcurrency.all + GoExampleLibraryStdlib.all
+        GoExampleLibraryProjects.all
+            + GoExampleLibraryCore.all
+            + GoExampleLibraryConcurrency.all
+            + GoExampleLibraryStdlib.all
 
     static func example(id: String) -> GoExample? {
         all.first { $0.id == id }
@@ -23,6 +26,7 @@ enum GoExampleLibrary {
     /// language first and library last, the way the course does.
     static var sections: [(title: String, examples: [GoExample])] {
         [
+            ("Projects", GoExampleLibraryProjects.all),
             ("The language", GoExampleLibraryCore.all),
             ("Concurrency", GoExampleLibraryConcurrency.all),
             ("Standard library", GoExampleLibraryStdlib.all),

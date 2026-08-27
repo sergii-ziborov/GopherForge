@@ -29,6 +29,9 @@ struct GoProgramRunner {
 
         do {
             let (exitCode, output) = try runner.run(module: module, invocation: invocation)
+            // Before the caller removes the job: a program that drew something
+            // has already written it, and the directory is about to go.
+            let artifacts = GoProgramArtifacts.collect(from: job.sandbox)
             return CompilationResult(
                 succeeded: exitCode == 0,
                 phase: .run,
@@ -37,11 +40,20 @@ struct GoProgramRunner {
                 stdout: output.stdout,
                 stderr: output.stderr,
                 duration: started.duration(to: clock.now),
-                detail: exitCode == 0 ? successDetail : "The program exited with code \(exitCode)."
+                detail: exitCode == 0
+                    ? detail(for: artifacts, otherwise: successDetail)
+                    : "The program exited with code \(exitCode).",
+                artifacts: artifacts
             )
         } catch let failure as WasiProcessRunner.RunFailure {
             return result(for: failure, diagnostics: diagnostics, started: started, clock: clock)
         }
+    }
+
+    private func detail(for artifacts: GoProgramArtifacts, otherwise fallback: String) -> String {
+        guard !artifacts.isEmpty else { return fallback }
+        let count = artifacts.images.count
+        return "Ran, and drew \(count) image\(count == 1 ? "" : "s")."
     }
 
     private func result(

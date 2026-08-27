@@ -19,15 +19,28 @@ struct GoExample: Identifiable, Equatable, Sendable {
     let source: String
     /// Exactly what the program prints, including the trailing newline.
     let expectedOutput: String
+    /// Additional packages, keyed by project-relative path. Empty for a
+    /// single-file example; a project's whole point is that this is not.
+    var extraFiles: [String: String] = [:]
+    /// The module path, which matters once an example has more than one
+    /// package: its own packages are imported through it.
+    var modulePath: String = "example"
+    /// True when the program's job is to produce an image rather than text.
+    /// Interactive Go graphics cannot run here — they need a window and a GPU,
+    /// and WASI has neither — but a program that draws into a buffer and writes
+    /// a PNG runs perfectly, and the app shows what it drew.
+    var producesImage: Bool = false
 
-    var moduleName: String { "example" }
+    var moduleName: String { modulePath }
 
     var files: [String: String] {
-        [
-            "go.mod": GoLanguage.module(moduleName),
-            "main.go": source,
-        ]
+        var all = extraFiles
+        all["go.mod"] = GoLanguage.module(modulePath)
+        all["main.go"] = source
+        return all
     }
+
+    var isProject: Bool { !extraFiles.isEmpty }
 
     /// Ready to open in the workspace and run.
     func project() -> GopherForgeProject {

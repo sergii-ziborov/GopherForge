@@ -274,4 +274,8 @@ enum AccessibilityIdentifier {
     static let settingsAppearance = "settings.appearance"
     static let drillBoard = "drill.board"
     static let exampleOpen = "example.open"
+    static let quizEntry = "unit.quiz"
+    static let quizContinue = "quiz.continue"
+    static let quizSummary = "quiz.summary"
+    static let quizRestart = "quiz.restart"
 }

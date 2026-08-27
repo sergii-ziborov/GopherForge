@@ -65,6 +65,27 @@ enum AchievementCatalog {
             requirement: .drillsPerfect(3)
         ),
         Achievement(
+            id: "first.quiz",
+            title: "Quizzed",
+            detail: "Pass a unit's quiz",
+            symbol: "checklist",
+            requirement: .quizzesPassed(1)
+        ),
+        Achievement(
+            id: "three.quizzes",
+            title: "Three units down",
+            detail: "Pass the quiz for three different units",
+            symbol: "graduationcap.fill",
+            requirement: .quizzesPassed(3)
+        ),
+        Achievement(
+            id: "perfect.quiz",
+            title: "Full marks",
+            detail: "Answer every question in a unit's quiz correctly",
+            symbol: "sparkles",
+            requirement: .quizzesPerfect(1)
+        ),
+        Achievement(
             id: "five.concepts",
             title: "Five under the belt",
             detail: "Master five concepts",
