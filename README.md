@@ -155,6 +155,13 @@ the Mac, then:
 It finds the connected device, builds signed, installs and launches. Pass a
 device identifier from `xcrun devicectl list devices` to choose between several.
 
+**It builds Release, and that is not a preference.** The whole product runs
+inside a Wasm interpreter, and an unoptimised WasmKit is slower by orders of
+magnitude — measured here, a Debug gate run in the Simulator does not finish
+where a Release one takes nineteen seconds. On a phone that difference reads as
+a Build button that does nothing at all. Pass `debug` only when you need a
+debugger attached and know what you are trading for it.
+
 Everything the compiler gate can only prove on real hardware — airplane mode,
 the thermal envelope, stopping a runaway program — is listed in
 [docs/DEVICE-GATE.md](docs/DEVICE-GATE.md).
