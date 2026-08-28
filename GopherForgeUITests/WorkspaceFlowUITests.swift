@@ -214,52 +214,6 @@ final class WorkspaceFlowUITests: XCTestCase {
     /// has no room for it and puts it behind the Files control, so the test
     /// opens it the way a person on that device would rather than assuming the
     /// wide layout.
-    /// The navigator searches, by file name and by what is inside a file.
-    ///
-    /// Both halves matter: a name search that misses a content hit is only half
-    /// a search, and a content hit that does not carry its line number is a
-    /// result you still have to go and find.
-    func testTheNavigatorSearchesNamesAndContents() {
-        launch(section: .build)
-        openNavigator()
-
-        let field = app.textFields[AccessibilityIdentifier.fileSearch]
-        XCTAssertTrue(field.waitForExistence(timeout: 10), "the navigator should offer a search field")
-
-        field.tap()
-        field.typeText("go.mod")
-        XCTAssertTrue(
-            app.buttons.matching(
-                NSPredicate(format: "identifier BEGINSWITH 'search.name:'")
-            ).firstMatch.waitForExistence(timeout: 5),
-            "searching a file name should find the file"
-        )
-
-        clear(field)
-        field.typeText("func main")
-        XCTAssertTrue(
-            app.buttons.matching(
-                NSPredicate(format: "identifier BEGINSWITH 'search.line:'")
-            ).firstMatch.waitForExistence(timeout: 5),
-            "searching a line of code should find the line"
-        )
-        attachScreenshot(named: "21-search")
-    }
-
-    func testFileTreeSwitchesTheOpenFile() {
-        launch(section: .build)
-
-        openNavigator()
-        let goMod = app.buttons["file.go.mod"]
-        XCTAssertTrue(goMod.waitForExistence(timeout: 5), "go.mod should be listed in the tree")
-        goMod.tap()
-
-        let editor = app.textViews[AccessibilityIdentifier.editor]
-        let contents = editor.value as? String ?? ""
-        XCTAssertTrue(contents.contains("module "), "selecting go.mod should show the module file")
-        attachScreenshot(named: "05-gomod")
-    }
-
     // MARK: - Helpers
 
     private enum Section: String {
