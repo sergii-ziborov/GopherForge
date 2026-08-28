@@ -2,13 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Game Center mirrors the achievements the app already keeps locally.
-         The capability has to be enabled for the App ID as well, and each
-         achievement created in App Store Connect with the identifier the app
-         reports; until then Game Center refuses the report and the app says
-         so rather than pretending it went through. -->
-    <key>com.apple.developer.game-center</key>
-    <true/>
+    <!-- Game Center is deliberately NOT declared here.
+         Claiming com.apple.developer.game-center makes every device build fail
+         until the capability is enabled for this App ID in the developer
+         portal, which needs a signed-in account and is not something the
+         source tree can do. The code is written and tested; enabling it is one
+         checkbox in Xcode's Signing & Capabilities plus the achievement
+         identifiers in App Store Connect. Until then the app reports Game
+         Center as unavailable rather than failing to build. See
+         docs/GAME-CENTER.md. -->
     <key>com.apple.security.application-groups</key>
     <array>
         <string>group.com.sergiiziborov.GopherForge</string>

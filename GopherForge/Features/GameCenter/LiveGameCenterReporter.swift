@@ -48,8 +48,9 @@ struct LiveGameCenterReporter: GameCenterReporting {
             // Store Connect yet, and saying so is more use than the raw error.
             return .failure(
                 "Game Center refused the report: \(error.localizedDescription). "
-                    + "Each achievement has to be created in App Store Connect with the "
-                    + "same identifier before it can be awarded."
+                    + "Two things have to be in place: the Game Center capability enabled "
+                    + "for this app, and each achievement created in App Store Connect "
+                    + "with the identifier the app reports."
             )
         }
     }
