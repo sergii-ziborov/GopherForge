@@ -7,6 +7,7 @@ import SwiftUI
 /// something to go and finish.
 struct AchievementsView: View {
     let stats: LearnerStats
+    @State private var gameCenter = GameCenterService()
 
     private var ordered: [Achievement] {
         AchievementCatalog.ordered(by: stats)
@@ -18,6 +19,15 @@ struct AchievementsView: View {
 
     var body: some View {
         List {
+            Section {
+                GameCenterRow(service: gameCenter, stats: stats)
+            } header: {
+                Text("Game Center")
+            } footer: {
+                Text("Every badge is earned and kept on this device whether or not you "
+                    + "sign in. Game Center is a mirror, not the record.")
+            }
+
             Section {
                 ForEach(ordered) { achievement in
                     AchievementRow(achievement: achievement, stats: stats)
@@ -32,6 +42,50 @@ struct AchievementsView: View {
         }
         .navigationTitle("Achievements")
         .navigationBarTitleDisplayMode(.inline)
+        // No automatic sign-in. Authenticating presents Apple's own sheet over
+        // whatever the person opened, and being asked to sign in to something
+        // for looking at a list is exactly the kind of thing that makes people
+        // close an app.
+        .task { await gameCenter.reportIfAlreadySignedIn(stats) }
+    }
+}
+
+/// Sign-in state, and the way into the dashboard.
+private struct GameCenterRow: View {
+    let service: GameCenterService
+    let stats: LearnerStats
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 9) {
+                Image(systemName: service.isSignedIn ? "person.crop.circle.fill" : "person.crop.circle")
+                    .font(.title3)
+                    .foregroundStyle(service.isSignedIn ? Color.green : Color.secondary)
+                Text(service.statusDescription)
+                    .font(.footnote)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .accessibilityIdentifier(AccessibilityID.gameCenterStatus)
+
+            if service.isSignedIn {
+                Button("Open Game Center", systemImage: "trophy") {
+                    service.showDashboard()
+                }
+                .font(.footnote)
+                .accessibilityIdentifier(AccessibilityID.gameCenterDashboard)
+            } else {
+                Button("Connect Game Center", systemImage: "person.badge.plus") {
+                    Task {
+                        await service.authenticate()
+                        await service.report(stats)
+                    }
+                }
+                .font(.footnote)
+                .accessibilityIdentifier(AccessibilityID.gameCenterConnect)
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 

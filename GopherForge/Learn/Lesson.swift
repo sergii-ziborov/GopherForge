@@ -43,6 +43,20 @@ struct Lesson: Identifiable, Equatable, Sendable {
         if case .compile = task { return true }
         return false
     }
+
+    /// A predict lesson is a question with an answer rather than something to
+    /// build, so it belongs with the drills and quizzes rather than in the
+    /// middle of a unit's reading.
+    var isChallenge: Bool {
+        if case .predict = task { return true }
+        return false
+    }
+
+    /// The compiler decides a compile lesson. Everything else is something the
+    /// learner does and then says they have done — there is nothing to run, and
+    /// pretending otherwise would mean marking a lesson complete for scrolling
+    /// past it.
+    var completesByHand: Bool { !requiresCompiler }
 }
 
 /// A group of lessons that belong together.
@@ -56,5 +70,15 @@ struct CourseUnit: Identifiable, Equatable, Sendable {
 
     var conceptTags: Set<String> {
         Set(lessons.flatMap(\.conceptTags))
+    }
+
+    /// What the unit teaches: explanation and something to do.
+    var teachingLessons: [Lesson] {
+        lessons.filter { !$0.isChallenge }
+    }
+
+    /// Its question-and-answer challenges, gathered into Practice instead.
+    var challenges: [Lesson] {
+        lessons.filter(\.isChallenge)
     }
 }

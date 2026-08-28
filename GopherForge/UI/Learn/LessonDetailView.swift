@@ -27,11 +27,14 @@ struct LessonDetailView: View {
                 if let result = model.result {
                     LessonVerdictView(result: result, solution: lesson.idiomaticSolution)
                 }
+
+                completion
             }
             .padding(16)
         }
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
+        .task { await model.loadProgress() }
         .toolbar {
             if lesson.requiresCompiler {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -48,6 +51,39 @@ struct LessonDetailView: View {
                     .accessibilityIdentifier(AccessibilityID.lessonCheck)
                 }
             }
+        }
+    }
+
+    /// Either the badge saying this is done, or the button that says so.
+    ///
+    /// A compile lesson is finished by the compiler and there is nothing to
+    /// press; everything else has nothing to run, so the learner marks it and
+    /// the app believes them. Inferring completion from scrolling would be
+    /// worse than not tracking it at all.
+    @ViewBuilder
+    private var completion: some View {
+        if model.isCompleted {
+            Label("Completed", systemImage: "checkmark.seal.fill")
+                .font(.callout.weight(.medium))
+                .foregroundStyle(.green)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(Color.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+                .accessibilityIdentifier(AccessibilityID.lessonCompleted)
+        } else if lesson.completesByHand {
+            Button {
+                Task { await model.markCompleted() }
+            } label: {
+                Label("Mark as completed", systemImage: "checkmark.circle")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier(AccessibilityID.lessonComplete)
+        } else {
+            Text("This one is finished by the compiler: press Check when the "
+                + "hidden test should pass.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 

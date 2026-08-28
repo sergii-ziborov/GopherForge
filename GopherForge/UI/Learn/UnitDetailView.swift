@@ -4,17 +4,13 @@ import SwiftUI
 struct UnitDetailView: View {
     let unit: CourseUnit
     let completed: Set<String>
-    var onQuizFinished: (QuizResult) -> Void = { _ in }
-    var onDrillFinished: (MatchingDrillResult) -> Void = { _ in }
 
-    private var quiz: Quiz? { QuizCatalog.quiz(forUnit: unit.id) }
-    private var drills: [MatchingDrill] { MatchingDrillCatalog.drills(forUnit: unit.id) }
-    private var doneCount: Int { unit.lessons.count { completed.contains($0.id) } }
+    private var doneCount: Int { unit.teachingLessons.count { completed.contains($0.id) } }
 
     var body: some View {
         List {
             Section {
-                UnitHeaderCard(unit: unit, done: doneCount, total: unit.lessons.count)
+                UnitHeaderCard(unit: unit, done: doneCount, total: unit.teachingLessons.count)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
             }
@@ -28,7 +24,7 @@ struct UnitDetailView: View {
             }
 
             Section("Lessons") {
-                ForEach(unit.lessons) { lesson in
+                ForEach(unit.teachingLessons) { lesson in
                     NavigationLink {
                         LessonDetailView(lesson: lesson)
                     } label: {
@@ -52,42 +48,6 @@ struct UnitDetailView: View {
                 }
             }
 
-            if !drills.isEmpty || quiz != nil {
-                Section {
-                    ForEach(drills) { drill in
-                        NavigationLink {
-                            MatchingDrillView(drill: drill, onFinish: onDrillFinished)
-                        } label: {
-                            PracticeRow(
-                                title: drill.title,
-                                detail: "\(drill.pairs.count) pairs to connect",
-                                symbol: "link",
-                                tint: .blue
-                            )
-                        }
-                        .accessibilityIdentifier("drill.\(drill.id)")
-                    }
-
-                    if let quiz {
-                        NavigationLink {
-                            QuizView(quiz: quiz, onFinish: onQuizFinished)
-                        } label: {
-                            PracticeRow(
-                                title: "Quiz",
-                                detail: "\(quiz.questions.count) questions · four in five passes",
-                                symbol: "checklist",
-                                tint: GopherForgeTheme.ember
-                            )
-                        }
-                        .accessibilityIdentifier(AccessibilityID.quizEntry)
-                    }
-                } header: {
-                    Text("Practise")
-                } footer: {
-                    Text("Anything you get wrong here joins what the compiler saw you get "
-                        + "wrong, in the same review queue.")
-                }
-            }
         }
         .navigationTitle(unit.title)
         .navigationBarTitleDisplayMode(.inline)

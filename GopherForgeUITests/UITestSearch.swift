@@ -16,13 +16,16 @@ extension XCUIApplication {
         scrollingUpTo attempts: Int = 6,
         timeout: TimeInterval = 10
     ) -> Bool {
-        if element.waitForExistence(timeout: timeout) { return true }
+        if element.waitForExistence(timeout: timeout), isOnScreen(element) { return true }
 
+        // Existing is not the same as reachable: a row that scrolled in at the
+        // very bottom exists and cannot be tapped, and a test that taps it
+        // anyway fails somewhere else entirely.
         for _ in 0..<attempts {
+            if element.exists, isOnScreen(element) { return true }
             swipeUp()
-            if element.exists { return true }
         }
-        return false
+        return element.exists && isOnScreen(element)
     }
 
     /// Brings a tab into view by dragging across the row it sits in.
@@ -60,6 +63,20 @@ extension XCUIApplication {
         let frame = element.frame
         guard !frame.isEmpty else { return false }
         return windows.firstMatch.frame.insetBy(dx: 2, dy: 0).contains(frame)
+    }
+
+    /// Waits for an element to report itself selected.
+    ///
+    /// Selection animates, and asking the instant after a tap makes a test that
+    /// passes alone and fails in a suite — where the app has more to do and
+    /// every transition takes longer.
+    func waitForSelection(of element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.isSelected { return true }
+            _ = element.waitForExistence(timeout: 0.2)
+        }
+        return element.isSelected
     }
 
     /// An element by identifier regardless of the trait SwiftUI gave it.

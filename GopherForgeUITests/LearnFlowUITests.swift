@@ -37,21 +37,23 @@ final class LearnFlowUITests: XCTestCase {
         unit.tap()
 
         XCTAssertTrue(
-            app.buttons["lesson.concurrency.unbuffered-rendezvous"].waitForExistence(timeout: 10),
+            app.buttons["lesson.concurrency.channel-close"].waitForExistence(timeout: 10),
             "the unit should list its lessons"
         )
         attachScreenshot(named: "11-unit")
     }
 
-    func testOpeningALessonShowsItsTaskAndHidesTheAnswer() {
-        launch(arguments: ["-GopherForgeSection", "learn"])
+    /// A prediction keeps its answer hidden until the learner commits.
+    ///
+    /// These live in Practice now rather than in the middle of a unit: a
+    /// question with an answer is not the same thing as a lesson with something
+    /// to build.
+    func testAPredictionKeepsItsAnswerHiddenUntilAsked() {
+        launch(arguments: ["-GopherForgeSection", "learn", "-GopherForgeScreen", "drills"])
 
-        let unit = app.buttons["unit.concurrency"]
-        XCTAssertTrue(app.waitForElement(unit))
-        unit.tap()
-        let lesson = app.buttons["lesson.concurrency.unbuffered-rendezvous"]
-        XCTAssertTrue(lesson.waitForExistence(timeout: 10))
-        lesson.tap()
+        let challenge = app.buttons["practice.challenge.concurrency.unbuffered-rendezvous"]
+        XCTAssertTrue(app.waitForElement(challenge), "practice should offer the prediction")
+        challenge.tap()
 
         XCTAssertTrue(
             app.staticTexts["Show the answer"].waitForExistence(timeout: 10),

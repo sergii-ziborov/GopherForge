@@ -20,8 +20,8 @@ final class PracticeFlowUITests: XCTestCase {
     func testADrillBoardOffersBothSidesToConnect() {
         launch(screen: "drills")
 
-        let drill = app.buttons["drill.drill.concurrency"]
-        XCTAssertTrue(app.waitForElement(drill), "the drills list should offer the concurrency drill")
+        let drill = app.buttons["practice.drill.drill.concurrency"]
+        XCTAssertTrue(app.waitForElement(drill), "practice should offer the concurrency drill")
         drill.tap()
 
         XCTAssertTrue(
@@ -37,7 +37,7 @@ final class PracticeFlowUITests: XCTestCase {
     func testEveryTileOnABoardIsTheSameHeight() {
         launch(screen: "drills")
 
-        let drill = app.buttons["drill.drill.errors"]
+        let drill = app.buttons["practice.drill.drill.errors"]
         XCTAssertTrue(app.waitForElement(drill))
         drill.tap()
 
@@ -56,7 +56,7 @@ final class PracticeFlowUITests: XCTestCase {
     func testAMatchedPairStaysOnTheBoard() {
         launch(screen: "drills")
 
-        let drill = app.buttons["drill.drill.errors"]
+        let drill = app.buttons["practice.drill.drill.errors"]
         XCTAssertTrue(app.waitForElement(drill))
         drill.tap()
 
@@ -106,14 +106,12 @@ final class PracticeFlowUITests: XCTestCase {
 
     /// A quiz answers, explains, and only then moves on.
     func testAQuizExplainsBeforeItMovesOn() {
-        launch(screen: "course")
+        // The quiz opens once its unit has been started, so start it.
+        complete(lesson: "errors.is-and-as", inUnit: "errors")
+        launch(screen: "drills")
 
-        let unit = app.buttons["unit.errors"]
-        XCTAssertTrue(app.waitForElement(unit))
-        unit.tap()
-
-        let quiz = app.buttons[AccessibilityIdentifier.quizEntry]
-        XCTAssertTrue(app.waitForElement(quiz), "a unit should offer its quiz")
+        let quiz = app.buttons["practice.quiz.errors"]
+        XCTAssertTrue(app.waitForElement(quiz), "practice should offer the unit's quiz")
         quiz.tap()
 
         let firstOption = app.buttons["quiz.option.0"]
@@ -138,12 +136,13 @@ final class PracticeFlowUITests: XCTestCase {
 
     /// Answering every question ends on a score, and the score is reachable.
     func testAQuizEndsOnAScore() {
-        launch(screen: "course")
+        complete(lesson: "core.short-declaration", inUnit: "core")
+        // `complete` leaves the app on the lesson; the quiz is reached from
+        // Practice, which the launch below opens.
 
-        let unit = app.buttons["unit.interfaces"]
-        XCTAssertTrue(app.waitForElement(unit))
-        unit.tap()
-        let quiz = app.buttons[AccessibilityIdentifier.quizEntry]
+        launch(screen: "drills")
+
+        let quiz = app.buttons["practice.quiz.core"]
         XCTAssertTrue(app.waitForElement(quiz))
         quiz.tap()
 
@@ -163,6 +162,60 @@ final class PracticeFlowUITests: XCTestCase {
             "the quiz should end on a result with a way to try again"
         )
         attachScreenshot(named: "20-quiz-score")
+    }
+
+    /// Practice fills up as the course is worked through.
+    ///
+    /// The quiz for a unit is locked until that unit has been started, so this
+    /// completes a lesson the way a person would and watches the quiz open.
+    func testCompletingALessonOpensThatUnitsQuiz() {
+        // A unit no other test touches, because progress persists between
+        // launches and a shared one would make this depend on test order.
+        launch(screen: "drills")
+
+        // Progress persists on the device, so a run on a simulator that has
+        // been used before may find this unit already started. The locking rule
+        // itself is pinned in PracticeCatalogTests, where no state can drift;
+        // what matters here is that finishing a lesson reaches the quiz.
+        let row = app.element(withIdentifier: "practice.quiz.modules")
+        XCTAssertTrue(app.waitForElement(row), "a locked item should be listed, not hidden")
+
+        complete(lesson: "modules.exported-by-case", inUnit: "modules")
+
+        launch(screen: "drills")
+        XCTAssertTrue(
+            app.waitForElement(app.buttons["practice.quiz.modules"]),
+            "finishing a lesson should open the unit's quiz"
+        )
+        attachScreenshot(named: "22-practice")
+    }
+
+    /// Finishes a lesson with nothing to run: the learner marks it done and the
+    /// app believes them, which is the only honest signal available.
+    private func complete(lesson lessonID: String, inUnit unitID: String) {
+        app.launchArguments = ["-GopherForgeSection", "learn"]
+        app.launch()
+
+        let unit = app.buttons["unit.\(unitID)"]
+        XCTAssertTrue(app.waitForElement(unit))
+        unit.tap()
+
+        let lesson = app.buttons["lesson.\(lessonID)"]
+        XCTAssertTrue(app.waitForElement(lesson))
+        lesson.tap()
+
+        // Progress persists across launches, so a lesson another test already
+        // finished is a normal state rather than a failure.
+        let done = app.buttons[AccessibilityIdentifier.lessonComplete]
+        let already = app.element(withIdentifier: AccessibilityIdentifier.lessonCompleted)
+        if app.waitForElement(done, timeout: 4) {
+            done.tap()
+        }
+
+        XCTAssertTrue(
+            app.waitForElement(already),
+            "the lesson should say it is completed, whether it just was or already had been"
+        )
     }
 
     // MARK: - Helpers

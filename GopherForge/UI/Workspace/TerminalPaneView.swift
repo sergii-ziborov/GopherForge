@@ -10,12 +10,7 @@ struct TerminalPaneView: View {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 6) {
                         ForEach(session.transcript) { entry in
-                            Text(entry.text)
-                                .font(.caption.monospaced())
-                                .foregroundStyle(color(for: entry.kind))
-                                .textSelection(.enabled)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .id(entry.id)
+                            TranscriptEntryView(entry: entry).id(entry.id)
                         }
                     }
                     .padding(12)
@@ -49,11 +44,30 @@ struct TerminalPaneView: View {
         }
     }
 
-    private func color(for kind: ProjectTerminalSession.Entry.Kind) -> Color {
-        switch kind {
-        case .command: GopherForgeTheme.ember
-        case .output: .primary
-        case .failure: .red
+}
+
+/// One line of the transcript.
+///
+/// A file printed by `cat` is highlighted with the editor's own tokenizer —
+/// showing Go as grey text in a console that sits beside a syntax-highlighted
+/// editor teaches the reader that the colours are decoration. Everything else
+/// is styled by shape: the command, a diagnostic, a test result.
+private struct TranscriptEntryView: View {
+    let entry: ProjectTerminalSession.Entry
+
+    var body: some View {
+        Group {
+            if let language = entry.language {
+                GoCodeText(code: entry.text, fileKind: language, fontSize: 12)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    Text(TerminalLineStyle.attributed(entry.text, kind: entry.kind))
+                        .font(.caption.monospaced())
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

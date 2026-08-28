@@ -9,6 +9,8 @@ struct SettingsView: View {
     /// Read once when the screen appears rather than on every redraw: it walks
     /// a directory, and Settings redraws for every stepper tick.
     @State private var cacheByteCount: Int64 = 0
+    @State private var isConfirmingReset = false
+    private let progress = LearningProgressStore()
 
     var body: some View {
         Form {
@@ -56,6 +58,18 @@ struct SettingsView: View {
                 }
             }
 
+            Section {
+                Button("Reset learning progress", role: .destructive) {
+                    isConfirmingReset = true
+                }
+                .accessibilityIdentifier(AccessibilityID.settingsResetProgress)
+            } header: {
+                Text("Progress")
+            } footer: {
+                Text("Forgets every lesson, drill and quiz, and locks practice again. "
+                    + "Projects and their files are untouched.")
+            }
+
             Section("About") {
                 LabeledContent("Product", value: "GopherForge")
                 Text("Forge real Go, anywhere.")
@@ -65,6 +79,20 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
         .task { cacheByteCount = workspace.buildCacheByteCount }
+        // Confirmed rather than immediate: this is the one action here that
+        // destroys something a person spent time on.
+        .confirmationDialog(
+            "Reset learning progress?",
+            isPresented: $isConfirmingReset,
+            titleVisibility: .visible
+        ) {
+            Button("Reset everything", role: .destructive) {
+                Task { try? await progress.reset() }
+            }
+            Button("Keep it", role: .cancel) {}
+        } message: {
+            Text("Every lesson, drill and quiz is forgotten, and practice locks again.")
+        }
     }
 
     private var formattedCacheSize: String {

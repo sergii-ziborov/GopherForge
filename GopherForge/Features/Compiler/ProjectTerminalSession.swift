@@ -19,6 +19,10 @@ final class ProjectTerminalSession {
         let id = UUID()
         let kind: Kind
         let text: String
+        /// Set when the entry is the contents of a file, so the console can
+        /// highlight it with the same tokenizer the editor uses instead of
+        /// printing Go as grey text.
+        var language: SourceFileKind?
     }
 
     private(set) var transcript: [Entry] = []
@@ -100,7 +104,7 @@ final class ProjectTerminalSession {
             append(.failure, "no such file: \(path)")
             return
         }
-        append(.output, contents)
+        append(.output, contents, language: SourceFileKind.of(path: path))
     }
 
     private func showModule() {
@@ -124,9 +128,9 @@ final class ProjectTerminalSession {
             : "\(text): not something this console runs. Type help."
     }
 
-    private func append(_ kind: Entry.Kind, _ text: String) {
+    private func append(_ kind: Entry.Kind, _ text: String, language: SourceFileKind? = nil) {
         guard !text.isEmpty else { return }
-        transcript.append(Entry(kind: kind, text: text))
+        transcript.append(Entry(kind: kind, text: text, language: language))
         if transcript.count > maximumEntries {
             transcript.removeFirst(transcript.count - maximumEntries)
         }

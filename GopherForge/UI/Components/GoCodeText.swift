@@ -9,10 +9,17 @@ struct GoCodeText: View {
     var fileKind: SourceFileKind = .go
     var fontSize: CGFloat = 13
 
+    /// Wrapping a line of Go hides its own indentation and makes every line
+    /// under it start somewhere different. Sideways is the right direction for
+    /// code, and a swipe is cheaper than a misread block.
     var body: some View {
-        Text(attributed)
-            .textSelection(.enabled)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        ScrollView(.horizontal, showsIndicators: true) {
+            Text(attributed)
+                .textSelection(.enabled)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.trailing, 8)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var attributed: AttributedString {

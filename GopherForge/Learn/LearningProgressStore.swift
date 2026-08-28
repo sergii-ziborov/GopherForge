@@ -125,6 +125,14 @@ actor LearningProgressStore {
         )
     }
 
+    /// Forgets everything: attempts, drills, quizzes and runs.
+    ///
+    /// A learner who wants to start the course again should be able to, and
+    /// there is no other way to undo a lesson marked complete by mistake.
+    func reset() throws {
+        try persist(State(attempts: [], drills: [], runs: [], quizzes: []))
+    }
+
     // MARK: - Storage
 
     private func state() throws -> State {

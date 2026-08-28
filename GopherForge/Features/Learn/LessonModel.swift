@@ -13,6 +13,9 @@ final class LessonModel {
 
     private(set) var result: CompilationResult?
     private(set) var isChecking = false
+    /// Whether this lesson has ever been passed, loaded when the screen opens
+    /// so a lesson you finished last week still looks finished.
+    private(set) var isCompleted = false
     var editorText: String
 
     private let compiler: WasmGoCompiler
@@ -42,6 +45,28 @@ final class LessonModel {
 
     var toolchainDetail: String { "\(toolchain.label). \(toolchain.detail)" }
 
+    func loadProgress() async {
+        isCompleted = ((try? await store.completedLessonIDs()) ?? []).contains(lesson.id)
+    }
+
+    /// Records a lesson the compiler cannot judge.
+    ///
+    /// Nothing is inferred from scrolling or from time on screen: the learner
+    /// says they have done it, and that is the only honest signal available for
+    /// a lesson with nothing to run.
+    func markCompleted() async {
+        guard lesson.completesByHand, !isCompleted else { return }
+        isCompleted = true
+        try? await store.record(
+            LessonAttempt(
+                lessonID: lesson.id,
+                succeeded: true,
+                mistakeTags: [],
+                compileAttempts: 0
+            )
+        )
+    }
+
     func check() async {
         guard case let .compile(_, hiddenTest) = lesson.task, !isChecking else { return }
         isChecking = true
@@ -60,6 +85,7 @@ final class LessonModel {
         let outcome = await compiler.test(project: snapshot)
         result = outcome
         attempts += 1
+        if outcome.succeeded { isCompleted = true }
 
         let findings = analyzer.analyze(source: editorText, fileName: "main.go")
         try? await store.record(

@@ -24,11 +24,22 @@ struct LearnHomeView: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.labEntry)
                 NavigationLink {
-                    MatchingDrillListView(onFinish: record)
+                    PracticeHomeView(
+                        completed: completed,
+                        onQuizFinished: record,
+                        onDrillFinished: record
+                    )
                 } label: {
-                    Label("Drills", systemImage: "link")
+                    LabeledContent {
+                        Text("\(PracticeCatalog.unlockedItems(completed: completed).count)"
+                            + " / \(PracticeCatalog.items.count)")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    } label: {
+                        Label("Practice", systemImage: "figure.mind.and.body")
+                    }
                 }
-                .accessibilityIdentifier(AccessibilityID.drillsEntry)
+                .accessibilityIdentifier(AccessibilityID.practiceEntry)
                 NavigationLink {
                     ExampleLibraryView()
                 } label: {
@@ -55,12 +66,7 @@ struct LearnHomeView: View {
             Section("Course") {
                 ForEach(GoCourseCatalog.units) { unit in
                     NavigationLink {
-                        UnitDetailView(
-                            unit: unit,
-                            completed: completed,
-                            onQuizFinished: record,
-                            onDrillFinished: record
-                        )
+                        UnitDetailView(unit: unit, completed: completed)
                     } label: {
                         UnitRow(unit: unit, completed: completed)
                     }
@@ -86,7 +92,12 @@ struct LearnHomeView: View {
             switch screen {
             case .lab: ConcurrencyLabView()
             case .review: ReviewView()
-            case .drills: MatchingDrillListView(onFinish: record)
+            case .drills:
+                PracticeHomeView(
+                    completed: completed,
+                    onQuizFinished: record,
+                    onDrillFinished: record
+                )
             case .achievements: AchievementsView(stats: stats)
             case .examples: ExampleLibraryView()
             // Packages live on the Projects side; opening Learn at one would
@@ -141,7 +152,7 @@ private struct UnitRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             UnitProgressRing(
-                fraction: unit.lessons.isEmpty ? 0 : Double(doneCount) / Double(unit.lessons.count),
+                fraction: unit.teachingLessons.isEmpty ? 0 : Double(doneCount) / Double(unit.teachingLessons.count),
                 symbol: CourseUnitStyle.symbol(for: unit.id)
             )
             .frame(width: 38, height: 38)
@@ -153,7 +164,7 @@ private struct UnitRow: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 HStack(spacing: 8) {
-                    Text("\(doneCount) of \(unit.lessons.count) lessons")
+                    Text("\(doneCount) of \(unit.teachingLessons.count) lessons")
                     if let quiz = QuizCatalog.quiz(forUnit: unit.id) {
                         Label("\(quiz.questions.count)", systemImage: "checklist")
                     }
@@ -176,6 +187,6 @@ private struct UnitRow: View {
     }
 
     private var doneCount: Int {
-        unit.lessons.count { completed.contains($0.id) }
+        unit.teachingLessons.count { completed.contains($0.id) }
     }
 }

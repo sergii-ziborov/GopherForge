@@ -124,7 +124,13 @@ final class WorkspaceFlowUITests: XCTestCase {
                 "\(pane) should be reachable, scrolling the row if it has to"
             )
             chip.tap()
-            XCTAssertTrue(chip.isSelected, "\(pane) should become the selected pane")
+            // Selection animates, so wait for it rather than asking the instant
+            // after the tap — under a full suite the app is slower than it is
+            // running one test alone, and that difference is not a defect.
+            XCTAssertTrue(
+                app.waitForSelection(of: chip),
+                "\(pane) should become the selected pane"
+            )
         }
         attachScreenshot(named: "04-panes")
     }
@@ -271,15 +277,20 @@ final class WorkspaceFlowUITests: XCTestCase {
     /// iPad shows the navigator beside the editor; iPhone keeps it behind the
     /// Files control. Open it whichever way this device offers.
     private func openNavigator() {
-        guard !app.textFields[AccessibilityIdentifier.fileSearch].waitForExistence(timeout: 6) else {
-            return
-        }
+        let search = app.textFields[AccessibilityIdentifier.fileSearch]
+        guard !search.waitForExistence(timeout: 6) else { return }
+
         let files = app.buttons[AccessibilityIdentifier.filesToggle]
         XCTAssertTrue(
             files.waitForExistence(timeout: 5),
             "a layout with no visible navigator must offer a way to open one"
         )
         files.tap()
+        // The drawer slides in; the tree is not there until it has.
+        XCTAssertTrue(
+            search.waitForExistence(timeout: 5),
+            "opening the navigator should show its search field"
+        )
     }
 
     private func clear(_ field: XCUIElement) {
@@ -325,4 +336,6 @@ enum AccessibilityIdentifier {
     static let quizContinue = "quiz.continue"
     static let quizSummary = "quiz.summary"
     static let quizRestart = "quiz.restart"
+    static let lessonComplete = "lesson.complete"
+    static let lessonCompleted = "lesson.completed"
 }
