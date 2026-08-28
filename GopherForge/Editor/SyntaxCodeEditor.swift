@@ -21,8 +21,10 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     var onReveal: (() -> Void)?
     var onCaretLineChange: ((Int, String) -> Void)?
 
-    func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
+    func makeUIView(context: Context) -> CodeEditorView {
+        // TextKit 1 on purpose: the gutter positions each number from a line
+        // fragment, and NSLayoutManager is the API that hands those over.
+        let textView = UITextView(usingTextLayoutManager: false)
         textView.delegate = context.coordinator
         textView.alwaysBounceVertical = true
         textView.autocapitalizationType = .none
@@ -34,11 +36,31 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         textView.backgroundColor = .clear
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 24, right: 8)
         textView.inputAccessoryView = context.coordinator.makeAccessoryView(for: textView)
-        return textView
+
+        // Code does not wrap. A wrapped Go line hides its own indentation and
+        // makes every line below it start in a different place, which is worse
+        // than scrolling sideways for the occasional long one.
+        textView.textContainer.widthTracksTextView = false
+        textView.textContainer.lineBreakMode = .byClipping
+        textView.textContainer.size = CGSize(
+            width: CGFloat.greatestFiniteMagnitude,
+            height: CGFloat.greatestFiniteMagnitude
+        )
+        textView.isDirectionalLockEnabled = true
+        textView.showsHorizontalScrollIndicator = true
+        // On the text view rather than on the SwiftUI wrapper: the wrapper is
+        // now a container holding the gutter as well, and an identifier there
+        // names the box instead of the thing you type into.
+        textView.accessibilityIdentifier = AccessibilityID.editor
+
+        return CodeEditorView(textView: textView)
     }
 
-    func updateUIView(_ textView: UITextView, context: Context) {
+    func updateUIView(_ editor: CodeEditorView, context: Context) {
+        let textView = editor.textView
         context.coordinator.parent = self
+        editor.gutter.fontSize = fontSize
+        editor.gutter.markedLines = markedLines
 
         let needsTextUpdate = textView.text != text
         if needsTextUpdate {
@@ -54,6 +76,9 @@ struct SyntaxCodeEditor: UIViewRepresentable {
 
         context.coordinator.appliedFontSize = fontSize
         context.coordinator.appliedFileKind = fileKind
+        context.coordinator.gutter = editor.gutter
+        context.coordinator.editor = editor
+        editor.gutter.setNeedsDisplay()
 
         if let revealLine {
             // After the text update, and on the next turn of the run loop:
@@ -87,6 +112,12 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         var parent: SyntaxCodeEditor
         var appliedFontSize: CGFloat = 0
         var appliedFileKind: SourceFileKind = .plain
+        /// Redrawn whenever the text or the scroll position changes, because
+        /// the numbers are painted rather than laid out.
+        weak var gutter: LineNumberGutterView?
+        /// Asked to re-measure after an edit: a line that just became longer
+        /// than every other one has to become reachable.
+        weak var editor: CodeEditorView?
         private var pendingHighlight: DispatchWorkItem?
 
         init(parent: SyntaxCodeEditor) {
@@ -105,6 +136,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
             reportCaretLine(in: textView)
+            editor?.updateTextWidth()
+            gutter?.setNeedsDisplay()
             // Typing is the one path where SwiftUI cannot ask for a
             // re-highlight: the binding is already equal to the buffer by the
             // time updateUIView runs, so it correctly decides nothing changed.
@@ -142,10 +175,17 @@ struct SyntaxCodeEditor: UIViewRepresentable {
             textView.typingAttributes = SyntaxAttributedStringBuilder.baseAttributes(
                 fontSize: parent.fontSize
             )
+            gutter?.setNeedsDisplay()
         }
 
         func textViewDidChangeSelection(_ textView: UITextView) {
             reportCaretLine(in: textView)
+        }
+
+        /// Only the gutter: re-measuring the longest line on every scroll
+        /// frame would lay the whole file out again for nothing.
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            gutter?.setNeedsDisplay()
         }
 
         /// The line the caret is on, and its text, which the completion and the

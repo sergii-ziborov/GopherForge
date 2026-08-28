@@ -115,16 +115,16 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testEveryPaneCanBeSelected() {
         launch(section: .build)
 
-        let picker = app.segmentedControls[AccessibilityIdentifier.dockPicker]
-        XCTAssertTrue(picker.waitForExistence(timeout: 10))
-
-        for title in ["Output", "Tests", "Idioms", "Terminal", "Problems"] {
-            let button = picker.buttons.matching(
-                NSPredicate(format: "label BEGINSWITH %@", title)
-            ).firstMatch
-            XCTAssertTrue(button.exists, "\(title) should be offered")
-            button.tap()
-            XCTAssertTrue(button.isSelected, "\(title) should become the selected pane")
+        // Chips in a scrolling row, not a segmented control: six segments on a
+        // phone are unreadable and the last two are unreachable.
+        for pane in ["output", "tests", "idioms", "terminal", "problems"] {
+            let chip = app.buttons["pane.\(pane)"]
+            XCTAssertTrue(
+                app.scrollHorizontally(to: chip),
+                "\(pane) should be reachable, scrolling the row if it has to"
+            )
+            chip.tap()
+            XCTAssertTrue(chip.isSelected, "\(pane) should become the selected pane")
         }
         attachScreenshot(named: "04-panes")
     }
@@ -135,9 +135,9 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testTerminalAnswersFromTheProjectAndNeverInvents() {
         launch(section: .build)
 
-        let picker = app.segmentedControls[AccessibilityIdentifier.dockPicker]
-        XCTAssertTrue(picker.waitForExistence(timeout: 10))
-        picker.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Terminal'")).firstMatch.tap()
+        let terminal = app.buttons["pane.terminal"]
+        XCTAssertTrue(app.scrollHorizontally(to: terminal))
+        terminal.tap()
 
         let input = app.textFields["terminal.input"]
         XCTAssertTrue(input.waitForExistence(timeout: 5), "the console should offer a prompt")
@@ -208,18 +208,43 @@ final class WorkspaceFlowUITests: XCTestCase {
     /// has no room for it and puts it behind the Files control, so the test
     /// opens it the way a person on that device would rather than assuming the
     /// wide layout.
+    /// The navigator searches, by file name and by what is inside a file.
+    ///
+    /// Both halves matter: a name search that misses a content hit is only half
+    /// a search, and a content hit that does not carry its line number is a
+    /// result you still have to go and find.
+    func testTheNavigatorSearchesNamesAndContents() {
+        launch(section: .build)
+        openNavigator()
+
+        let field = app.textFields[AccessibilityIdentifier.fileSearch]
+        XCTAssertTrue(field.waitForExistence(timeout: 10), "the navigator should offer a search field")
+
+        field.tap()
+        field.typeText("go.mod")
+        XCTAssertTrue(
+            app.buttons.matching(
+                NSPredicate(format: "identifier BEGINSWITH 'search.name:'")
+            ).firstMatch.waitForExistence(timeout: 5),
+            "searching a file name should find the file"
+        )
+
+        clear(field)
+        field.typeText("func main")
+        XCTAssertTrue(
+            app.buttons.matching(
+                NSPredicate(format: "identifier BEGINSWITH 'search.line:'")
+            ).firstMatch.waitForExistence(timeout: 5),
+            "searching a line of code should find the line"
+        )
+        attachScreenshot(named: "21-search")
+    }
+
     func testFileTreeSwitchesTheOpenFile() {
         launch(section: .build)
 
+        openNavigator()
         let goMod = app.buttons["file.go.mod"]
-        if !goMod.waitForExistence(timeout: 10) {
-            let files = app.buttons["Files"]
-            XCTAssertTrue(
-                files.waitForExistence(timeout: 5),
-                "a layout with no visible tree must offer a way to open one"
-            )
-            files.tap()
-        }
         XCTAssertTrue(goMod.waitForExistence(timeout: 5), "go.mod should be listed in the tree")
         goMod.tap()
 
@@ -241,6 +266,26 @@ final class WorkspaceFlowUITests: XCTestCase {
     private func launch(section: Section) {
         app.launchArguments = ["-GopherForgeSection", section.rawValue]
         app.launch()
+    }
+
+    /// iPad shows the navigator beside the editor; iPhone keeps it behind the
+    /// Files control. Open it whichever way this device offers.
+    private func openNavigator() {
+        guard !app.textFields[AccessibilityIdentifier.fileSearch].waitForExistence(timeout: 6) else {
+            return
+        }
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        XCTAssertTrue(
+            files.waitForExistence(timeout: 5),
+            "a layout with no visible navigator must offer a way to open one"
+        )
+        files.tap()
+    }
+
+    private func clear(_ field: XCUIElement) {
+        field.tap()
+        let existing = (field.value as? String) ?? ""
+        field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: existing.count))
     }
 
     private func send(_ command: String, to field: XCUIElement) {
@@ -272,6 +317,8 @@ enum AccessibilityIdentifier {
     static let settingsToolchainStatus = "settings.toolchainStatus"
     static let hideKeyboard = "editor.hideKeyboard"
     static let settingsAppearance = "settings.appearance"
+    static let fileSearch = "files.search"
+    static let filesToggle = "workspace.filesToggle"
     static let drillBoard = "drill.board"
     static let exampleOpen = "example.open"
     static let quizEntry = "unit.quiz"

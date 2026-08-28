@@ -61,7 +61,6 @@ struct WorkspaceView: View {
 
             VStack(spacing: 0) {
                 WorkspacePanePicker(selection: $dockPane, panes: WorkspacePane.dockPanes)
-                    .padding(8)
                 Divider()
                 WorkspacePaneContent(pane: dockPane, terminal: terminal, fontSize: fontSize)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -98,15 +97,11 @@ struct WorkspaceView: View {
 
     private func paneStack(terminal: ProjectTerminalSession) -> some View {
         VStack(spacing: 0) {
-            // The switcher sits directly under the banner rather than at the
-            // bottom: on a phone the keyboard owns the bottom of the screen.
-            ScrollView(.horizontal, showsIndicators: false) {
-                WorkspacePanePicker(selection: $pane, panes: WorkspacePane.allCases)
-                    .frame(minWidth: 520)
-                    .padding(.horizontal, 8)
-            }
-            .padding(.vertical, 6)
-            .background(Color(.secondarySystemBackground))
+            // The switcher sits at the top rather than the bottom: on a phone
+            // the keyboard owns the bottom of the screen. It scrolls, because
+            // six tabs do not fit across a phone at any readable size.
+            WorkspacePanePicker(selection: $pane, panes: WorkspacePane.allCases)
+                .background(Color(.secondarySystemBackground))
 
             Divider()
 
