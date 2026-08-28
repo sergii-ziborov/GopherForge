@@ -5,6 +5,7 @@ struct LessonDetailView: View {
     let lesson: Lesson
 
     @State private var model: LessonModel
+    @Environment(LearnProgress.self) private var progress
 
     init(lesson: Lesson) {
         self.lesson = lesson
@@ -36,10 +37,24 @@ struct LessonDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task { await model.loadProgress() }
         .toolbar {
+            // The completion control lives here because a compile lesson puts a
+            // text view between the explanation and the bottom of the page, and
+            // a swipe over a text view scrolls the text rather than the page —
+            // which left the button underneath it unreachable. A toolbar item
+            // is reachable whatever is on screen.
+            ToolbarItem(placement: .topBarTrailing) {
+                completionToggle
+            }
+
             if lesson.requiresCompiler {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task { await model.check() }
+                        Task {
+                            await model.check()
+                            // The course is showing this lesson's state too, and
+                            // a pass it never hears about is a tick nobody sees.
+                            await progress.refresh()
+                        }
                     } label: {
                         if model.isChecking {
                             ProgressView()
@@ -54,36 +69,117 @@ struct LessonDetailView: View {
         }
     }
 
-    /// Either the badge saying this is done, or the button that says so.
+    /// Whether this is done, and the way to say so.
     ///
-    /// A compile lesson is finished by the compiler and there is nothing to
-    /// press; everything else has nothing to run, so the learner marks it and
-    /// the app believes them. Inferring completion from scrolling would be
-    /// worse than not tracking it at all.
+    /// Every lesson can be ticked. It used to be that only a lesson with
+    /// nothing to run could, which left four of the seven units with no way to
+    /// record progress at all — their lessons are all compile lessons, and a
+    /// learner who had done the work elsewhere could not say so.
+    ///
+    /// A compile lesson still asks for Check first, and the app records which
+    /// of the two happened rather than flattening them into one tick.
     @ViewBuilder
     private var completion: some View {
         if model.isCompleted {
-            Label("Completed", systemImage: "checkmark.seal.fill")
+            VStack(alignment: .leading, spacing: 6) {
+                Label(
+                    model.isCompilerVerified ? "Passed the compiler" : "Marked done",
+                    systemImage: model.isCompilerVerified
+                        ? "checkmark.seal.fill"
+                        : "checkmark.circle.fill"
+                )
                 .font(.callout.weight(.medium))
-                .foregroundStyle(.green)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
-                .background(Color.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
-                .accessibilityIdentifier(AccessibilityID.lessonCompleted)
-        } else if lesson.completesByHand {
-            Button {
-                Task { await model.markCompleted() }
-            } label: {
-                Label("Mark as completed", systemImage: "checkmark.circle")
-                    .frame(maxWidth: .infinity)
+                .foregroundStyle(model.isCompilerVerified ? Color.green : GopherForgeTheme.anvil)
+
+                if !model.isCompilerVerified, lesson.isJudgedByCompiler {
+                    Text("You said so — the hidden test has not run. Press Check to "
+                        + "have it judged, or use the tick above to take this back.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .accessibilityIdentifier(AccessibilityID.lessonComplete)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(
+                (model.isCompilerVerified ? Color.green : GopherForgeTheme.anvil).opacity(0.12),
+                in: RoundedRectangle(cornerRadius: 12)
+            )
+            // One element, so the identifier belongs to the card rather than
+            // being inherited by every label inside it — which made a search
+            // for it ambiguous, and made the card three things to VoiceOver.
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier(AccessibilityID.lessonCompleted)
         } else {
-            Text("This one is finished by the compiler: press Check when the "
-                + "hidden test should pass.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 8) {
+                if lesson.isJudgedByCompiler {
+                    Text("Press Check to have the hidden test judge this, or mark it "
+                        + "done if you have already worked through it.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                // Secondary where the compiler is the better judge, so Check
+                // stays the obvious thing to press; prominent where there is
+                // nothing to run and this is the only way to finish.
+                // The identifier goes on each button rather than on a wrapper:
+                // a modifier on a Group lands on the container, and the button
+                // underneath keeps no identifier at all.
+                if lesson.isJudgedByCompiler {
+                    Button(action: markDone) { markLabel }
+                        .buttonStyle(.bordered)
+                } else {
+                    Button(action: markDone) { markLabel }
+                        .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+    }
+
+    /// Done or not, in one tap, from anywhere on the page.
+    ///
+    /// Tapping an unmarked lesson says you have done it. Tapping one you marked
+    /// yourself takes it back. A pass the compiler witnessed cannot be undone,
+    /// so it is shown and not offered as a toggle.
+    @ViewBuilder
+    private var completionToggle: some View {
+        if model.isCompleted, model.isCompilerVerified {
+            Image(systemName: "checkmark.seal.fill")
+                .foregroundStyle(.green)
+                .accessibilityLabel("Passed the compiler")
+                .accessibilityIdentifier(AccessibilityID.lessonVerified)
+        } else if model.isCompleted {
+            Button {
+                Task {
+                    await model.clearCompletion()
+                    await progress.refresh()
+                }
+            } label: {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(GopherForgeTheme.anvil)
+            }
+            .accessibilityLabel("Marked done. Tap to undo.")
+            .accessibilityIdentifier(AccessibilityID.lessonUncomplete)
+        } else {
+            Button(action: markDone) {
+                Image(systemName: "circle")
+            }
+            .accessibilityLabel("Mark as completed")
+            .accessibilityIdentifier(AccessibilityID.lessonComplete)
+        }
+    }
+
+    private var markLabel: some View {
+        Label("Mark as completed", systemImage: "checkmark.circle")
+            .frame(maxWidth: .infinity)
+    }
+
+    private func markDone() {
+        Task {
+            await model.markCompleted()
+            await progress.refresh()
         }
     }
 

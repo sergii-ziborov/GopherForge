@@ -2,11 +2,16 @@ import SwiftUI
 
 /// The course hub: units, review and the Concurrency Lab.
 struct LearnHomeView: View {
-    @State private var mastery: [ConceptMastery] = []
-    @State private var completed: Set<String> = []
-    @State private var stats: LearnerStats = .empty
+    /// Shared with every screen below, so a tick made three screens deep is
+    /// visible on the way back out. It used to be a value handed down, which
+    /// meant a lesson marked complete changed nothing anybody could see until
+    /// the app was relaunched.
+    @Environment(LearnProgress.self) private var progress
     @State private var openedScreen: LaunchOptions.Screen?
-    private let store = LearningProgressStore()
+
+    private var completed: Set<String> { progress.completed }
+    private var stats: LearnerStats { progress.stats }
+    private var mastery: [ConceptMastery] { progress.mastery }
 
     var body: some View {
         List {
@@ -66,7 +71,7 @@ struct LearnHomeView: View {
             Section("Course") {
                 ForEach(GoCourseCatalog.units) { unit in
                     NavigationLink {
-                        UnitDetailView(unit: unit, completed: completed)
+                        UnitDetailView(unit: unit)
                     } label: {
                         UnitRow(unit: unit, completed: completed)
                     }
@@ -106,7 +111,7 @@ struct LearnHomeView: View {
             }
         }
         .task {
-            await reload()
+            await progress.refresh()
             openedScreen = LaunchOptions.initialScreen
         }
     }
@@ -114,30 +119,19 @@ struct LearnHomeView: View {
     /// A finished drill is evidence like any other: it feeds the badges, and
     /// its wrong connections feed the same review queue a failed compile does.
     private func record(_ result: MatchingDrillResult) {
-        Task {
-            try? await store.record(result)
-            await reload()
-        }
+        Task { await progress.record(result) }
     }
 
     /// A quiz is evidence like any other: it feeds the badges, and its wrong
     /// answers feed the same review queue a failed compile does.
     private func record(_ result: QuizResult) {
-        Task {
-            try? await store.record(result)
-            await reload()
-        }
+        Task { await progress.record(result) }
     }
 
     private var weakest: [ConceptMastery] {
         mastery.sorted { $0.strength < $1.strength }.prefix(5).map { $0 }
     }
 
-    private func reload() async {
-        mastery = (try? await store.mastery()) ?? []
-        completed = (try? await store.completedLessonIDs()) ?? []
-        stats = (try? await store.learnerStats()) ?? .empty
-    }
 }
 
 /// A unit in the course list.

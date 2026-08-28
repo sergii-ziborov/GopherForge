@@ -16,6 +16,9 @@ final class LessonModel {
     /// Whether this lesson has ever been passed, loaded when the screen opens
     /// so a lesson you finished last week still looks finished.
     private(set) var isCompleted = false
+    /// Whether the pass on record is one the compiler witnessed. A lesson the
+    /// learner ticked is done, and is not the same claim.
+    private(set) var isCompilerVerified = false
     var editorText: String
 
     private let compiler: WasmGoCompiler
@@ -47,6 +50,8 @@ final class LessonModel {
 
     func loadProgress() async {
         isCompleted = ((try? await store.completedLessonIDs()) ?? []).contains(lesson.id)
+        isCompilerVerified =
+            ((try? await store.compilerVerifiedLessonIDs()) ?? []).contains(lesson.id)
     }
 
     /// Records a lesson the compiler cannot judge.
@@ -55,16 +60,25 @@ final class LessonModel {
     /// says they have done it, and that is the only honest signal available for
     /// a lesson with nothing to run.
     func markCompleted() async {
-        guard lesson.completesByHand, !isCompleted else { return }
+        guard !isCompleted else { return }
         isCompleted = true
+        isCompilerVerified = false
         try? await store.record(
             LessonAttempt(
                 lessonID: lesson.id,
                 succeeded: true,
                 mistakeTags: [],
-                compileAttempts: 0
+                compileAttempts: 0,
+                compilerVerified: false
             )
         )
+    }
+
+    /// Undoes a tick made by hand. A pass the compiler witnessed stays, because
+    /// it happened.
+    func clearCompletion() async {
+        _ = try? await store.clearSelfReportedCompletion(lessonID: lesson.id)
+        await loadProgress()
     }
 
     func check() async {
@@ -85,7 +99,10 @@ final class LessonModel {
         let outcome = await compiler.test(project: snapshot)
         result = outcome
         attempts += 1
-        if outcome.succeeded { isCompleted = true }
+        if outcome.succeeded {
+            isCompleted = true
+            isCompilerVerified = true
+        }
 
         let findings = analyzer.analyze(source: editorText, fileName: "main.go")
         try? await store.record(

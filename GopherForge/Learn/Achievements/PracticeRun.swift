@@ -54,8 +54,13 @@ enum LearnerStatsBuilder {
 
         let passed = attempts.filter(\.succeeded)
         stats.lessonsPassed = Set(passed.map(\.lessonID)).count
+        // Compiler-verified only: a lesson the learner ticked by hand records
+        // no compile attempts and no mistakes, which would otherwise look
+        // exactly like a flawless first try.
         stats.lessonsPassedFirstTry = Set(
-            passed.filter { $0.compileAttempts <= 1 && $0.mistakeTags.isEmpty }.map(\.lessonID)
+            passed
+                .filter { $0.isCompilerVerified && $0.compileAttempts <= 1 && $0.mistakeTags.isEmpty }
+                .map(\.lessonID)
         ).count
 
         let mastered = mastery.filter { $0.strength >= masteryThreshold }

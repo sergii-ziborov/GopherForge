@@ -15,6 +15,22 @@ struct LessonAttempt: Codable, Equatable, Identifiable, Sendable {
     /// How many times the learner ran the compiler before succeeding. A high
     /// count with an eventual pass is a different signal from a first-try pass.
     let compileAttempts: Int
+    /// Whether the compiler judged this, or the learner said so.
+    ///
+    /// Optional because attempts written before self-marking existed do not
+    /// carry it, and a new non-optional field would turn every old install's
+    /// history into a decode failure. Read it through `isCompilerVerified`.
+    let compilerVerified: Bool?
+
+    /// A pass the toolchain actually witnessed.
+    ///
+    /// Older records fall back to the count: nothing could be marked by hand
+    /// then except a guided-typing lesson, which ran no compiler either.
+    var isCompilerVerified: Bool { compilerVerified ?? (compileAttempts > 0) }
+
+    /// The learner said they had done it. The app believes them and says so —
+    /// it does not claim the compiler agreed.
+    var isSelfReported: Bool { succeeded && !isCompilerVerified }
 
     init(
         id: UUID = UUID(),
@@ -22,7 +38,8 @@ struct LessonAttempt: Codable, Equatable, Identifiable, Sendable {
         succeeded: Bool,
         attemptedAt: Date = Date(),
         mistakeTags: [String] = [],
-        compileAttempts: Int = 0
+        compileAttempts: Int = 0,
+        compilerVerified: Bool? = nil
     ) {
         self.id = id
         self.lessonID = lessonID
@@ -30,6 +47,7 @@ struct LessonAttempt: Codable, Equatable, Identifiable, Sendable {
         self.attemptedAt = attemptedAt
         self.mistakeTags = mistakeTags
         self.compileAttempts = compileAttempts
+        self.compilerVerified = compilerVerified
     }
 }
 
@@ -49,7 +67,8 @@ extension LessonAttempt {
             lessonID: lessonID,
             succeeded: passed,
             mistakeTags: Array(Set(compilerTags + idiomTags)).sorted(),
-            compileAttempts: compileAttempts
+            compileAttempts: compileAttempts,
+            compilerVerified: true
         )
     }
 }

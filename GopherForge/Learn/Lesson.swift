@@ -52,11 +52,18 @@ struct Lesson: Identifiable, Equatable, Sendable {
         return false
     }
 
-    /// The compiler decides a compile lesson. Everything else is something the
-    /// learner does and then says they have done — there is nothing to run, and
-    /// pretending otherwise would mean marking a lesson complete for scrolling
-    /// past it.
-    var completesByHand: Bool { !requiresCompiler }
+    /// Whether the compiler is the one that judges this lesson.
+    ///
+    /// It used to be that only a lesson with nothing to run could be ticked by
+    /// hand, which left four of the seven units with no way to record progress
+    /// at all: their lessons are all compile lessons, and the only signal was
+    /// the hidden test. A learner who has done the work — on paper, in another
+    /// editor, or because they already knew it — could not say so.
+    ///
+    /// So every lesson can be ticked now, and the app records *who* judged it.
+    /// A compile lesson still shows Check first, and a pass the compiler
+    /// witnessed is marked differently from one the learner reported.
+    var isJudgedByCompiler: Bool { requiresCompiler }
 }
 
 /// A group of lessons that belong together.

@@ -9,6 +9,12 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var workspace = WorkspaceModel()
     @State private var navigation = AppNavigation()
+    /// Above the navigation stacks on purpose. A pushed screen inherits the
+    /// environment of the stack that presents it, so progress owned inside the
+    /// course screen would not reach the unit and lesson screens pushed from
+    /// it — which is how a lesson could be marked complete and the course show
+    /// nothing.
+    @State private var learnProgress = LearnProgress()
 
     var body: some View {
         Group {
@@ -21,6 +27,7 @@ struct ContentView: View {
         .tint(GopherForgeTheme.accent)
         .environment(workspace)
         .environment(navigation)
+        .environment(learnProgress)
         .task { await workspace.prepare() }
     }
 

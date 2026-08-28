@@ -43,6 +43,52 @@ final class LearnFlowUITests: XCTestCase {
         attachScreenshot(named: "11-unit")
     }
 
+    /// The defect this was written for: marking a lesson complete wrote to disk
+    /// and changed nothing on screen. The unit list held the completed set it
+    /// was built with, so progress only appeared after relaunching the app.
+    ///
+    /// Progress survives between runs, so the lesson is put into a known state
+    /// first rather than assumed to be untouched.
+    func testMarkingALessonCompleteShowsUpInTheUnit() {
+        launch(arguments: ["-GopherForgeSection", "learn"])
+
+        let unit = app.buttons["unit.concurrency"]
+        XCTAssertTrue(app.waitForElement(unit))
+        unit.tap()
+
+        let row = app.buttons["lesson.concurrency.channel-close"]
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+
+        // Back to not-done, if a previous run left it marked.
+        let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
+        if undo.waitForExistence(timeout: 3) { undo.tap() }
+
+        let mark = app.buttons[AccessibilityIdentifier.lessonComplete]
+        XCTAssertTrue(
+            app.waitForElement(mark),
+            "every lesson should offer a way to say it has been done"
+        )
+        mark.tap()
+
+        // The toolbar, not the card at the bottom: a compile lesson puts an
+        // editor above the card, and a swipe over a text view scrolls the text.
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.lessonUncomplete].waitForExistence(timeout: 5),
+            "the lesson should say it is done, from somewhere reachable"
+        )
+
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        XCTAssertEqual(
+            row.value as? String,
+            "Marked done",
+            "the unit should show the tick without the app being relaunched"
+        )
+        attachScreenshot(named: "11b-lesson-marked")
+    }
+
     /// A prediction keeps its answer hidden until the learner commits.
     ///
     /// These live in Practice now rather than in the middle of a unit: a

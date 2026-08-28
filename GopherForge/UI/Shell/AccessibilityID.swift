@@ -60,6 +60,8 @@ enum AccessibilityID {
     static let quizRestart = "quiz.restart"
     static let lessonComplete = "lesson.complete"
     static let lessonCompleted = "lesson.completed"
+    static let lessonUncomplete = "lesson.uncomplete"
+    static let lessonVerified = "lesson.verified"
     static let practiceEntry = "learn.practice"
     static let gameCenterStatus = "gamecenter.status"
     static let gameCenterDashboard = "gamecenter.dashboard"

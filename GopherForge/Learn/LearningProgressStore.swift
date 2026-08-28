@@ -71,6 +71,33 @@ actor LearningProgressStore {
         Set(try state().attempts.filter(\.succeeded).map(\.lessonID))
     }
 
+    /// Lessons the compiler actually witnessed passing, as distinct from the
+    /// ones the learner ticked. The course marks the two differently, because
+    /// claiming the compiler agreed when it never ran would be a lie the app
+    /// tells on the learner's behalf.
+    func compilerVerifiedLessonIDs() throws -> Set<String> {
+        Set(
+            try state().attempts
+                .filter { $0.succeeded && $0.isCompilerVerified }
+                .map(\.lessonID)
+        )
+    }
+
+    /// Undoes a tick the learner made by hand.
+    ///
+    /// Only self-reported passes are removed: a lesson the compiler passed
+    /// happened, and forgetting it on request would throw away the evidence
+    /// review is built from. Returns whether anything changed.
+    @discardableResult
+    func clearSelfReportedCompletion(lessonID: String) throws -> Bool {
+        var current = try state()
+        let before = current.attempts.count
+        current.attempts.removeAll { $0.lessonID == lessonID && $0.isSelfReported }
+        guard current.attempts.count != before else { return false }
+        try persist(current)
+        return true
+    }
+
     // MARK: - Drills and runs
 
     func drillResults() throws -> [MatchingDrillResult] {
