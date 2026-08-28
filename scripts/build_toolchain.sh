@@ -114,6 +114,29 @@ if [[ "$count" -eq 0 ]]; then
 fi
 
 echo "$GO_VERSION" > "$STAGING/goroot/VERSION"
+
+# The BSD 3-Clause licence requires the copyright notice and disclaimer to be
+# reproduced with a binary redistribution, and these wasm files are exactly
+# that. Staging them here means the notice travels inside the app bundle
+# rather than only being claimed in a document.
+# Some distributions keep these beside GOROOT rather than inside it — Homebrew
+# puts LICENSE one level up — so both places are searched before giving up.
+GOROOT_SOURCE="$("$GO" env GOROOT)"
+for notice in LICENSE PATENTS; do
+  found=""
+  for candidate in "$GOROOT_SOURCE/$notice" "$GOROOT_SOURCE/../$notice"; do
+    if [[ -f "$candidate" ]]; then
+      found="$candidate"
+      break
+    fi
+  done
+  if [[ -z "$found" ]]; then
+    echo "error: $notice not found near $GOROOT_SOURCE." >&2
+    echo "Refusing to stage a redistribution of Go without its licence." >&2
+    exit 1
+  fi
+  cp "$found" "$STAGING/goroot/$notice"
+done
 {
   echo "# GopherForge bundled toolchain"
   echo "version	$GO_VERSION"

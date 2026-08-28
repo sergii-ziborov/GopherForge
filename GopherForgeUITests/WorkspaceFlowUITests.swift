@@ -18,7 +18,7 @@ final class WorkspaceFlowUITests: XCTestCase {
         app = nil
     }
 
-    func testLandingOffersTemplatesOnAFirstRun() {
+    func testLandingIntroducesTheProductAndOffersAWayIn() {
         launch(section: .projects)
 
         XCTAssertTrue(
@@ -26,19 +26,39 @@ final class WorkspaceFlowUITests: XCTestCase {
                 || app.staticTexts["Forge real Go, anywhere."].exists,
             "the landing screen should introduce the product"
         )
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.newProject].waitForExistence(timeout: 5),
+            "the landing screen should offer a way to start something"
+        )
+        attachScreenshot(named: "01-projects")
+    }
+
+    /// Starting a project is one decision, so the landing screen asks it once
+    /// rather than listing every template inline — but every template must
+    /// still be reachable behind that one row.
+    func testEveryTemplateIsOfferedBehindCreateNewProject() {
+        launch(section: .projects)
+        openNewProject()
+
         for template in ["cli", "report", "worker-pool", "tested-package"] {
             XCTAssertTrue(
-                app.buttons["template.\(template)"].exists,
+                app.buttons["template.\(template)"].waitForExistence(timeout: 5),
                 "template \(template) should be offered"
             )
         }
-        attachScreenshot(named: "01-projects")
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.githubImportEntry].exists,
+            "importing from GitHub should be offered alongside the templates"
+        )
+        attachScreenshot(named: "01b-new-project")
     }
 
     /// The defect that made this suite worth writing: opening a project used to
     /// change state the user could not see.
     func testOpeningATemplateLandsInTheEditor() {
         launch(section: .projects)
+
+        openNewProject()
 
         let template = app.buttons["template.worker-pool"]
         XCTAssertTrue(template.waitForExistence(timeout: 10))
@@ -223,6 +243,13 @@ final class WorkspaceFlowUITests: XCTestCase {
         case settings
     }
 
+    /// Pushes the screen where a project actually begins.
+    private func openNewProject() {
+        let entry = app.buttons[AccessibilityIdentifier.newProject]
+        XCTAssertTrue(entry.waitForExistence(timeout: 10), "the way in should be on the landing screen")
+        entry.tap()
+    }
+
     private func launch(section: Section) {
         app.launchArguments = ["-GopherForgeSection", section.rawValue]
         app.launch()
@@ -271,6 +298,8 @@ final class WorkspaceFlowUITests: XCTestCase {
 /// breaks compilation in exactly one file.
 enum AccessibilityIdentifier {
     static let welcomeCard = "projects.welcome"
+    static let newProject = "projects.new"
+    static let githubImportEntry = "projects.github"
     static let editor = "workspace.editor"
     static let dockPicker = "workspace.dockPicker"
     static let toolchainBanner = "workspace.toolchainBanner"

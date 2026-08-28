@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- The share extension hands a received file to the app and does
+         nothing else: it collects nothing and uses no required-reason API.
+         GopherForge collects nothing either. There is no analytics SDK, no crash
+         reporter, no account, and no identifier of any kind. Everything a
+         learner does stays in the app's own container. -->
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+    </array>
+</dict>
+</plist>

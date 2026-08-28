@@ -56,29 +56,47 @@ struct ProjectNavigatorView: View {
 
     // MARK: - Search
 
+    /// Results grouped by file: the file once, the lines beneath it.
+    ///
+    /// A flat list showed `main.go` for its name and again for every line
+    /// containing "main", which reads as the search stuttering rather than as
+    /// one file that matched in several places.
     private var results: some View {
         List {
-            if matches.isEmpty {
+            if fileResults.isEmpty {
                 ContentUnavailableView(
                     "Nothing matches",
                     systemImage: "magnifyingglass",
-                    description: Text("No file name or line in this project contains “\(query)”.")
+                    description: Text("No file name or line in this project contains \u{201C}\(query)\u{201D}.")
                 )
             } else {
-                Section("\(matches.count) result\(matches.count == 1 ? "" : "s")") {
-                    ForEach(matches) { match in
+                ForEach(fileResults) { result in
+                    Section {
+                        ForEach(result.lines) { line in
+                            Button {
+                                open(result.path, at: line.number)
+                            } label: {
+                                SearchLineRow(line: line, query: query)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("search.line:\(result.path):\(line.number)")
+                        }
+
+                        if result.additionalLines > 0 {
+                            // Said out loud rather than truncated silently: a
+                            // capped list that looks complete is a lie.
+                            Text("\(result.additionalLines) more in this file")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    } header: {
                         Button {
-                            workspace.select(file: match.path, revealingLine: match.lineNumber)
-                            onSelect()
+                            open(result.path, at: result.lines.first?.number)
                         } label: {
-                            ProjectFileRow(
-                                path: match.path,
-                                isSelected: workspace.selectedFile == match.path,
-                                detail: detail(for: match)
-                            )
+                            SearchFileHeader(result: result, query: query)
                         }
                         .buttonStyle(.plain)
-                        .accessibilityIdentifier("search.\(match.id)")
+                        .accessibilityIdentifier("search.name:\(result.path)")
                     }
                 }
             }
@@ -86,13 +104,16 @@ struct ProjectNavigatorView: View {
         .listStyle(.plain)
     }
 
-    private var matches: [ProjectFileSearch.Match] {
-        ProjectFileSearch.matches(query: query, in: workspace.project?.files ?? [:])
+    private var fileResults: [ProjectFileSearch.FileResult] {
+        ProjectFileSearch.results(query: query, in: workspace.project?.files ?? [:])
     }
 
-    private func detail(for match: ProjectFileSearch.Match) -> String? {
-        if case let .content(line, snippet) = match.kind { return "\(line): \(snippet)" }
-        return nil
+    private func open(_ path: String, at line: Int?) {
+        workspace.select(file: path, revealingLine: line)
+        // The query travels with the selection so the editor can mark the same
+        // occurrences the sidebar just showed.
+        workspace.highlightQuery = query
+        onSelect()
     }
 
     private var groups: [(directory: String, title: String, paths: [String])] {

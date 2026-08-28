@@ -50,8 +50,8 @@ struct LearnHomeView: View {
                     AchievementsView(stats: stats)
                 } label: {
                     LabeledContent {
-                        Text("\(AchievementCatalog.unlocked(by: stats).count)"
-                            + " / \(AchievementCatalog.all.count)")
+                        Text("\(AchievementCatalog.earnedLevelCount(by: stats))"
+                            + " / \(AchievementCatalog.totalLevelCount)")
                             .font(.caption.monospaced())
                             .foregroundStyle(.secondary)
                     } label: {

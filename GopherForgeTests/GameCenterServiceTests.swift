@@ -61,7 +61,9 @@ final class GameCenterServiceTests: XCTestCase {
         XCTAssertTrue(reporter.reported.isEmpty)
     }
 
-    func testEveryBadgeIsReportedAsAPercentage() async {
+    /// Game Center has no notion of tiers, so each rung is its own achievement
+    /// there — four per badge rather than one.
+    func testEveryLevelIsReportedAsItsOwnAchievement() async throws {
         let reporter = FakeReporter()
         reporter.authenticationResult = .signedIn("ada")
         let service = GameCenterService(reporter: reporter)
@@ -69,17 +71,34 @@ final class GameCenterServiceTests: XCTestCase {
 
         await service.report(everything)
 
-        let sent = try? XCTUnwrap(reporter.reported.first)
-        XCTAssertEqual(sent?.count, AchievementCatalog.all.count)
-        XCTAssertEqual(
-            sent?[GameCenterService.identifier(for: AchievementCatalog.all[0])],
-            100,
-            "an earned badge should report as complete"
-        )
-        for percent in sent?.values ?? [:].values {
+        let sent = try XCTUnwrap(reporter.reported.first)
+        XCTAssertEqual(sent.count, AchievementCatalog.totalLevelCount)
+
+        let badge = AchievementCatalog.all[0]
+        for level in badge.levels {
+            XCTAssertEqual(
+                sent[GameCenterService.identifier(for: badge, level: level)],
+                100,
+                "\(level.rank) should report as complete when everything is earned"
+            )
+        }
+        for percent in sent.values {
             XCTAssertGreaterThanOrEqual(percent, 0)
             XCTAssertLessThanOrEqual(percent, 100)
         }
+    }
+
+    /// Identifiers are a flat namespace shared with every other app on Game
+    /// Center, so two rungs colliding would silently overwrite each other.
+    func testEveryLevelIdentifierIsDistinct() {
+        var identifiers: Set<String> = []
+        for badge in AchievementCatalog.all {
+            for level in badge.levels {
+                identifiers.insert(GameCenterService.identifier(for: badge, level: level))
+            }
+        }
+
+        XCTAssertEqual(identifiers.count, AchievementCatalog.totalLevelCount)
     }
 
     /// Overwhelmingly this means the achievement does not exist in App Store
@@ -125,13 +144,15 @@ final class GameCenterServiceTests: XCTestCase {
     }
 
     /// Game Center's namespace is shared with every other app, so identifiers
-    /// carry the bundle's own prefix and stay unique.
-    func testIdentifiersArePrefixedAndUnique() {
-        let identifiers = AchievementCatalog.all.map(GameCenterService.identifier)
-
-        XCTAssertEqual(Set(identifiers).count, identifiers.count)
-        for identifier in identifiers {
-            XCTAssertTrue(identifier.hasPrefix("com.sergiiziborov.GopherForge."))
+    /// carry the bundle's own prefix.
+    func testIdentifiersArePrefixed() {
+        for badge in AchievementCatalog.all {
+            for level in badge.levels {
+                XCTAssertTrue(
+                    GameCenterService.identifier(for: badge, level: level)
+                        .hasPrefix("com.sergiiziborov.GopherForge.")
+                )
+            }
         }
     }
 }

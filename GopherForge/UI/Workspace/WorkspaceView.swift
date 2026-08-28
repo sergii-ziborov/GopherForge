@@ -41,6 +41,25 @@ struct WorkspaceView: View {
         .task {
             if terminal == nil { terminal = ProjectTerminalSession(workspace: workspace) }
         }
+        // A finished run opens the pane that answers it. Keyed on the
+        // generation rather than the result, so running the same thing twice
+        // still moves.
+        .onChange(of: workspace.resultGeneration) {
+            guard let result = workspace.lastResult,
+                  let destination = WorkspacePane.afterRun(result)
+            else {
+                return
+            }
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if horizontalSizeClass == .regular {
+                    // The iPad keeps the editor on screen, so only the dock
+                    // moves and the code the person was reading stays put.
+                    dockPane = destination
+                } else {
+                    pane = destination
+                }
+            }
+        }
     }
 
     // MARK: - Layouts

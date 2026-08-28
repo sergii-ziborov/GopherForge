@@ -10,7 +10,8 @@ struct ProjectsHomeView: View {
     @Environment(AppNavigation.self) private var navigation
     @State private var recents: [ProjectLibraryItem] = []
     @State private var pendingImports: [PendingImportDrain.Pending] = []
-    @State private var isImporting = false
+    /// The pending import currently downloading, so its row can show it.
+    @State private var importingShared: String?
     @State private var importFailure: String?
     private let library = ProjectLibrary()
 
@@ -24,34 +25,37 @@ struct ProjectsHomeView: View {
             }
 
             if !pendingImports.isEmpty {
-                Section("Shared with GopherForge") {
+                Section {
                     ForEach(pendingImports) { pending in
-                        Label(pending.reference.displayName, systemImage: "square.and.arrow.down")
-                            .font(.callout)
+                        Button {
+                            importShared(pending)
+                        } label: {
+                            HStack(spacing: 10) {
+                                Label(pending.reference.displayName, systemImage: "square.and.arrow.down")
+                                    .font(.callout)
+                                Spacer(minLength: 0)
+                                if importingShared == pending.id {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(importingShared != nil)
                     }
-                    Text("Repository import arrives with the network work; the link is kept until then.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Shared with GopherForge")
+                } footer: {
+                    Text("Sent here from another app. Tap to download the repository.")
                 }
             }
 
-            Section("Start a project") {
-                ForEach(ProjectTemplate.all) { template in
-                    Button {
-                        open(template.project(named: template.title))
-                    } label: {
-                        TemplateTile(template: template)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier(AccessibilityID.template(template.id))
-                }
-
-                Button {
-                    isImporting = true
+            Section {
+                NavigationLink {
+                    NewProjectView { open($0) }
                 } label: {
-                    Label("Open a folder from Files", systemImage: "folder.badge.plus")
+                    NewProjectRow()
                 }
-                .accessibilityIdentifier(AccessibilityID.openFolder)
+                .accessibilityIdentifier(AccessibilityID.newProject)
             }
 
             Section {
@@ -100,19 +104,6 @@ struct ProjectsHomeView: View {
         }
         .navigationTitle("Projects")
         .navigationDestination(isPresented: $isShowingPackages) { PackageBrowserView() }
-        .fileImporter(
-            isPresented: $isImporting,
-            allowedContentTypes: [
-                .folder,
-                GopherForgeProjectDocument.contentType,
-                // A tar.gz is what the rest of the world already opens, so it
-                // is what an exported project should be able to come back as.
-                .gzip,
-            ],
-            allowsMultipleSelection: false
-        ) { result in
-            handleImport(result)
-        }
         .task {
             await reload()
             // Automation opens the package browser directly; the section it
@@ -157,41 +148,22 @@ struct ProjectsHomeView: View {
         }
     }
 
-    private func handleImport(_ result: Result<[URL], any Error>) {
+    /// Downloads a repository the share extension queued while the app was
+    /// not running.
+    private func importShared(_ pending: PendingImportDrain.Pending) {
+        importingShared = pending.id
         importFailure = nil
-        guard case let .success(urls) = result, let url = urls.first else {
-            if case let .failure(error) = result { importFailure = error.localizedDescription }
-            return
-        }
-
-        // A picked folder lives outside the app container, so access has to be
-        // opened explicitly and closed again whatever happens.
-        let needsScope = url.startAccessingSecurityScopedResource()
-        defer { if needsScope { url.stopAccessingSecurityScopedResource() } }
-
-        do {
-            open(try loadProject(at: url))
-        } catch {
-            importFailure = error.localizedDescription
-        }
-    }
-
-    private func loadProject(at url: URL) throws -> GopherForgeProject {
-        switch url.pathExtension.lowercased() {
-        case "gopherforgeproject":
-            return try GopherForgeProjectDocument.read(from: url)
-        case "gz", "tgz":
-            let files = try ProjectArchive.files(
-                fromTar: ProjectArchive.gunzip(try Data(contentsOf: url))
-            )
-            return GopherForgeProject(
-                name: ProjectArchiveNaming.projectName(fromArchive: url.lastPathComponent),
-                files: files,
-                entryFile: ProjectArchiveNaming.entryFile(in: files),
-                provenance: .files()
-            )
-        default:
-            return try LocalProjectLoader().load(from: url)
+        Task {
+            defer { importingShared = nil }
+            do {
+                let project = try await GitHubRepositoryImporter()
+                    .importRepository(pending.reference)
+                pendingImports.removeAll { $0.id == pending.id }
+                open(project)
+            } catch {
+                importFailure = (error as? LocalizedError)?.errorDescription
+                    ?? error.localizedDescription
+            }
         }
     }
 
@@ -255,5 +227,28 @@ private struct ProjectRow: View {
         parts.append("\(item.project.goFileCount) Go files")
         if item.project.testFileCount > 0 { parts.append("\(item.project.testFileCount) test files") }
         return parts.joined(separator: " · ")
+    }
+}
+
+/// The single way in to starting something, on a screen whose job is otherwise
+/// to show what you were already working on.
+private struct NewProjectRow: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "plus")
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(GopherForgeTheme.ember, in: RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Create new project").font(.callout.weight(.medium))
+                Text("A template, a GitHub repository, or a folder from Files")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 4)
     }
 }

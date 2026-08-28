@@ -1,188 +1,148 @@
 import XCTest
 @testable import GopherForge
 
-/// Badges, and the evidence they are made of.
-///
-/// The whole design is that a badge is a fact about work done, so these tests
-/// hand the builder a history and check the number rather than exercising a UI.
+/// Badges, and the rungs they are climbed by.
 final class AchievementTests: XCTestCase {
-    private let day = 86_400.0
-    private lazy var start = Date(timeIntervalSince1970: 1_700_000_000)
-
-    private func attempt(
-        _ lesson: String,
-        succeeded: Bool,
-        compiles: Int = 2,
-        mistakes: [String] = [],
-        dayOffset: Double = 0
-    ) -> LessonAttempt {
-        LessonAttempt(
-            lessonID: lesson,
-            succeeded: succeeded,
-            attemptedAt: start.addingTimeInterval(dayOffset * day),
-            mistakeTags: mistakes,
-            compileAttempts: compiles
-        )
+    private func badge(_ id: String) throws -> Achievement {
+        try XCTUnwrap(AchievementCatalog.all.first { $0.id == id })
     }
 
-    private func mastery(_ tag: String, successes: Int, mistakes: Int) -> ConceptMastery {
-        ConceptMastery(
-            conceptTag: tag,
-            successes: successes,
-            mistakes: mistakes,
-            lastSeenAt: start,
-            // Nil so the recency penalty stays out of a test about counting.
-            lastMistakeAt: nil
-        )
+    // MARK: - The catalogue is well formed
+
+    /// A level list out of order would award the wrong rank silently, because
+    /// the current level is "the last one reached".
+    func testEveryBadgeHasAscendingLevels() {
+        for badge in AchievementCatalog.all {
+            let targets = badge.levels.map(\.target)
+            XCTAssertEqual(targets, targets.sorted(), "\(badge.id) has levels out of order")
+            XCTAssertEqual(Set(targets).count, targets.count, "\(badge.id) repeats a target")
+            XCTAssertFalse(badge.levels.isEmpty, "\(badge.id) has no levels")
+            XCTAssertTrue(targets.allSatisfy { $0 > 0 }, "\(badge.id) has a level reachable by doing nothing")
+        }
     }
 
-    // MARK: - Stats
-
-    func testAPassedLessonCountsOnceHoweverManyAttempts() {
-        let stats = LearnerStatsBuilder.build(
-            attempts: [
-                attempt("l1", succeeded: false),
-                attempt("l1", succeeded: true),
-                attempt("l1", succeeded: true),
-            ],
-            mastery: [],
-            drills: [],
-            runs: []
-        )
-
-        XCTAssertEqual(stats.lessonsPassed, 1)
+    func testEveryBadgeClimbsThroughTheRanksInOrder() {
+        for badge in AchievementCatalog.all {
+            let ranks = badge.levels.map(\.rank)
+            XCTAssertEqual(ranks, ranks.sorted(), "\(badge.id) ranks are out of order")
+        }
     }
 
-    /// The first-try badge is about compiling cleanly, so a pass that took
-    /// several compiles must not count towards it.
-    func testFirstTryNeedsACleanCompile() {
-        let stats = LearnerStatsBuilder.build(
-            attempts: [
-                attempt("clean", succeeded: true, compiles: 1),
-                attempt("messy", succeeded: true, compiles: 6),
-                attempt("flagged", succeeded: true, compiles: 1, mistakes: ["vars.unused"]),
-            ],
-            mastery: [],
-            drills: [],
-            runs: []
-        )
-
-        XCTAssertEqual(stats.lessonsPassed, 3)
-        XCTAssertEqual(stats.lessonsPassedFirstTry, 1)
-    }
-
-    /// "Repaired" is the interesting number: mastered now, and wrong before.
-    func testRepairedCountsOnlyConceptsThatWereOnceWrong() {
-        let stats = LearnerStatsBuilder.build(
-            attempts: [],
-            mastery: [
-                mastery("always.right", successes: 8, mistakes: 0),
-                mastery("learned.it", successes: 9, mistakes: 2),
-                mastery("still.shaky", successes: 1, mistakes: 4),
-            ],
-            drills: [],
-            runs: []
-        )
-
-        XCTAssertEqual(stats.conceptsMastered, 2, "still.shaky is below the threshold")
-        XCTAssertEqual(stats.conceptsRepaired, 1)
-    }
-
-    func testOnlySuccessfulRunsOfAProgramAreCounted() {
-        let stats = LearnerStatsBuilder.build(
-            attempts: [],
-            mastery: [],
-            drills: [],
-            runs: [
-                PracticeRun(phase: .run, succeeded: true, testsPassed: 0, ranAt: start),
-                PracticeRun(phase: .run, succeeded: false, testsPassed: 0, ranAt: start),
-                PracticeRun(phase: .build, succeeded: true, testsPassed: 0, ranAt: start),
-                PracticeRun(phase: .test, succeeded: true, testsPassed: 7, ranAt: start),
-            ]
-        )
-
-        XCTAssertEqual(stats.programsRun, 1, "a build is not a run, and a failure is not either")
-        XCTAssertEqual(stats.testsPassed, 7)
-    }
-
-    func testActiveDaysCountsDaysNotEvents() {
-        let stats = LearnerStatsBuilder.build(
-            attempts: [
-                attempt("a", succeeded: true, dayOffset: 0),
-                attempt("b", succeeded: true, dayOffset: 0),
-                attempt("c", succeeded: true, dayOffset: 3),
-            ],
-            mastery: [],
-            drills: [
-                MatchingDrillResult(
-                    drillID: "d",
-                    completedAt: start.addingTimeInterval(9 * day),
-                    mistakes: 0,
-                    mistakenConcepts: []
-                ),
-            ],
-            runs: []
-        )
-
-        XCTAssertEqual(stats.distinctActiveDays, 3)
-    }
-
-    // MARK: - Catalog
-
-    func testNothingIsEarnedFromAnEmptyHistory() {
-        XCTAssertTrue(
-            AchievementCatalog.unlocked(by: .empty).isEmpty,
-            "a fresh install should have earned nothing"
-        )
-    }
-
-    /// This is the test that catches a badge added against a statistic nothing
-    /// ever sets — which is exactly how it caught the quiz ones.
-    func testEveryAchievementIsReachable() {
-        var everything = LearnerStats()
-        everything.lessonsPassed = 999
-        everything.lessonsPassedFirstTry = 999
-        everything.conceptsMastered = 999
-        everything.drillsCompleted = 999
-        everything.drillsPerfect = 999
-        everything.quizzesPassed = 999
-        everything.quizzesPerfect = 999
-        everything.programsRun = 999
-        everything.testsPassed = 999
-        everything.conceptsRepaired = 999
-        everything.distinctActiveDays = 999
-
-        XCTAssertEqual(
-            AchievementCatalog.unlocked(by: everything).count,
-            AchievementCatalog.all.count,
-            "an achievement nothing can unlock is a bug, not a challenge"
-        )
-    }
-
-    func testProgressIsClampedAndReadable() {
-        var stats = LearnerStats()
-        stats.programsRun = 50
-        let badge = try! XCTUnwrap(AchievementCatalog.achievement(id: "ten.runs"))
-
-        XCTAssertEqual(badge.fraction(of: stats), 1)
-        XCTAssertEqual(badge.progressLabel(for: stats), "10 / 10")
-    }
-
-    /// Earned first, then closest to earned: the list should open on what you
-    /// did and point at what is one step away.
-    func testOrderingPutsEarnedFirstThenNearest() {
-        var stats = LearnerStats()
-        stats.programsRun = 1
-        stats.testsPassed = 19
-
-        let ordered = AchievementCatalog.ordered(by: stats)
-        XCTAssertEqual(ordered.first?.id, "first.build", "the only earned badge leads")
-        let unearned = ordered.drop { $0.isUnlocked(by: stats) }
-        XCTAssertEqual(unearned.first?.id, "twenty.tests", "19 of 20 is the nearest miss")
-    }
-
-    func testAchievementIdentifiersAreUnique() {
+    func testBadgeIdentifiersAreUnique() {
         let ids = AchievementCatalog.all.map(\.id)
         XCTAssertEqual(Set(ids).count, ids.count)
+    }
+
+    /// Every level name is what somebody actually earns, so a blank one is a
+    /// badge with nothing to show.
+    func testEveryLevelIsNamed() {
+        for badge in AchievementCatalog.all {
+            for level in badge.levels {
+                XCTAssertFalse(level.title.isEmpty, "\(badge.id) \(level.rank) has no name")
+            }
+        }
+    }
+
+    // MARK: - Climbing
+
+    func testNothingIsEarnedAtTheStart() {
+        let stats = LearnerStats.empty
+
+        XCTAssertEqual(AchievementCatalog.unlocked(by: stats).count, 0)
+        XCTAssertEqual(AchievementCatalog.earnedLevelCount(by: stats), 0)
+    }
+
+    func testTheFirstRunEarnsBronzeAndOnlyBronze() throws {
+        var stats = LearnerStats.empty
+        stats.programsRun = 1
+        let forge = try badge("programs.run")
+
+        XCTAssertEqual(forge.currentLevel(for: stats)?.rank, .bronze)
+        XCTAssertEqual(forge.nextLevel(for: stats)?.rank, .silver)
+        XCTAssertEqual(forge.earnedLevelCount(for: stats), 1)
+    }
+
+    func testEveryRungIsEarnedOnceThePlatinumTargetIsMet() throws {
+        var stats = LearnerStats.empty
+        let forge = try badge("programs.run")
+        stats.programsRun = try XCTUnwrap(forge.levels.last?.target)
+
+        XCTAssertEqual(forge.currentLevel(for: stats)?.rank, .platinum)
+        XCTAssertNil(forge.nextLevel(for: stats))
+        XCTAssertEqual(forge.earnedLevelCount(for: stats), forge.levels.count)
+        XCTAssertTrue(forge.isComplete(for: stats))
+    }
+
+    /// The bar measures the rung being climbed, not the whole badge. Ten runs
+    /// out of a fifty-run gold level is not "20% of gold" from zero — it is the
+    /// start of the climb from silver.
+    func testTheBarMeasuresFromTheRungBelow() throws {
+        var stats = LearnerStats.empty
+        let forge = try badge("programs.run")
+        stats.programsRun = 10
+
+        XCTAssertEqual(forge.currentLevel(for: stats)?.rank, .silver)
+        XCTAssertEqual(forge.fraction(of: stats), 0, accuracy: 0.001)
+
+        stats.programsRun = 30
+        XCTAssertEqual(forge.fraction(of: stats), 0.5, accuracy: 0.001)
+    }
+
+    func testAFinishedBadgeShowsAFullBar() throws {
+        var stats = LearnerStats.empty
+        let forge = try badge("programs.run")
+        stats.programsRun = 10_000
+
+        XCTAssertEqual(forge.fraction(of: stats), 1, accuracy: 0.001)
+        XCTAssertEqual(forge.progressLabel(for: stats), "10000")
+    }
+
+    func testTheLabelCountsTowardsTheNextRung() throws {
+        var stats = LearnerStats.empty
+        stats.programsRun = 7
+
+        XCTAssertEqual(try badge("programs.run").progressLabel(for: stats), "7 / 10")
+    }
+
+    // MARK: - Ordering
+
+    /// The top of the list should be whatever is nearly earned, and a badge
+    /// with nothing left to give should not sit there.
+    func testFinishedBadgesSinkToTheBottom() {
+        var stats = LearnerStats.empty
+        stats.programsRun = 10_000
+
+        let ordered = AchievementCatalog.ordered(by: stats)
+
+        XCTAssertEqual(ordered.last?.id, "programs.run")
+    }
+
+    func testTheClosestBadgeComesFirst() {
+        var stats = LearnerStats.empty
+        // One drill away from bronze; nothing else touched.
+        stats.drillsCompleted = 0
+        stats.quizzesPassed = 0
+        stats.programsRun = 9
+
+        XCTAssertEqual(AchievementCatalog.ordered(by: stats).first?.id, "programs.run")
+    }
+
+    // MARK: - Every measure is reachable
+
+    /// A measure nothing in the catalogue reads is a statistic the app collects
+    /// and never uses; a badge measuring something never recorded can never be
+    /// earned. Both are worth knowing about.
+    func testEveryMeasureIsUsedByABadge() {
+        let used = Set(AchievementCatalog.all.map(\.measure))
+
+        for measure in Achievement.Measure.allCases {
+            XCTAssertTrue(used.contains(measure), "no badge measures \(measure.rawValue)")
+        }
+    }
+
+    func testEveryBadgeNamesItsUnit() {
+        for badge in AchievementCatalog.all {
+            XCTAssertFalse(badge.progressUnit.isEmpty, "\(badge.id) has no unit")
+        }
     }
 }

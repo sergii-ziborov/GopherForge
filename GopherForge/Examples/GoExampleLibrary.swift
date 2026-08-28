@@ -11,6 +11,7 @@ enum GoExampleLibrary {
             + GoExampleLibraryCore.all
             + GoExampleLibraryConcurrency.all
             + GoExampleLibraryStdlib.all
+            + GoExampleLibraryGraphics.all
 
     static func example(id: String) -> GoExample? {
         all.first { $0.id == id }
@@ -30,6 +31,7 @@ enum GoExampleLibrary {
             ("The language", GoExampleLibraryCore.all),
             ("Concurrency", GoExampleLibraryConcurrency.all),
             ("Standard library", GoExampleLibraryStdlib.all),
+            ("Graphics", GoExampleLibraryGraphics.all),
         ]
     }
 }

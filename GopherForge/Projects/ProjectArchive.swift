@@ -50,10 +50,25 @@ enum ProjectArchive {
     // MARK: - Reading
 
     static func files(fromTar data: Data) throws -> [String: String] {
+        try entries(fromTar: data).reduce(into: [:]) { files, entry in
+            files[entry.key] = String(decoding: entry.value, as: UTF8.self)
+        }
+    }
+
+    /// Every regular file in the archive, as bytes.
+    ///
+    /// Bytes rather than strings, because an archive from anywhere but this app
+    /// contains things that are not text — a PNG decoded as UTF-8 becomes a
+    /// screenful of replacement characters, and the caller is the only one that
+    /// knows whether that matters.
+    static func entries(fromTar data: Data) throws -> [String: Data] {
         guard data.count >= blockSize else { throw ArchiveError.notATar }
-        var files: [String: String] = [:]
+        var files: [String: Data] = [:]
         var offset = 0
         var total = 0
+        /// A name carried by a preceding long-name header, which applies to the
+        /// next entry only.
+        var pendingName: String?
 
         while offset + blockSize <= data.count {
             let block = data.subdata(in: offset..<(offset + blockSize))
@@ -66,13 +81,59 @@ enum ProjectArchive {
             total += entry.size
             guard total <= maximumUncompressedBytes else { throw ArchiveError.tooLarge(total) }
 
-            if entry.isFile, let relative = projectPath(from: entry.name) {
-                files[relative] = String(decoding: data.subdata(in: offset..<end), as: UTF8.self)
-            }
+            let body = data.subdata(in: offset..<end)
             offset = end + paddingLength(after: entry.size)
+
+            switch entry.kind {
+            case .longName:
+                // GNU stores the real path as the body of a header that comes
+                // first. Without this the name is silently truncated at 100
+                // bytes, which turns a deep file into a wrong path.
+                pendingName = String(decoding: body, as: UTF8.self)
+                    .prefix(while: { $0 != "\0" })
+                    .trimmingCharacters(in: .whitespaces)
+                continue
+            case .extendedHeader:
+                // pax, which is what GitHub's tarballs use. The body is a list
+                // of "<length> <key>=<value>\n" records; only the path matters.
+                pendingName = paxPath(in: body) ?? pendingName
+                continue
+            case .globalHeader, .other:
+                pendingName = nil
+                continue
+            case .file:
+                break
+            }
+
+            let name = pendingName ?? entry.name
+            pendingName = nil
+            if let relative = projectPath(from: name) {
+                files[relative] = body
+            }
         }
 
         return files
+    }
+
+    /// The `path` record of a pax extended header, if it has one.
+    private static func paxPath(in body: Data) -> String? {
+        var text = String(decoding: body, as: UTF8.self)[...]
+        while let newline = text.firstIndex(of: "\n") {
+            let record = text[text.startIndex..<newline]
+            text = text[text.index(after: newline)...]
+            // "<length> <key>=<value>" — the length prefix is what makes a
+            // value containing a newline unambiguous, and is not needed here
+            // because a path never has one.
+            guard let space = record.firstIndex(of: " ") else { continue }
+            let keyValue = record[record.index(after: space)...]
+            guard let equals = keyValue.firstIndex(of: "="),
+                  keyValue[keyValue.startIndex..<equals] == "path"
+            else {
+                continue
+            }
+            return String(keyValue[keyValue.index(after: equals)...])
+        }
+        return nil
     }
 
     static func gunzip(_ data: Data) throws -> Data {
@@ -95,9 +156,20 @@ enum ProjectArchive {
     // MARK: - Blocks
 
     private struct Entry {
+        /// What a header block describes. Directories, symlinks and the rest
+        /// fall into `other` and are skipped; the two header kinds carry the
+        /// name of the entry that follows them.
+        enum Kind {
+            case file
+            case longName
+            case extendedHeader
+            case globalHeader
+            case other
+        }
+
         let name: String
         let size: Int
-        let isFile: Bool
+        let kind: Kind
 
         init?(block: Data) {
             func field(_ range: Range<Int>) -> String {
@@ -109,8 +181,14 @@ enum ProjectArchive {
             guard !name.isEmpty, let size = Int(field(124..<136), radix: 8) else { return nil }
             self.name = name
             self.size = size
-            let type = block[block.startIndex + 156]
-            isFile = type == UInt8(ascii: "0") || type == 0
+
+            switch block[block.startIndex + 156] {
+            case UInt8(ascii: "0"), 0: kind = .file
+            case UInt8(ascii: "L"): kind = .longName
+            case UInt8(ascii: "x"): kind = .extendedHeader
+            case UInt8(ascii: "g"): kind = .globalHeader
+            default: kind = .other
+            }
         }
     }
 

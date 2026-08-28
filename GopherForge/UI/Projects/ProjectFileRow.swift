@@ -80,3 +80,67 @@ struct ProjectSearchField: View {
         .background(.bar)
     }
 }
+
+/// The header of one file's search results: what it is, and how it matched.
+struct SearchFileHeader: View {
+    let result: ProjectFileSearch.FileResult
+    let query: String
+
+    private var badge: SourceFileBadge { SourceFileBadge.of(path: result.path) }
+    private var name: String {
+        result.path.split(separator: "/").last.map(String.init) ?? result.path
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: badge.systemImage)
+                .foregroundStyle(badge.tint)
+                .font(.caption)
+                .frame(width: 18)
+                .accessibilityHidden(true)
+
+            // The name is marked too, since a name match is why some files are
+            // in the list at all.
+            HighlightedText(text: name, query: result.matchesName ? query : "", font: .caption.weight(.semibold))
+                .lineLimit(1)
+
+            Text(result.summary)
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 1)
+        .contentShape(Rectangle())
+        .textCase(nil)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(result.path), \(result.summary)")
+    }
+}
+
+/// One matched line, with the query marked inside it.
+struct SearchLineRow: View {
+    let line: ProjectFileSearch.Line
+    let query: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text("\(line.number)")
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.tertiary)
+                // Fixed width so the code starts at the same x on every row;
+                // ragged code is much harder to scan than ragged numbers.
+                .frame(width: 30, alignment: .trailing)
+
+            HighlightedText(text: line.snippet, query: query)
+                .lineLimit(1)
+                .truncationMode(.tail)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 1)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Line \(line.number), \(line.snippet)")
+    }
+}

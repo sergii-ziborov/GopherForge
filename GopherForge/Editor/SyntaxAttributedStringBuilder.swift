@@ -9,6 +9,9 @@ struct SyntaxAttributedStringBuilder {
     let fileKind: SourceFileKind
     let fontSize: CGFloat
     var markedLines: Set<Int> = []
+    /// What the navigator's search matched, marked in the code so the reader
+    /// does not have to find the word again by eye after tapping a result.
+    var searchQuery: String = ""
     var theme: GoSyntaxTheme = .standard
 
     /// The attributes unhighlighted text wears.
@@ -43,7 +46,23 @@ struct SyntaxAttributedStringBuilder {
         }
 
         applyLineMarks(to: attributed, source: source)
+        applySearchMarks(to: attributed, source: source)
         return attributed
+    }
+
+    /// Search hits get their own colour, distinct from the red of a compiler
+    /// mark: one says "look here", the other says "this is wrong", and a reader
+    /// should never have to work out which.
+    private func applySearchMarks(to attributed: NSMutableAttributedString, source: String) {
+        for range in ProjectFileSearch.ranges(of: searchQuery, in: source) {
+            let nsRange = NSRange(range, in: source)
+            guard nsRange.location != NSNotFound else { continue }
+            attributed.addAttribute(
+                .backgroundColor,
+                value: UIColor.systemYellow.withAlphaComponent(0.28),
+                range: nsRange
+            )
+        }
     }
 
     /// Marked lines get a background rather than an underline: an underline is

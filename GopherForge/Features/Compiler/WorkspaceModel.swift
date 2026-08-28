@@ -26,6 +26,15 @@ final class WorkspaceModel {
     /// result is chosen and cleared once the editor has done it. Nil the rest
     /// of the time, so nothing scrolls on an ordinary redraw.
     private(set) var revealLine: Int?
+    /// Bumped every time a run finishes, so the view can react to "a result
+    /// arrived" rather than to "the result changed" — two identical runs
+    /// produce equal values and the second would otherwise go unnoticed.
+    private(set) var resultGeneration = 0
+
+    /// What the navigator's search was looking for, kept so the editor can mark
+    /// the same occurrences the sidebar showed. Cleared when the file is opened
+    /// any other way, so ordinary navigation never leaves stale marks behind.
+    var highlightQuery: String = ""
 
     private let compiler: WasmGoCompiler
     private let analyzer: IdiomAnalyzer
@@ -96,6 +105,7 @@ final class WorkspaceModel {
         commitEditorText()
         selectedFile = file
         editorText = project?.files[file] ?? ""
+        highlightQuery = ""
     }
 
     /// Folds the editor buffer back into the project. Called before anything
@@ -130,6 +140,7 @@ final class WorkspaceModel {
         let snapshot = project.snapshot(packagePattern: phase == .run ? "." : "./...")
         let result = await execute(phase: phase, snapshot: snapshot)
         lastResult = result
+        resultGeneration += 1
         compileAttempts += 1
 
         if phase == .format, result.succeeded {

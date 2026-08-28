@@ -15,6 +15,11 @@ enum AccessibilityID {
 
     static let welcomeCard = "projects.welcome"
     static let openFolder = "projects.openFolder"
+    static let newProject = "projects.new"
+    static let githubImportEntry = "projects.github"
+    static let githubURLField = "github.url"
+    static let githubImportButton = "github.import"
+    static let githubImportFailure = "github.failure"
     static let editor = "workspace.editor"
     static let toolchainBanner = "workspace.toolchainBanner"
     static let dockPicker = "workspace.dockPicker"
@@ -60,4 +65,5 @@ enum AccessibilityID {
     static let gameCenterDashboard = "gamecenter.dashboard"
     static let gameCenterConnect = "gamecenter.connect"
     static let settingsResetProgress = "settings.resetProgress"
+    static let settingsAcknowledgements = "settings.acknowledgements"
 }

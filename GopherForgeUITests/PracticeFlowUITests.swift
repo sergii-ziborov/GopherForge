@@ -75,16 +75,33 @@ final class PracticeFlowUITests: XCTestCase {
         XCTAssertEqual(tiles.count, before, "a matched pair should stay put, not vanish")
     }
 
+    /// Asserted by shape rather than by badge name: identifiers are content and
+    /// content is renamed, but "every badge is listed and says what is left"
+    /// is the promise the screen makes.
     func testAchievementsShowWhatIsLeftRatherThanHidingIt() {
         launch(screen: "achievements")
 
+        let badges = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'achievement.'"))
         XCTAssertTrue(
-            app.waitForElement(app.element(withIdentifier: "achievement.first.build")),
-            "every badge should be listed, earned or not"
+            badges.firstMatch.waitForExistence(timeout: 10),
+            "the screen should list badges"
         )
+        XCTAssertGreaterThanOrEqual(
+            badges.count, 5,
+            "every badge should be listed, earned or not — got \(badges.count)"
+        )
+
+        // The counter that keeps going up. Progress survives between runs, so
+        // the number itself is not assertable; that it is being counted in
+        // levels is.
         XCTAssertTrue(
-            app.waitForElement(app.element(withIdentifier: "achievement.repaired")),
-            "a locked badge is listed too, with what is left of it"
+            app.staticTexts.matching(
+                // Case-insensitive: a section header is uppercased by the
+                // list style, so the label is not what the source says.
+                NSPredicate(format: "label CONTAINS[c] 'levels earned'")
+            ).firstMatch.waitForExistence(timeout: 5),
+            "the screen should count the rungs earned, not just the badges"
         )
         attachScreenshot(named: "17-achievements")
     }

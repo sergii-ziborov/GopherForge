@@ -10,70 +10,107 @@ final class ProjectFileSearchTests: XCTestCase {
     ]
 
     func testAnEmptyQueryFindsNothing() {
-        XCTAssertTrue(ProjectFileSearch.matches(query: "", in: files).isEmpty)
-        XCTAssertTrue(ProjectFileSearch.matches(query: "   ", in: files).isEmpty)
+        XCTAssertTrue(ProjectFileSearch.results(query: "", in: files).isEmpty)
+        XCTAssertTrue(ProjectFileSearch.results(query: "   ", in: files).isEmpty)
     }
 
-    /// A file whose name matches is almost always what was meant, so burying it
-    /// under content hits from elsewhere would be wrong.
-    func testNameMatchesComeFirst() {
-        let matches = ProjectFileSearch.matches(query: "greet", in: files)
+    /// The bug this replaced: `main.go` appeared once for its name and again
+    /// for every line containing "main", so the sidebar looked like it was
+    /// stuttering. One file is one result however many ways it matched.
+    func testAFileThatMatchesByNameAndContentIsListedOnce() throws {
+        let results = ProjectFileSearch.results(query: "main", in: files)
 
-        XCTAssertEqual(matches.first?.path, "greet/greet.go")
-        XCTAssertEqual(matches.first?.kind, .name)
+        XCTAssertEqual(results.filter { $0.path == "main.go" }.count, 1)
+        let mainResult = try XCTUnwrap(results.first { $0.path == "main.go" })
+        XCTAssertTrue(mainResult.matchesName)
+        XCTAssertFalse(mainResult.lines.isEmpty, "its lines should hang off the file")
+    }
+
+    /// A file whose name matches is almost always what was meant, so it is
+    /// listed before files that merely mention the word.
+    func testNameMatchesComeFirst() {
+        let results = ProjectFileSearch.results(query: "greet", in: files)
+
+        XCTAssertEqual(results.first?.path, "greet/greet.go")
+        XCTAssertEqual(results.first?.matchesName, true)
     }
 
     func testContentMatchesCarryTheirLine() {
-        let matches = ProjectFileSearch.matches(query: "Println", in: files)
-        let hit = try? XCTUnwrap(matches.first)
+        let results = ProjectFileSearch.results(query: "Println", in: files)
 
-        XCTAssertEqual(hit?.path, "main.go")
-        XCTAssertEqual(hit?.lineNumber, 6)
-        if case let .content(_, snippet) = hit?.kind {
-            XCTAssertEqual(snippet, "fmt.Println(\"hello\")", "the snippet should be the trimmed line")
-        } else {
-            XCTFail("expected a content match")
-        }
+        XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results.first?.path, "main.go")
+        XCTAssertEqual(results.first?.matchesName, false)
+        XCTAssertEqual(results.first?.lines.first?.number, 6)
+        XCTAssertEqual(results.first?.lines.first?.snippet, "fmt.Println(\"hello\")")
     }
 
     func testSearchIsCaseInsensitive() {
-        XCTAssertFalse(ProjectFileSearch.matches(query: "PACKAGE MAIN", in: files).isEmpty)
-        XCTAssertFalse(ProjectFileSearch.matches(query: "MAIN.GO", in: files).isEmpty)
+        XCTAssertFalse(ProjectFileSearch.results(query: "PRINTLN", in: files).isEmpty)
+        XCTAssertFalse(ProjectFileSearch.results(query: "MAIN.GO", in: files).isEmpty)
     }
 
     func testAQueryInTwoFilesFindsBoth() {
-        let paths = Set(ProjectFileSearch.matches(query: "hello", in: files).map(\.path))
+        let results = ProjectFileSearch.results(query: "hello", in: files)
 
-        XCTAssertEqual(paths, ["main.go", "greet/greet.go"])
+        XCTAssertEqual(Set(results.map(\.path)), ["main.go", "greet/greet.go"])
     }
 
-    /// One letter matches everything and tells the reader nothing, so content
-    /// is only searched once the query is worth searching for.
+    /// One letter matches everything, so only names are searched until the
+    /// query is worth searching content for.
     func testASingleLetterSearchesNamesOnly() {
-        let matches = ProjectFileSearch.matches(query: "m", in: files)
+        let results = ProjectFileSearch.results(query: "m", in: files)
 
-        XCTAssertFalse(matches.isEmpty)
-        XCTAssertTrue(matches.allSatisfy { $0.kind == .name })
+        XCTAssertFalse(results.isEmpty)
+        XCTAssertTrue(
+            results.allSatisfy { $0.matchesName && $0.lines.isEmpty },
+            "a one-letter query should not report content hits"
+        )
     }
 
-    /// One enormous file must not be able to fill the whole list.
     func testOneFileCannotFloodTheResults() {
-        let flooded = ["big.go": String(repeating: "// needle\n", count: 500)]
-        let matches = ProjectFileSearch.matches(query: "needle", in: flooded)
+        let crowded = ["big.go": Array(repeating: "x := hello", count: 50).joined(separator: "\n")]
+        let results = ProjectFileSearch.results(query: "hello", in: crowded)
 
-        XCTAssertLessThanOrEqual(matches.count, ProjectFileSearch.maximumMatchesPerFile)
+        XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results.first?.lines.count, ProjectFileSearch.maximumLinesPerFile)
+        // Capped, and it says so rather than looking complete.
+        XCTAssertEqual(
+            results.first?.additionalLines,
+            50 - ProjectFileSearch.maximumLinesPerFile
+        )
     }
 
     func testALongLineIsShortenedForTheRow() {
-        let line = "\t" + String(repeating: "x", count: 200)
-        let snippet = ProjectFileSearch.snippet(of: line)
+        let long = String(repeating: "a", count: 200)
+        let snippet = ProjectFileSearch.snippet(of: "  \(long)  ")
 
-        XCTAssertLessThanOrEqual(snippet.count, 71)
-        XCTAssertTrue(snippet.hasSuffix("…"))
+        XCTAssertTrue(snippet.hasSuffix("\u{2026}"))
+        XCTAssertLessThan(snippet.count, long.count)
+    }
+
+    // MARK: - Marking what matched
+
+    func testEveryOccurrenceIsMarked() {
+        let ranges = ProjectFileSearch.ranges(of: "go", in: "go go gopher")
+
+        XCTAssertEqual(ranges.count, 3)
+    }
+
+    func testMarkingIsCaseInsensitiveLikeTheSearch() {
+        let ranges = ProjectFileSearch.ranges(of: "MAIN", in: "func main() { main() }")
+
+        XCTAssertEqual(ranges.count, 2)
+    }
+
+    /// Nothing is marked for a query that found nothing, so an empty search box
+    /// never paints the file yellow.
+    func testAnEmptyQueryMarksNothing() {
+        XCTAssertTrue(ProjectFileSearch.ranges(of: "", in: "package main").isEmpty)
+        XCTAssertTrue(ProjectFileSearch.ranges(of: "  ", in: "package main").isEmpty)
     }
 }
 
-/// Names for exported archives and the projects they come back as.
 final class ProjectArchiveNamingTests: XCTestCase {
     func testAProjectNameBecomesASafeDirectory() {
         XCTAssertEqual(ProjectArchiveNaming.rootDirectory(for: "Worker Pool"), "worker-pool")

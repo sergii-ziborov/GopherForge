@@ -51,12 +51,15 @@ Concretely, the app currently contains:
 - a matching drill — terms on the left, meanings on the right, tiles of one
   fixed height so nothing moves while your thumb is reaching — whose wrong
   connections feed the same review queue a failed compile does;
-- achievements earned by compiling, running, testing and fixing, each showing
-  its own counter so a locked one says what is left rather than hiding it;
-- an example library: single-idea programs, five multi-package projects, one
-  that renders a PNG the app displays, and one with `go-cmp` already vendored
-  so it builds offline against a real dependency. A gate compiles, runs and
-  checks the output of every one of them;
+- achievements earned by compiling, running, testing and fixing — eleven badges
+  of four ranks each, where the bar measures the rung being climbed rather than
+  the whole badge, so passing silver does not read as almost-gold;
+- an example library: single-idea programs, five multi-package projects, a
+  graphics section that computes pixels and writes PNGs the app displays — the
+  Mandelbrot set, a hand-written colour wheel, plotted waves, Sierpinski by
+  chaos game, and Life drawn as a filmstrip — and one project with `go-cmp`
+  already vendored so it builds offline against a real dependency. A gate
+  compiles, runs and checks the exact output of every one of them;
 - package installation: resolve a module, see its popularity, licence and
   OpenSSF Scorecard, and vendor a checksum-verified copy into the project;
 - a `UITextView` editor with Go and `go.mod` syntax highlighting, marked
@@ -85,11 +88,19 @@ Concretely, the app currently contains:
 - review chosen from the mistakes the compiler and the coach actually saw, with
   the reason shown on every item;
 - four project templates that build offline with no dependencies at all;
-- a Share Extension that queues GitHub URLs through an App Group and never
-  tries to foreground the host app, plus a launch-time drain that surfaces what
-  it queued;
-- Files import of a folder or a `.gopherforgeproject` package, opening the
-  module root rather than the checkout root, bounded in file count and size.
+- GitHub import: paste a repository URL, or send one in from another app
+  through the Share Extension, and the snapshot is downloaded, filtered to text
+  the editor can open, and turned into a project. A Share Extension queues URLs
+  through an App Group and never tries to foreground the host app; a
+  launch-time drain surfaces what it queued as something tappable;
+- Files import of a folder, a `.tar.gz` this app exported, or a
+  `.gopherforgeproject` package, opening the module root rather than the
+  checkout root, bounded in file count and size;
+- a navigator whose search groups hits by file rather than listing a file once
+  per match, and marks what it matched in the code as well as in the sidebar;
+- panes that follow the work: a finished run opens Output, a failure opens
+  Problems, and a test run opens Tests, so pressing Run never leaves you
+  staring at the source it just left behind.
 
 Anything that needs the toolchain says so rather than offering a button that
 can only fail: Build, Run, Test, the lab and every compile lesson are disabled
@@ -131,6 +142,20 @@ project. Attributions are maintained in
 
 The Go gopher was designed by Renée French and is not used here. The app's mark
 is original artwork.
+
+`ThirdPartyNoticesTests` fails the build if a bundled dependency is missing
+from the notices or recorded under the wrong licence, and
+`scripts/build_toolchain.sh` refuses to produce a toolchain artifact unless
+Go's own `LICENSE` and `PATENTS` are staged beside it — shipping the compiled
+tools without them would not satisfy the BSD 3-Clause redistribution terms.
+
+## Shipping
+
+What a submission to Apple needs, what has already been settled, and the
+findings from the pre-submission review are in
+[docs/APP-STORE.md](docs/APP-STORE.md). The privacy policy — the app collects
+nothing — is [PRIVACY.md](PRIVACY.md), and must be published at a public URL
+before submitting.
 
 ## Build
 

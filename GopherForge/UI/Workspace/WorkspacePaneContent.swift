@@ -20,6 +20,7 @@ struct WorkspacePaneContent: View {
                 fileKind: workspace.fileKind,
                 fontSize: fontSize,
                 markedLines: workspace.markedLines,
+                searchQuery: workspace.highlightQuery,
                 revealLine: workspace.revealLine,
                 onReveal: workspace.clearReveal
             )

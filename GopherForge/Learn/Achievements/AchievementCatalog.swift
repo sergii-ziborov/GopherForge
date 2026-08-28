@@ -1,139 +1,183 @@
 import Foundation
 
-/// Every badge in the product.
+/// Every badge in the product, and the rungs each one has.
 ///
-/// Each one is earned by doing the thing the product is for — compiling,
-/// running, testing, fixing — rather than by opening screens or by time spent.
-/// The ones worth having are at the bottom: passing on the first compile, and
-/// repairing a concept you once got wrong.
+/// Each is earned by doing the thing the product is for — compiling, running,
+/// testing, fixing — rather than by opening screens or by time spent. Levels
+/// rather than single bars, because a badge that finishes at ten runs stops
+/// saying anything on the eleventh, and the person still running programs a
+/// month later is the one worth recognising.
 enum AchievementCatalog {
     static let all: [Achievement] = [
         Achievement(
-            id: "first.build",
-            title: "First forge",
-            detail: "Compile and run a Go program on device",
+            id: "programs.run",
+            title: "The forge",
+            detail: "Compile and run Go programs on device",
             symbol: "hammer.fill",
-            requirement: .programsRun(1)
+            measure: .programsRun,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "First forge"),
+                AchievementLevel(rank: .silver, target: 10, title: "Anvil warmed"),
+                AchievementLevel(rank: .gold, target: 50, title: "Smith"),
+                AchievementLevel(rank: .platinum, target: 200, title: "Master smith"),
+            ]
         ),
         Achievement(
-            id: "ten.runs",
-            title: "Anvil warmed",
-            detail: "Run ten programs",
-            symbol: "flame.fill",
-            requirement: .programsRun(10)
-        ),
-        Achievement(
-            id: "first.lesson",
-            title: "Opening move",
-            detail: "Pass your first lesson",
-            symbol: "checkmark.seal.fill",
-            requirement: .lessonsPassed(1)
-        ),
-        Achievement(
-            id: "ten.lessons",
-            title: "Course underway",
-            detail: "Pass ten lessons",
+            id: "lessons.passed",
+            title: "The course",
+            detail: "Pass lessons",
             symbol: "book.fill",
-            requirement: .lessonsPassed(10)
+            measure: .lessonsPassed,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Opening move"),
+                AchievementLevel(rank: .silver, target: 10, title: "Course underway"),
+                AchievementLevel(rank: .gold, target: 25, title: "Well read"),
+                AchievementLevel(rank: .platinum, target: 40, title: "Every lesson"),
+            ]
         ),
         Achievement(
-            id: "first.tests",
+            id: "lessons.firstTry",
+            title: "Clean first compile",
+            detail: "Pass lessons on the first compile, with nothing to fix",
+            symbol: "bolt.fill",
+            measure: .lessonsPassedFirstTry,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Straight through"),
+                AchievementLevel(rank: .silver, target: 5, title: "Sure footed"),
+                AchievementLevel(rank: .gold, target: 15, title: "Compiles in your head"),
+                AchievementLevel(rank: .platinum, target: 30, title: "The compiler agrees"),
+            ]
+        ),
+        Achievement(
+            id: "tests.passed",
             title: "Green bar",
-            detail: "Make a package's tests pass",
-            symbol: "testtube.2",
-            requirement: .testsPassed(1)
+            detail: "Make tests pass",
+            symbol: "checkmark.diamond.fill",
+            measure: .testsPassed,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "First green"),
+                AchievementLevel(rank: .silver, target: 20, title: "Table driven"),
+                AchievementLevel(rank: .gold, target: 75, title: "Well covered"),
+                AchievementLevel(rank: .platinum, target: 200, title: "Nothing untested"),
+            ]
         ),
         Achievement(
-            id: "twenty.tests",
-            title: "Table driven",
-            detail: "Pass twenty tests",
-            symbol: "list.bullet.rectangle",
-            requirement: .testsPassed(20)
+            id: "concepts.mastered",
+            title: "Understanding",
+            detail: "Bring concepts up to strength",
+            symbol: "brain.head.profile",
+            measure: .conceptsMastered,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 3, title: "Getting it"),
+                AchievementLevel(rank: .silver, target: 10, title: "Fluent"),
+                AchievementLevel(rank: .gold, target: 20, title: "It clicked"),
+                AchievementLevel(rank: .platinum, target: 35, title: "Second nature"),
+            ]
         ),
         Achievement(
-            id: "first.drill",
-            title: "Paired up",
-            detail: "Finish a matching drill",
+            id: "concepts.repaired",
+            title: "Repaired",
+            detail: "Master a concept you once got wrong — not what you knew, what you fixed",
+            symbol: "wrench.and.screwdriver.fill",
+            measure: .conceptsRepaired,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Put right"),
+                AchievementLevel(rank: .silver, target: 5, title: "Learned from it"),
+                AchievementLevel(rank: .gold, target: 12, title: "Nothing left broken"),
+                AchievementLevel(rank: .platinum, target: 25, title: "Rebuilt"),
+            ]
+        ),
+        Achievement(
+            id: "drills.completed",
+            title: "Drills",
+            detail: "Finish matching drills",
             symbol: "link",
-            requirement: .drillsCompleted(1)
+            measure: .drillsCompleted,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Paired up"),
+                AchievementLevel(rank: .silver, target: 10, title: "Quick hands"),
+                AchievementLevel(rank: .gold, target: 30, title: "Pattern matcher"),
+                AchievementLevel(rank: .platinum, target: 60, title: "Instant"),
+            ]
         ),
         Achievement(
-            id: "three.perfect",
-            title: "Clean sweep",
-            detail: "Finish three drills with no wrong connection",
+            id: "drills.perfect",
+            title: "No wrong moves",
+            detail: "Finish drills with no wrong connection",
             symbol: "star.fill",
-            requirement: .drillsPerfect(3)
+            measure: .drillsPerfect,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Spotless"),
+                AchievementLevel(rank: .silver, target: 5, title: "Clean sweep"),
+                AchievementLevel(rank: .gold, target: 15, title: "Unerring"),
+                AchievementLevel(rank: .platinum, target: 30, title: "Never a slip"),
+            ]
         ),
         Achievement(
-            id: "first.quiz",
-            title: "Quizzed",
-            detail: "Pass a unit's quiz",
-            symbol: "checklist",
-            requirement: .quizzesPassed(1)
-        ),
-        Achievement(
-            id: "three.quizzes",
-            title: "Three units down",
-            detail: "Pass the quiz for three different units",
+            id: "quizzes.passed",
+            title: "Units finished",
+            detail: "Pass the quiz at the end of a unit",
             symbol: "graduationcap.fill",
-            requirement: .quizzesPassed(3)
+            measure: .quizzesPassed,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Quizzed"),
+                AchievementLevel(rank: .silver, target: 3, title: "Three units down"),
+                AchievementLevel(rank: .gold, target: 5, title: "Most of the way"),
+                AchievementLevel(rank: .platinum, target: 7, title: "Every unit"),
+            ]
         ),
         Achievement(
-            id: "perfect.quiz",
+            id: "quizzes.perfect",
             title: "Full marks",
             detail: "Answer every question in a unit's quiz correctly",
-            symbol: "sparkles",
-            requirement: .quizzesPerfect(1)
+            symbol: "rosette",
+            measure: .quizzesPerfect,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 1, title: "Perfect round"),
+                AchievementLevel(rank: .silver, target: 3, title: "Three perfect"),
+                AchievementLevel(rank: .gold, target: 5, title: "Hardly a doubt"),
+                AchievementLevel(rank: .platinum, target: 7, title: "Flawless"),
+            ]
         ),
         Achievement(
-            id: "five.concepts",
-            title: "Five under the belt",
-            detail: "Master five concepts",
-            symbol: "brain.head.profile",
-            requirement: .conceptsMastered(5)
-        ),
-        Achievement(
-            id: "first.try",
-            title: "Compiles first time",
-            detail: "Pass five lessons without a failed compile",
-            symbol: "bolt.fill",
-            requirement: .lessonsPassedFirstTry(5)
-        ),
-        Achievement(
-            id: "repaired",
-            title: "Learned the hard way",
-            detail: "Master three concepts you once got wrong",
-            symbol: "arrow.uturn.up.circle.fill",
-            requirement: .conceptsRepaired(3)
-        ),
-        Achievement(
-            id: "seven.days",
+            id: "days.active",
             title: "Kept at it",
-            detail: "Practise on seven different days",
+            detail: "Come back and build something on different days",
             symbol: "calendar",
-            requirement: .activeDays(7)
+            measure: .activeDays,
+            levels: [
+                AchievementLevel(rank: .bronze, target: 2, title: "Came back"),
+                AchievementLevel(rank: .silver, target: 7, title: "A week of it"),
+                AchievementLevel(rank: .gold, target: 21, title: "A habit"),
+                AchievementLevel(rank: .platinum, target: 60, title: "Part of the day"),
+            ]
         ),
     ]
 
-    static func achievement(id: String) -> Achievement? {
-        all.first { $0.id == id }
-    }
-
-    /// Unlocked first, then whatever is closest to being earned — so the list
-    /// opens on what you did and points at what is one step away.
-    static func ordered(by stats: LearnerStats) -> [Achievement] {
-        all.sorted { first, second in
-            let firstDone = first.isUnlocked(by: stats)
-            let secondDone = second.isUnlocked(by: stats)
-            if firstDone != secondDone { return firstDone }
-            let firstFraction = first.fraction(of: stats)
-            let secondFraction = second.fraction(of: stats)
-            if firstFraction != secondFraction { return firstFraction > secondFraction }
-            return first.id < second.id
-        }
-    }
-
+    /// Badges with at least one level earned.
     static func unlocked(by stats: LearnerStats) -> [Achievement] {
         all.filter { $0.isUnlocked(by: stats) }
+    }
+
+    /// Every rung earned across every badge — the number that keeps going up,
+    /// which is what a progress line on the home screen should show.
+    static func earnedLevelCount(by stats: LearnerStats) -> Int {
+        all.reduce(0) { $0 + $1.earnedLevelCount(for: stats) }
+    }
+
+    static var totalLevelCount: Int {
+        all.reduce(0) { $0 + $1.levels.count }
+    }
+
+    /// Closest to its next rung first, so the top of the list is whatever is
+    /// nearly earned. Finished badges sink to the bottom: they have nothing
+    /// left to say.
+    static func ordered(by stats: LearnerStats) -> [Achievement] {
+        all.sorted { left, right in
+            let leftDone = left.isComplete(for: stats)
+            let rightDone = right.isComplete(for: stats)
+            if leftDone != rightDone { return !leftDone }
+            return left.fraction(of: stats) > right.fraction(of: stats)
+        }
     }
 }

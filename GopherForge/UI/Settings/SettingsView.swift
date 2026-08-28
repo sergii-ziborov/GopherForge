@@ -71,6 +71,12 @@ struct SettingsView: View {
             }
 
             Section("About") {
+                NavigationLink {
+                    AcknowledgementsView()
+                } label: {
+                    Label("Acknowledgements", systemImage: "text.book.closed")
+                }
+                .accessibilityIdentifier(AccessibilityID.settingsAcknowledgements)
                 LabeledContent("Product", value: "GopherForge")
                 Text("Forge real Go, anywhere.")
                     .font(.caption)

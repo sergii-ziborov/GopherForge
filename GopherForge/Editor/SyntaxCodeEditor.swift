@@ -14,6 +14,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     /// Lines to mark, keyed by line number, for example the ones a diagnostic
     /// points at.
     var markedLines: Set<Int> = []
+    /// Marked in the code, matching what the navigator's search listed.
+    var searchQuery: String = ""
     /// A line to scroll to and select, set when a search result is chosen.
     /// Cleared through `onReveal` once it has happened, so an ordinary redraw
     /// does not drag the reader back to it.
@@ -68,7 +70,13 @@ struct SyntaxCodeEditor: UIViewRepresentable {
             textView.attributedText = context.coordinator.highlighted(text, fontSize: fontSize)
             textView.selectedRange = Self.clamped(selection, in: textView.text)
         } else if context.coordinator.appliedFontSize != fontSize
-            || context.coordinator.appliedFileKind != fileKind {
+            || context.coordinator.appliedFileKind != fileKind
+            // Marks live in the attributed string, so a change to either set
+            // repaints nothing unless the string is rebuilt — and the text is
+            // exactly what has not changed when a search runs or a compile
+            // finishes.
+            || context.coordinator.appliedSearchQuery != searchQuery
+            || context.coordinator.appliedMarkedLines != markedLines {
             let selection = textView.selectedRange
             textView.attributedText = context.coordinator.highlighted(text, fontSize: fontSize)
             textView.selectedRange = Self.clamped(selection, in: textView.text)
@@ -76,6 +84,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
 
         context.coordinator.appliedFontSize = fontSize
         context.coordinator.appliedFileKind = fileKind
+        context.coordinator.appliedSearchQuery = searchQuery
+        context.coordinator.appliedMarkedLines = markedLines
         context.coordinator.gutter = editor.gutter
         context.coordinator.editor = editor
         editor.gutter.setNeedsDisplay()
@@ -112,6 +122,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         var parent: SyntaxCodeEditor
         var appliedFontSize: CGFloat = 0
         var appliedFileKind: SourceFileKind = .plain
+        var appliedSearchQuery = ""
+        var appliedMarkedLines: Set<Int> = []
         /// Redrawn whenever the text or the scroll position changes, because
         /// the numbers are painted rather than laid out.
         weak var gutter: LineNumberGutterView?
@@ -128,7 +140,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
             SyntaxAttributedStringBuilder(
                 fileKind: parent.fileKind,
                 fontSize: fontSize,
-                markedLines: parent.markedLines
+                markedLines: parent.markedLines,
+                searchQuery: parent.searchQuery
             )
             .build(source)
         }

@@ -56,6 +56,7 @@ enum GoConcept {
     static let stdlibHTTP = "stdlib.http"
     static let stdlibJSON = "stdlib.json"
     static let stdlibTesting = "stdlib.testing"
+    static let stdlibImage = "stdlib.image"
 
     /// Every tag the product knows, used to validate course content and to
     /// keep the review scheduler from inventing categories at runtime.
@@ -68,6 +69,6 @@ enum GoConcept {
         goroutineLeak, waitGroup, stdlibIO, stdlibHTTP, stdlibJSON, stdlibTesting,
         constants, switchNoFallthrough, conversion, mapOrder, stringsBuilder,
         typeAssertion, embedding, customError, panicIsNotAnError, packageInit,
-        mutex, stdlibTime, stdlibSort,
+        mutex, stdlibTime, stdlibSort, stdlibImage,
     ]
 }

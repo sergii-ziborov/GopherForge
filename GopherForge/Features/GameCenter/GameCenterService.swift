@@ -78,8 +78,20 @@ final class GameCenterService {
     func report(_ stats: LearnerStats) async {
         guard isSignedIn else { return }
 
-        let progress = AchievementCatalog.all.reduce(into: [String: Double]()) { result, badge in
-            result[Self.identifier(for: badge)] = badge.fraction(of: stats) * 100
+        // One Game Center achievement per level: Game Center has no notion of
+        // tiers, so a four-rung badge is four achievements there, each either
+        // finished or part way.
+        var progress: [String: Double] = [:]
+        for badge in AchievementCatalog.all {
+            let done = badge.progress(in: stats)
+            var floorValue = 0
+            for level in badge.levels {
+                let span = max(1, level.target - floorValue)
+                let into = Double(done - floorValue) / Double(span)
+                progress[Self.identifier(for: badge, level: level)] =
+                    min(100, max(0, into * 100))
+                floorValue = level.target
+            }
         }
         switch await reporter.report(progress) {
         case .success:
@@ -95,8 +107,8 @@ final class GameCenterService {
 
     /// Game Center identifiers are a flat namespace shared with every other
     /// app, so they carry the bundle's own prefix.
-    static func identifier(for achievement: Achievement) -> String {
-        "com.sergiiziborov.GopherForge.\(achievement.id)"
+    static func identifier(for achievement: Achievement, level: AchievementLevel) -> String {
+        "com.sergiiziborov.GopherForge.\(achievement.id).\(level.rank.rawValue)"
     }
 }
 
