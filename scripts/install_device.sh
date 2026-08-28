@@ -27,9 +27,20 @@ for argument in "$@"; do
 done
 
 if [[ -z "$DEVICE_ID" ]]; then
+  # The identifier is found by its shape rather than by column number. Both
+  # the name and the model hold spaces — "iPhone s", "iPhone 13 mini
+  # (iPhone14,4)" — so counting fields from either end lands somewhere
+  # different for every device, and the wrong column is a UUID-shaped nothing
+  # that fails at install time with "device not found".
   DEVICE_ID="$(xcrun devicectl list devices 2>/dev/null \
-    | awk '$NF == "physical" && ($0 ~ / connected / || $0 ~ /available \(paired\)/) { print $(NF-4) }' \
-    | head -1)"
+    | awk '$NF == "physical" && ($0 ~ / connected / || $0 ~ /available \(paired\)/) {
+             for (i = 1; i <= NF; i++) {
+               if ($i ~ /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/) {
+                 print $i
+                 exit
+               }
+             }
+           }')"
 fi
 
 if [[ -z "$DEVICE_ID" ]]; then
