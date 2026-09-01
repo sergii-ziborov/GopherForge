@@ -1,6 +1,11 @@
 import SwiftUI
 
-/// One lesson: explanation, the task, and the verdict from the real toolchain.
+/// One lesson: where it sits, what it teaches, the task, the verdict from the
+/// real toolchain, and the way onward.
+///
+/// It used to be a single column of equally-weighted paragraphs that ended in a
+/// tick and nothing else — no unit, no position, no next lesson, and two
+/// different controls for "done" with no explanation of how they differed.
 struct LessonDetailView: View {
     let lesson: Lesson
 
@@ -12,17 +17,37 @@ struct LessonDetailView: View {
         _model = State(initialValue: LessonModel(lesson: lesson))
     }
 
+    private var unit: CourseUnit? { GoCourseCatalog.unit(containing: lesson.id) }
+
+    private var tint: Color {
+        CourseUnitStyle.tint(for: unit?.id ?? "")
+    }
+
+    private var nextLesson: Lesson? { GoCourseCatalog.lesson(after: lesson.id) }
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                header
-                explanation
+            VStack(alignment: .leading, spacing: 20) {
+                LessonHeaderCard(
+                    lesson: lesson,
+                    unitTitle: unit?.title ?? "Practice",
+                    position: GoCourseCatalog.position(of: lesson.id),
+                    tint: tint
+                )
+
+                LessonSection(title: "What is going on", systemImage: "text.alignleft", tint: tint) {
+                    Text(lesson.explanation)
+                        .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
                 taskSection
 
                 if lesson.requiresCompiler, !model.canCheck, !model.isChecking {
                     Label(model.toolchainDetail, systemImage: "exclamationmark.triangle")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(GopherForgeTheme.warning)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 if let result = model.result {
@@ -30,8 +55,19 @@ struct LessonDetailView: View {
                 }
 
                 completion
+
+                // Only for what the course teaches. A challenge belongs to a
+                // unit but is reached from Practice, and it has no next lesson
+                // — offering one would walk somebody out of the drill they
+                // chose into the middle of a unit, and saying "that is the last
+                // lesson" would be a plain lie.
+                if unit != nil, !lesson.isChallenge {
+                    LessonNextStep(next: nextLesson, isFinished: model.isCompleted)
+                }
             }
             .padding(16)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
         }
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
@@ -49,12 +85,7 @@ struct LessonDetailView: View {
             if lesson.requiresCompiler {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task {
-                            await model.check()
-                            // The course is showing this lesson's state too, and
-                            // a pass it never hears about is a tick nobody sees.
-                            await progress.refresh()
-                        }
+                        check()
                     } label: {
                         if model.isChecking {
                             ProgressView()
@@ -69,6 +100,8 @@ struct LessonDetailView: View {
         }
     }
 
+    // MARK: - Finishing
+
     /// Whether this is done, and the way to say so.
     ///
     /// Every lesson can be ticked. It used to be that only a lesson with
@@ -76,73 +109,98 @@ struct LessonDetailView: View {
     /// record progress at all — their lessons are all compile lessons, and a
     /// learner who had done the work elsewhere could not say so.
     ///
-    /// A compile lesson still asks for Check first, and the app records which
-    /// of the two happened rather than flattening them into one tick.
+    /// The two ways are named rather than left to be guessed. "Check" hands the
+    /// work to the compiler; the button below is the learner's own word, and
+    /// the app records which of the two happened rather than flattening them
+    /// into one tick.
     @ViewBuilder
     private var completion: some View {
         if model.isCompleted {
-            VStack(alignment: .leading, spacing: 6) {
-                Label(
-                    model.isCompilerVerified ? "Passed the compiler" : "Marked done",
-                    systemImage: model.isCompilerVerified
-                        ? "checkmark.seal.fill"
-                        : "checkmark.circle.fill"
-                )
-                .font(.callout.weight(.medium))
-                .foregroundStyle(model.isCompilerVerified ? Color.green : GopherForgeTheme.slate)
-
-                if !model.isCompilerVerified, lesson.isJudgedByCompiler {
-                    Text("You said so — the hidden test has not run. Press Check to "
-                        + "have it judged, or use the tick above to take this back.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(
-                (model.isCompilerVerified ? Color.green : GopherForgeTheme.slate).opacity(0.12),
-                in: RoundedRectangle(cornerRadius: 12)
-            )
-            // One element, so the identifier belongs to the card rather than
-            // being inherited by every label inside it — which made a search
-            // for it ambiguous, and made the card three things to VoiceOver.
-            .accessibilityElement(children: .combine)
-            .accessibilityIdentifier(AccessibilityID.lessonCompleted)
+            finishedCard
         } else {
-            VStack(spacing: 8) {
-                if lesson.isJudgedByCompiler {
-                    Text("Press Check to have the hidden test judge this, or mark it "
-                        + "done if you have already worked through it.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+            unfinishedCard
+        }
+    }
 
-                // Secondary where the compiler is the better judge, so Check
-                // stays the obvious thing to press; prominent where there is
-                // nothing to run and this is the only way to finish.
-                // The identifier goes on each button rather than on a wrapper:
-                // a modifier on a Group lands on the container, and the button
-                // underneath keeps no identifier at all.
-                if lesson.isJudgedByCompiler {
-                    Button(action: markDone) { markLabel }
-                        .buttonStyle(.bordered)
-                } else {
-                    Button(action: markDone) { markLabel }
-                        .buttonStyle(.borderedProminent)
+    private var finishedCard: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(
+                model.isCompilerVerified ? "The compiler passed this" : "Marked done by you",
+                systemImage: model.isCompilerVerified
+                    ? "checkmark.seal.fill"
+                    : "checkmark.circle.fill"
+            )
+            .font(.callout.weight(.semibold))
+            .foregroundStyle(model.isCompilerVerified ? Color.green : GopherForgeTheme.accent)
+
+            if !model.isCompilerVerified, lesson.isJudgedByCompiler {
+                Text("The hidden test has not run. Press Check to have it judged, "
+                    + "or use the tick in the toolbar to take this back.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(
+            (model.isCompilerVerified ? Color.green : GopherForgeTheme.accentSolid).opacity(0.12),
+            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+        )
+        // One element, so the identifier belongs to the card rather than
+        // being inherited by every label inside it — which made a search
+        // for it ambiguous, and made the card three things to VoiceOver.
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(AccessibilityID.lessonCompleted)
+    }
+
+    @ViewBuilder
+    private var unfinishedCard: some View {
+        if lesson.isJudgedByCompiler {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Two ways to finish this")
+                    .font(.callout.weight(.semibold))
+                Text("**Check** compiles your code against the lesson's hidden test and "
+                    + "records a pass the compiler witnessed. If you have already worked "
+                    + "through this — on paper, in another editor, years ago in another "
+                    + "language — say so instead. The app keeps the two apart.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 10) {
+                    Button(action: check) {
+                        Label("Check", systemImage: "checkmark.diamond")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!model.canCheck || model.isChecking)
+
+                    Button(action: markDone) {
+                        Text("I've done this")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
                 }
             }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        } else {
+            // Nothing to run, so the learner's word is the only signal there is
+            // and the button carries the page.
+            Button(action: markDone) {
+                Label("Mark this lesson done", systemImage: "checkmark.circle")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
         }
     }
 
     /// Done or not, in one tap, from anywhere on the page.
     ///
-    /// Tapping an unmarked lesson says you have done it. Tapping one you marked
-    /// yourself takes it back. A pass the compiler witnessed cannot be undone,
-    /// so it is shown and not offered as a toggle.
+    /// Labelled rather than a bare circle: an unnamed glyph in a toolbar is a
+    /// decoration until you press it and find out.
     @ViewBuilder
     private var completionToggle: some View {
         if model.isCompleted, model.isCompilerVerified {
@@ -157,23 +215,17 @@ struct LessonDetailView: View {
                     await progress.refresh()
                 }
             } label: {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(GopherForgeTheme.slate)
+                Label("Done", systemImage: "checkmark.circle.fill")
             }
             .accessibilityLabel("Marked done. Tap to undo.")
             .accessibilityIdentifier(AccessibilityID.lessonUncomplete)
         } else {
             Button(action: markDone) {
-                Image(systemName: "circle")
+                Label("Mark done", systemImage: "circle")
             }
             .accessibilityLabel("Mark as completed")
             .accessibilityIdentifier(AccessibilityID.lessonComplete)
         }
-    }
-
-    private var markLabel: some View {
-        Label("Mark as completed", systemImage: "checkmark.circle")
-            .frame(maxWidth: .infinity)
     }
 
     private func markDone() {
@@ -183,52 +235,50 @@ struct LessonDetailView: View {
         }
     }
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(lesson.objective)
-                .font(.headline)
-                .fixedSize(horizontal: false, vertical: true)
-            if !lesson.conceptTags.isEmpty {
-                Text(lesson.conceptTags.joined(separator: " · "))
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
-            }
+    private func check() {
+        Task {
+            await model.check()
+            // The course is showing this lesson's state too, and a pass it
+            // never hears about is a tick nobody sees.
+            await progress.refresh()
         }
     }
 
-    private var explanation: some View {
-        Text(lesson.explanation)
-            .font(.callout)
-            .fixedSize(horizontal: false, vertical: true)
-    }
+    // MARK: - The task
 
     @ViewBuilder
     private var taskSection: some View {
         switch lesson.task {
         case let .guidedTyping(target):
-            CodeBlock(title: "Type this until it is automatic", code: target)
+            LessonSection(title: "Type this until it is automatic", systemImage: "keyboard", tint: tint) {
+                CodeBlock(title: "", code: target)
+            }
         case let .fillGaps(template, blanks):
-            VStack(alignment: .leading, spacing: 8) {
-                CodeBlock(title: "Fill the gaps", code: template)
-                Text("Missing: \(blanks.joined(separator: ", "))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            LessonSection(title: "Fill the gaps", systemImage: "square.dashed", tint: tint) {
+                VStack(alignment: .leading, spacing: 8) {
+                    CodeBlock(title: "", code: template)
+                    Text("Missing: \(blanks.joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         case let .predict(source, question, answer):
-            VStack(alignment: .leading, spacing: 8) {
-                CodeBlock(title: "Predict the output", code: source)
-                Text(question).font(.callout.weight(.medium))
-                DisclosureGroup("Show the answer") {
-                    Text(answer)
-                        .font(.callout)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+            LessonSection(title: "Predict the output", systemImage: "questionmark.circle", tint: tint) {
+                VStack(alignment: .leading, spacing: 10) {
+                    CodeBlock(title: "", code: source)
+                    Text(question).font(.callout.weight(.medium))
+                    DisclosureGroup("Show the answer") {
+                        Text(answer)
+                            .font(.callout)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 4)
+                    }
+                    .tint(tint)
                 }
             }
         case .compile:
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Edit until the hidden test passes")
-                    .font(.callout.weight(.medium))
+            LessonSection(title: "Edit until the hidden test passes", systemImage: "hammer", tint: tint) {
                 SyntaxCodeEditor(
                     text: $model.editorText,
                     fileKind: .go,
@@ -236,7 +286,7 @@ struct LessonDetailView: View {
                 )
                 .frame(height: 320)
                 .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
         }
     }
@@ -252,7 +302,7 @@ struct LessonVerdictView: View {
             HStack(spacing: 6) {
                 Image(systemName: result.succeeded ? "checkmark.seal.fill" : "xmark.octagon.fill")
                     .foregroundStyle(GopherForgeTheme.statusColor(succeeded: result.succeeded))
-                Text(result.detail).font(.callout)
+                Text(result.detail).font(.callout.weight(.medium))
             }
 
             ForEach(result.diagnostics) { diagnostic in
@@ -266,9 +316,11 @@ struct LessonVerdictView: View {
                 CodeBlock(title: "How Go would usually write it", code: solution)
             }
         }
-        .padding(12)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(
+            GopherForgeTheme.statusColor(succeeded: result.succeeded).opacity(0.10),
+            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+        )
     }
 }

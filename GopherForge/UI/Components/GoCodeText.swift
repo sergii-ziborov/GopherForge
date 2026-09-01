@@ -36,9 +36,14 @@ struct CodeBlock: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+            // Skipped when empty rather than drawn as a blank line: the block
+            // is used inside titled sections now, where a second title would
+            // be the same words twice.
+            if !title.isEmpty {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
             GoCodeText(code: code, fileKind: fileKind)
                 .padding(10)
                 .background(Color(.secondarySystemBackground))

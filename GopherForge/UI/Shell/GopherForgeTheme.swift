@@ -95,6 +95,29 @@ extension Color {
     init(hex: UInt32) {
         self.init(UIColor(hex: hex))
     }
+
+    /// The same hue, darker.
+    ///
+    /// Needed because the unit tints span Go's light blue and its deep one, and
+    /// a header that fills itself with the tint and writes on it in white is
+    /// legible for half of them: white on `#5DC9E2` is about 1.9:1. Darkening
+    /// the fill keeps the unit recognisable and the words readable.
+    func darkened(by amount: Double) -> Color {
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+        guard UIColor(self).getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+        else {
+            return self
+        }
+        return Color(
+            hue: Double(hue),
+            saturation: Double(min(1, saturation * 1.08)),
+            brightness: Double(max(0, brightness * (1 - amount))),
+            opacity: Double(alpha)
+        )
+    }
 }
 
 extension UIColor {
