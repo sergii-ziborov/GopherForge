@@ -45,8 +45,8 @@ final class WorkspaceModel {
     init(
         compiler: WasmGoCompiler = WasmGoCompiler(),
         analyzer: IdiomAnalyzer = IdiomAnalyzer(),
-        library: ProjectLibrary = ProjectLibrary(),
-        progress: LearningProgressStore = LearningProgressStore()
+        library: ProjectLibrary = .shared,
+        progress: LearningProgressStore = .shared
     ) {
         self.compiler = compiler
         self.analyzer = analyzer
@@ -80,6 +80,8 @@ final class WorkspaceModel {
         }
     }
 
+    private var remembering: Task<Void, Never>?
+
     func open(_ project: GopherForgeProject) {
         self.project = project
         selectedFile = project.entryFile
@@ -87,6 +89,22 @@ final class WorkspaceModel {
         lastResult = nil
         compileAttempts = 0
         refreshIdioms()
+        // A project is yours from the moment you make it. The library used to
+        // hear about one only when a build finished, so anything created and
+        // not yet compiled was missing from My projects — which is every
+        // project, for as long as it takes to press Build.
+        //
+        // The task is kept so a screen that is about to list the library can
+        // wait for this write rather than race it: an actor takes messages in
+        // the order they arrive, and two loose tasks have no order at all.
+        remembering = Task { [library] in
+            try? await library.record(project: project, lastBuild: nil)
+        }
+    }
+
+    /// Completes once the open above has reached the library.
+    func libraryUpdated() async {
+        await remembering?.value
     }
 
     /// Opens a file and, when a line is given, asks the editor to reveal it.

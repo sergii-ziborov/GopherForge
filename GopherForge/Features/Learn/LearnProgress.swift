@@ -22,7 +22,7 @@ final class LearnProgress {
 
     private let store: LearningProgressStore
 
-    init(store: LearningProgressStore = LearningProgressStore()) {
+    init(store: LearningProgressStore = .shared) {
         self.store = store
     }
 

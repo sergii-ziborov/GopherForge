@@ -6,6 +6,11 @@ import SwiftUI
 /// apart at a glance, and a course someone returns to daily is exactly the
 /// place where "which one was that" should be answered by shape and colour
 /// before it is answered by reading.
+///
+/// The seven tints are drawn from Go's own palette rather than from the system
+/// rainbow, so the course reads as one product. Two of them are derived: the
+/// unit blue is the blue golang.org used for years, and the module amber is
+/// Go's yellow darkened until a word can sit on it.
 enum CourseUnitStyle {
     static func symbol(for unitID: String) -> String {
         switch unitID {
@@ -23,14 +28,14 @@ enum CourseUnitStyle {
     /// The tint a unit is recognised by.
     static func tint(for unitID: String) -> Color {
         switch unitID {
-        case "core": .orange
-        case "collections": .teal
-        case "interfaces": .purple
-        case "errors": .pink
-        case "modules": .indigo
-        case "concurrency": .blue
-        case "stdlib": .green
-        default: GopherForgeTheme.anvil
+        case "core": GopherForgeTheme.gopherBlue
+        case "collections": GopherForgeTheme.aqua
+        case "interfaces": Color(hex: 0x375EAB)
+        case "errors": GopherForgeTheme.berry
+        case "modules": Color(hex: 0xB07B00)
+        case "concurrency": GopherForgeTheme.sky
+        case "stdlib": Color(hex: 0x4E8F3E)
+        default: GopherForgeTheme.slate
         }
     }
 

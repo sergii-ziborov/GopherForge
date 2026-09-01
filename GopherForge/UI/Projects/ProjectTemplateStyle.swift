@@ -9,11 +9,11 @@ import SwiftUI
 enum ProjectTemplateStyle {
     static func tint(for templateID: String) -> Color {
         switch templateID {
-        case "cli": GopherForgeTheme.ember
-        case "report": .teal
-        case "worker-pool": .blue
-        case "tested-package": .green
-        default: GopherForgeTheme.anvil
+        case "cli": GopherForgeTheme.gopherBlue
+        case "report": Color(hex: 0xB07B00)
+        case "worker-pool": GopherForgeTheme.sky
+        case "tested-package": Color(hex: 0x4E8F3E)
+        default: GopherForgeTheme.slate
         }
     }
 }
@@ -87,6 +87,6 @@ struct BuildOutcomeChip: View {
     }
 
     private func tint(for record: ProjectBuildRecord) -> Color {
-        record.succeeded ? .green : .orange
+        record.succeeded ? .green : GopherForgeTheme.warning
     }
 }

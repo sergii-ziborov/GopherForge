@@ -29,10 +29,3 @@ struct ProjectBuildRecord: Codable, Equatable, Sendable {
         }
     }
 }
-
-struct ProjectLibraryItem: Codable, Equatable, Identifiable, Sendable {
-    let id: UUID
-    var project: GopherForgeProject
-    var lastOpenedAt: Date
-    var lastBuild: ProjectBuildRecord?
-}

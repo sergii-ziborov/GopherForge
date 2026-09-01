@@ -18,6 +18,7 @@ enum LaunchOptions {
 
     private static let sectionArgument = "-GopherForgeSection"
     private static let screenArgument = "-GopherForgeScreen"
+    private static let emptyLibraryArgument = "-GopherForgeEmptyLibrary"
 
     /// `-GopherForgeSection learn` opens straight to that section.
     static var initialSection: AppSection {
@@ -40,5 +41,15 @@ enum LaunchOptions {
             return nil
         }
         return Screen(rawValue: arguments[index + 1])
+    }
+
+    /// `-GopherForgeEmptyLibrary` starts with no projects at all.
+    ///
+    /// The landing screen introduces the product only when there is nothing to
+    /// show instead, so a test for it that relies on the simulator happening to
+    /// be fresh is a test of the simulator rather than of the app. Its writes
+    /// go to a throwaway file, so a run cannot leave anything behind either.
+    static var usesEmptyLibrary: Bool {
+        ProcessInfo.processInfo.arguments.contains(emptyLibraryArgument)
     }
 }

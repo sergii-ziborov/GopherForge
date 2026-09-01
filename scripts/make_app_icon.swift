@@ -2,12 +2,19 @@
 
 // Renders the GopherForge app icon.
 //
-// The mark is original artwork: an anvil struck by a spark, with two ears
-// suggested by the anvil's horns. It deliberately does not reproduce the Go
-// gopher, which is Renée French's design and not ours to ship.
+// The mark is original artwork: our own gopher, drawn from circles, in the
+// colours the Go project publishes for itself. It deliberately does not
+// reproduce the Go gopher, which is Renée French's design and not ours to
+// ship — different silhouette, different palette arrangement, different face.
+// A mascot on the icon has to be one we can register as ours.
 //
 // Generated rather than hand-drawn so the icon is reproducible from source and
 // a colour change is a one-line diff instead of a binary swap.
+//
+// Written without an alpha channel on purpose: App Store Connect rejects a
+// transparent marketing icon at upload, long after the archive, with a message
+// that does not name the file. scripts/check_app_icon.sh guards the same rule
+// at build time.
 
 import CoreGraphics
 import Foundation
@@ -19,150 +26,246 @@ let output = CommandLine.arguments.count > 1
     ? URL(fileURLWithPath: CommandLine.arguments[1])
     : URL(fileURLWithPath: "GopherForgeIcon-1024.png")
 
+let space = CGColorSpace(name: CGColorSpace.sRGB)!
+
 guard let context = CGContext(
     data: nil,
     width: side,
     height: side,
     bitsPerComponent: 8,
     bytesPerRow: 0,
-    space: CGColorSpace(name: CGColorSpace.sRGB)!,
-    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+    space: space,
+    bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
 ) else {
     fatalError("could not create the drawing context")
 }
 
 let size = CGFloat(side)
 
-func color(_ red: CGFloat, _ green: CGFloat, _ blue: CGFloat, _ alpha: CGFloat = 1) -> CGColor {
-    CGColor(srgbRed: red, green: green, blue: blue, alpha: alpha)
+/// Fractions of the canvas rather than pixels, so the drawing scales with the
+/// icon instead of being tuned to 1024 alone.
+func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+    CGPoint(x: size * x, y: size * y)
 }
 
-// Slate ground, warm at the bottom as if lit from the forge.
-let slateTop = color(0.11, 0.14, 0.18)
-let slateBottom = color(0.20, 0.15, 0.13)
-let ember = color(0.85, 0.45, 0.16)
-let emberBright = color(0.98, 0.70, 0.32)
+func length(_ fraction: CGFloat) -> CGFloat { size * fraction }
 
-let gradient = CGGradient(
-    colorsSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
-    colors: [slateTop, slateBottom] as CFArray,
+func circle(_ centre: CGPoint, _ radius: CGFloat) -> CGRect {
+    CGRect(x: centre.x - radius, y: centre.y - radius, width: radius * 2, height: radius * 2)
+}
+
+// Go's published palette, plus the two darker values its own site uses where a
+// bright fill would not carry.
+func rgb(_ hex: UInt32) -> CGColor {
+    CGColor(
+        srgbRed: CGFloat((hex >> 16) & 0xFF) / 255,
+        green: CGFloat((hex >> 8) & 0xFF) / 255,
+        blue: CGFloat(hex & 0xFF) / 255,
+        alpha: 1
+    )
+}
+
+let gopherBlue = rgb(0x00ADD8)
+let deepBlue = rgb(0x00566E)
+let sky = rgb(0x5DC9E2)
+let berry = rgb(0xCE3262)
+let sun = rgb(0xFDDD00)
+let ink = rgb(0x0E3648)
+let cream = rgb(0xF6F4EE)
+
+// MARK: - Ground
+
+let ground = CGGradient(
+    colorsSpace: space,
+    colors: [gopherBlue, deepBlue] as CFArray,
     locations: [0, 1]
 )!
 context.drawLinearGradient(
-    gradient,
-    start: CGPoint(x: 0, y: size),
-    end: CGPoint(x: 0, y: 0),
+    ground,
+    start: point(0, 1),
+    end: point(1, 0),
     options: []
 )
 
-// The glow the anvil sits in.
-let glow = CGGradient(
-    colorsSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
-    colors: [color(0.85, 0.45, 0.16, 0.55), color(0.85, 0.45, 0.16, 0)] as CFArray,
+// A soft light behind the head, so the mark sits on the square rather than
+// floating over a flat field.
+let halo = CGGradient(
+    colorsSpace: space,
+    colors: [
+        CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.22),
+        CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0),
+    ] as CFArray,
     locations: [0, 1]
 )!
 context.drawRadialGradient(
-    glow,
-    startCenter: CGPoint(x: size / 2, y: size * 0.36),
+    halo,
+    startCenter: point(0.5, 0.52),
     startRadius: 0,
-    endCenter: CGPoint(x: size / 2, y: size * 0.36),
-    endRadius: size * 0.42,
+    endCenter: point(0.5, 0.52),
+    endRadius: length(0.52),
     options: []
 )
 
-// MARK: - Anvil
+// MARK: - Ears
 
-// Proportions are expressed as fractions of the canvas so the shape scales
-// with the icon rather than being tuned to 1024 alone.
-let anvil = CGMutablePath()
-let baseY = size * 0.26
-let bodyTopY = size * 0.52
-let waistY = size * 0.38
+// Drawn before the head so the head overlaps them: an ear that is a separate
+// circle stuck on the side reads as a sticker, and one the head grows out of
+// reads as an animal.
+//
+// Small and set high. Large round ears on a round head is a bear, whatever
+// else is on the face — the first draft of this icon was one.
+for centre in [point(0.315, 0.715), point(0.685, 0.715)] {
+    context.setFillColor(cream)
+    context.fillEllipse(in: circle(centre, length(0.079)))
+    context.setFillColor(sky)
+    context.fillEllipse(in: circle(centre, length(0.037)))
+}
 
-anvil.move(to: CGPoint(x: size * 0.30, y: baseY))
-anvil.addLine(to: CGPoint(x: size * 0.70, y: baseY))
-anvil.addLine(to: CGPoint(x: size * 0.62, y: waistY))
-anvil.addLine(to: CGPoint(x: size * 0.66, y: waistY))
-anvil.addLine(to: CGPoint(x: size * 0.66, y: bodyTopY - size * 0.06))
+// MARK: - Head
 
-// Right horn, drawn as an ear.
-anvil.addCurve(
-    to: CGPoint(x: size * 0.78, y: bodyTopY),
-    control1: CGPoint(x: size * 0.72, y: bodyTopY - size * 0.05),
-    control2: CGPoint(x: size * 0.78, y: bodyTopY - size * 0.03)
+context.setFillColor(cream)
+context.fillEllipse(
+    in: CGRect(
+        x: length(0.225),
+        y: length(0.195),
+        width: length(0.55),
+        height: length(0.545)
+    )
 )
-anvil.addCurve(
-    to: CGPoint(x: size * 0.64, y: bodyTopY + size * 0.03),
-    control1: CGPoint(x: size * 0.78, y: bodyTopY + size * 0.04),
-    control2: CGPoint(x: size * 0.71, y: bodyTopY + size * 0.05)
-)
-anvil.addLine(to: CGPoint(x: size * 0.36, y: bodyTopY + size * 0.03))
 
-// Left horn.
-anvil.addCurve(
-    to: CGPoint(x: size * 0.22, y: bodyTopY),
-    control1: CGPoint(x: size * 0.29, y: bodyTopY + size * 0.05),
-    control2: CGPoint(x: size * 0.22, y: bodyTopY + size * 0.04)
-)
-anvil.addCurve(
-    to: CGPoint(x: size * 0.34, y: bodyTopY - size * 0.06),
-    control1: CGPoint(x: size * 0.22, y: bodyTopY - size * 0.03),
-    control2: CGPoint(x: size * 0.28, y: bodyTopY - size * 0.05)
-)
-anvil.addLine(to: CGPoint(x: size * 0.34, y: waistY))
-anvil.addLine(to: CGPoint(x: size * 0.38, y: waistY))
-anvil.closeSubpath()
+// MARK: - Eyes
 
-context.addPath(anvil)
-context.setFillColor(ember)
+// Big, wide-set and outlined. At 40 points on a home screen the eyes are the
+// whole character; everything else is texture.
+for centre in [point(0.378, 0.556), point(0.622, 0.556)] {
+    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
+    context.fillEllipse(in: circle(centre, length(0.090)))
+
+    context.setStrokeColor(ink)
+    context.setLineWidth(length(0.013))
+    context.strokeEllipse(in: circle(centre, length(0.090)))
+
+    context.setFillColor(ink)
+    context.fillEllipse(
+        in: circle(CGPoint(x: centre.x, y: centre.y - length(0.008)), length(0.046))
+    )
+
+    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.92))
+    context.fillEllipse(
+        in: circle(
+            CGPoint(x: centre.x - length(0.016), y: centre.y + length(0.016)),
+            length(0.017)
+        )
+    )
+}
+
+// MARK: - Muzzle, nose and teeth
+
+// A muzzle patch, then the nose on it, then the teeth hanging off the nose.
+// Drawn as one stack on purpose: the first draft had the teeth floating below
+// a gap and the whole thing read as a light switch.
+context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
+context.fillEllipse(
+    in: CGRect(
+        x: size * 0.5 - length(0.175),
+        y: length(0.245),
+        width: length(0.35),
+        height: length(0.215)
+    )
+)
+
+// Whiskers as dots rather than lines: three a side, which is what says rodent
+// at a size where a hairline would disappear.
+context.setFillColor(ink)
+for side in [CGFloat(-1), 1] {
+    for (dx, dy) in [(0.128, 0.048), (0.152, 0.012), (0.128, -0.024)] {
+        context.fillEllipse(
+            in: circle(
+                CGPoint(x: size * 0.5 + side * length(dx), y: length(0.355 + dy)),
+                length(0.0095)
+            )
+        )
+    }
+}
+
+let noseCentre = point(0.5, 0.412)
+let nose = CGMutablePath()
+nose.move(to: CGPoint(x: noseCentre.x - length(0.046), y: noseCentre.y + length(0.018)))
+nose.addQuadCurve(
+    to: CGPoint(x: noseCentre.x + length(0.046), y: noseCentre.y + length(0.018)),
+    control: CGPoint(x: noseCentre.x, y: noseCentre.y + length(0.050))
+)
+nose.addQuadCurve(
+    to: CGPoint(x: noseCentre.x, y: noseCentre.y - length(0.036)),
+    control: CGPoint(x: noseCentre.x + length(0.044), y: noseCentre.y - length(0.020))
+)
+nose.addQuadCurve(
+    to: CGPoint(x: noseCentre.x - length(0.046), y: noseCentre.y + length(0.018)),
+    control: CGPoint(x: noseCentre.x - length(0.044), y: noseCentre.y - length(0.020))
+)
+nose.closeSubpath()
+context.addPath(nose)
+context.setFillColor(berry)
 context.fillPath()
+
+// Two front teeth, which is the one feature that says rodent without a tail.
+// Their top edge sits under the nose rather than below a gap.
+let teeth = CGRect(
+    x: size * 0.5 - length(0.068),
+    y: length(0.272),
+    width: length(0.136),
+    height: length(0.098)
+)
+let toothPath = CGPath(
+    roundedRect: teeth,
+    cornerWidth: length(0.026),
+    cornerHeight: length(0.026),
+    transform: nil
+)
+context.addPath(toothPath)
+context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
+context.fillPath()
+context.addPath(toothPath)
+context.setStrokeColor(ink)
+context.setLineWidth(length(0.009))
+context.strokePath()
+
+context.setStrokeColor(ink)
+context.setLineWidth(length(0.010))
+context.move(to: CGPoint(x: teeth.midX, y: teeth.minY + length(0.010)))
+context.addLine(to: CGPoint(x: teeth.midX, y: teeth.maxY - length(0.012)))
+context.strokePath()
 
 // MARK: - Spark
 
-// A four-pointed spark above the anvil, offset so the icon is not symmetric
-// and reads as a moment rather than a logo lockup.
-let sparkCenter = CGPoint(x: size * 0.60, y: size * 0.70)
-let sparkLong = size * 0.14
-let sparkShort = size * 0.035
+// The forge half of the name, in Go's yellow: a four-pointed spark, off centre
+// so the icon reads as a moment rather than a symmetrical logo lockup.
+let sparkCentre = point(0.175, 0.845)
+let long = length(0.090)
+let short = length(0.022)
 
 let spark = CGMutablePath()
-spark.move(to: CGPoint(x: sparkCenter.x, y: sparkCenter.y + sparkLong))
+spark.move(to: CGPoint(x: sparkCentre.x, y: sparkCentre.y + long))
 spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x + sparkShort, y: sparkCenter.y),
-    control: CGPoint(x: sparkCenter.x + sparkShort * 0.4, y: sparkCenter.y + sparkShort)
+    to: CGPoint(x: sparkCentre.x + long, y: sparkCentre.y),
+    control: CGPoint(x: sparkCentre.x + short, y: sparkCentre.y + short)
 )
 spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x + sparkLong * 0.72, y: sparkCenter.y),
-    control: CGPoint(x: sparkCenter.x + sparkShort * 2, y: sparkCenter.y + sparkShort * 0.3)
+    to: CGPoint(x: sparkCentre.x, y: sparkCentre.y - long),
+    control: CGPoint(x: sparkCentre.x + short, y: sparkCentre.y - short)
 )
 spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x + sparkShort, y: sparkCenter.y),
-    control: CGPoint(x: sparkCenter.x + sparkShort * 2, y: sparkCenter.y - sparkShort * 0.3)
+    to: CGPoint(x: sparkCentre.x - long, y: sparkCentre.y),
+    control: CGPoint(x: sparkCentre.x - short, y: sparkCentre.y - short)
 )
 spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x, y: sparkCenter.y - sparkLong),
-    control: CGPoint(x: sparkCenter.x + sparkShort * 0.4, y: sparkCenter.y - sparkShort)
-)
-spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x - sparkShort, y: sparkCenter.y),
-    control: CGPoint(x: sparkCenter.x - sparkShort * 0.4, y: sparkCenter.y - sparkShort)
-)
-spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x - sparkLong * 0.72, y: sparkCenter.y),
-    control: CGPoint(x: sparkCenter.x - sparkShort * 2, y: sparkCenter.y - sparkShort * 0.3)
-)
-spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x - sparkShort, y: sparkCenter.y),
-    control: CGPoint(x: sparkCenter.x - sparkShort * 2, y: sparkCenter.y + sparkShort * 0.3)
-)
-spark.addQuadCurve(
-    to: CGPoint(x: sparkCenter.x, y: sparkCenter.y + sparkLong),
-    control: CGPoint(x: sparkCenter.x - sparkShort * 0.4, y: sparkCenter.y + sparkShort)
+    to: CGPoint(x: sparkCentre.x, y: sparkCentre.y + long),
+    control: CGPoint(x: sparkCentre.x - short, y: sparkCentre.y + short)
 )
 spark.closeSubpath()
 
 context.addPath(spark)
-context.setFillColor(emberBright)
+context.setFillColor(sun)
 context.fillPath()
 
 guard let image = context.makeImage(),

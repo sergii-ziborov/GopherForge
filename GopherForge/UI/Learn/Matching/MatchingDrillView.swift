@@ -107,7 +107,7 @@ struct MatchingDrillView: View {
                 systemImage: session.isPerfect ? "star.fill" : "checkmark.circle.fill"
             )
             .font(.headline)
-            .foregroundStyle(session.isPerfect ? Color.orange : Color.green)
+            .foregroundStyle(session.isPerfect ? GopherForgeTheme.gopherBlue : Color.green)
 
             Text(
                 session.isPerfect

@@ -31,7 +31,7 @@ struct GitHubImportView: View {
                     Text("Repository URL")
                 } footer: {
                     if let message = model.validationMessage {
-                        Text(message).foregroundStyle(.orange)
+                        Text(message).foregroundStyle(GopherForgeTheme.warning)
                     } else {
                         Text("A public repository is downloaded as a snapshot — the code, "
                             + "not its history. A link to a branch or a commit brings that "
@@ -43,7 +43,7 @@ struct GitHubImportView: View {
                     Section {
                         Label(message, systemImage: "exclamationmark.triangle")
                             .font(.callout)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(GopherForgeTheme.warning)
                             .accessibilityIdentifier(AccessibilityID.githubImportFailure)
                     }
                 }

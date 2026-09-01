@@ -4,7 +4,7 @@ import SwiftUI
 struct ReviewView: View {
     @State private var items: [ReviewScheduler.Item] = []
     @State private var hasLoaded = false
-    private let store = LearningProgressStore()
+    private let store = LearningProgressStore.shared
     private let scheduler = ReviewScheduler()
 
     var body: some View {

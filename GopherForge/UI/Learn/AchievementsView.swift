@@ -140,7 +140,7 @@ private struct AchievementRow: View {
             } else {
                 Text("Every level earned.")
                     .font(.caption2)
-                    .foregroundStyle(GopherForgeTheme.ember)
+                    .foregroundStyle(GopherForgeTheme.accent)
             }
         }
         .padding(.vertical, 3)
@@ -153,7 +153,7 @@ private struct AchievementRow: View {
         case .bronze: Color(red: 0.72, green: 0.45, blue: 0.20)
         case .silver: Color(red: 0.62, green: 0.66, blue: 0.70)
         case .gold: Color(red: 0.85, green: 0.68, blue: 0.13)
-        case .platinum: GopherForgeTheme.ember
+        case .platinum: GopherForgeTheme.accent
         }
     }
 

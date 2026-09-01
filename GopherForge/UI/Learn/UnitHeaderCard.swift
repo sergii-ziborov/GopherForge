@@ -14,8 +14,12 @@ struct UnitHeaderCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 14) {
-                UnitProgressRing(fraction: fraction, symbol: CourseUnitStyle.symbol(for: unit.id))
-                    .frame(width: 56, height: 56)
+                UnitProgressRing(
+                    fraction: fraction,
+                    symbol: CourseUnitStyle.symbol(for: unit.id),
+                    tint: CourseUnitStyle.tint(for: unit.id)
+                )
+                .frame(width: 56, height: 56)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(unit.title).font(.headline)
@@ -39,29 +43,31 @@ struct UnitHeaderCard: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             ),
-            in: RoundedRectangle(cornerRadius: 16)
+            in: RoundedRectangle(cornerRadius: 18, style: .continuous)
         )
-        .padding(.horizontal, 16)
-        .padding(.vertical, 6)
     }
 }
 
 /// A ring around the unit's symbol. The ring is the progress; the symbol is
 /// which unit it is, so a glance answers both.
+///
+/// Tinted by the unit rather than by the app, so the ring and the node on the
+/// path above it are the same colour and read as the same thing.
 struct UnitProgressRing: View {
     let fraction: Double
     let symbol: String
+    var tint: Color = GopherForgeTheme.accent
 
     var body: some View {
         ZStack {
             Circle().stroke(Color.primary.opacity(0.12), lineWidth: 5)
             Circle()
                 .trim(from: 0, to: max(0.001, fraction))
-                .stroke(GopherForgeTheme.ember, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .stroke(tint, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Image(systemName: symbol)
                 .font(.title3)
-                .foregroundStyle(GopherForgeTheme.ember)
+                .foregroundStyle(tint)
         }
         .accessibilityHidden(true)
     }

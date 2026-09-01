@@ -37,16 +37,20 @@ enum WorkspacePane: String, CaseIterable, Identifiable {
         }
     }
 
-    /// The colour this pane is recognised by. Problems are orange, tests are
-    /// green, and the rest take the app's own tints — so the switcher can be
-    /// read by shape at a glance rather than by reading six words.
+    /// The colour this pane is recognised by. Tests are green and problems are
+    /// amber, which is what those two mean everywhere; the rest take the app's
+    /// own tints — so the switcher can be read by shape at a glance rather than
+    /// by reading six words.
+    ///
+    /// Idioms used to be plain yellow, which on a white dock is a chip nobody
+    /// with ordinary eyesight can read. Go's pink carries at the same size.
     var tint: Color {
         switch self {
-        case .code: GopherForgeTheme.anvil
-        case .problems: .orange
-        case .output: .teal
+        case .code: GopherForgeTheme.slate
+        case .problems: GopherForgeTheme.warning
+        case .output: GopherForgeTheme.aqua
         case .tests: .green
-        case .idioms: .yellow
+        case .idioms: GopherForgeTheme.berry
         case .terminal: .purple
         }
     }

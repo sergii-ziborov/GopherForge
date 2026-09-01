@@ -11,6 +11,23 @@ than screens.
 
 > Forge real Go, anywhere.
 
+## What it looks like
+
+Every compiler result below is a real run of the bundled toolchain in the
+Simulator — the test counts, the diagnostics, the program output and the
+goroutine trace are what the app actually produced, not mock-ups.
+
+| | |
+| --- | --- |
+| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card reading 0 of 23 lessons, five tool cards, and seven unit nodes on a winding dashed trail"> | <img src="docs/screenshots/unit-path.png" alt="A unit opened: its header, a note for people who already program, and five lesson nodes on a trail, each marked READ or COMPILE"> |
+| **The course is a path.** Seven units, then the lessons inside one. A node says whether it was ticked by hand or sealed by a compiler pass — and nothing is locked, because a course for people who already program is one they enter at goroutines. | **Inside a unit.** Every lesson is marked `READ` or `COMPILE` before it is opened, so it is clear which ones the toolchain will judge. |
+| <img src="docs/screenshots/run-output.png" alt="The iPad workspace: a worker-pool program in the editor and an Output pane reporting it compiled and executed locally, printing 1 4 9 16 25"> | <img src="docs/screenshots/problems.png" alt="The Problems pane showing declared and not used: unusedTotal at main.go line 11 column 1, with the line marked in the gutter"> |
+| **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
+| <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane reading 4 passed, 0 failed with per-case rows for TestReverse and its subtests"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab: a scenario, a prediction kept closed, and a trace reporting that main blocked on ready before the greeter sent to it"> |
+| **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Concurrency Lab.** Scenarios that print structured events from ordinary instrumentation, and a trace model that names the goroutine and the channel that blocked. |
+| <img src="docs/screenshots/my-projects.png" alt="My projects: a search field, folder chips, and projects grouped under Experiments, Learning and Unfiled with tags and a build chip"> | <img src="docs/screenshots/iphone-workspace.png" width="300" alt="The same workspace on iPhone, as full-height Code, Problems, Output and Tests tabs above a bottom tab bar"> |
+| **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone.** The workspace becomes full-height tabs with the switcher at the top, where the keyboard cannot bury it. |
+
 ## What is built, and what is not
 
 The hard product gate for this repository is:
@@ -36,6 +53,11 @@ Concretely, the app currently contains:
 
 - an adaptive native `Projects / Build / Learn / Settings` shell — sidebar on
   iPad, tab bar on iPhone;
+- a project library that keeps everything you make: folders, tags, a star and a
+  note per project, grouped and searched by name, folder, tag or file name —
+  because the project you are looking for is often "the one with `parser.go`
+  in it" rather than whatever you called it six weeks ago. Nothing is evicted;
+  the dashboard keeps a five-project strip and links to the rest;
 - a workspace that changes shape by device: iPad shows the file tree, the editor
   and a dock at once, while iPhone becomes full-height
   `Code / Problems / Output / Tests / Idioms / Terminal` tabs with the switcher
@@ -46,6 +68,11 @@ Concretely, the app currently contains:
 - a course of 40 lessons across seven units, every code lesson shipping a
   complete answer that a gate compiles against that lesson's own hidden test —
   so a lesson nobody can solve fails the build rather than a learner;
+- the course drawn as a path rather than a list, at both levels: seven unit
+  nodes on the Learn screen, the unit's own lessons inside it, each node saying
+  whether it was ticked by hand or sealed by a compiler pass. Nothing is
+  locked — a course written for people who already program is one they enter
+  sideways, at goroutines, because that is what they came for;
 - a quiz closing each unit: one question at a time, four options, and the
   explanation the moment an answer is committed rather than at the end;
 - a matching drill — terms on the left, meanings on the right, tiles of one
@@ -140,8 +167,12 @@ toolchain and standard library under the BSD 3-Clause license of the Go
 project. Attributions are maintained in
 [GopherForge/Resources/ThirdPartyNotices.md](GopherForge/Resources/ThirdPartyNotices.md).
 
-The Go gopher was designed by Renée French and is not used here. The app's mark
-is original artwork.
+The Go gopher was designed by Renée French and is not used here. The app's
+mascot is a gopher of our own — a different silhouette and a different face,
+drawn from scratch in `scripts/make_app_icon.swift` so the icon is reproducible
+from source rather than a binary nobody can regenerate. Go's published brand
+colours are used as colours; no Go mark, logo, or gopher is reproduced, and
+nothing here implies endorsement by the Go project.
 
 `ThirdPartyNoticesTests` fails the build if a bundled dependency is missing
 from the notices or recorded under the wrong licence, and

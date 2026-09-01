@@ -58,7 +58,13 @@ struct PracticeHomeView: View {
             }
             .accessibilityIdentifier("practice.\(item.id)")
         } else {
+            // Combined into one element before it is named. An identifier on a
+            // container is inherited by every label inside it, so the locked
+            // row answered a search for it three times and a test asking where
+            // it is on screen got "multiple matching elements" instead of a
+            // frame. The unlocked branch is a link, which is already one.
             PracticeItemRow(item: item, locked: true, remaining: item.unlocksAfter - done)
+                .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("practice.\(item.id)")
         }
     }

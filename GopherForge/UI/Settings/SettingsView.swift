@@ -10,7 +10,7 @@ struct SettingsView: View {
     /// a directory, and Settings redraws for every stepper tick.
     @State private var cacheByteCount: Int64 = 0
     @State private var isConfirmingReset = false
-    private let progress = LearningProgressStore()
+    private let progress = LearningProgressStore.shared
 
     var body: some View {
         Form {

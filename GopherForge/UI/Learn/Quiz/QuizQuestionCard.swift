@@ -107,7 +107,7 @@ struct QuizOptionRow: View {
         switch state {
         case .unanswered, .dimmed: .secondary
         case .correct: .green
-        case .wrong: .orange
+        case .wrong: GopherForgeTheme.berry
         }
     }
 
@@ -115,7 +115,7 @@ struct QuizOptionRow: View {
         switch state {
         case .unanswered, .dimmed: Color(.secondarySystemGroupedBackground)
         case .correct: Color.green.opacity(0.14)
-        case .wrong: Color.orange.opacity(0.14)
+        case .wrong: GopherForgeTheme.berry.opacity(0.14)
         }
     }
 }

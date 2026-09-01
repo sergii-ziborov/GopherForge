@@ -80,10 +80,10 @@ private struct EventRow: View {
 
     private var tint: Color {
         switch event.kind {
-        case .blocked: isStuck ? .red : .orange
-        case .channelClosed, .contextCancelled: GopherForgeTheme.ember
+        case .blocked: isStuck ? .red : GopherForgeTheme.warning
+        case .channelClosed, .contextCancelled: GopherForgeTheme.accent
         case .goroutineFinished, .waitGroupDone, .waitGroupWaitReturned: .green
-        default: GopherForgeTheme.anvil
+        default: GopherForgeTheme.slate
         }
     }
 }

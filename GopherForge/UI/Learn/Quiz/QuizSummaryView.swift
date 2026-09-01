@@ -92,8 +92,8 @@ private struct ScoreRing: View {
                 .stroke(
                     LinearGradient(
                         colors: passed
-                            ? [GopherForgeTheme.anvil, GopherForgeTheme.ember]
-                            : [.orange, .red],
+                            ? [GopherForgeTheme.slate, GopherForgeTheme.accent]
+                            : [GopherForgeTheme.warning, GopherForgeTheme.berry],
                         startPoint: .top,
                         endPoint: .bottom
                     ),

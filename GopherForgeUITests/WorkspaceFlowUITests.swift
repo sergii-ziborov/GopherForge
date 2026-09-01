@@ -18,8 +18,16 @@ final class WorkspaceFlowUITests: XCTestCase {
         app = nil
     }
 
+    /// Launched with an empty library on purpose. The landing screen only
+    /// introduces the product when there is nothing to show instead, and every
+    /// other test in this suite opens a project — so without the argument this
+    /// asserts that it ran first.
     func testLandingIntroducesTheProductAndOffersAWayIn() {
-        launch(section: .projects)
+        app.launchArguments = [
+            "-GopherForgeSection", Section.projects.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
+        app.launch()
 
         XCTAssertTrue(
             app.otherElements[AccessibilityIdentifier.welcomeCard].waitForExistence(timeout: 10)

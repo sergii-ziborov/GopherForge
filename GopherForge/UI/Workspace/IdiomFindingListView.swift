@@ -19,7 +19,7 @@ struct IdiomFindingListView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 6) {
                         Image(systemName: "lightbulb")
-                            .foregroundStyle(GopherForgeTheme.ember)
+                            .foregroundStyle(GopherForgeTheme.accent)
                         Text(finding.title).font(.callout.weight(.medium))
                         Spacer()
                         Text(finding.confidence == .certain ? "convention" : "worth a look")

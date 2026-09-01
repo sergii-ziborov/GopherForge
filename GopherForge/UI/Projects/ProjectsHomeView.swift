@@ -13,7 +13,7 @@ struct ProjectsHomeView: View {
     /// The pending import currently downloading, so its row can show it.
     @State private var importingShared: String?
     @State private var importFailure: String?
-    private let library = ProjectLibrary()
+    private let library = ProjectLibrary.shared
 
     var body: some View {
         List {
@@ -56,6 +56,27 @@ struct ProjectsHomeView: View {
                     NewProjectRow()
                 }
                 .accessibilityIdentifier(AccessibilityID.newProject)
+
+                if !recents.isEmpty {
+                    NavigationLink {
+                        MyProjectsView(
+                            items: recents,
+                            onOpen: { open($0.project) },
+                            onToggleFavorite: toggleFavorite,
+                            onOrganize: organize,
+                            onDelete: delete
+                        )
+                    } label: {
+                        LabeledContent {
+                            Text("\(recents.count)")
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        } label: {
+                            Label("My projects", systemImage: "square.grid.2x2")
+                        }
+                    }
+                    .accessibilityIdentifier(AccessibilityID.libraryEntry)
+                }
             }
 
             Section {
@@ -81,16 +102,26 @@ struct ProjectsHomeView: View {
             }
 
             if !recents.isEmpty {
-                Section("Recent") {
-                    ForEach(recents) { item in
+                Section {
+                    // A strip, not the library: five is what fits without the
+                    // first screen becoming a wall, and everything else is one
+                    // tap away in My projects.
+                    ForEach(recents.prefix(5)) { item in
                         Button {
                             open(item.project)
                         } label: {
-                            ProjectRow(item: item)
+                            ProjectLibraryRow(item: item)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier(AccessibilityID.project(item.id))
                     }
                     .onDelete(perform: remove)
+                } header: {
+                    Text("Recent")
+                } footer: {
+                    if recents.count > 5 {
+                        Text("\(recents.count - 5) more in My projects.")
+                    }
                 }
             }
 
@@ -137,11 +168,17 @@ struct ProjectsHomeView: View {
     private func open(_ project: GopherForgeProject) {
         workspace.open(project)
         navigation.show(.build)
-        Task { await reload() }
+        Task {
+            // Opening writes the project into the library; waiting for that
+            // write is what stops the list reloading from the state before it.
+            await workspace.libraryUpdated()
+            await reload()
+        }
     }
 
     private func remove(at offsets: IndexSet) {
-        let ids = offsets.map { recents[$0].id }
+        let shown = Array(recents.prefix(5))
+        let ids = offsets.compactMap { shown.indices.contains($0) ? shown[$0].id : nil }
         Task {
             for id in ids { _ = try? await library.remove(id: id) }
             await reload()
@@ -164,6 +201,34 @@ struct ProjectsHomeView: View {
                 importFailure = (error as? LocalizedError)?.errorDescription
                     ?? error.localizedDescription
             }
+        }
+    }
+
+    private func toggleFavorite(_ item: ProjectLibraryItem) {
+        Task {
+            _ = try? await library.setFavorite(id: item.id, !item.favorite)
+            await reload()
+        }
+    }
+
+    private func organize(_ item: ProjectLibraryItem, _ draft: ProjectFilingDraft) {
+        Task {
+            _ = try? await library.update(
+                id: item.id,
+                name: draft.trimmedName,
+                folder: draft.folder,
+                tags: draft.tags,
+                isFavorite: draft.isFavorite,
+                summary: draft.summary
+            )
+            await reload()
+        }
+    }
+
+    private func delete(_ item: ProjectLibraryItem) {
+        Task {
+            _ = try? await library.remove(id: item.id)
+            await reload()
         }
     }
 
@@ -194,42 +259,6 @@ private struct WelcomeCard: View {
     }
 }
 
-private struct ProjectRow: View {
-    let item: ProjectLibraryItem
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "folder.fill")
-                .font(.callout)
-                .foregroundStyle(GopherForgeTheme.anvil)
-                .frame(width: 28, height: 28)
-                .background(GopherForgeTheme.anvil.opacity(0.14), in: RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.project.name).font(.callout.weight(.medium))
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                // The last build as a chip rather than a bare tick: "3 tests"
-                // and "build failed" are different facts, and a tick says
-                // neither of them.
-                BuildOutcomeChip(record: item.lastBuild)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(.vertical, 2)
-        .contentShape(Rectangle())
-    }
-
-    private var subtitle: String {
-        var parts: [String] = []
-        if let module = item.project.module { parts.append(module.modulePath) }
-        parts.append("\(item.project.goFileCount) Go files")
-        if item.project.testFileCount > 0 { parts.append("\(item.project.testFileCount) test files") }
-        return parts.joined(separator: " · ")
-    }
-}
-
 /// The single way in to starting something, on a screen whose job is otherwise
 /// to show what you were already working on.
 private struct NewProjectRow: View {
@@ -239,7 +268,7 @@ private struct NewProjectRow: View {
                 .font(.callout.weight(.semibold))
                 .foregroundStyle(.white)
                 .frame(width: 28, height: 28)
-                .background(GopherForgeTheme.ember, in: RoundedRectangle(cornerRadius: 8))
+                .background(GopherForgeTheme.accent, in: RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Create new project").font(.callout.weight(.medium))

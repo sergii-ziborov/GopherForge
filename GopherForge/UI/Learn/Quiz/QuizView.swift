@@ -77,7 +77,7 @@ private struct QuizProgressBar: View {
                     Capsule().fill(Color(.tertiarySystemFill))
                     Capsule()
                         .fill(LinearGradient(
-                            colors: [GopherForgeTheme.anvil, GopherForgeTheme.ember],
+                            colors: [GopherForgeTheme.slate, GopherForgeTheme.accent],
                             startPoint: .leading,
                             endPoint: .trailing
                         ))
@@ -118,7 +118,7 @@ private struct QuizFooter: View {
                     systemImage: right ? "checkmark.seal.fill" : "xmark.seal.fill"
                 )
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(right ? Color.green : Color.orange)
+                .foregroundStyle(right ? Color.green : GopherForgeTheme.berry)
 
                 Text(question.explanation)
                     .font(.footnote)

@@ -89,7 +89,7 @@ struct LessonDetailView: View {
                         : "checkmark.circle.fill"
                 )
                 .font(.callout.weight(.medium))
-                .foregroundStyle(model.isCompilerVerified ? Color.green : GopherForgeTheme.anvil)
+                .foregroundStyle(model.isCompilerVerified ? Color.green : GopherForgeTheme.slate)
 
                 if !model.isCompilerVerified, lesson.isJudgedByCompiler {
                     Text("You said so — the hidden test has not run. Press Check to "
@@ -102,7 +102,7 @@ struct LessonDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(
-                (model.isCompilerVerified ? Color.green : GopherForgeTheme.anvil).opacity(0.12),
+                (model.isCompilerVerified ? Color.green : GopherForgeTheme.slate).opacity(0.12),
                 in: RoundedRectangle(cornerRadius: 12)
             )
             // One element, so the identifier belongs to the card rather than
@@ -158,7 +158,7 @@ struct LessonDetailView: View {
                 }
             } label: {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(GopherForgeTheme.anvil)
+                    .foregroundStyle(GopherForgeTheme.slate)
             }
             .accessibilityLabel("Marked done. Tap to undo.")
             .accessibilityIdentifier(AccessibilityID.lessonUncomplete)

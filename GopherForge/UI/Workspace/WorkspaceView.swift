@@ -212,7 +212,7 @@ private struct MissingToolchainRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Color.orange)
+                .foregroundStyle(GopherForgeTheme.warning)
             VStack(alignment: .leading, spacing: 1) {
                 Text(status.label).font(.footnote.weight(.medium))
                 Text(status.detail).font(.caption2).foregroundStyle(.secondary)

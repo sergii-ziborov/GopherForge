@@ -62,7 +62,7 @@ enum TerminalLineStyle {
 
         let parts = body.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
         var tool = AttributedString(String(parts.first ?? ""))
-        tool.foregroundColor = GopherForgeTheme.ember
+        tool.foregroundColor = GopherForgeTheme.accent
         tool.font = .caption.monospaced().weight(.semibold)
 
         guard parts.count > 1 else { return prompt + tool }
@@ -81,7 +81,7 @@ enum TerminalLineStyle {
         var where_ = AttributedString(":\(position): ")
         where_.foregroundColor = .secondary
         var text = AttributedString(message)
-        text.foregroundColor = .orange
+        text.foregroundColor = GopherForgeTheme.warning
         return path + where_ + text
     }
 }

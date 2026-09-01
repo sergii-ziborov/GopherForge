@@ -36,7 +36,7 @@ struct PackageBrowserView: View {
             if case let .failed(message) = model.phase {
                 Section {
                     Label(message, systemImage: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(GopherForgeTheme.warning)
                         .font(.footnote)
                         .accessibilityIdentifier(AccessibilityID.packageError)
                 }
@@ -144,7 +144,7 @@ private struct SearchResultRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: "shippingbox")
-                .foregroundStyle(GopherForgeTheme.anvil)
+                .foregroundStyle(GopherForgeTheme.slate)
                 .font(.caption)
             Text(result.path).font(.callout.monospaced())
             Spacer(minLength: 6)

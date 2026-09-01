@@ -103,7 +103,7 @@ private struct DiagnosisCard: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 Image(systemName: "exclamationmark.bubble")
-                    .foregroundStyle(GopherForgeTheme.ember)
+                    .foregroundStyle(GopherForgeTheme.accent)
                 Text(diagnosis.headline).font(.callout.weight(.medium))
             }
             Text(diagnosis.detail)

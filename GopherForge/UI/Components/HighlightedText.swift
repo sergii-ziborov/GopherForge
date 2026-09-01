@@ -12,7 +12,7 @@ struct HighlightedText: View {
     let text: String
     let query: String
     var font: Font = .caption2.monospaced()
-    var tint: Color = GopherForgeTheme.ember
+    var tint: Color = GopherForgeTheme.accent
 
     var body: some View {
         Text(Self.attributed(text, marking: query, tint: tint))
@@ -26,7 +26,7 @@ struct HighlightedText: View {
     static func attributed(
         _ text: String,
         marking query: String,
-        tint: Color = GopherForgeTheme.ember
+        tint: Color = GopherForgeTheme.accent
     ) -> AttributedString {
         var attributed = AttributedString(text)
         attributed.foregroundColor = .secondary

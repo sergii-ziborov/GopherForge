@@ -59,7 +59,7 @@ struct NewProjectView: View {
                 Section {
                     Label(failure, systemImage: "exclamationmark.triangle")
                         .font(.caption)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(GopherForgeTheme.warning)
                 }
             }
         }

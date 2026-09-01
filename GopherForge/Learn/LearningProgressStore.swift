@@ -22,6 +22,17 @@ actor LearningProgressStore {
     private let maximumRuns = 1_000
     private var cachedState: State?
 
+    /// The store the app uses.
+    ///
+    /// Shared rather than made per screen, because the cache above turns a
+    /// second instance from a waste into a correctness bug: marking a lesson
+    /// done updated the cache of whichever store the lesson screen happened to
+    /// hold, while the course screen's own store went on answering from the
+    /// cache it had read at launch. Progress appeared only after a relaunch —
+    /// which is the thing that re-read the file. Tests still make their own
+    /// with an explicit `storageURL`.
+    static let shared = LearningProgressStore()
+
     init(storageURL: URL? = nil) {
         if let storageURL {
             self.storageURL = storageURL

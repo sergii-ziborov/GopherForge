@@ -31,7 +31,7 @@ final class LessonModel {
         lesson: Lesson,
         compiler: WasmGoCompiler = WasmGoCompiler(),
         analyzer: IdiomAnalyzer = IdiomAnalyzer(),
-        store: LearningProgressStore = LearningProgressStore()
+        store: LearningProgressStore = .shared
     ) {
         self.lesson = lesson
         self.compiler = compiler

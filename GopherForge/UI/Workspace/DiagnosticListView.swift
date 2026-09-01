@@ -18,7 +18,7 @@ struct DiagnosticListView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
                         Image(systemName: diagnostic.isBlocking ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
-                            .foregroundStyle(diagnostic.isBlocking ? Color.red : Color.orange)
+                            .foregroundStyle(diagnostic.isBlocking ? Color.red : GopherForgeTheme.warning)
                         Text(diagnostic.message)
                             .font(.callout)
                             .textSelection(.enabled)

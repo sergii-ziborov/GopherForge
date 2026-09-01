@@ -63,7 +63,7 @@ struct ResolvedModuleSection: View {
             HStack(spacing: 14) {
                 if let score = insight.scorecard {
                     Label(String(format: "%.1f", score), systemImage: "shield.lefthalf.filled")
-                        .foregroundStyle(score >= 7 ? Color.green : score >= 4 ? Color.orange : Color.red)
+                        .foregroundStyle(score >= 7 ? Color.green : score >= 4 ? GopherForgeTheme.warning : Color.red)
                 }
                 if let stars = insight.stars {
                     Label(Self.compact(stars), systemImage: "star")

@@ -45,7 +45,7 @@ enum SourceFileBadge: String, Sendable, CaseIterable {
 
     var tint: Color {
         switch self {
-        case .entryPoint: GopherForgeTheme.anvil
+        case .entryPoint: GopherForgeTheme.slate
         case .test: .green
         case .source: .blue
         case .module: .purple
