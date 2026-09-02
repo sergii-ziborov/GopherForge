@@ -8,6 +8,15 @@ import UIKit
 /// losing the selection, a caret position the app can read, and a keyboard
 /// accessory with the characters Go needs most.
 struct SyntaxCodeEditor: UIViewRepresentable {
+    /// A container wide enough that nothing reaches its edge.
+    ///
+    /// Large and finite rather than `greatestFiniteMagnitude` because TextKit
+    /// does arithmetic on this width. It is only a starting value either way:
+    /// the text view overwrites it with its own width on the first layout pass,
+    /// which is why `CodeEditorView` measures the string rather than the
+    /// container.
+    static let unboundedContainerSize = CGSize(width: 1_000_000, height: 1_000_000)
+
     @Binding var text: String
     let fileKind: SourceFileKind
     let fontSize: CGFloat
@@ -44,10 +53,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         // than scrolling sideways for the occasional long one.
         textView.textContainer.widthTracksTextView = false
         textView.textContainer.lineBreakMode = .byClipping
-        textView.textContainer.size = CGSize(
-            width: CGFloat.greatestFiniteMagnitude,
-            height: CGFloat.greatestFiniteMagnitude
-        )
+        textView.textContainer.size = SyntaxCodeEditor.unboundedContainerSize
         textView.isDirectionalLockEnabled = true
         textView.showsHorizontalScrollIndicator = true
         // On the text view rather than on the SwiftUI wrapper: the wrapper is
@@ -67,8 +73,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         let needsTextUpdate = textView.text != text
         if needsTextUpdate {
             let selection = textView.selectedRange
-            textView.attributedText = context.coordinator.highlighted(text, fontSize: fontSize)
-            textView.selectedRange = Self.clamped(selection, in: textView.text)
+            let highlighted = context.coordinator.highlighted(text, fontSize: fontSize)
+            editor.apply(highlighted, selection: Self.clamped(selection, in: highlighted.string))
         } else if context.coordinator.appliedFontSize != fontSize
             || context.coordinator.appliedFileKind != fileKind
             // Marks live in the attributed string, so a change to either set
@@ -78,8 +84,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
             || context.coordinator.appliedSearchQuery != searchQuery
             || context.coordinator.appliedMarkedLines != markedLines {
             let selection = textView.selectedRange
-            textView.attributedText = context.coordinator.highlighted(text, fontSize: fontSize)
-            textView.selectedRange = Self.clamped(selection, in: textView.text)
+            let highlighted = context.coordinator.highlighted(text, fontSize: fontSize)
+            editor.apply(highlighted, selection: Self.clamped(selection, in: highlighted.string))
         }
 
         context.coordinator.appliedFontSize = fontSize

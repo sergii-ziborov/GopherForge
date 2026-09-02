@@ -40,65 +40,125 @@ final class LineNumberGutterView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// One line fragment, and which line of the file it belongs to.
+    struct FragmentLine: Equatable {
+        let number: Int
+        /// False for the continuation of a line that wrapped, so the gutter can
+        /// leave it blank the way an editor does rather than inventing a line.
+        let startsLine: Bool
+        let y: CGFloat
+        let height: CGFloat
+    }
+
     override func draw(_ rect: CGRect) {
-        guard let textView,
-              let context = UIGraphicsGetCurrentContext()
-        else {
-            return
+        guard let textView, let context = UIGraphicsGetCurrentContext() else { return }
+
+        let font = UIFont.monospacedDigitSystemFont(ofSize: max(9, fontSize - 2), weight: .regular)
+        context.setFillColor(UIColor.systemOrange.withAlphaComponent(0.18).cgColor)
+
+        for fragment in fragmentLines() {
+            let marked = markedLines.contains(fragment.number)
+            if marked {
+                context.fill(CGRect(x: 0, y: fragment.y, width: bounds.width, height: fragment.height))
+            }
+            // A wrapped row carries no number. Two identical numbers down the
+            // gutter read as two lines, which is the same lie as numbering the
+            // row separately.
+            guard fragment.startsLine else { continue }
+            draw(number: fragment.number, at: fragment.y, height: fragment.height, font: font, marked: marked)
         }
+    }
+
+    /// The fragments on screen, each tagged with the line of the file it is
+    /// part of.
+    ///
+    /// The number comes from the character the fragment starts at, not from a
+    /// counter advanced once per fragment. Counting fragments is only right
+    /// while nothing wraps, and when something does it starts numbering rows on
+    /// the screen instead of lines in the file — so every number below the
+    /// first long line disagrees with the compiler, and a diagnostic marks a
+    /// line nobody was told about.
+    ///
+    /// Only what is on screen: numbering a whole file would make scrolling a
+    /// long one cost more the further down you go.
+    func fragmentLines() -> [FragmentLine] {
+        guard let textView else { return [] }
 
         let layoutManager = textView.layoutManager
         let container = textView.textContainer
         let inset = textView.textContainerInset
         let offset = textView.contentOffset.y
 
-        // Only the fragments on screen: drawing the whole file would make
-        // scrolling a long one cost more the further down you are.
         let visible = CGRect(
             x: 0,
             y: offset - inset.top,
-            width: container.size.width,
-            height: bounds.height + fontSize * 2
+            width: max(1, container.size.width),
+            height: max(bounds.height, 1) + fontSize * 2
         )
-        let range = layoutManager.glyphRange(forBoundingRect: visible, in: container)
+        let glyphRange = layoutManager.glyphRange(forBoundingRect: visible, in: container)
         let text = textView.text as NSString
 
-        let font = UIFont.monospacedDigitSystemFont(ofSize: max(9, fontSize - 2), weight: .regular)
-        let firstCharacter = layoutManager.characterRange(
-            forGlyphRange: NSRange(location: range.location, length: 0),
+        var characterIndex = layoutManager.characterRange(
+            forGlyphRange: NSRange(location: glyphRange.location, length: 0),
             actualGlyphRange: nil
         ).location
-        var lineNumber = text.substring(to: min(firstCharacter, text.length))
-            .components(separatedBy: "\n").count
+        // The prefix is walked once; after that only the gap between one
+        // fragment and the next is counted, so the whole pass stays linear in
+        // what is on screen rather than quadratic in it.
+        var lineNumber = Self.lineNumber(at: characterIndex, in: text)
+        var previousNumber = 0
 
-        context.setFillColor(UIColor.systemOrange.withAlphaComponent(0.18).cgColor)
-
-        layoutManager.enumerateLineFragments(forGlyphRange: range) { _, usedRect, _, glyphRange, _ in
-            let y = usedRect.minY + inset.top - offset
-            if self.markedLines.contains(lineNumber) {
-                context.fill(CGRect(x: 0, y: y, width: self.bounds.width, height: usedRect.height))
+        var fragments: [FragmentLine] = []
+        layoutManager.enumerateLineFragments(forGlyphRange: glyphRange) { _, usedRect, _, fragmentGlyphs, _ in
+            let start = layoutManager.characterRange(
+                forGlyphRange: NSRange(location: fragmentGlyphs.location, length: 0),
+                actualGlyphRange: nil
+            ).location
+            if start > characterIndex {
+                lineNumber += Self.newlineCount(
+                    in: NSRange(location: characterIndex, length: start - characterIndex),
+                    of: text
+                )
+                characterIndex = start
             }
-            self.draw(
-                number: lineNumber,
-                at: y,
-                height: usedRect.height,
-                font: font,
-                marked: self.markedLines.contains(lineNumber)
+            fragments.append(
+                FragmentLine(
+                    number: lineNumber,
+                    startsLine: lineNumber != previousNumber,
+                    y: usedRect.minY + inset.top - offset,
+                    height: usedRect.height
+                )
             )
-            // With wrapping off a fragment is a line, so counting fragments
-            // counts lines. Kept explicit so the assumption is visible.
-            lineNumber += self.lineCount(in: glyphRange, of: layoutManager, text: text)
+            previousNumber = lineNumber
         }
+        return fragments
     }
 
-    private func lineCount(
-        in glyphRange: NSRange,
-        of layoutManager: NSLayoutManager,
-        text: NSString
-    ) -> Int {
-        let characterRange = layoutManager.characterRange(forGlyphRange: glyphRange, actualGlyphRange: nil)
-        guard characterRange.length > 0, NSMaxRange(characterRange) <= text.length else { return 1 }
-        return max(1, text.substring(with: characterRange).components(separatedBy: "\n").count - 1)
+    /// The numbers this gutter would draw, in order. The invariant the editor
+    /// rests on, in a shape a test can read.
+    func lineNumbersForVisibleFragments() -> [Int] {
+        fragmentLines().filter(\.startsLine).map(\.number)
+    }
+
+    /// Lines are counted from the newlines before a character, which is what
+    /// every compiler means by a line number.
+    static func lineNumber(at characterIndex: Int, in text: NSString) -> Int {
+        let bounded = max(0, min(characterIndex, text.length))
+        return 1 + newlineCount(in: NSRange(location: 0, length: bounded), of: text)
+    }
+
+    static func newlineCount(in range: NSRange, of text: NSString) -> Int {
+        guard range.length > 0, NSMaxRange(range) <= text.length else { return 0 }
+        var count = 0
+        var remaining = range
+        while remaining.length > 0 {
+            let found = text.range(of: "\n", options: [], range: remaining)
+            guard found.location != NSNotFound else { break }
+            count += 1
+            let next = NSMaxRange(found)
+            remaining = NSRange(location: next, length: max(0, NSMaxRange(range) - next))
+        }
+        return count
     }
 
     private func draw(number: Int, at y: CGFloat, height: CGFloat, font: UIFont, marked: Bool) {

@@ -68,6 +68,20 @@ final class CodeEditorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Sets the text, then re-measures and redraws the gutter.
+    ///
+    /// The one door on purpose. A caller that assigns `textView.attributedText`
+    /// itself and forgets to re-measure leaves the view at whatever width it
+    /// had while the text was something else — and the first width it ever has
+    /// is the one it was given while empty, which is the pane. The container
+    /// then takes that width and every long line wraps inside it for good.
+    func apply(_ attributed: NSAttributedString, selection: NSRange) {
+        textView.attributedText = attributed
+        textView.selectedRange = selection
+        updateTextWidth()
+        gutter.setNeedsDisplay()
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         updateTextWidth()
@@ -80,12 +94,57 @@ final class CodeEditorView: UIView {
     func updateTextWidth() {
         let available = max(0, bounds.width - LineNumberGutterView.width)
         let inset = textView.textContainerInset.left + textView.textContainerInset.right
-        textView.layoutManager.ensureLayout(for: textView.textContainer)
-        let used = textView.layoutManager.usedRect(for: textView.textContainer).width
-        let wanted = max(available, ceil(used) + inset + 24)
+        let wanted = max(available, longestLineWidth() + inset + 24)
 
         guard abs((textWidth?.constant ?? 0) - wanted) > 0.5 else { return }
         textWidth?.constant = wanted
+        // Changing a constant is a request, not a layout. Without this the new
+        // width sits in the constraint unapplied until something else happens
+        // to lay the view out — which, for an editor that has just been handed
+        // a file, is nothing.
+        setNeedsLayout()
+    }
+
+    /// The width of the longest line, measured from the text itself.
+    ///
+    /// Not from `usedRect`, which is what this used to do. A `UITextView`
+    /// resets its text container to its own width on every layout pass whatever
+    /// `widthTracksTextView` says — measured here, a container set to a million
+    /// points came back at 330 — so the used rect reports the width of text
+    /// that has already wrapped. Sizing the view from that is a loop whose
+    /// fixed point is "stay wrapped": the measurement and the thing being
+    /// measured are the same number, and the view never gets wide enough to
+    /// stop wrapping. Measuring the string is independent of all of it.
+    ///
+    /// Candidates are picked by a cheap estimate and only a few are measured
+    /// properly, because this runs on every layout pass and a file of a few
+    /// thousand lines would otherwise be a few thousand measurements each time.
+    private func longestLineWidth() -> CGFloat {
+        guard let attributed = textView.attributedText, attributed.length > 0 else { return 0 }
+        let text = attributed.string as NSString
+
+        var candidates: [(estimate: Int, range: NSRange)] = []
+        text.enumerateSubstrings(
+            in: NSRange(location: 0, length: text.length),
+            options: [.byLines, .substringNotRequired]
+        ) { _, range, _, _ in
+            // A tab is one character and much more than one character wide, so
+            // counting characters alone would nominate the wrong line in Go
+            // source, which is indented with them.
+            var tabs = 0
+            for index in range.location..<NSMaxRange(range)
+            where text.character(at: index) == 9 {
+                tabs += 1
+            }
+            candidates.append((range.length + tabs * 7, range))
+        }
+
+        var widest: CGFloat = 0
+        for candidate in candidates.sorted(by: { $0.estimate > $1.estimate }).prefix(4) {
+            let line = attributed.attributedSubstring(from: candidate.range)
+            widest = max(widest, ceil(line.size().width))
+        }
+        return widest
     }
 
     private func addSeparator() {
