@@ -73,6 +73,11 @@ Concretely, the app currently contains:
   whether it was ticked by hand or sealed by a compiler pass. Nothing is
   locked — a course written for people who already program is one they enter
   sideways, at goroutines, because that is what they came for;
+- a lesson that says where it sits and where it goes: the unit, which lesson of
+  how many, whether the toolchain judges this one, and the next lesson by name
+  at the end. Finishing is two named things rather than one vague tick — Check
+  hands the code to the lesson's hidden test, and the learner's own word is
+  recorded as exactly that;
 - a quiz closing each unit: one question at a time, four options, and the
   explanation the moment an answer is committed rather than at the end;
 - a matching drill — terms on the left, meanings on the right, tiles of one
@@ -92,7 +97,9 @@ Concretely, the app currently contains:
 - a `UITextView` editor with Go and `go.mod` syntax highlighting, marked
   diagnostic lines, and an accessory row with three fixed regions: suggestions,
   a scrolling set of the symbols Go needs, and a control that puts the keyboard
-  away;
+  away. Long lines scroll sideways rather than wrapping, and the gutter numbers
+  lines of the file — which is what a diagnostic points at, so a wrapped row
+  counted as a line would mark code the compiler never mentioned;
 - a compiler layer that stages a project into a job sandbox, runs one WASI
   module per phase, and parses what it wrote — format, vet, build, run, test;
 - Go's plain-text diagnostics parsed for real, including package banners,

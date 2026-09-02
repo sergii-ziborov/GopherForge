@@ -327,6 +327,7 @@ enum AccessibilityIdentifier {
     static let quizContinue = "quiz.continue"
     static let quizSummary = "quiz.summary"
     static let quizRestart = "quiz.restart"
+    static let lessonCheck = "lesson.check"
     static let lessonComplete = "lesson.complete"
     static let lessonCompleted = "lesson.completed"
     static let lessonUncomplete = "lesson.uncomplete"

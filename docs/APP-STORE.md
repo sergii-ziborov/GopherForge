@@ -159,7 +159,140 @@ recorded because each one is a mistake that comes back.
 
 ---
 
-## 8. What still needs an App Store Connect account
+## 8. The listing
+
+Copy for App Store Connect, within Apple's limits. Character counts are given
+because the fields are truncated silently rather than refused.
+
+| Field | Value | Limit |
+| --- | --- | --- |
+| Name | `GopherForge` | 30 |
+| Subtitle | `Write, test and run Go offline` (29) | 30 |
+| Category | Developer Tools, then Education | — |
+| Age rating | 4+ | — |
+
+**Promotional text** (170; can be changed without a new build, so it is the
+place to put anything time-bound):
+
+> A real Go compiler in your pocket. Build, vet, test and run Go with the
+> network switched off — beside a 40-lesson course written for people who
+> already program.
+
+**Keywords** (100 characters, comma-separated, no spaces — a space costs a
+character and buys nothing). The name and subtitle are indexed separately, so
+none of their words are repeated here:
+
+```
+golang,go,compiler,ide,editor,programming,learn,code,goroutines,offline,developer,wasm,tutorial
+```
+
+**Description:**
+
+> GopherForge is a Go workspace that runs on the device. The Go compiler,
+> linker, vet and gofmt are inside the app, so you can build, test and run Go
+> with the network switched off.
+>
+> WHAT IT DOES
+>
+> • Build, Run, Test, Vet and Format real Go — the toolchain is bundled, not a
+>   server somewhere.
+> • Read Go's own diagnostics, parsed to the line and column, marked in the
+>   editor where they happened.
+> • Run `go test` and see per-case results, kept apart from compiler errors.
+> • Write in an editor with Go and go.mod highlighting, a keyboard row of the
+>   symbols Go actually needs, and code that scrolls sideways instead of
+>   wrapping.
+> • Keep as many projects as you like: folders, tags, stars and search by name,
+>   folder, tag or file name.
+> • Import a public GitHub repository, a folder from Files, or an archive this
+>   app exported.
+> • Install a Go module: it is resolved through the official proxy, checked
+>   against the Go checksum database, and vendored into your project — after
+>   which the project builds offline.
+>
+> LEARNING GO
+>
+> • A course of 40 lessons across seven units, written for people who already
+>   program and are carrying habits from another language.
+> • A lesson passes when the hidden test passes. The compiler judges it, not a
+>   text match — and the app records whether a pass was witnessed by the
+>   compiler or reported by you.
+> • Quizzes, matching drills and a review queue built from the mistakes the
+>   compiler and the idiom coach actually saw you make.
+> • Idiom Coach flags Java-style getters, a context that is not the first
+>   parameter, discarded errors and a channel closed in the receiving
+>   goroutine — each one explaining itself.
+> • Concurrency Lab runs scenarios that print what your goroutines did, and
+>   names the goroutine and the channel that blocked.
+> • An example library of programs that run, including graphics that compute
+>   pixels and write PNGs the app displays.
+>
+> PRIVACY
+>
+> No account, no analytics, no tracking, nothing collected. The app reaches the
+> network only when you ask it to import a repository or install a package.
+>
+> WHAT IT DOES NOT DO
+>
+> cgo is not supported: it needs a native C toolchain. Programs you compile run
+> in a WebAssembly sandbox with one writable directory and no network access.
+
+**What's New, 1.0.0:**
+
+> First release.
+
+---
+
+## 9. Price
+
+Nothing here is set in the source tree; this is the recommendation and the
+reasoning behind it, so the decision can be argued with rather than inherited.
+
+**Where this app sits.** One-time iOS developer tools cluster tightly:
+Pythonista and Textastic at $9.99, Codea at $14.99, Working Copy free with a
+$19.99 unlock, iSH and a-Shell free. Learning apps are mostly subscriptions at
+$5–10 a month. GopherForge is both halves at once, and its unusual claim — a
+real Go toolchain that runs offline — is worth more to a small audience than a
+common one is to a large audience.
+
+**Recommended: free to download, one unlock at $9.99.**
+
+The line to draw is between learning and working: the course, the drills, the
+Concurrency Lab and the example library stay free, including compiling and
+running them, because a course whose compiler is behind a paywall cannot prove
+the thing it is selling. The unlock covers your own projects — creating them,
+importing from GitHub or Files, installing packages, exporting.
+
+Why not paid up front: nobody searches for an app they have not heard of, and
+on the App Store a paid download from an unknown developer converts poorly
+enough that the listing never gathers the reviews that would fix it. Free entry
+buys installs, ratings and a rank; the unlock is then sold to people who have
+already watched the compiler work on their own device.
+
+Why $9.99 and not more: it is the ceiling for an unresearched impulse purchase
+on iOS, and the price the two closest comparables sit at. $14.99 is defensible
+on the strength of the toolchain — but it is the price to move to after the
+listing has reviews, not the one to launch on.
+
+Why not less: $2.99 buys very little extra volume in a niche this narrow, and
+it argues against the product. The claim is a real compiler; a toy price says
+otherwise before anyone has opened it.
+
+Why not a subscription: nothing here has a running cost. There is no server, no
+account and no content pipeline, so a recurring charge would be rent for
+something already delivered — and reviewers say so, loudly.
+
+**What the recommendation costs to build.** The app currently sells nothing,
+which is what section 6 records under guideline 3.1.1. A free-plus-unlock
+release needs StoreKit 2, a non-consumable product, a paywall on the Projects
+side, and a Restore Purchases control — Apple rejects a paid unlock without
+one. If 1.0 should ship before that work, **$9.99 paid up front** is the honest
+alternative: it needs no code at all, and moving to free-plus-unlock later is a
+price change plus a build, not a migration.
+
+---
+
+## 10. What still needs an App Store Connect account
 
 These cannot be done from the source tree.
 
@@ -168,11 +301,15 @@ These cannot be done from the source tree.
       URL. **Required — a submission without one is rejected.**
 - [ ] Provide a support URL.
 - [ ] Answer the App Privacy questionnaire: *Data Not Collected* throughout.
-- [ ] Upload screenshots for 6.9" and 6.5" iPhone and 13" iPad. The UI test
-      suite drives every screen and is the easiest way to capture them
-      consistently.
-- [ ] Write the description and keywords. Suggested subtitle: *Learn and
-      compile Go on your iPhone*.
+- [ ] Upload the screenshots. They are captured by driving the real app:
+      `scripts/app_store_screenshots.sh` erases a 6.9" iPhone and a 13" iPad,
+      runs `AppStoreScreenshotUITests` on each, and writes the results to
+      `docs/app-store/screenshots/`. Apple scales those two sets down to the
+      smaller device sizes, so no others need capturing.
+- [ ] Paste the name, subtitle, keywords, promotional text and description from
+      section 8.
+- [ ] Set the price. Section 9 recommends free with a $9.99 unlock, and gives
+      the paid-up-front alternative if 1.0 should ship before StoreKit work.
 - [ ] Set the age rating (4+; the app has no objectionable content).
 - [ ] Paste the review note from section 2 into App Review Notes.
 - [ ] Confirm the export compliance answer: **no**, the app does not use

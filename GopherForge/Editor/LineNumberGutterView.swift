@@ -51,7 +51,7 @@ final class LineNumberGutterView: UIView {
     }
 
     override func draw(_ rect: CGRect) {
-        guard let textView, let context = UIGraphicsGetCurrentContext() else { return }
+        guard let context = UIGraphicsGetCurrentContext() else { return }
 
         let font = UIFont.monospacedDigitSystemFont(ofSize: max(9, fontSize - 2), weight: .regular)
         context.setFillColor(UIColor.systemOrange.withAlphaComponent(0.18).cgColor)
