@@ -113,10 +113,20 @@ Concretely, the app currently contains:
   a context that is not the first parameter, discarded errors, upper-case error
   strings and a close in the receiving goroutine — each explaining itself, and
   repairing only the exact line it pointed at;
-- **Concurrency Lab**: four runnable scenarios that print structured events from
-  ordinary instrumentation the learner can read, a trace model that finds
-  goroutines which blocked and never resumed, and diagnoses that name the
-  goroutine and the channel;
+- **Concurrency Lab**: nine runnable scenarios on a shelf grouped by what they
+  are about, each with its own page — the question, your prediction, the
+  program, then a lane per goroutine showing what it did and how long it spent
+  blocked. A goroutine that blocked and never came back gets a bar that runs off
+  the end of the chart, which is what a leak looks like. The events come from
+  ordinary instrumentation printed by the program itself, not from a hook into
+  the runtime;
+- interview preparation: fourteen questions a Go interview asks, each with what
+  a strong answer covers and the plausible answer that is wrong. No multiple
+  choice — an interview is answered out loud, and four options train
+  recognition instead;
+- **Spot the bug**: twelve short programs with one fault each, found by tapping
+  the line. Every fault is unambiguous under the bundled Go, the guess cannot be
+  taken back, and a miss feeds the same review queue a failed compile does;
 - a seven-unit course written for people who already program, where a lesson
   passes when `go test` passes rather than when text matches;
 - review chosen from the mistakes the compiler and the coach actually saw, with

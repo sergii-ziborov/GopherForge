@@ -75,6 +75,8 @@ struct PracticeHomeView: View {
         case let .challenge(lesson): LessonDetailView(lesson: lesson)
         case let .drill(drill): MatchingDrillView(drill: drill, onFinish: onDrillFinished)
         case let .quiz(quiz): QuizView(quiz: quiz, onFinish: onQuizFinished)
+        case let .spotTheBug(rounds): SpotTheBugView(rounds: rounds, onFinish: onDrillFinished)
+        case let .interview(questions): InterviewQuestionView(questions: questions)
         }
     }
 }

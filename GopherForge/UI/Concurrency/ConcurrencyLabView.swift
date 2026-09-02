@@ -1,121 +1,122 @@
 import SwiftUI
 
-/// The lab: pick a scenario, predict, run, then read what happened.
+/// The lab: a shelf of runnable scenarios, grouped by what they are about.
+///
+/// It used to be one screen with a dropdown at the top. Four scenarios hidden
+/// behind a menu is four scenarios nobody knows exist — you cannot browse a
+/// picker, and the screen underneath was doing five jobs at once. The scenarios
+/// are on a shelf now, and each one gets a page.
 struct ConcurrencyLabView: View {
-    @State private var model = ConcurrencyLabModel()
+    private let columns = [GridItem(.adaptive(minimum: 260), spacing: 12)]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                scenarioPicker
+            VStack(alignment: .leading, spacing: 24) {
+                intro
 
-                Text(model.scenario.question)
-                    .font(.headline)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                if !model.canRun {
-                    Label(model.toolchainDetail, systemImage: "exclamationmark.triangle")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                predictionSection
-
-                CodeBlock(title: "The program", code: model.scenario.source)
-
-                if let trace = model.trace {
-                    ConcurrencyTraceView(trace: trace)
-                }
-
-                ForEach(model.diagnoses) { diagnosis in
-                    DiagnosisCard(diagnosis: diagnosis)
-                }
-
-                if !model.programOutput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    CodeBlock(title: "Program output", code: model.programOutput)
-                }
-
-                if let failureDetail = model.failureDetail {
-                    Text(failureDetail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                ForEach(ConcurrencyLabScenario.Family.allCases) { family in
+                    let scenarios = ConcurrencyLabScenario.all.filter { $0.family == family }
+                    if !scenarios.isEmpty {
+                        section(family, scenarios: scenarios)
+                    }
                 }
             }
-            .padding(16)
+            .padding(18)
+            .frame(maxWidth: 900)
+            .frame(maxWidth: .infinity)
         }
         .navigationTitle("Concurrency Lab")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    Task { await model.run() }
-                } label: {
-                    if model.isRunning {
-                        ProgressView()
-                    } else {
-                        Label("Run", systemImage: "play.fill")
-                    }
-                }
-                .disabled(model.isRunning || !model.canRun)
-                .accessibilityIdentifier(AccessibilityID.labRun)
-            }
-        }
-    }
-
-    private var scenarioPicker: some View {
-        Picker("Scenario", selection: Binding(
-            get: { model.scenario.id },
-            set: { id in
-                if let found = ConcurrencyLabScenario.all.first(where: { $0.id == id }) {
-                    model.select(found)
-                }
-            }
-        )) {
-            ForEach(ConcurrencyLabScenario.all) { scenario in
-                Text(scenario.title).tag(scenario.id)
-            }
-        }
-        .pickerStyle(.menu)
+        // The lab as a whole is what a test picks a scenario from, so the
+        // identifier that used to name the dropdown names the shelf.
         .accessibilityIdentifier(AccessibilityID.labScenarioPicker)
     }
 
-    private var predictionSection: some View {
-        DisclosureGroup(isExpanded: Binding(
-            get: { model.hasPredicted },
-            set: { model.hasPredicted = $0 }
-        )) {
-            Text(model.scenario.prediction)
-                .font(.callout)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        } label: {
-            Text("Predict first, then open this")
-                .font(.callout.weight(.medium))
+    private var intro: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("\(ConcurrencyLabScenario.all.count) programs that really run")
+                .font(.title3.weight(.semibold))
+            Text("""
+            Each one is a Go program the bundled toolchain compiles and runs on \
+            this device. What the lab draws afterwards is what the program \
+            itself reported doing — the instrumentation is ordinary code you can \
+            read, not a hook into the runtime.
+            """)
+            .font(.callout)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
         }
-        .accessibilityIdentifier(AccessibilityID.labPrediction)
+    }
+
+    private func section(
+        _ family: ConcurrencyLabScenario.Family,
+        scenarios: [ConcurrencyLabScenario]
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Label(family.title, systemImage: family.systemImage)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(GopherForgeTheme.accent)
+                    .textCase(.uppercase)
+                Text(family.summary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(scenarios) { scenario in
+                    NavigationLink {
+                        ConcurrencyScenarioView(scenario: scenario)
+                    } label: {
+                        ScenarioCard(scenario: scenario)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier(AccessibilityID.labScenario(scenario.id))
+                }
+            }
+        }
     }
 }
 
-private struct DiagnosisCard: View {
-    let diagnosis: ConcurrencyDiagnosis
+/// A scenario as something to choose. The question is on the card and the
+/// answer is not: the lab's whole method is predict, then run.
+private struct ScenarioCard: View {
+    let scenario: ConcurrencyLabScenario
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Image(systemName: "exclamationmark.bubble")
-                    .foregroundStyle(GopherForgeTheme.accent)
-                Text(diagnosis.headline).font(.callout.weight(.medium))
-            }
-            Text(diagnosis.detail)
-                .font(.caption)
+        VStack(alignment: .leading, spacing: 8) {
+            Text(scenario.title)
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(.primary)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(diagnosis.conceptTag)
-                .font(.caption2.monospaced())
-                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.leading)
+
+            Text(scenario.question)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.leading)
+
+            HStack(spacing: 5) {
+                ForEach(scenario.conceptTags, id: \.self) { tag in
+                    Text(tag)
+                        .font(.system(size: 9, design: .monospaced))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(GopherForgeTheme.accentWash(0.12), in: Capsule())
+                        .foregroundStyle(GopherForgeTheme.accent)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "play.circle.fill")
+                    .foregroundStyle(GopherForgeTheme.accent)
+            }
         }
-        .padding(12)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(GopherForgeTheme.accentWash(0.22), lineWidth: 1)
+        }
     }
 }

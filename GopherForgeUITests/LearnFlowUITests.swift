@@ -129,9 +129,7 @@ final class LearnFlowUITests: XCTestCase {
     /// withheld once there is something behind it.
     func testLabRunsExactlyWhenTheToolchainIsThere() {
         launch(arguments: ["-GopherForgeSection", "learn", "-GopherForgeScreen", "lab"])
-
-        let picker = app.buttons[AccessibilityIdentifier.labScenarioPicker]
-        XCTAssertTrue(picker.waitForExistence(timeout: 10), "the lab should offer its scenarios")
+        openFirstScenario()
 
         let run = app.buttons[AccessibilityIdentifier.labRun]
         XCTAssertTrue(run.exists)
@@ -140,10 +138,23 @@ final class LearnFlowUITests: XCTestCase {
             "the lab's Run should follow the toolchain, not a fixed expectation"
         )
         attachScreenshot(named: "13-lab")
+
+        // With a toolchain there, run it for real and check the lab draws what
+        // came back. The timeline is the whole point of the screen, and a test
+        // that stops at "Run is tappable" would never notice it not appearing.
+        guard run.isEnabled else { return }
+        run.tap()
+        XCTAssertTrue(
+            app.element(withIdentifier: AccessibilityIdentifier.labTimeline)
+                .waitForExistence(timeout: 180),
+            "running a scenario should draw the goroutine timeline"
+        )
+        attachScreenshot(named: "13b-lab-timeline")
     }
 
     func testLabPredictionStaysClosedUntilAsked() {
         launch(arguments: ["-GopherForgeSection", "learn", "-GopherForgeScreen", "lab"])
+        openFirstScenario()
 
         let prediction = app.buttons[AccessibilityIdentifier.labPrediction]
         XCTAssertTrue(prediction.waitForExistence(timeout: 10))
@@ -180,6 +191,14 @@ final class LearnFlowUITests: XCTestCase {
     }
 
     // MARK: - Helpers
+
+    /// The lab is a shelf now rather than a dropdown, so a scenario has to be
+    /// opened before there is anything to run or predict.
+    private func openFirstScenario() {
+        let scenario = app.buttons[AccessibilityIdentifier.labScenario("unbuffered-rendezvous")]
+        XCTAssertTrue(app.waitForElement(scenario), "the lab should offer its scenarios")
+        scenario.tap()
+    }
 
     private func launch(arguments: [String]) {
         app.launchArguments = arguments

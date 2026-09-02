@@ -312,7 +312,9 @@ enum AccessibilityIdentifier {
     static let dockPicker = "workspace.dockPicker"
     static let toolchainBanner = "workspace.toolchainBanner"
     static let labScenarioPicker = "lab.scenarioPicker"
+    static func labScenario(_ id: String) -> String { "lab.scenario.\(id)" }
     static let labRun = "lab.run"
+    static let labTimeline = "lab.timeline"
     static let labPrediction = "lab.prediction"
     static let reviewEntry = "learn.review"
     static let labEntry = "learn.lab"

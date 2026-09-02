@@ -15,6 +15,10 @@ enum PracticeCatalog {
             case challenge(Lesson)
             case drill(MatchingDrill)
             case quiz(Quiz)
+            /// A short program with one thing wrong in it.
+            case spotTheBug([SpotTheBugRound])
+            /// Questions a Go interview asks, with what a strong answer covers.
+            case interview([InterviewQuestion])
         }
 
         let kind: Kind
@@ -27,6 +31,8 @@ enum PracticeCatalog {
             case let .challenge(lesson): "challenge.\(lesson.id)"
             case let .drill(drill): "drill.\(drill.id)"
             case let .quiz(quiz): "quiz.\(quiz.unitID)"
+            case .spotTheBug: "bug.\(unitID)"
+            case .interview: "interview.\(unitID)"
             }
         }
 
@@ -35,6 +41,8 @@ enum PracticeCatalog {
             case let .challenge(lesson): lesson.title
             case let .drill(drill): drill.title
             case let .quiz(quiz): quiz.title
+            case .spotTheBug: "Spot the bug"
+            case .interview: "Interview questions"
             }
         }
 
@@ -43,6 +51,8 @@ enum PracticeCatalog {
             case let .challenge(lesson): lesson.objective
             case let .drill(drill): "\(drill.pairs.count) pairs to connect"
             case let .quiz(quiz): "\(quiz.questions.count) questions · four in five passes"
+            case let .spotTheBug(rounds): "\(rounds.count) programs, one fault each"
+            case let .interview(questions): "\(questions.count) asked out loud, then compared"
             }
         }
 
@@ -51,6 +61,8 @@ enum PracticeCatalog {
             case .challenge: "questionmark.circle"
             case .drill: "link"
             case .quiz: "checklist"
+            case .spotTheBug: "magnifyingglass"
+            case .interview: "mic"
             }
         }
 
@@ -79,6 +91,26 @@ enum PracticeCatalog {
             // way in for someone who has read nothing yet.
             for drill in MatchingDrillCatalog.drills(forUnit: unit.id) {
                 built.append(Item(kind: .drill(drill), unitID: unit.id, unlocksAfter: 0))
+            }
+            // The bug hunt is open from the start. Reading code and noticing
+            // what is off does not need the unit read first — it is often the
+            // reason somebody opens the unit.
+            let rounds = SpotTheBugCatalog.rounds(forUnit: unit.id)
+            if !rounds.isEmpty {
+                built.append(Item(kind: .spotTheBug(rounds), unitID: unit.id, unlocksAfter: 0))
+            }
+            // Interview questions wait until the unit is finished. They are
+            // about explaining, and explaining something you have not built is
+            // how people learn to recite.
+            let interview = InterviewCatalog.questions(forUnit: unit.id)
+            if !interview.isEmpty {
+                built.append(
+                    Item(
+                        kind: .interview(interview),
+                        unitID: unit.id,
+                        unlocksAfter: unit.teachingLessons.count
+                    )
+                )
             }
             if let quiz = QuizCatalog.quiz(forUnit: unit.id) {
                 // The quiz waits until the unit has been started. Gating it

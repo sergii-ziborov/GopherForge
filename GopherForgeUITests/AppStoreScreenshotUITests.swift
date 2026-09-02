@@ -49,7 +49,8 @@ final class AppStoreScreenshotUITests: XCTestCase {
 
         launch(section: "learn", screen: "lab")
         XCTAssertTrue(
-            app.buttons[AccessibilityIdentifier.labScenarioPicker].waitForExistence(timeout: 15),
+            app.buttons[AccessibilityIdentifier.labScenario("unbuffered-rendezvous")]
+                .waitForExistence(timeout: 15),
             "the lab should offer its scenarios"
         )
         capture("04-lab")
@@ -84,7 +85,8 @@ final class AppStoreScreenshotUITests: XCTestCase {
     // MARK: - Helpers
 
     private func launch(section: String, screen: String? = nil) {
-        app.terminate()
+        // No terminate first: `launch()` already relaunches, and terminating an
+        // app that has not started yet fails the run before it reaches a screen.
         var arguments = ["-GopherForgeSection", section]
         if let screen { arguments += ["-GopherForgeScreen", screen] }
         app.launchArguments = arguments
