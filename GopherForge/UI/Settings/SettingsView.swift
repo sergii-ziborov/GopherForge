@@ -77,7 +77,22 @@ struct SettingsView: View {
                     Label("Acknowledgements", systemImage: "text.book.closed")
                 }
                 .accessibilityIdentifier(AccessibilityID.settingsAcknowledgements)
+                // Required in the app, not only in App Store Connect: guideline
+                // 5.1.1(i) asks for the privacy policy to be reachable from
+                // inside the app, and a listing link alone does not satisfy it.
+                Link(destination: AppLinks.privacyPolicy) {
+                    Label("Privacy Policy", systemImage: "hand.raised")
+                }
+                .accessibilityIdentifier(AccessibilityID.settingsPrivacyPolicy)
+
+                Link(destination: AppLinks.support) {
+                    Label("Support", systemImage: "questionmark.circle")
+                }
+                .accessibilityIdentifier(AccessibilityID.settingsSupport)
+
                 LabeledContent("Product", value: "GopherForge")
+                LabeledContent("Version", value: AppLinks.versionSummary)
+                    .accessibilityIdentifier(AccessibilityID.settingsVersion)
                 Text("Forge real Go, anywhere.")
                     .font(.caption)
                     .foregroundStyle(.secondary)

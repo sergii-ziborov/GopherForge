@@ -90,4 +90,7 @@ enum AccessibilityID {
     static let gameCenterConnect = "gamecenter.connect"
     static let settingsResetProgress = "settings.resetProgress"
     static let settingsAcknowledgements = "settings.acknowledgements"
+    static let settingsPrivacyPolicy = "settings.privacyPolicy"
+    static let settingsSupport = "settings.support"
+    static let settingsVersion = "settings.version"
 }

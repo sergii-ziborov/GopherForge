@@ -40,6 +40,13 @@ All of these connections use HTTPS.
 
 ## Game Center
 
+**Not available in this release.** The capability is deliberately absent from
+the app's entitlements, and the app reports Game Center as unavailable rather
+than offering something that cannot work. The paragraph below describes what
+would happen if it is enabled in a later version, and nothing in it applies to
+the version you are running.
+
+
 If you choose to connect Game Center, your achievement progress is mirrored to
 Apple's Game Center under your own Apple Account. This is optional, the app
 never signs you in without you asking, and your badges are earned and kept on

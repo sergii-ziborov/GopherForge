@@ -186,6 +186,11 @@ none of their words are repeated here:
 golang,go,compiler,ide,editor,programming,learn,code,goroutines,offline,developer,wasm,tutorial
 ```
 
+The lesson and unit counts above are the ones `ListingCopyTests` checks against
+the catalogue. They were wrong once — the document said forty lessons across
+seven units while the app shipped forty-nine across nine — and a reviewer
+comparing the listing, the screenshots and the app is exactly who notices.
+
 **Description:**
 
 > GopherForge is a Go workspace that runs on the device. The Go compiler,
@@ -212,8 +217,9 @@ golang,go,compiler,ide,editor,programming,learn,code,goroutines,offline,develope
 >
 > LEARNING GO
 >
-> • A course of 40 lessons across seven units, written for people who already
->   program and are carrying habits from another language.
+> • A course of 49 lessons across nine units, written for people who already
+>   program and are carrying habits from another language, including the types
+>   you declare yourself and generics.
 > • A lesson passes when the hidden test passes. The compiler judges it, not a
 >   text match — and the app records whether a pass was witnessed by the
 >   compiler or reported by you.
