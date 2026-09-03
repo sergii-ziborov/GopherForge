@@ -19,13 +19,13 @@ goroutine trace are what the app actually produced, not mock-ups.
 
 | | |
 | --- | --- |
-| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card reading 0 of 23 lessons, five tool cards, and seven unit nodes on a winding dashed trail"> | <img src="docs/screenshots/unit-path.png" alt="A unit opened: its header, a note for people who already program, and its lessons on a winding trail, each marked READ or COMPILE"> |
+| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card reading 0 of 29 lessons over nine units, cards for Review, Practice, the Concurrency Lab, Examples and Achievements, and the units themselves on a rail, each with its own icon and a lessons-done badge"> | <img src="docs/screenshots/unit-path.png" alt="The Concurrency unit opened: its header reading 0 of 4 lessons, a note for people who already program, and its four lessons on a winding trail, each with its own icon and marked COMPILE"> |
 | **The course is a journey.** Nine units on a rail, then the lessons inside one on a winding path. A node says whether it was ticked by hand or sealed by a compiler pass — and nothing is locked, because a course for people who already program is one they enter at goroutines. | **Inside a unit.** Every lesson is marked `READ` or `COMPILE` before it is opened, so it is clear which ones the toolchain will judge. |
 | <img src="docs/screenshots/run-output.png" alt="The iPad workspace: a worker-pool program in the editor and an Output pane reporting it compiled and executed locally, printing 1 4 9 16 25"> | <img src="docs/screenshots/problems.png" alt="The Problems pane showing declared and not used: unusedTotal at main.go line 11 column 1, with the line marked in the gutter"> |
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
 | <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane reading 4 passed, 0 failed with per-case rows for TestReverse and its subtests"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab: nine runnable scenarios on a shelf, grouped into channels, coordination and ways it goes wrong"> |
 | **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Concurrency Lab.** Nine scenarios that print structured events from ordinary instrumentation; each one draws a lane per goroutine and names what blocked. |
-| <img src="docs/screenshots/my-projects.png" alt="My projects: a search field, folder chips, and projects grouped under Experiments, Learning and Unfiled with tags and a build chip"> | <img src="docs/screenshots/iphone-workspace.png" width="300" alt="The same workspace on iPhone, as full-height Code, Problems, Output and Tests tabs above a bottom tab bar"> |
+| <img src="docs/screenshots/my-projects.png" alt="My projects: a search field reading Name, folder, tag or file, and three projects filed under Unfiled — Worker pool, Playground and Package with tests, the last carrying a Build failed chip"> | <img src="docs/screenshots/iphone-workspace.png" width="300" alt="The same workspace on iPhone: Code, Problems, Output, Tests and Idioms as chips across the top, the Output pane reporting a local compile and run, and Projects, Build, Learn and Settings along the bottom"> |
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone.** The workspace becomes full-height tabs with the switcher at the top, where the keyboard cannot bury it. |
 
 ## What is built, and what is not
@@ -65,9 +65,11 @@ Concretely, the app currently contains:
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
-- a course of 49 lessons across nine units, every code lesson shipping a
-  complete answer that a gate compiles against that lesson's own hidden test —
-  so a lesson nobody can solve fails the build rather than a learner;
+- a course of 29 lessons across nine units. Another
+  20 question-and-answer challenges are gathered into Practice rather than
+  counted as course steps. Every code lesson ships a complete answer that a
+  gate compiles against that lesson's own hidden test — so a lesson nobody can
+  solve fails the build rather than a learner;
 - two of those units close gaps the course had no business having. **Types you
   define** teaches struct literals, methods and receivers, pointers, closures
   and escape analysis — the course previously taught `:=` and `switch` and never

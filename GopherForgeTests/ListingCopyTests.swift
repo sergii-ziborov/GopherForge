@@ -8,6 +8,12 @@ import XCTest
 /// they add a unit, so the document has to be checked rather than trusted —
 /// and a reviewer comparing the listing, the screenshots and the app is
 /// exactly who finds the difference.
+///
+/// The number checked is the one the Learn screen shows. This guard used to
+/// compare against every lesson in the catalogue, challenges included, which
+/// made both documents advertise 49 while the app's own progress card read
+/// "0 of 29 lessons" — the guard was enforcing a mismatch rather than catching
+/// one. Challenges are counted too, as what they are: Practice.
 final class ListingCopyTests: XCTestCase {
     private func releaseDocument() throws -> String {
         // The tests run from the app bundle, so the document is read from the
@@ -20,7 +26,7 @@ final class ListingCopyTests: XCTestCase {
 
     func testTheDescriptionQuotesTheRealLessonAndUnitCount() throws {
         let document = try releaseDocument()
-        let lessons = GoCourseCatalog.lessons.count
+        let lessons = GoCourseCatalog.teachingLessons.count
         let units = GoCourseCatalog.units.count
 
         XCTAssertTrue(
@@ -30,6 +36,10 @@ final class ListingCopyTests: XCTestCase {
         XCTAssertTrue(
             document.contains("nine units") || document.contains("\(units) units"),
             "the listing does not say \(units) units"
+        )
+        XCTAssertTrue(
+            document.contains("\(GoCourseCatalog.challenges.count) question-and-answer challenges"),
+            "the listing does not say how many challenges Practice holds"
         )
     }
 
@@ -41,8 +51,12 @@ final class ListingCopyTests: XCTestCase {
         let readme = try String(contentsOf: root.appending(path: "README.md"), encoding: .utf8)
 
         XCTAssertTrue(
-            readme.contains("\(GoCourseCatalog.lessons.count) lessons"),
-            "the README does not say \(GoCourseCatalog.lessons.count) lessons"
+            readme.contains("\(GoCourseCatalog.teachingLessons.count) lessons"),
+            "the README does not say \(GoCourseCatalog.teachingLessons.count) lessons"
+        )
+        XCTAssertTrue(
+            readme.contains("\(GoCourseCatalog.challenges.count) question-and-answer challenges"),
+            "the README does not say how many challenges Practice holds"
         )
     }
 }

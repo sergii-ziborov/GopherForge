@@ -208,6 +208,12 @@ the catalogue. They were wrong once — the document said forty lessons across
 seven units while the app shipped forty-nine across nine — and a reviewer
 comparing the listing, the screenshots and the app is exactly who notices.
 
+The count quoted is the one the Learn screen shows. The catalogue holds 49
+lessons, but 20 of those are question-and-answer challenges that the app
+gathers into Practice rather than offering as course steps, so its progress
+card reads "0 of 29 lessons". Advertising 49 would put the listing at odds with
+the first screen a reviewer opens.
+
 **Description:**
 
 > GopherForge is a Go workspace that runs on the device. The Go compiler,
@@ -234,9 +240,10 @@ comparing the listing, the screenshots and the app is exactly who notices.
 >
 > LEARNING GO
 >
-> • A course of 49 lessons across nine units, written for people who already
+> • A course of 29 lessons across nine units, written for people who already
 >   program and are carrying habits from another language, including the types
->   you declare yourself and generics.
+>   you declare yourself and generics. Practice holds another
+>   20 question-and-answer challenges.
 > • A lesson passes when the hidden test passes. The compiler judges it, not a
 >   text match — and the app records whether a pass was witnessed by the
 >   compiler or reported by you.
@@ -270,8 +277,7 @@ comparing the listing, the screenshots and the app is exactly who notices.
 
 **Decided: paid up front. No free tier, no in-app purchase.**
 
-**Recommended: $4.99 as an announced launch price, moving to $9.99** — or
-**$6.99 flat** if the price should be set once and left alone.
+**Decided: $6.99, flat. No launch price, no changes planned.**
 
 ### What a paid app already gives the buyer
 
@@ -280,29 +286,30 @@ paid iOS app works, and there is nothing to build for it. It also means the
 price has to cover the work that comes after 1.0, which is an argument against
 setting it too low rather than for it.
 
-### Why not $3.99
+### Why $6.99 rather than less
 
 The buyer here is not browsing. Somebody installing a Go compiler on an iPhone
 arrives from a search with an intent, and that purchase is not very sensitive
 to price: the difference between $3.99 and $6.99 wins few extra installs and
-changes the signal a great deal. The product's claim is a real compiler, and a
+spends a good deal of signal. The product's claim is a real compiler, and a
 four-dollar price argues with that claim before the app is opened.
 
-### If the entry price should be lower
+### Why $6.99 rather than more
 
-Do it as a launch price with a stated end — $4.99 for the first few weeks, then
-$9.99 — rather than a quiet number that goes up later. An announced increase is
-a reason to buy now; an unannounced one reads as arbitrary to the person who
-was going to buy next week. Raising a price in App Store Connect is a single
-change and never affects anyone who has already bought.
+One-time iOS developer tools cluster around $9.99 — Pythonista and Textastic
+sit there, Codea higher. Code App, a broader editor with SSH, a terminal and
+Git, is $6.99. Matching it puts GopherForge below the middle of its category
+rather than at the top of it, which is the right place for a first release from
+a name nobody knows yet.
 
-### Why $9.99 is the ceiling
+### The friction that price does not fix
 
-One-time iOS developer tools cluster tightly. Pythonista and Textastic sit at
-$9.99, Codea at $14.99, and Code App — a broader editor with SSH, a terminal
-and Git — at $6.99. GopherForge is narrower than Code App and deeper in the one
-thing it does. $9.99 is the most somebody pays without research; above it the
-listing has to win an argument it cannot have in six screenshots.
+A paid app has no trial, so the buyer cannot confirm that the compiler really
+runs on the device until after paying. Lowering the price does not answer that
+doubt — the first screenshot does, which is why the listing leads with a real
+build result rather than with the course. The same goes for the other risk
+worth naming: somebody expecting a general-purpose IDE will be disappointed by
+a focused Go tool, and that is a job for the description, not the price.
 
 ### What paid up front costs
 
@@ -338,19 +345,26 @@ These cannot be done from the source tree.
       URL. **Required — a submission without one is rejected.**
 - [ ] Provide a support URL.
 - [ ] Answer the App Privacy questionnaire: *Data Not Collected* throughout.
-- [ ] Upload the screenshots. They are captured by driving the real app:
-      `scripts/app_store_screenshots.sh` erases a 6.9" iPhone and a 13" iPad,
-      runs `AppStoreScreenshotUITests` on each, and writes the results to
+- [ ] Upload the screenshots, which are `01-compiler` through `06-projects`
+      in listing order. They are captured by driving the real app:
+      `scripts/app_store_screenshots.sh` creates a 6.9" iPhone and a 13" iPad
+      of its own, erases them, forces light appearance, runs
+      `AppStoreScreenshotUITests` on each, and writes the results to
       `docs/app-store/screenshots/`. Apple scales those two sets down to the
       smaller device sizes, so no others need capturing.
+
+      The simulators are the script's own because shared ones carry whatever
+      else has run on them — one capture came back showing this app under
+      another project's back breadcrumb, and another came back in dark mode.
+
+      The same run also writes `07-unit` and `08-problems`, which are not part
+      of the listing: they exist so `docs/screenshots/` for the README comes
+      out of the same walk rather than being taken by hand and left to age.
 - [ ] Paste the name, subtitle, keywords, promotional text and description from
       section 8.
-- [ ] Set the price, paid up front — section 9 recommends $4.99 as an announced
-      launch price moving to $9.99, or $6.99 flat. Confirm availability in every
-      territory you intend to sell in. No in-app purchases exist, so the pricing
-      section is the only place this is configured.
-- [ ] If a launch price is used, say so in the promotional text, which can be
-      changed without a new build, and diarise the date it ends.
+- [ ] Set the price to **$6.99, paid up front**, and confirm availability in
+      every territory you intend to sell in. No in-app purchases exist, so the
+      pricing section is the only place this is configured.
 - [ ] Set the age rating (4+; the app has no objectionable content).
 - [ ] Paste the review note from section 2 into App Review Notes.
 - [ ] Confirm the export compliance answer: **no**, the app does not use

@@ -28,6 +28,21 @@ enum GoCourseCatalog {
         units.flatMap(\.lessons)
     }
 
+    /// The lessons the course presents as steps, which is what every count on
+    /// the Learn screen is counting.
+    ///
+    /// Separate from `lessons` because challenges are lessons too and live in
+    /// Practice instead. Describing the course by `lessons.count` quotes a
+    /// number nobody can see: the app says 29 while that total says 49.
+    static var teachingLessons: [Lesson] {
+        units.flatMap(\.teachingLessons)
+    }
+
+    /// The question-and-answer challenges, which Practice offers.
+    static var challenges: [Lesson] {
+        units.flatMap(\.challenges)
+    }
+
     static func unit(id: String) -> CourseUnit? {
         units.first { $0.id == id }
     }

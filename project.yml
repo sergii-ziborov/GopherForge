@@ -239,6 +239,24 @@ schemes:
             - BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
             - BundledContentGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()
 
+  # Screenshots only, and Release on purpose. The listing's first picture is a
+  # real build result, which means the capture run compiles Go under the
+  # interpreter — unusably slow unoptimised. The ordinary scheme cannot be built
+  # in Release because it also builds the unit test target, and `@testable`
+  # needs a testability a shipped binary should not carry; this one builds only
+  # the UI tests, so Release is available to it.
+  GopherForgeScreenshots:
+    build:
+      targets:
+        GopherForge: all
+        GopherForgeUITests: [test]
+    test:
+      config: Release
+      targets:
+        - name: GopherForgeUITests
+          selectedTests:
+            - AppStoreScreenshotUITests/testCaptureTheListingScreenshots()
+
   GopherForgeCompilerGate:
     build:
       targets:
