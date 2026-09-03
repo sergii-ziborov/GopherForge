@@ -89,7 +89,7 @@ struct UnitDetailView: View {
     }
 
     private func symbol(for lesson: Lesson) -> String {
-        lesson.requiresCompiler ? "hammer.fill" : "text.book.closed.fill"
+        LessonSymbol.symbol(for: lesson)
     }
 }
 
