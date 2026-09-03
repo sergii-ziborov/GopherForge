@@ -139,7 +139,7 @@ struct LearnHomeView: View {
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
 
-            CoursePathView(items: items, trailTint: GopherForgeTheme.gopherBlue) { item in
+            CourseJourneyView(items: items) { item in
                 if let unit = GoCourseCatalog.unit(id: item.id) {
                     UnitDetailView(unit: unit)
                 }

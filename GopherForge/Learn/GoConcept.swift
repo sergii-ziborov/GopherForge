@@ -58,6 +58,15 @@ enum GoConcept {
     static let stdlibTesting = "stdlib.testing"
     static let stdlibImage = "stdlib.image"
 
+    static let structLiteral = "types.struct-literal"
+    static let pointerReceiver = "types.pointer"
+    static let closure = "functions.closure"
+    static let typeParameter = "generics.type-parameter"
+    static let constraint = "generics.constraint"
+    static let genericsOveruse = "generics.overuse"
+    static let channelDirection = "concurrency.channel-direction"
+    static let stdlibStrconv = "stdlib.strconv"
+
     /// Every tag the product knows, used to validate course content and to
     /// keep the review scheduler from inventing categories at runtime.
     static let all: Set<String> = [
@@ -70,5 +79,8 @@ enum GoConcept {
         constants, switchNoFallthrough, conversion, mapOrder, stringsBuilder,
         typeAssertion, embedding, customError, panicIsNotAnError, packageInit,
         mutex, stdlibTime, stdlibSort, stdlibImage,
+        structLiteral, pointerReceiver, closure,
+        typeParameter, constraint, genericsOveruse,
+        channelDirection, stdlibStrconv,
     ]
 }

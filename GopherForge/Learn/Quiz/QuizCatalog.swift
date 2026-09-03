@@ -4,8 +4,10 @@ import Foundation
 enum QuizCatalog {
     static let all: [Quiz] = [
         QuizCatalogCore.core,
+        QuizCatalogTypes.structs,
         QuizCatalogCore.collections,
         QuizCatalogAdvanced.interfaces,
+        QuizCatalogTypes.generics,
         QuizCatalogAdvanced.errors,
         QuizCatalogConcurrency.concurrency,
         QuizCatalogConcurrency.modules,

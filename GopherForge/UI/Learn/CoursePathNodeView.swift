@@ -35,6 +35,14 @@ enum CoursePathState {
 /// One stop on the path: a circle you tap and a label beside it.
 struct CoursePathNodeView: View {
     let index: Int
+    /// Handed down rather than read from a `GeometryReader` of its own.
+    ///
+    /// One reader per node, inside the reader the path already uses, is nine
+    /// nested readers on the course screen — and nested readers keep
+    /// invalidating each other's layout, so the app never goes quiet. It looks
+    /// fine and it never settles, which XCTest reports as a UI query that timed
+    /// out and a person experiences as a screen that will not respond.
+    let width: CGFloat
     let title: String
     let subtitle: String
     let badge: String
@@ -43,29 +51,33 @@ struct CoursePathNodeView: View {
     let tint: Color
 
     var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let nodeX = CoursePathLayout.nodeCenterX(width: width, index: index)
-            let toRight = CoursePathLayout.labelToRight(at: index)
-            let labelWidth = CoursePathLayout.labelWidth(for: width)
-            let labelX = CoursePathLayout.labelCenterX(
-                width: width,
-                nodeX: nodeX,
-                labelWidth: labelWidth,
-                labelToRight: toRight
-            )
+        let nodeX = CoursePathLayout.nodeCenterX(width: width, index: index)
+        let toRight = CoursePathLayout.labelToRight(at: index)
+        let labelWidth = CoursePathLayout.labelWidth(for: width)
+        let labelX = CoursePathLayout.labelCenterX(
+            width: width,
+            nodeX: nodeX,
+            labelWidth: labelWidth,
+            labelToRight: toRight
+        )
 
-            ZStack {
-                label(toRight: toRight)
-                    .frame(width: labelWidth)
-                    .position(x: labelX, y: geometry.size.height / 2)
+        // Placed with padding inside a leading-aligned stack rather than with
+        // `.position`. A positioned child is handed the whole proposed size and
+        // resolved against it, and N of those inside a scroll view is work on
+        // every frame that grows with N — measured: seven nodes scrolled, nine
+        // pinned the main thread for thirty seconds.
+        return ZStack(alignment: .topLeading) {
+            label(toRight: toRight)
+                .frame(width: labelWidth, height: CoursePathLayout.rowHeight)
+                .padding(.leading, max(0, labelX - labelWidth / 2))
 
-                circle
-                    .position(x: nodeX, y: geometry.size.height / 2)
-            }
-            .frame(width: width, height: geometry.size.height)
-            .contentShape(Rectangle())
+            circle
+                .padding(.leading, max(0, nodeX - CoursePathLayout.nodeBox / 2))
+                .frame(height: CoursePathLayout.rowHeight)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: CoursePathLayout.rowHeight)
+        .contentShape(Rectangle())
     }
 
     // MARK: - The circle
@@ -83,13 +95,26 @@ struct CoursePathNodeView: View {
                     .frame(width: CoursePathLayout.nodeDiameter + 26)
             }
 
+            // An opaque disc under the fill. The trail is drawn behind the
+            // nodes, but an upcoming node is a ten-percent wash of its tint —
+            // so without something solid beneath it the dashes run straight
+            // through the circle and the path reads as a line with holes in it.
+            Circle()
+                .fill(Color(.systemBackground))
+                .frame(width: CoursePathLayout.nodeDiameter, height: CoursePathLayout.nodeDiameter)
+
             Circle()
                 .fill(fill)
                 .frame(width: CoursePathLayout.nodeDiameter, height: CoursePathLayout.nodeDiameter)
                 .overlay {
                     Circle().stroke(border, lineWidth: state == .upcoming ? 2 : 1)
                 }
-                .shadow(color: shadow, radius: state == .next ? 14 : 4, y: 5)
+                // No shadow. A shadow is an offscreen render pass per node, and
+                // nine of them scrolling is what took the course screen from
+                // slow to unusable — a border reads as well and costs nothing.
+                .overlay {
+                    Circle().stroke(border.opacity(0.5), lineWidth: 0.5)
+                }
 
             Image(systemName: glyph)
                 .font(.system(size: 25, weight: .bold))

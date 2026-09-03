@@ -65,14 +65,25 @@ Concretely, the app currently contains:
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
-- a course of 40 lessons across seven units, every code lesson shipping a
+- a course of 49 lessons across nine units, every code lesson shipping a
   complete answer that a gate compiles against that lesson's own hidden test —
   so a lesson nobody can solve fails the build rather than a learner;
-- the course drawn as a path rather than a list, at both levels: seven unit
-  nodes on the Learn screen, the unit's own lessons inside it, each node saying
-  whether it was ticked by hand or sealed by a compiler pass. Nothing is
+- two of those units close gaps the course had no business having. **Types you
+  define** teaches struct literals, methods and receivers, pointers, closures
+  and escape analysis — the course previously taught `:=` and `switch` and never
+  once showed how to declare a type of your own. **Generics** teaches type
+  parameters, constraints with `~`, generic containers, and the cases where a
+  plain interface is the better answer; Go has had them since 1.18, and a course
+  without them teaches the language as it was in 2021;
+- the course drawn as a journey rather than a list: the units on a rail on the
+  Learn screen, and inside a unit its own lessons on a winding path. Each node
+  says whether it was ticked by hand or sealed by a compiler pass. Nothing is
   locked — a course written for people who already program is one they enter
-  sideways, at goroutines, because that is what they came for;
+  sideways, at goroutines, because that is what they came for.
+  The two shapes are deliberate. The winding path costs work per node on every
+  frame of a scroll, and measured here it carried seven units and pinned the
+  main thread for thirty seconds at nine; it stays where the node count is small
+  and bounded, which is inside a unit;
 - a lesson that says where it sits and where it goes: the unit, which lesson of
   how many, whether the toolchain judges this one, and the next lesson by name
   at the end. Finishing is two named things rather than one vague tick — Check
@@ -127,7 +138,7 @@ Concretely, the app currently contains:
 - **Spot the bug**: twelve short programs with one fault each, found by tapping
   the line. Every fault is unambiguous under the bundled Go, the guess cannot be
   taken back, and a miss feeds the same review queue a failed compile does;
-- a seven-unit course written for people who already program, where a lesson
+- a nine-unit course written for people who already program, where a lesson
   passes when `go test` passes rather than when text matches;
 - review chosen from the mistakes the compiler and the coach actually saw, with
   the reason shown on every item;

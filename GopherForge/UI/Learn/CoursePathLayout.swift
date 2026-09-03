@@ -66,35 +66,37 @@ enum CoursePathLayout {
     }
 }
 
-/// The dashed trail the nodes sit on.
+/// The dashed trail the nodes sit on, drawn in one pass.
 ///
-/// Drawn as one curve rather than as a segment per gap: a curve that knows
-/// where the next node is can bend towards it, and the bend is what makes the
-/// column read as a route instead of a stack of circles.
+/// A `Canvas` rather than stroked `Path` views. The path is one drawing whose
+/// shape only depends on how many nodes there are, and as a pair of Shape views
+/// inside a scrolling stack it was re-proposed and re-stroked on every frame.
 struct CoursePathTrail: View {
     let nodeCount: Int
     let width: CGFloat
     let tint: Color
 
     var body: some View {
-        ZStack {
-            path
-                .stroke(
-                    tint.opacity(0.10),
-                    style: StrokeStyle(lineWidth: 13, lineCap: .round, lineJoin: .round)
-                )
-            path
-                .stroke(
-                    tint.opacity(0.45),
-                    style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round, dash: [3, 9])
-                )
+        Canvas(opaque: false, rendersAsynchronously: false) { context, _ in
+            let path = trail
+            context.stroke(
+                path,
+                with: .color(tint.opacity(0.10)),
+                style: StrokeStyle(lineWidth: 13, lineCap: .round, lineJoin: .round)
+            )
+            context.stroke(
+                path,
+                with: .color(tint.opacity(0.45)),
+                style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round, dash: [3, 9])
+            )
         }
+        .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
 
-    private var path: Path {
+    private var trail: Path {
         Path { path in
-            guard nodeCount > 0 else { return }
+            guard nodeCount > 0, width > 0 else { return }
             var current = point(at: 0)
             path.move(to: current)
 

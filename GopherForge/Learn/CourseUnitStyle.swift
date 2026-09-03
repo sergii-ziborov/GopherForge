@@ -15,6 +15,8 @@ enum CourseUnitStyle {
     static func symbol(for unitID: String) -> String {
         switch unitID {
         case "core": "square.stack.3d.up"
+        case "structs": "cube"
+        case "generics": "curlybraces"
         case "collections": "square.grid.3x3"
         case "interfaces": "puzzlepiece"
         case "errors": "exclamationmark.triangle"
@@ -29,6 +31,8 @@ enum CourseUnitStyle {
     static func tint(for unitID: String) -> Color {
         switch unitID {
         case "core": GopherForgeTheme.gopherBlue
+        case "structs": GopherForgeTheme.deepBlue
+        case "generics": Color(hex: 0x6B4FA8)
         case "collections": GopherForgeTheme.aqua
         case "interfaces": Color(hex: 0x375EAB)
         case "errors": GopherForgeTheme.berry

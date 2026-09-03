@@ -10,8 +10,14 @@ import Foundation
 enum GoCourseCatalog {
     static let units: [CourseUnit] = [
         CourseUnitCore.unit,
+        // Types you declare come straight after the basics: everything below
+        // this line is written in terms of them.
+        CourseUnitStructs.unit,
         CourseUnitCollections.unit,
         CourseUnitInterfaces.unit,
+        // After interfaces on purpose — a constraint is an interface, so the
+        // unit has something to build on rather than a new idea to introduce.
+        CourseUnitGenerics.unit,
         CourseUnitErrors.unit,
         CourseUnitModules.unit,
         CourseUnitConcurrency.unit,
