@@ -24,15 +24,20 @@ That trade is the whole result. The app takes on the ordering, the import
 configurations and the generated test main, and in exchange a new Go release is
 a re-run of `scripts/build_toolchain.sh` rather than a rebase.
 
-Measured on an M-series Mac, Go 1.24.2, WasmKit 0.3.1 interpreter:
+Measured on an M-series Mac, Go 1.27.1, WasmKit 0.3.1 interpreter:
 
 | | |
 | --- | --- |
-| build the artifact | ~15 s |
-| `compile.wasm` / `link.wasm` | 38 MB / 10 MB — 5.8 MB / 2.0 MB compressed |
-| standard library export data | 114 MB, 333 packages — 17.7 MB compressed |
-| hello-world compile | ~1.4 s |
-| hello-world link | ~1.4 s |
+| `compile.wasm` | 50.9 MB — 7.1 MB compressed |
+| `link.wasm` | 11.9 MB — 2.4 MB compressed |
+| `vet.wasm` / `gofmt.wasm` | 14.5 MB / 4.8 MB — 2.7 MB / 1.0 MB compressed |
+| standard library export data | 138.2 MB, 370 packages — 21.5 MB compressed |
+| whole staged artifact | 220 MB |
+
+Bigger than the Go 1.24.2 artifact these numbers replaced, in every row. Three
+Go releases of compiler and standard-library growth, and worth knowing before
+the device gate rather than after: the compressed total is what an App Store
+download carries.
 
 The seven items the gate asked for:
 
@@ -70,8 +75,41 @@ presented as if it had.
    results, including a deliberate failure.
 6. **Thermal and memory envelope.** Repeated builds do not push the device into
    throttling or termination. Record the state before and after.
-7. **Stop.** A non-terminating program can be stopped, and the app does not
-   leave runaway work behind or start a second job on top of a draining one.
+7. **A runaway program.** `for { fmt.Println("x") }` must stop being kept after
+   1 MiB, report that it was truncated, and leave the device's storage where it
+   was. `for {}` will *not* stop — that is a known and documented limit, not a
+   test failure — so what is being measured here is what it costs: whether the
+   app stays responsive, whether anything is lost, and how the device behaves
+   thermally until the app is closed.
+8. **An allocation bomb.** A program growing memory without bound is refused at
+   64 MiB rather than taking the app down with it.
+9. **Repeated unique edits.** Twenty to fifty edit-and-run cycles, each with
+   different source, so every one is a cache miss. Memory must not climb with
+   the count — the parsed-module cache holds eight — and the on-disk cache must
+   stay under its 128 MiB budget.
+10. **Low storage.** With the device nearly full, a build fails in a way that
+    says so rather than corrupting the library.
+11. **Backgrounding mid-edit.** Type, background the app, force-quit it, and
+    relaunch: the edit is there. This is the autosave path, and the Simulator
+    proves the logic while only a device proves the timing.
+
+## The devices that have to be in it
+
+Not one modern phone. Three profiles, because each answers something the others
+cannot:
+
+| Profile | Why |
+| --- | --- |
+| The oldest hardware the deployment target admits | `iOS 18.0` is the declared minimum, so the App Store will offer this app to hardware several generations old. A local compiler in an interpreter is the worst possible workload for it. |
+| A current iPhone | The ordinary case, and the one most reviews will come from. |
+| An iPad | A different layout — sidebar, editor and dock at once — and probably the main way this app gets used seriously. |
+
+**The minimum-OS decision belongs to this measurement.** If the oldest
+supported hardware throttles, gets killed by jetsam, or takes long enough that
+the Build button reads as broken, raising the deployment target is better than
+collecting one-star reviews from devices that are formally supported and
+practically unsuitable. There is no installed base yet, which makes this the
+cheapest moment there will ever be to raise it.
 
 ## What a Simulator run can and cannot show
 

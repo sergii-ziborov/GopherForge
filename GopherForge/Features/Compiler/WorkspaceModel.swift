@@ -21,7 +21,13 @@ final class WorkspaceModel {
     private(set) var runningStep: GoBuildProgress?
 
     var selectedFile: String = "main.go"
-    var editorText: String = ""
+    /// Read-only from outside so the only way in is `updateEditorText`.
+    ///
+    /// This was a plain `var` bound straight to the editor, which is exactly
+    /// how text reached a buffer nobody saved. Closing that needs the compiler
+    /// rather than a convention: `private(set)` makes the old binding fail to
+    /// build instead of quietly losing work again.
+    private(set) var editorText: String = ""
     /// A line the editor should scroll to and highlight, set when a search
     /// result is chosen and cleared once the editor has done it. Nil the rest
     /// of the time, so nothing scrolls on an ordinary redraw.
@@ -81,6 +87,8 @@ final class WorkspaceModel {
     }
 
     private var remembering: Task<Void, Never>?
+    /// The pending autosave, cancelled and replaced on each edit.
+    private var autosave: Task<Void, Never>?
 
     func open(_ project: GopherForgeProject) {
         self.project = project
@@ -126,6 +134,25 @@ final class WorkspaceModel {
         highlightQuery = ""
     }
 
+    /// The one way the editor changes text.
+    ///
+    /// It folds the buffer into the project immediately and schedules the disk
+    /// write. Both halves matter: the in-memory project is what Export, the
+    /// package installer and every phase read, and the library is what
+    /// survives the app being closed.
+    ///
+    /// The editor used to write `editorText` and nothing else, and the project
+    /// caught up only when something asked for it — a build, or opening
+    /// another file. So anything typed and not built lived in a buffer nobody
+    /// persisted: leaving the tab and vendoring a package overwrote it from a
+    /// stale project, and quitting lost it outright. Losing what someone typed
+    /// is worse than any missing language feature.
+    func updateEditorText(_ text: String) {
+        guard text != editorText else { return }
+        editorText = text
+        commitEditorText()
+    }
+
     /// Folds the editor buffer back into the project. Called before anything
     /// that reads the project, so a phase never compiles a stale file.
     func commitEditorText() {
@@ -141,6 +168,31 @@ final class WorkspaceModel {
         )
         self.project = project
         refreshIdioms()
+        scheduleAutosave()
+    }
+
+    /// Waits out a pause in typing before writing.
+    ///
+    /// The library is a single JSON document, so one save rewrites all of it.
+    /// That is cheap between keystrokes and far too expensive on each one.
+    private func scheduleAutosave() {
+        autosave?.cancel()
+        autosave = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            await self?.flush()
+        }
+    }
+
+    /// Writes the open project as it stands.
+    ///
+    /// Also called when the app stops being active, where there may be no
+    /// later chance: a debounce that has not fired yet does not survive the
+    /// process going away, so backgrounding writes rather than waits.
+    func flush() async {
+        commitEditorText()
+        guard let project else { return }
+        try? await library.record(project: project, lastBuild: nil)
     }
 
     func run(_ phase: CompilationResult.Phase) async {
@@ -207,6 +259,7 @@ final class WorkspaceModel {
         }
         editorText = files[selectedFile] ?? ""
         refreshIdioms()
+        scheduleAutosave()
     }
 
     func applyIdiom(_ finding: IdiomFinding) {

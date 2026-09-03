@@ -43,7 +43,7 @@ struct GoChecksumDatabase: Sendable {
 
     func record(for reference: GoModuleReference) async throws -> Record {
         let url = baseURL.appendingPathComponent("lookup/\(reference.path)@\(reference.version)")
-        let (data, status) = try await transport.get(url)
+        let (data, status) = try await transport.get(url, limit: GoModuleProxyClient.maximumMetadataBytes)
         switch status {
         case 200: break
         case 404, 410: throw ChecksumError.notFound(reference.id)

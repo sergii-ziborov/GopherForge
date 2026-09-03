@@ -7,6 +7,7 @@ import SwiftUI
 /// third of the screen for navigation nobody is looking at while they code.
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.scenePhase) private var scenePhase
     @State private var workspace = WorkspaceModel()
     @State private var navigation = AppNavigation()
     /// Above the navigation stacks on purpose. A pushed screen inherits the
@@ -29,6 +30,13 @@ struct ContentView: View {
         .environment(navigation)
         .environment(learnProgress)
         .task { await workspace.prepare() }
+        // The last chance to keep what is in the editor. Autosave debounces,
+        // and a debounce that has not fired does not survive the process being
+        // suspended or killed — so leaving the foreground writes now.
+        .onChange(of: scenePhase) { _, phase in
+            guard phase != .active else { return }
+            Task { await workspace.flush() }
+        }
     }
 
     private var regularLayout: some View {

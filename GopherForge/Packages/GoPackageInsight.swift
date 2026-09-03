@@ -77,7 +77,8 @@ struct GoPackageInsightClient: Sendable {
         ) ?? projectID
         let url = baseURL.appendingPathComponent("v3alpha/projects/\(escaped)")
 
-        guard let (data, status) = try? await transport.get(url), status == 200,
+        guard let (data, status) = try? await transport.get(url, limit: GoModuleProxyClient.maximumMetadataBytes),
+              status == 200,
               let decoded = try? JSONDecoder().decode(ProjectResponse.self, from: data)
         else {
             return .unknown

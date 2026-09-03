@@ -20,19 +20,25 @@ struct WasiProcessRunner: Sendable {
         let preopens: [String: String]
         let memoryLimitBytes: Int
         let tableElementLimit: Int
+        /// How much of each stream is kept before the rest is counted and
+        /// dropped. Defaults to the toolchain's ceiling because most callers
+        /// here are the toolchain; running a user's program passes its own.
+        let outputLimitBytes: Int
 
         init(
             arguments: [String],
             environment: [String: String] = [:],
             preopens: [String: String],
             memoryLimitBytes: Int = WasmSandboxPolicy.toolchainMemoryLimitBytes,
-            tableElementLimit: Int = WasmSandboxPolicy.userProgramTableElementLimit
+            tableElementLimit: Int = WasmSandboxPolicy.userProgramTableElementLimit,
+            outputLimitBytes: Int = WasmSandboxPolicy.toolchainOutputLimitBytes
         ) {
             self.arguments = arguments
             self.environment = environment
             self.preopens = preopens
             self.memoryLimitBytes = memoryLimitBytes
             self.tableElementLimit = tableElementLimit
+            self.outputLimitBytes = outputLimitBytes
         }
     }
 
@@ -45,21 +51,13 @@ struct WasiProcessRunner: Sendable {
     }
 
     private let engineProvider: WasmEngineProvider
-    private let captureDirectory: URL
-    private let capturePrefix: String
 
-    init(
-        captureDirectory: URL,
-        capturePrefix: String,
-        engineProvider: WasmEngineProvider = .shared
-    ) {
-        self.captureDirectory = captureDirectory
-        self.capturePrefix = capturePrefix
+    init(engineProvider: WasmEngineProvider = .shared) {
         self.engineProvider = engineProvider
     }
 
     func run(module: Module, invocation: Invocation) throws -> (exitCode: UInt32, output: Output) {
-        let capture = try StreamCapture(directory: captureDirectory, prefix: capturePrefix)
+        let capture = try StreamCapture(limitBytes: invocation.outputLimitBytes)
         let limiter = WasmSandboxResourceLimiter(
             memoryLimitBytes: invocation.memoryLimitBytes,
             tableElementLimit: invocation.tableElementLimit
@@ -104,38 +102,102 @@ struct WasiProcessRunner: Sendable {
     }
 }
 
-/// Captures a guest's stdout and stderr into files.
+/// Captures a guest's stdout and stderr, keeping a bounded amount of each.
 ///
-/// Files rather than pipes: a Go build can emit more output than a pipe buffer
-/// holds, and a blocked writer inside the interpreter would deadlock the job.
+/// This wrote to files once, because a Go build emits more than a pipe buffer
+/// holds and a blocked writer inside the interpreter would deadlock the job.
+/// The problem with a file is that nothing bounds it: the memory limiter never
+/// fires on output, because the bytes leave the sandbox as they are produced,
+/// and `for { fmt.Println("x") }` filled the device and then produced a string
+/// too large to render.
+///
+/// So: a pipe per stream, drained continuously by a thread of its own. Draining
+/// is what keeps the old deadlock away — the reader never stops reading, even
+/// after the limit, it simply stops keeping. The guest is never blocked by us,
+/// and the host never holds more than the limit.
 private final class StreamCapture {
-    private let stdoutURL: URL
-    private let stderrURL: URL
-    private let stdoutHandle: FileHandle
-    private let stderrHandle: FileHandle
-    private var isClosed = false
+    private let stdout: BoundedStream
+    private let stderr: BoundedStream
 
-    var stdoutDescriptor: Int32 { stdoutHandle.fileDescriptor }
-    var stderrDescriptor: Int32 { stderrHandle.fileDescriptor }
+    var stdoutDescriptor: Int32 { stdout.writingDescriptor }
+    var stderrDescriptor: Int32 { stderr.writingDescriptor }
 
-    init(directory: URL, prefix: String) throws {
-        stdoutURL = directory.appendingPathComponent("\(prefix)-stdout.log")
-        stderrURL = directory.appendingPathComponent("\(prefix)-stderr.log")
-        FileManager.default.createFile(atPath: stdoutURL.path, contents: nil)
-        FileManager.default.createFile(atPath: stderrURL.path, contents: nil)
-        stdoutHandle = try FileHandle(forWritingTo: stdoutURL)
-        stderrHandle = try FileHandle(forWritingTo: stderrURL)
+    init(limitBytes: Int) throws {
+        stdout = BoundedStream(limitBytes: limitBytes)
+        stderr = BoundedStream(limitBytes: limitBytes)
     }
 
     func finish() throws -> WasiProcessRunner.Output {
-        if !isClosed {
-            try stdoutHandle.close()
-            try stderrHandle.close()
-            isClosed = true
+        WasiProcessRunner.Output(stdout: stdout.take(), stderr: stderr.take())
+    }
+}
+
+/// One pipe, drained by one thread, keeping at most `limitBytes`.
+///
+/// Not private so the limit can be tested directly. Proving it through a real
+/// guest would mean compiling and running a Go program that never stops, which
+/// is not something a unit test should need to do.
+final class BoundedStream {
+    private let pipe = Pipe()
+    private let limitBytes: Int
+    private let lock = NSLock()
+    private var kept = Data()
+    private var discarded = 0
+    private var finished = false
+    private let drained = DispatchSemaphore(value: 0)
+
+    var writingDescriptor: Int32 { pipe.fileHandleForWriting.fileDescriptor }
+
+    init(limitBytes: Int) {
+        self.limitBytes = limitBytes
+
+        // A thread rather than a DispatchQueue: this blocks in `read` for as
+        // long as the guest runs, and parking a cooperative pool thread for
+        // that long is how a concurrency runtime starves.
+        let thread = Thread { [pipe, limitBytes, lock, drained] in
+            let reading = pipe.fileHandleForReading
+            while true {
+                let chunk = reading.availableData
+                if chunk.isEmpty { break }
+                lock.lock()
+                let room = limitBytes - self.kept.count
+                if room > 0 {
+                    self.kept.append(chunk.prefix(room))
+                }
+                if chunk.count > max(room, 0) {
+                    self.discarded += chunk.count - max(room, 0)
+                }
+                lock.unlock()
+            }
+            drained.signal()
         }
-        return WasiProcessRunner.Output(
-            stdout: String(decoding: try Data(contentsOf: stdoutURL), as: UTF8.self),
-            stderr: String(decoding: try Data(contentsOf: stderrURL), as: UTF8.self)
-        )
+        thread.name = "gopherforge.stream-capture"
+        thread.start()
+    }
+
+    /// Closes the write end, waits for the reader to see the end of the stream,
+    /// and returns what was kept.
+    func take() -> String {
+        lock.lock()
+        let alreadyFinished = finished
+        finished = true
+        lock.unlock()
+        guard !alreadyFinished else { return "" }
+
+        try? pipe.fileHandleForWriting.close()
+        drained.wait()
+        try? pipe.fileHandleForReading.close()
+
+        lock.lock()
+        defer { lock.unlock() }
+        var text = String(decoding: kept, as: UTF8.self)
+        if discarded > 0 {
+            // Said plainly and in the output itself. A silently truncated
+            // stream reads as a program that stopped printing.
+            let limit = ByteCountFormatter.string(fromByteCount: Int64(limitBytes), countStyle: .file)
+            text += "\n… output stopped being kept after \(limit); "
+            text += "\(discarded) more bytes were produced and discarded.\n"
+        }
+        return text
     }
 }

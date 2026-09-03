@@ -12,7 +12,7 @@ enum AppLinks {
     /// that fails to parse is a build-time mistake rather than a runtime state
     /// worth handling. `AppLinksTests` fails first if one is malformed.
     static let privacyPolicy = URL(string: "https://github.com/sergii-ziborov/GopherForge/blob/main/PRIVACY.md")!
-    static let support = URL(string: "https://github.com/sergii-ziborov/GopherForge/issues")!
+    static let support = URL(string: "https://github.com/sergii-ziborov/GopherForge/blob/main/SUPPORT.md")!
 
     /// What Settings shows, and what a support request should quote.
     static var versionSummary: String {

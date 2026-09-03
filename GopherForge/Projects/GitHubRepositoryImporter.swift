@@ -57,6 +57,15 @@ struct GitHubRepositoryImporter: Sendable {
     /// all of memory. The archive reader enforces its own limit as well.
     static let maximumFiles = 400
 
+    /// The compressed archive's own ceiling.
+    ///
+    /// The reader below bounds what a tarball expands to, which is the defence
+    /// against a decompression bomb — but it only gets to run once the whole
+    /// download is already in memory. This is the bound on the download
+    /// itself, so a repository that is simply enormous is refused before the
+    /// phone has spent anything on it.
+    static let maximumArchiveBytes = 64 * 1024 * 1024
+
     private let session: URLSession
 
     init(session: URLSession = .shared) {
@@ -69,7 +78,13 @@ struct GitHubRepositoryImporter: Sendable {
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(from: url)
+            (data, response) = try await BoundedDownload.load(
+                url,
+                limit: Self.maximumArchiveBytes,
+                session: session
+            )
+        } catch is GoHTTPTransportError {
+            throw ImportError.tooLarge
         } catch {
             throw ImportError.unreachable(error.localizedDescription)
         }

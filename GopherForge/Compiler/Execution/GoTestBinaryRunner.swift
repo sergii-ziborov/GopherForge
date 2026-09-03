@@ -49,12 +49,13 @@ struct GoTestBinaryRunner {
             return ("FAIL\t\(product.importPath) [build failed]\n", "", false)
         }
 
-        let runner = WasiProcessRunner(captureDirectory: job.jobRoot, capturePrefix: "test")
+        let runner = WasiProcessRunner()
         let invocation = WasiProcessRunner.Invocation(
             arguments: [product.importPath + ".test", "-test.v"],
             preopens: [WasmSandboxPolicy.writableGuestDirectory: job.sandbox.path],
             memoryLimitBytes: WasmSandboxPolicy.userProgramMemoryLimitBytes,
-            tableElementLimit: WasmSandboxPolicy.userProgramTableElementLimit
+            tableElementLimit: WasmSandboxPolicy.userProgramTableElementLimit,
+            outputLimitBytes: WasmSandboxPolicy.userProgramOutputLimitBytes
         )
 
         do {

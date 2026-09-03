@@ -53,7 +53,8 @@ struct GoPackageSearchClient: Sendable {
             URLQueryItem(name: "system", value: "GO"),
         ]
         guard let url = components.url,
-              let (data, status) = try? await transport.get(url), status == 200,
+              let (data, status) = try? await transport.get(url, limit: GoModuleProxyClient.maximumMetadataBytes),
+              status == 200,
               let decoded = try? JSONDecoder().decode(Response.self, from: data)
         else {
             return []

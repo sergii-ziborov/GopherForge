@@ -88,8 +88,11 @@ struct ProjectsHomeView: View {
                 .disabled(workspace.project == nil)
                 .accessibilityIdentifier(AccessibilityID.packagesEntry)
 
-                if let project = workspace.project, let archive = exportURL(for: project) {
-                    ShareLink(item: archive) {
+                if let project = workspace.project {
+                    ShareLink(
+                        item: ProjectExport(project: project),
+                        preview: SharePreview(project.name)
+                    ) {
                         Label("Export \(project.name) as .tar.gz", systemImage: "square.and.arrow.up")
                     }
                     .accessibilityIdentifier(AccessibilityID.exportProject)
@@ -142,26 +145,6 @@ struct ProjectsHomeView: View {
             if LaunchOptions.initialScreen == .packages, workspace.project != nil {
                 isShowingPackages = true
             }
-        }
-    }
-
-    /// Writes the archive to a temporary file for the share sheet, which needs
-    /// something on disk rather than bytes in memory.
-    ///
-    /// Nil rather than an error if it cannot be written: the row simply does
-    /// not appear, which is better than a button that fails when pressed.
-    private func exportURL(for project: GopherForgeProject) -> URL? {
-        let name = ProjectArchiveNaming.archiveName(for: project.name)
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent(name)
-        do {
-            let root = ProjectArchiveNaming.rootDirectory(for: project.name)
-            let data = try ProjectArchive.gzip(
-                ProjectArchive.tar(files: project.files, root: root)
-            )
-            try data.write(to: url, options: .atomic)
-            return url
-        } catch {
-            return nil
         }
     }
 

@@ -48,13 +48,50 @@ staged_toolchain() {
   return 1
 }
 
-if EXISTING="$(staged_toolchain)"; then
-  echo "Bundled toolchain already staged: $(basename "$EXISTING")"
-  exit 0
-fi
+# A distribution build is held to a stricter rule than a development one.
+#
+# Without this, two App Store archives cut from the same commit could carry
+# different Go releases — whatever happened to be on that machine's PATH — and
+# then "we tested exactly what we shipped" is not a statement anybody can make.
+# A release names its artifact and its hash, or it does not build.
+DISTRIBUTION="${GOPHERFORGE_DISTRIBUTION_BUILD:-0}"
 
 TOOLCHAIN_URL="${GOPHERFORGE_TOOLCHAIN_URL:-}"
 TOOLCHAIN_SHA="${GOPHERFORGE_TOOLCHAIN_SHA256:-}"
+EXPECTED_GO="${GOPHERFORGE_EXPECTED_GO_VERSION:-}"
+
+if [[ "$DISTRIBUTION" == "1" ]]; then
+  missing=()
+  [[ -n "$TOOLCHAIN_URL" ]] || missing+=("GOPHERFORGE_TOOLCHAIN_URL")
+  [[ -n "$TOOLCHAIN_SHA" ]] || missing+=("GOPHERFORGE_TOOLCHAIN_SHA256")
+  [[ -n "$EXPECTED_GO" ]] || missing+=("GOPHERFORGE_EXPECTED_GO_VERSION")
+
+  if (( ${#missing[@]} > 0 )); then
+    cat >&2 <<MESSAGE
+error: this is a distribution build and the toolchain is not pinned.
+
+Missing: ${missing[*]}
+
+A distribution build may not fall back to building from whatever Go is on
+PATH, and may not reuse a toolchain that happens to be staged already: both
+make the shipped binary depend on the machine that cut it. Set all three and
+run again.
+MESSAGE
+    exit 1
+  fi
+fi
+
+if EXISTING="$(staged_toolchain)"; then
+  if [[ "$DISTRIBUTION" == "1" ]]; then
+    # Deliberately not accepted. A staged directory carries no proof of where
+    # it came from, which is the whole question a release has to answer.
+    echo "error: a toolchain is already staged at $(basename "$EXISTING")." >&2
+    echo "Remove it so a distribution build stages the pinned artifact itself." >&2
+    exit 1
+  fi
+  echo "Bundled toolchain already staged: $(basename "$EXISTING")"
+  exit 0
+fi
 
 # --- Path 1: build it here -------------------------------------------------
 
@@ -161,6 +198,29 @@ if [[ ! -f "$STAGING/compile.wasm" || ! -f "$STAGING/link.wasm" || ! -d "$STAGIN
   echo "Expected compile.wasm, link.wasm and goroot/ at the archive root" >&2
   exit 1
 fi
+
+# The hash proves the archive was not altered. It does not prove the archive
+# holds the Go release the release notes claim, which is a different mistake
+# and just as easy to make.
+STAGED_GO="$(cat "$STAGING/goroot/VERSION" 2>/dev/null || true)"
+if [[ -n "$EXPECTED_GO" && "$STAGED_GO" != "$EXPECTED_GO" ]]; then
+  echo "error: the pinned artifact carries $STAGED_GO, not $EXPECTED_GO." >&2
+  exit 1
+fi
+
+# What shipped, written beside what shipped. A crash report or a review
+# question a year from now is answerable from this file alone.
+cat > "$STAGING/toolchain-provenance.json" <<PROVENANCE
+{
+  "goVersion": "$STAGED_GO",
+  "target": "wasip1/wasm",
+  "toolchainTag": "$TOOLCHAIN_TAG",
+  "artifactURL": "$TOOLCHAIN_URL",
+  "artifactSHA256": "$TOOLCHAIN_SHA",
+  "source": "pinned-release-artifact",
+  "distributionBuild": $([[ "$DISTRIBUTION" == "1" ]] && echo true || echo false)
+}
+PROVENANCE
 
 echo "$TOOLCHAIN_TAG" > "$STAGING/.complete"
 if [[ -e "$VERSION_DIR" ]]; then

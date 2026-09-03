@@ -16,7 +16,13 @@ struct WorkspacePaneContent: View {
         switch pane {
         case .code:
             SyntaxCodeEditor(
-                text: $workspace.editorText,
+                // Through the model's setter rather than straight at the
+                // property: every keystroke has to reach the project and the
+                // autosave, and a plain binding reaches neither.
+                text: Binding(
+                    get: { workspace.editorText },
+                    set: { workspace.updateEditorText($0) }
+                ),
                 fileKind: workspace.fileKind,
                 fontSize: fontSize,
                 markedLines: workspace.markedLines,

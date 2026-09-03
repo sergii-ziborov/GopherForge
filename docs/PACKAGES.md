@@ -40,6 +40,38 @@ editor, it travels with the project, and the compiler builds it like any other
 package — `GoPackageGraph` gives a directory under `vendor/` the import path it
 was published under, which is the whole point of vendoring.
 
+## What a vendored module can and cannot be
+
+Adding a dependency here is not `go get`, and the differences are worth stating
+plainly rather than leaving someone to meet them halfway through a build.
+
+**Transitive dependencies are not resolved.** Adding module A vendors A and
+adds A's requirement. It does not walk A's own `go.mod` and fetch what A
+imports. If A imports B and B is not vendored, the build reports an unresolved
+import; the compatibility report names it rather than failing obscurely. This
+is the most common surprise, and it is why the listing says "a pure-Go module"
+rather than promising that any module will work.
+
+**`//go:embed` of non-Go assets does not survive.** Vendoring keeps `.go`
+files, `go.mod` and the licence and notice files. Templates, images and other
+embedded data are dropped, so a package built around `//go:embed templates/*`
+will not find them. Supporting it properly also needs the build planner to
+write an `embedcfg`, which it does not.
+
+**Assembly and native source are dropped.** `.s` files and C or C++ sources are
+filtered out of the archive. cgo is unsupported for the same underlying reason:
+there is no native toolchain in the sandbox. Pure Go is the target, and that
+covers most of the ecosystem worth using on a phone.
+
+**`replace`, `exclude` and `retract` are parsed but not applied.** The `go.mod`
+parser recognises them, and the build resolves imports from the paths actually
+present rather than implementing module-resolution semantics. A project relying
+on a `replace` directive is reported in the compatibility summary rather than
+silently built against the wrong thing.
+
+**`go.work` is not implemented.** A workspace is detected and its root module
+opened; workspace semantics are not applied.
+
 ## The limit worth stating
 
 The checksum database's response is a signed note over a transparency log. This

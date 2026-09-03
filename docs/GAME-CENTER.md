@@ -1,5 +1,12 @@
 # Game Center
 
+> **Current state: off, and not shown.** The entitlement is not claimed and
+> `GameCenterAvailability.isEnabled` is `false`, so the Achievements screen
+> shows local badges only. The two are checked against each other by
+> `GameCenterAvailabilityTests`: claiming the entitlement without flipping the
+> flag, or the reverse, fails the build rather than shipping a Connect button
+> that cannot connect. Everything below describes what enabling it involves.
+
 The achievements in this app are earned, stored and shown locally. Game Center
 mirrors them for people who want that, and the app works identically for people
 who do not.

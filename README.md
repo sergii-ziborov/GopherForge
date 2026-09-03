@@ -53,6 +53,12 @@ Concretely, the app currently contains:
 
 - an adaptive native `Projects / Build / Learn / Settings` shell — sidebar on
   iPad, tab bar on iPhone;
+- what you type is kept without being asked to keep it. Every edit reaches the
+  project immediately and the library shortly after, and leaving the foreground
+  writes rather than waiting. There was a version where an edit lived only in
+  the editor's own buffer until something wanted to build, and switching tab or
+  vendoring a package could overwrite it from a stale project; that is what
+  `WorkspaceAutosaveTests` exists to keep closed;
 - a project library that keeps everything you make: folders, tags, a star and a
   note per project, grouped and searched by name, folder, tag or file name —
   because the project you are looking for is often "the one with `parser.go`
@@ -186,6 +192,25 @@ bundle. The running app never downloads compiler components.
 - **No `cmd/go` in the bundle, on purpose.** It builds by spawning the compiler
   and the linker, and WASI cannot spawn. The app plans the build itself, which
   is what keeps the bundled Go unpatched.
+- **A program that loops forever cannot be stopped.** Everything a runaway
+  guest can consume is capped except processor time: guest memory at 64 MiB,
+  the function table at 32,768 entries, and each output stream at 1 MiB, after
+  which further bytes are counted, discarded, and reported in the output. What
+  has no ceiling is a loop that calls nothing — `for {}` or `select {}`.
+  WasmKit 0.3.1 exposes no way to interrupt a running guest: its public surface
+  is a resource limiter for memory and table growth and an execution
+  interceptor whose methods cannot throw, and upstream has no fuel, epoch or
+  deadline API. The app stays responsive and nothing is lost, but one thread
+  spins until the app is closed. A genuine Stop needs an interrupt check inside
+  the interpreter's instruction handlers, which means forking a
+  performance-critical dependency; that is deferred deliberately rather than
+  overlooked. Full reasoning in
+  [docs/APP-STORE.md](docs/APP-STORE.md#6a-what-bounds-a-running-program-and-what-does-not).
+- **Transitive dependencies are not resolved for you.** Adding a module vendors
+  that module. If it imports another one, that one has to be added too — the
+  compatibility report names what is missing rather than failing partway
+  through a build. `//go:embed` of non-Go assets does not survive vendoring,
+  and assembly files are dropped. See [docs/PACKAGES.md](docs/PACKAGES.md).
 
 ## License and ownership
 
@@ -222,13 +247,20 @@ before submitting.
 
 Requirements:
 
-- Xcode 27 beta or newer (Swift 6.3+ is required by WasmKit 0.3.1);
+- Xcode 26.6 or newer (Swift 6.3+ is required by WasmKit 0.3.1);
 - XcodeGen;
 - `zstd` on the build Mac.
 
+Stable Xcode, not beta, and that distinction is the release pipeline rather
+than a preference: Swift 6.3 ships in 26.6, which is what WasmKit needs, so
+there is nothing a beta is required for. Beta Xcode is for testing the next
+iOS ahead of time, and an App Store archive should not be the place that
+happens. The commands below name `DEVELOPER_DIR` explicitly so that whichever
+Xcode a Mac happens to have selected does not decide what gets built.
+
 ```bash
 ./scripts/bootstrap.sh
-DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForge \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
@@ -313,15 +345,24 @@ a shipped binary should not carry. Each run also clears the build cache first �
 a cached artifact makes a build that never happened look exactly like one that
 did.
 
-Measured on an M-series Mac in the Simulator, Go 1.24.2, cold cache:
+Measured on an M-series Mac in the Simulator, Go 1.27.1, cold cache. These are
+the compiler gate's own per-test times, so they are re-measured every time it
+runs rather than being a number somebody typed once:
 
 | | |
 | --- | --- |
-| hello-world: compile, link and run | 3.2 s |
-| two-package module | 3.9 s |
-| `declared and not used` reported | 0.4 s |
-| table-driven `go test`, per-case results | 6.9 s |
-| three repeated runs, cache warm after the first | 2.5 s total |
+| compile, link and run one program | 3.6 s |
+| two-package module | 4.8 s |
+| `declared and not used` reported | 0.5 s |
+| table-driven `go test`, per-case results | 9.1 s |
+| three repeated runs, cache warm after the first | 2.8 s total |
+| one file edited, only its package recompiled | 17.6 s |
+| a dependency changed, everything importing it rebuilt | 24.6 s |
+
+Slower than the Go 1.24.2 figures these replaced — a larger compiler doing more
+work inside the same interpreter. Still the same shape: the second build of an
+unchanged program is cache-warm, and editing one file does not rebuild the
+module.
 
 These are Simulator numbers on a Mac and nothing more. What a phone does is
 Gate B, and no number here anticipates it.

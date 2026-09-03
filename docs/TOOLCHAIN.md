@@ -57,13 +57,17 @@ can prove.
 
 ## What ships
 
-`scripts/build_toolchain.sh` produces, in about fifteen seconds:
+`scripts/build_toolchain.sh` produces, from Go 1.27.1:
 
-    compile.wasm             38 MB     5.8 MB compressed
-    link.wasm                10 MB     2.0 MB
-    vet.wasm                 12 MB     2.5 MB
-    gofmt.wasm              4.5 MB     1.0 MB
-    goroot/pkg/wasip1_wasm  114 MB    17.7 MB    333 packages of export data
+    compile.wasm           50.9 MB     7.1 MB compressed
+    link.wasm              11.9 MB     2.4 MB
+    vet.wasm               14.5 MB     2.7 MB
+    gofmt.wasm              4.8 MB     1.0 MB
+    goroot/pkg/wasip1_wasm 138.2 MB   21.5 MB    370 packages of export data
+
+Every row is larger than the Go 1.24.2 artifact it replaces. That is three
+releases of compiler and standard-library growth, and it is the compressed
+column that matters — it is what the App Store download carries.
 
 The standard library ships as export data — one `.a` per package, cut from the
 same release as the tools — so building a program only ever compiles the user's
@@ -73,6 +77,47 @@ them no test binary links.
 
 Nothing here is committed. It is build output from an unpatched release, which
 makes it something to reproduce rather than something to store.
+
+### Which Go, and how a release proves it
+
+A development build takes whatever Go is on `PATH`, which is convenient and
+unsuitable for shipping: two App Store archives cut from the same commit could
+carry different Go releases, and then nobody can say the tested binary is the
+shipped one.
+
+So a release is a distribution build, and it is a different mode rather than a
+convention:
+
+```bash
+export GOPHERFORGE_DISTRIBUTION_BUILD=1
+export GOPHERFORGE_TOOLCHAIN_URL=<published artifact>
+export GOPHERFORGE_TOOLCHAIN_SHA256=<sha256 of it>
+export GOPHERFORGE_EXPECTED_GO_VERSION=go1.27.1
+```
+
+Under that flag `scripts/fetch_toolchain.sh` refuses to build from `PATH`, and
+refuses to accept a toolchain that is merely already staged — a staged
+directory carries no evidence of where it came from, which is the one question
+a release has to answer. It also compares `goroot/VERSION` against the expected
+release, because a hash proves an archive was not altered and says nothing
+about which Go is inside it.
+
+Both paths write `toolchain-provenance.json` beside the artifact:
+
+```json
+{
+  "goVersion": "go1.27.1",
+  "target": "wasip1/wasm",
+  "toolchainTag": "go1.27.1-wasm-1",
+  "source": "pinned-release-artifact",
+  "artifactSHA256": "…",
+  "distributionBuild": true
+}
+```
+
+A locally built one says `"source": "built-locally"` and names the `go` binary
+it came from, so a development artifact can never be mistaken for a release
+one.
 
 ## Sandbox
 

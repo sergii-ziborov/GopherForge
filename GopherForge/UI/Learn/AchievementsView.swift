@@ -19,13 +19,15 @@ struct AchievementsView: View {
 
     var body: some View {
         List {
-            Section {
-                GameCenterRow(service: gameCenter, stats: stats)
-            } header: {
-                Text("Game Center")
-            } footer: {
-                Text("Every badge is earned and kept on this device whether or not you "
-                    + "sign in. Game Center is a mirror, not the record.")
+            if GameCenterAvailability.isEnabled {
+                Section {
+                    GameCenterRow(service: gameCenter, stats: stats)
+                } header: {
+                    Text("Game Center")
+                } footer: {
+                    Text("Every badge is earned and kept on this device whether or not you "
+                        + "sign in. Game Center is a mirror, not the record.")
+                }
             }
 
             Section {
@@ -46,7 +48,10 @@ struct AchievementsView: View {
         // whatever the person opened, and being asked to sign in to something
         // for looking at a list is exactly the kind of thing that makes people
         // close an app.
-        .task { await gameCenter.reportIfAlreadySignedIn(stats) }
+        .task {
+            guard GameCenterAvailability.isEnabled else { return }
+            await gameCenter.reportIfAlreadySignedIn(stats)
+        }
     }
 }
 

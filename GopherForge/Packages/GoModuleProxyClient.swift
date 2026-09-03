@@ -74,7 +74,7 @@ struct GoModuleProxyClient: Sendable {
 
     private func get(_ path: String, limit: Int) async throws -> Data {
         let url = baseURL.appendingPathComponent(path)
-        let (data, status) = try await transport.get(url)
+        let (data, status) = try await transport.get(url, limit: limit)
         switch status {
         case 200:
             guard data.count <= limit else { throw ProxyError.tooLarge(data.count) }
@@ -106,8 +106,19 @@ struct GoModuleProxyClient: Sendable {
 
 /// The one thing that touches the network, behind a protocol so every client
 /// above it is testable without one.
+///
+/// The limit is part of the request rather than something the caller checks
+/// afterwards. It used to be checked afterwards, which meant the phone
+/// downloaded the whole response into memory and only then decided it was too
+/// big — a limit on what was kept, not on what was fetched.
 protocol GoHTTPTransport: Sendable {
-    func get(_ url: URL) async throws -> (Data, Int)
+    func get(_ url: URL, limit: Int) async throws -> (Data, Int)
+}
+
+enum GoHTTPTransportError: Error, Equatable {
+    /// Carries what was refused and whether the server admitted the size up
+    /// front, because the two are worth telling apart when diagnosing.
+    case tooLarge(bytes: Int, declared: Bool)
 }
 
 struct URLSessionTransport: GoHTTPTransport {
@@ -117,14 +128,18 @@ struct URLSessionTransport: GoHTTPTransport {
         self.session = session
     }
 
-    func get(_ url: URL) async throws -> (Data, Int) {
+    func get(_ url: URL, limit: Int) async throws -> (Data, Int) {
         var request = URLRequest(url: url)
         request.timeoutInterval = 30
         // The proxy serves the right thing without content negotiation, and a
         // plain identity encoding keeps the archive bytes exactly as hashed.
         request.setValue("identity", forHTTPHeaderField: "Accept-Encoding")
-        let (data, response) = try await session.data(for: request)
-        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
-        return (data, status)
+
+        let (data, response) = try await BoundedDownload.load(
+            request,
+            limit: limit,
+            session: session
+        )
+        return (data, (response as? HTTPURLResponse)?.statusCode ?? 0)
     }
 }

@@ -115,6 +115,20 @@ fi
 
 echo "$GO_VERSION" > "$STAGING/goroot/VERSION"
 
+# Says what this is and, just as importantly, what it is not. A development
+# toolchain built from whatever Go is on this Mac is fine to develop against
+# and not fine to ship, and the only way to tell later is to record it now.
+cat > "$STAGING/toolchain-provenance.json" <<PROVENANCE
+{
+  "goVersion": "$GO_VERSION",
+  "target": "wasip1/wasm",
+  "toolchainTag": "$TAG",
+  "source": "built-locally",
+  "builtWith": "$GO",
+  "distributionBuild": false
+}
+PROVENANCE
+
 # The BSD 3-Clause licence requires the copyright notice and disclaimer to be
 # reproduced with a binary redistribution, and these wasm files are exactly
 # that. Staging them here means the notice travels inside the app bundle

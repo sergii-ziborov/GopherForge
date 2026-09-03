@@ -29,6 +29,32 @@ enum WasmSandboxPolicy {
     /// right one.
     static let toolchainTableElementLimit = 65_536
 
+    /// How much of a program's own output is kept.
+    ///
+    /// A guest that prints in a loop is bounded by nothing else: the memory
+    /// limiter never fires, because the bytes leave the sandbox as fast as they
+    /// are produced and land in the host's storage. Left alone, `for {
+    /// fmt.Println("x") }` fills the device and then hands the app a string too
+    /// big to render.
+    ///
+    /// A megabyte is far more than a person reads and far less than a phone
+    /// minds. Output past it is counted and dropped, and the run says so.
+    static let userProgramOutputLimitBytes = 1024 * 1024
+
+    /// The toolchain's own ceiling, which has to be higher.
+    ///
+    /// A failing build with hundreds of diagnostics, or `go test -v` over a
+    /// large package, is legitimately verbose, and truncating that would hide
+    /// the compiler error the user is looking for.
+    static let toolchainOutputLimitBytes = 16 * 1024 * 1024
+
+    static var outputLimitLabel: String {
+        ByteCountFormatter.string(
+            fromByteCount: Int64(userProgramOutputLimitBytes),
+            countStyle: .file
+        )
+    }
+
     static var memoryLimitLabel: String {
         ByteCountFormatter.string(
             fromByteCount: Int64(userProgramMemoryLimitBytes),

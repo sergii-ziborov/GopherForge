@@ -146,14 +146,55 @@ Renée French's, and the notices say so.
 | **4.7 Mini apps** | Not applicable; 2.5.2's developer-tool exception is the governing rule, and the app hosts no third-party mini-app store. |
 | **5.1.1 Data collection** | Nothing is collected, so no consent flow is required and none is shown. |
 | **iOS data storage** | User projects and learning progress go to Application Support (backed up, because they are user-created). The build cache goes to Caches (purgeable, not backed up). Nothing large is written to Documents. |
-| **Game Center** | The capability is deliberately **not** in the entitlements file. The code is written and tested, and the app reports Game Center as unavailable rather than failing. See [`GAME-CENTER.md`](GAME-CENTER.md) before enabling it. |
+| **Game Center** | The capability is deliberately **not** in the entitlements file, and nothing in the app offers it: the Achievements screen shows local badges only. It previously offered "Connect Game Center", which could not work in a signed build — a reviewer tapping it would have found a dead feature next to a privacy policy calling it unavailable. `GameCenterAvailabilityTests` now fails if the screen and the entitlement disagree. See [`GAME-CENTER.md`](GAME-CENTER.md) before enabling it. |
+| **Resource containment** | A guest program runs under a memory ceiling, a function-table ceiling and an output ceiling, and the build cache is bounded in memory and on disk. What is *not* bounded is CPU: see the honest note in section 6a. |
+
+---
+
+## 6a. What bounds a running program, and what does not
+
+Worth stating precisely, because a reviewer can write whatever they like in the
+editor and press Run.
+
+| Resource | Bound |
+| --- | --- |
+| Guest memory | 64 MiB for a user's program, refused at `memory.grow` |
+| Function table | 32,768 elements for a user's program |
+| Program output | 1 MiB kept per stream; past that, counted and discarded, and the run says so |
+| Toolchain output | 16 MiB, higher because a failing build's diagnostics are the useful part |
+| Parsed modules in memory | 8, least-recently-used evicted |
+| Build cache on disk | 128 MiB, oldest evicted; in Caches, so the system may also purge it |
+| Package download | 24 MiB, refused on `Content-Length` before the body is read |
+| GitHub archive download | 64 MiB, same |
+| Files from an import | 400 files, 512 KiB each, 8 MiB total |
+| CPU | **Not bounded.** See below. |
+
+**CPU is the honest gap.** A program that loops forever without calling
+anything — `for {}`, or `select {}` — cannot be interrupted. WasmKit 0.3.1
+exposes no interruption primitive: its public surface is a resource limiter for
+memory and table growth, plus an execution interceptor whose methods cannot
+throw, so there is no way to unwind a running guest. Upstream has no fuel,
+epoch or deadline API, and under the direct-threaded model whole chains of
+instructions execute inside C before Swift regains control, so a check in the
+interpreter loop would not see a tight guest loop either.
+
+What that costs: the run does not finish, and one background thread spins until
+the app is closed. What it does not cost: the app stays responsive, no data is
+lost, storage does not grow — the output ceiling above is what stops the
+storage half of this — and nothing escapes the sandbox.
+
+A real Stop needs an interrupt check inside the instruction handlers, which
+means a fork of a performance-critical interpreter. That is a considered
+deferral rather than an oversight, and it is the first thing to revisit when
+WasmKit gains the primitive.
 
 ---
 
 ## 7. Findings from the pre-submission review
 
-The pass over this app found seven real problems. All are fixed; they are
-recorded because each one is a mistake that comes back.
+Two passes over this app found fifteen real problems. Fourteen are fixed and
+one is documented as a known limit; they are recorded because each one is a
+mistake that comes back.
 
 1. **The app icon carried an alpha channel.** App Store Connect rejects
    transparent icons *at upload* — after the archive, after the signing. Every
@@ -174,6 +215,67 @@ recorded because each one is a mistake that comes back.
    the app does not keep. Removed.
 7. **The version was 0.1.0.** Set to 1.0.0 for a first release.
 
+### A second, deeper pass found worse things
+
+The first pass was a metadata and compliance review. A second one went through
+the runtime and found problems that mattered more, none of which a reviewer
+would have caught but a user would.
+
+8. **The editor could lose what you typed.** Text went into the editor's own
+   buffer, and the project only caught up when something asked for it — a
+   build, or opening another file. Nothing wrote it to the library except
+   opening a project and finishing a build. So an edit that was never built
+   existed in one place nothing persisted: leaving the Build tab and vendoring
+   a package overwrote it from a stale project, and quitting lost it. Every
+   edit now reaches the project at once and the library after a pause, leaving
+   the foreground flushes rather than waiting, and `editorText` is
+   `private(set)` so the binding that caused this cannot be written again.
+   `WorkspaceAutosaveTests` covers the paths that lost it.
+9. **A program's output had no ceiling.** stdout and stderr went to files that
+   nothing bounded, and were read whole afterwards. `for { fmt.Println("x") }`
+   would fill the device's storage and then hand the app a string too large to
+   render. Reading the first N bytes afterwards would not have helped — a
+   program like that has no afterwards. Each stream is now a pipe drained by
+   its own thread, keeping 1 MiB for a user's program and 16 MiB for the
+   toolchain, counting and discarding the rest and saying so in the output.
+10. **The build cache grew without limit.** Every edit that reaches a build
+    makes a new cache key, and editing and running is the ordinary way to use
+    this app — so the map of parsed WebAssembly modules gained one per unique
+    build and released none. Now eight, least-recently-used evicted, with the
+    verdict set bounded too and a 128 MiB budget on disk.
+11. **Download limits were enforced after downloading.** The comment said
+    "enforced before a download"; the code called `session.data(for:)`, which
+    buffers the whole body, and *then* compared its size. The archive and
+    tarball readers below it are genuinely well bounded, but all of them run
+    after the bytes are already held. Both paths now refuse on
+    `Content-Length` before reading a body and cap the stream as it arrives.
+12. **The screen offered a feature the entitlement forbade.** Game Center is
+    deliberately not claimed, and Achievements still showed "Connect Game
+    Center" — a button that cannot succeed in a signed build, beside a privacy
+    policy calling the feature unavailable. The surface is gone, and
+    `GameCenterAvailabilityTests` fails if the screen and the entitlement ever
+    disagree again.
+13. **The listing advertised a course nobody could see.** The promotional text
+    said 40 lessons, the description said 49, and the app's own Learn screen
+    says 29 — the catalogue holds 49 but 20 of those are challenges the app
+    files under Practice. `ListingCopyTests` was checking that the *right*
+    number appeared somewhere, which a stale number does not disturb, so it
+    passed throughout. It now reads every course count in both documents and
+    requires each to be the one the Learn screen shows.
+14. **The bundled Go was three releases old.** Gate A was measured on 1.24.2
+    and that is what shipped, in September 2026, with 1.27.1 current. Now
+    1.27.1, with the full compiler gate green against it — including every
+    lesson's answer still compiling.
+15. **A release build could pick up any Go.** `fetch_toolchain.sh` fell back to
+    whatever was on `PATH`, so two archives from one commit could carry
+    different compilers. `GOPHERFORGE_DISTRIBUTION_BUILD=1` now requires a
+    pinned URL, its hash and the expected Go version, refuses a merely-staged
+    toolchain, and writes `toolchain-provenance.json`.
+
+**One item was not fixed, and is documented instead.** A guest program that
+loops without calling anything cannot be interrupted; see section 6a for why,
+what it costs, and what would have to change.
+
 ---
 
 ## 8. The listing
@@ -192,8 +294,8 @@ because the fields are truncated silently rather than refused.
 place to put anything time-bound):
 
 > A real Go compiler in your pocket. Build, vet, test and run Go with the
-> network switched off — beside a 40-lesson course written for people who
-> already program.
+> network switched off — beside a 29-lesson course judged by that same
+> compiler.
 
 **Keywords** (100 characters, comma-separated, no spaces — a space costs a
 character and buys nothing). The name and subtitle are indexed separately, so
@@ -234,9 +336,9 @@ the first screen a reviewer opens.
 >   folder, tag or file name.
 > • Import a public GitHub repository, a folder from Files, or an archive this
 >   app exported.
-> • Install a Go module: it is resolved through the official proxy, checked
->   against the Go checksum database, and vendored into your project — after
->   which the project builds offline.
+> • Add a pure-Go module as a source dependency: it is resolved through the
+>   official proxy, checked against the checksum database, and vendored into
+>   your project, after which every build is offline again.
 >
 > LEARNING GO
 >
@@ -343,7 +445,12 @@ These cannot be done from the source tree.
 - [ ] Create the app record for `com.sergiiziborov.GopherForge`.
 - [ ] Publish `PRIVACY.md` at a public URL and enter it as the privacy policy
       URL. **Required — a submission without one is rejected.**
-- [ ] Provide a support URL.
+- [ ] Provide a support URL. Use [`SUPPORT.md`](../SUPPORT.md), published at a
+      public URL — **and fill in the contact email in it first.** It ships with
+      that line marked and unset on purpose: publishing an address is a
+      decision about which address, and Apple asks the Support URL to lead to
+      real contact information rather than to an issue tracker that needs a
+      GitHub account to use.
 - [ ] Answer the App Privacy questionnaire: *Data Not Collected* throughout.
 - [ ] Upload the screenshots, which are `01-compiler` through `06-projects`
       in listing order. They are captured by driving the real app:
@@ -366,10 +473,42 @@ These cannot be done from the source tree.
       every territory you intend to sell in. No in-app purchases exist, so the
       pricing section is the only place this is configured.
 - [ ] Set the age rating (4+; the app has no objectionable content).
+- [ ] Answer the **Digital Services Act** status. App Store Connect asks every
+      developer to declare trader status, and it asks even when the app is not
+      sold in the EU. Apple states explicitly that it does not make this
+      determination on the developer's behalf. For a paid app sold
+      commercially this cannot be deferred: decide the territories, complete
+      the declaration, and if the answer is *trader*, verify the contact
+      details Apple will then display on the public product page. If the status
+      is not obvious, it is a question for a lawyer rather than for this
+      document.
+- [ ] Answer the social-media capability questions: the app has no accounts, no
+      profiles, no messaging and no user-to-user content of any kind.
 - [ ] Paste the review note from section 2 into App Review Notes.
 - [ ] Confirm the export compliance answer: **no**, the app does not use
       non-exempt encryption (see section 4).
-- [ ] Choose a signing team and archive with the Release configuration.
+- [ ] Run `scripts/check_app_store_screenshots.sh` before uploading. It checks
+      the sizes App Store Connect enforces and refuses an alpha channel, which
+      is invisible locally and rejected on upload.
+- [ ] Cut the archive as a **distribution build**, which is a different thing
+      from a Release build:
+
+      ```bash
+      export GOPHERFORGE_DISTRIBUTION_BUILD=1
+      export GOPHERFORGE_TOOLCHAIN_URL=<published artifact>
+      export GOPHERFORGE_TOOLCHAIN_SHA256=<sha256 of it>
+      export GOPHERFORGE_EXPECTED_GO_VERSION=go1.27.1
+      ```
+
+      With `GOPHERFORGE_DISTRIBUTION_BUILD=1`, `scripts/fetch_toolchain.sh`
+      refuses to build a toolchain from whatever Go is on `PATH` and refuses to
+      reuse one that happens to be staged. Without that, two archives from the
+      same commit could carry different Go releases, and "we tested exactly
+      what we shipped" stops being a statement anybody can make. The staged
+      toolchain gets a `toolchain-provenance.json` recording the version, the
+      artifact URL and its hash.
+- [ ] Choose a signing team and archive with the Release configuration, using
+      **stable Xcode** (`/Applications/Xcode.app`), not a beta.
 
 ### Metadata that is already set
 

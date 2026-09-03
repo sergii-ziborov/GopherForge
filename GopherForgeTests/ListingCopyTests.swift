@@ -43,12 +43,52 @@ final class ListingCopyTests: XCTestCase {
         )
     }
 
+    /// Every lesson count in the document has to be the real one.
+    ///
+    /// Checking that the right number appears somewhere is not enough, and the
+    /// gap was not hypothetical: the promotional text advertised a 40-lesson
+    /// course for weeks while the description below it said 49, and the test
+    /// passed the whole time because it only ever asked whether the correct
+    /// value was present. A stale number is not the absence of a fresh one.
+    func testNoStaleLessonCountIsLeftAnywhere() throws {
+        for (name, document) in try [
+            ("docs/APP-STORE.md", releaseDocument()),
+            ("README.md", readme()),
+        ] {
+            for quoted in Self.lessonCounts(in: document) {
+                XCTAssertEqual(
+                    quoted, GoCourseCatalog.teachingLessons.count,
+                    "\(name) still says \(quoted) lessons"
+                )
+            }
+        }
+    }
+
+    /// Every count that describes the whole course.
+    ///
+    /// Deliberately not every "N lessons" in the file: a screenshot's alt text
+    /// says "0 of 4 lessons" about one unit, which is true and has nothing to
+    /// do with the total. What matters is the phrasings that claim to describe
+    /// the course — "a 29-lesson course", "29 lessons across nine units".
+    private static func lessonCounts(in document: String) -> [Int] {
+        let pattern = try? NSRegularExpression(pattern: "([0-9]+)[ -]lessons? (?:course|across)")
+        let range = NSRange(document.startIndex..., in: document)
+        return (pattern?.matches(in: document, range: range) ?? []).compactMap { match in
+            guard let digits = Range(match.range(at: 1), in: document) else { return nil }
+            return Int(document[digits])
+        }
+    }
+
+    private func readme() throws -> String {
+        let here = URL(fileURLWithPath: #filePath)
+        let root = here.deletingLastPathComponent().deletingLastPathComponent()
+        return try String(contentsOf: root.appending(path: "README.md"), encoding: .utf8)
+    }
+
     /// The counts in the README are read by anyone deciding whether to look
     /// further, so they are worth the same check.
     func testTheReadmeQuotesTheRealCounts() throws {
-        let here = URL(fileURLWithPath: #filePath)
-        let root = here.deletingLastPathComponent().deletingLastPathComponent()
-        let readme = try String(contentsOf: root.appending(path: "README.md"), encoding: .utf8)
+        let readme = try readme()
 
         XCTAssertTrue(
             readme.contains("\(GoCourseCatalog.teachingLessons.count) lessons"),

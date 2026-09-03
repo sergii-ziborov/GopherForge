@@ -142,7 +142,7 @@ struct GoToolSession {
             throw SessionError.toolNotBundled(step.tool.rawValue)
         }
 
-        let runner = WasiProcessRunner(captureDirectory: job.jobRoot, capturePrefix: step.tool.rawValue)
+        let runner = WasiProcessRunner()
         let invocation = WasiProcessRunner.Invocation(
             arguments: step.arguments,
             environment: GoToolInvocation.environment(goVersion: goVersion),

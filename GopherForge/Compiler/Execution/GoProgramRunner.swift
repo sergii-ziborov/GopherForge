@@ -19,12 +19,13 @@ struct GoProgramRunner {
         clock: ContinuousClock,
         successDetail: String
     ) throws -> CompilationResult {
-        let runner = WasiProcessRunner(captureDirectory: job.jobRoot, capturePrefix: "program")
+        let runner = WasiProcessRunner()
         let invocation = WasiProcessRunner.Invocation(
             arguments: GoToolInvocation.programArguments(),
             preopens: [WasmSandboxPolicy.writableGuestDirectory: job.sandbox.path],
             memoryLimitBytes: WasmSandboxPolicy.userProgramMemoryLimitBytes,
-            tableElementLimit: WasmSandboxPolicy.userProgramTableElementLimit
+            tableElementLimit: WasmSandboxPolicy.userProgramTableElementLimit,
+            outputLimitBytes: WasmSandboxPolicy.userProgramOutputLimitBytes
         )
 
         do {
