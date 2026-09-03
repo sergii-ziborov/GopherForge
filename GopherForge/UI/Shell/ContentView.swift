@@ -40,7 +40,12 @@ struct ContentView: View {
     }
 
     private var regularLayout: some View {
-        NavigationSplitView {
+        // Pinned open. On iPad the sidebar is the only thing that says where
+        // you are, and a split view will otherwise collapse it on rotation or
+        // when a detail wants the room — so the four sections disappear behind
+        // a button for reasons the person did not ask for. A constant binding
+        // rather than state, because state is something the system may change.
+        NavigationSplitView(columnVisibility: .constant(.all)) {
             List(selection: sidebarSelection) {
                 ForEach(AppSection.allCases) { item in
                     NavigationLink(value: item) {
@@ -51,6 +56,9 @@ struct ContentView: View {
             }
             .navigationTitle("GopherForge")
             .listStyle(.sidebar)
+            // The toggle would offer to collapse what cannot collapse, which
+            // is worse than not offering it.
+            .toolbar(removing: .sidebarToggle)
         } detail: {
             NavigationStack {
                 destination(for: navigation.section)
