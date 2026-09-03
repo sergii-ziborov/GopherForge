@@ -51,8 +51,25 @@ change the app's own features.
 > interpreter with one writable directory, a memory limit, and no network
 > access. Nothing downloaded or compiled can alter the app's own functionality.
 >
-> To try it: open the app, tap **Build**, and press **Run** on the sample
-> project. No account or network is required.
+> What a reviewer may want to confirm, in order:
+>
+> 1. Open the app — no account, no sign-in, no purchase; every feature is
+>    available immediately.
+> 2. Tap **Build** and press **Run** on the sample project. It compiles and
+>    runs with no network; airplane mode is a fair test.
+> 3. Edit the source in the editor and press Run again — the output changes,
+>    because the code is compiled on the device rather than matched against
+>    anything.
+> 4. Open **Projects → My projects** and then the file navigator to see that
+>    everything the app has downloaded is source, listed beside the user's own
+>    files and editable in the same editor.
+>
+> What the app is not: it is not a store for executable content. Nothing it
+> downloads can add a feature to GopherForge, the package browser lists
+> published Go modules for a project's own dependencies rather than anything
+> installable into the app, and a compiled program cannot call into iOS — it
+> runs in a WebAssembly interpreter with one writable directory, a memory cap,
+> and no network API in scope at all.
 
 ---
 
@@ -125,7 +142,7 @@ Renée French's, and the notices say so.
 | --- | --- |
 | **1.2 User-generated content** | The package browser lists module names and scores from `deps.dev`, a Google-operated index of published packages. This is a package registry, not user-generated content: there is no posting, no profiles, no messaging between users, and nothing a user of this app can publish to it. |
 | **2.3.1 Hidden features** | None. Every feature is reachable from the UI and described in the listing. |
-| **3.1.1 In-app purchase** | The app sells nothing and contains no purchases. |
+| **3.1.1 In-app purchase** | The app is paid up front and contains no in-app purchases, no subscription, and no purchase surface of any kind. Every feature is available to a reviewer on first launch with no account and no unlock. |
 | **4.7 Mini apps** | Not applicable; 2.5.2's developer-tool exception is the governing rule, and the app hosts no third-party mini-app store. |
 | **5.1.1 Data collection** | Nothing is collected, so no consent flow is required and none is shown. |
 | **iOS data storage** | User projects and learning progress go to Application Support (backed up, because they are user-created). The build cache goes to Caches (purgeable, not backed up). Nothing large is written to Documents. |
@@ -251,50 +268,64 @@ comparing the listing, the screenshots and the app is exactly who notices.
 
 ## 9. Price
 
-Nothing here is set in the source tree; this is the recommendation and the
-reasoning behind it, so the decision can be argued with rather than inherited.
+**Decided: paid up front. No free tier, no in-app purchase.**
 
-**Where this app sits.** One-time iOS developer tools cluster tightly:
-Pythonista and Textastic at $9.99, Codea at $14.99, Working Copy free with a
-$19.99 unlock, iSH and a-Shell free. Learning apps are mostly subscriptions at
-$5–10 a month. GopherForge is both halves at once, and its unusual claim — a
-real Go toolchain that runs offline — is worth more to a small audience than a
-common one is to a large audience.
+**Recommended: $4.99 as an announced launch price, moving to $9.99** — or
+**$6.99 flat** if the price should be set once and left alone.
 
-**Recommended: free to download, one unlock at $9.99.**
+### What a paid app already gives the buyer
 
-The line to draw is between learning and working: the course, the drills, the
-Concurrency Lab and the example library stay free, including compiling and
-running them, because a course whose compiler is behind a paywall cannot prove
-the thing it is selling. The unlock covers your own projects — creating them,
-importing from GitHub or Files, installing packages, exporting.
+One purchase, every future version, no upgrade pricing — that is simply how a
+paid iOS app works, and there is nothing to build for it. It also means the
+price has to cover the work that comes after 1.0, which is an argument against
+setting it too low rather than for it.
 
-Why not paid up front: nobody searches for an app they have not heard of, and
-on the App Store a paid download from an unknown developer converts poorly
-enough that the listing never gathers the reviews that would fix it. Free entry
-buys installs, ratings and a rank; the unlock is then sold to people who have
-already watched the compiler work on their own device.
+### Why not $3.99
 
-Why $9.99 and not more: it is the ceiling for an unresearched impulse purchase
-on iOS, and the price the two closest comparables sit at. $14.99 is defensible
-on the strength of the toolchain — but it is the price to move to after the
-listing has reviews, not the one to launch on.
+The buyer here is not browsing. Somebody installing a Go compiler on an iPhone
+arrives from a search with an intent, and that purchase is not very sensitive
+to price: the difference between $3.99 and $6.99 wins few extra installs and
+changes the signal a great deal. The product's claim is a real compiler, and a
+four-dollar price argues with that claim before the app is opened.
 
-Why not less: $2.99 buys very little extra volume in a niche this narrow, and
-it argues against the product. The claim is a real compiler; a toy price says
-otherwise before anyone has opened it.
+### If the entry price should be lower
 
-Why not a subscription: nothing here has a running cost. There is no server, no
-account and no content pipeline, so a recurring charge would be rent for
-something already delivered — and reviewers say so, loudly.
+Do it as a launch price with a stated end — $4.99 for the first few weeks, then
+$9.99 — rather than a quiet number that goes up later. An announced increase is
+a reason to buy now; an unannounced one reads as arbitrary to the person who
+was going to buy next week. Raising a price in App Store Connect is a single
+change and never affects anyone who has already bought.
 
-**What the recommendation costs to build.** The app currently sells nothing,
-which is what section 6 records under guideline 3.1.1. A free-plus-unlock
-release needs StoreKit 2, a non-consumable product, a paywall on the Projects
-side, and a Restore Purchases control — Apple rejects a paid unlock without
-one. If 1.0 should ship before that work, **$9.99 paid up front** is the honest
-alternative: it needs no code at all, and moving to free-plus-unlock later is a
-price change plus a build, not a migration.
+### Why $9.99 is the ceiling
+
+One-time iOS developer tools cluster tightly. Pythonista and Textastic sit at
+$9.99, Codea at $14.99, and Code App — a broader editor with SSH, a terminal
+and Git — at $6.99. GopherForge is narrower than Code App and deeper in the one
+thing it does. $9.99 is the most somebody pays without research; above it the
+listing has to win an argument it cannot have in six screenshots.
+
+### What paid up front costs
+
+Conversion. An unknown paid app is bought by people who came looking for it —
+somebody searching "go compiler iphone" — and almost nobody else, so the
+listing has to do the whole job of explaining the difference from a tutorial
+app. That is why the screenshots lead with the compiler rather than the course.
+
+### What it saves
+
+Everything StoreKit would have cost: a product definition, an entitlement
+store, a paywall, purchase and restore flows, offline entitlement caching,
+transaction observers, and the sandbox testing under all of them. It also keeps
+the answer to guideline 3.1.1 simple and true — the app contains no purchases
+at all — and keeps the whole app available to a reviewer without an account.
+
+### If this is revisited later
+
+Moving to free-with-an-unlock is a price change plus a build, not a migration,
+and the natural line is between learning and working: the course, the drills,
+the lab and the examples free, and your own projects, imports, packages and
+export behind the unlock. It is worth doing only once the listing has reviews,
+because that model's whole advantage is volume it cannot get without them.
 
 ---
 
@@ -314,8 +345,12 @@ These cannot be done from the source tree.
       smaller device sizes, so no others need capturing.
 - [ ] Paste the name, subtitle, keywords, promotional text and description from
       section 8.
-- [ ] Set the price. Section 9 recommends free with a $9.99 unlock, and gives
-      the paid-up-front alternative if 1.0 should ship before StoreKit work.
+- [ ] Set the price, paid up front — section 9 recommends $4.99 as an announced
+      launch price moving to $9.99, or $6.99 flat. Confirm availability in every
+      territory you intend to sell in. No in-app purchases exist, so the pricing
+      section is the only place this is configured.
+- [ ] If a launch price is used, say so in the promotional text, which can be
+      changed without a new build, and diarise the date it ends.
 - [ ] Set the age rating (4+; the app has no objectionable content).
 - [ ] Paste the review note from section 2 into App Review Notes.
 - [ ] Confirm the export compliance answer: **no**, the app does not use
