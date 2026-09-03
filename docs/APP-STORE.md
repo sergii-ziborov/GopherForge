@@ -163,7 +163,8 @@ editor and press Run.
 | Program output | 1 MiB kept per stream; past that, counted and discarded, and the run says so |
 | Toolchain output | 16 MiB, higher because a failing build's diagnostics are the useful part |
 | Parsed modules in memory | 8, least-recently-used evicted |
-| Build cache on disk | 128 MiB, oldest evicted; in Caches, so the system may also purge it |
+| Program cache on disk | 128 MiB, oldest evicted; in Caches, so the system may also purge it |
+| Per-package step cache | 400 entries **and** 192 MiB, whichever is reached first — a count alone bounded bookkeeping rather than storage, since one package archive runs from kilobytes to megabytes |
 | Package download | 24 MiB, refused on `Content-Length` before the body is read |
 | GitHub archive download | 64 MiB, same |
 | Files from an import | 400 files, 512 KiB each, 8 MiB total |

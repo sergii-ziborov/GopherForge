@@ -19,8 +19,27 @@ final class GoStepArtifactCache: @unchecked Sendable {
     /// cache that grows forever, and an archive is cheap to produce again.
     private let maximumEntries = 400
 
-    init(toolchainTag: String, fileManager: FileManager = .default) {
+    /// And bounded in bytes, which is the limit that actually matters.
+    ///
+    /// Four hundred entries says nothing about size: a package archive for a
+    /// small package is a few kilobytes and for a large one several megabytes,
+    /// so the same count can mean anything between a few megabytes and most of
+    /// a gigabyte. A count alone was not a ceiling on storage, only on
+    /// bookkeeping. Provisional in the same way the program cache's budget is:
+    /// the number to keep comes from the device gate.
+    ///
+    /// Injectable only so a test can reach it: proving the trim with the real
+    /// ceiling would mean writing 192 MiB, and a test that writes less than
+    /// the budget proves nothing at all.
+    private let maximumBytes: Int
+
+    init(
+        toolchainTag: String,
+        fileManager: FileManager = .default,
+        maximumBytes: Int = 192 * 1024 * 1024
+    ) {
         self.fileManager = fileManager
+        self.maximumBytes = maximumBytes
         directory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first?
             .appendingPathComponent("GopherForgeSteps", isDirectory: true)
             .appendingPathComponent(toolchainTag, isDirectory: true)
@@ -90,12 +109,27 @@ final class GoStepArtifactCache: @unchecked Sendable {
 
     /// Oldest first, which for build artifacts is a good enough proxy for
     /// least useful.
+    ///
+    /// Trims on whichever ceiling is reached first. Sorted once and walked,
+    /// rather than checked twice, so a cache that is over both limits does not
+    /// get two passes over the directory.
     private func trimIfNeeded() {
         let all = entries()
-        guard all.count > maximumEntries else { return }
-        let doomed = all.sorted { $0.accessed < $1.accessed }.prefix(all.count - maximumEntries)
+        var total = all.reduce(0) { $0 + $1.size }
+        guard all.count > maximumEntries || total > maximumBytes else { return }
+
+        var remaining = all.count
+        var doomed: [URL] = []
+        for entry in all.sorted(by: { $0.accessed < $1.accessed }) {
+            guard remaining > maximumEntries || total > maximumBytes else { break }
+            doomed.append(entry.url)
+            remaining -= 1
+            total -= entry.size
+        }
+
         lock.withLock {
-            for entry in doomed { try? fileManager.removeItem(at: entry.url) }
+            for url in doomed { try? fileManager.removeItem(at: url) }
         }
     }
+
 }

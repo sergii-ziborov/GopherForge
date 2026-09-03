@@ -194,8 +194,9 @@ bundle. The running app never downloads compiler components.
   is what keeps the bundled Go unpatched.
 - **A program that loops forever cannot be stopped.** Everything a runaway
   guest can consume is capped except processor time: guest memory at 64 MiB,
-  the function table at 32,768 entries, and each output stream at 1 MiB, after
-  which further bytes are counted, discarded, and reported in the output. What
+  the function table at 32,768 entries, each output stream at 1 MiB — after
+  which further bytes are counted, discarded, and reported in the output — and
+  both build caches bounded in bytes as well as in entries. What
   has no ceiling is a loop that calls nothing — `for {}` or `select {}`.
   WasmKit 0.3.1 exposes no way to interrupt a running guest: its public surface
   is a resource limiter for memory and table growth and an execution
