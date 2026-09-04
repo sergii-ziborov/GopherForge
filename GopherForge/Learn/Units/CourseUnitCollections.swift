@@ -13,6 +13,7 @@ enum CourseUnitCollections {
         """,
         lessons: [
             lengthAndCapacity, appendAliasing, mapZeroValue, runesNotBytes,
+            iterators,
             boundsVersusCapacity, mapsAreUnordered, buildingStrings,
         ]
     )
@@ -199,5 +200,109 @@ enum CourseUnitCollections {
             """
         ),
         idiomaticSolution: nil
+    )
+
+    static let iterators = Lesson(
+        id: "collections.iterators",
+        title: "range works on functions too",
+        objective: "Write something that can be ranged over without building a slice first.",
+        explanation: """
+        Since Go 1.23, `range` accepts a function as well as a slice, map or \
+        channel. A function of the shape `func(yield func(V) bool)` is an \
+        iterator: it calls `yield` once per element, and stops early when \
+        `yield` returns false — which is how a `break` in the caller's loop \
+        reaches you.
+
+        There are two shapes, and the standard library names them in `iter`: \
+        `iter.Seq[V]` yields one value per step, and `iter.Seq2[K, V]` yields \
+        two, which is what map-like iteration needs. You rarely write the type \
+        out; you write the function, and `range` accepts it.
+
+        The point is not novelty. Before this, a function returning a sequence \
+        had to hand back a whole slice — allocating every element even when the \
+        caller wanted the first one — or take a callback and lose `break`, \
+        `continue` and `return`. An iterator is lazy and keeps the loop \
+        keywords working, which is why `slices.Values` and `maps.Keys` return \
+        one instead of a copy.
+        """,
+        conceptTags: [GoConcept.rangeOverFunc],
+        task: .compile(
+            starter: """
+            package main
+
+            // Take should return an iterator over at most n values from the
+            // slice — nothing copied up front, and a caller that breaks out
+            // early must stop the work rather than run to the end.
+
+            func main() {
+            \tfor value := range Take([]string{"go", "forge", "run"}, 2) {
+            \t\tprintln(value)
+            \t}
+            }
+            """,
+            hiddenTest: """
+            package main
+
+            import "testing"
+
+            func collect(seq func(func(string) bool)) []string {
+            \tvar out []string
+            \tfor v := range seq {
+            \t\tout = append(out, v)
+            \t}
+            \treturn out
+            }
+
+            func TestTakeStopsAtN(t *testing.T) {
+            \tgot := collect(Take([]string{"a", "b", "c", "d"}, 2))
+            \tif len(got) != 2 || got[0] != "a" || got[1] != "b" {
+            \t\tt.Fatalf("Take(4 values, 2) = %v, want [a b]", got)
+            \t}
+            }
+
+            func TestTakeAllowsFewerThanN(t *testing.T) {
+            \tif got := collect(Take([]string{"a"}, 5)); len(got) != 1 {
+            \t\tt.Errorf("Take(1 value, 5) = %v, want one value", got)
+            \t}
+            }
+
+            // Breaking out of the caller's loop makes yield return false, and
+            // an iterator that ignores that keeps working after nobody reads.
+            func TestBreakingOutStopsTheIterator(t *testing.T) {
+            \tvisited := 0
+            \tfor range Take([]string{"a", "b", "c"}, 3) {
+            \t\tvisited++
+            \t\tbreak
+            \t}
+            \tif visited != 1 {
+            \t\tt.Errorf("the loop body ran %d times after a break, want 1", visited)
+            \t}
+            }
+
+            func TestTakeNoneYieldsNothing(t *testing.T) {
+            \tif got := collect(Take([]string{"a", "b"}, 0)); len(got) != 0 {
+            \t\tt.Errorf("Take(2 values, 0) = %v, want nothing", got)
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        // iter.Seq[string], spelled out. Writing the signature rather than
+        // importing iter keeps the shape visible: one yield, one bool back.
+        func Take(values []string, n int) func(func(string) bool) {
+        \treturn func(yield func(string) bool) {
+        \t\tfor i, value := range values {
+        \t\t\tif i >= n {
+        \t\t\t\treturn
+        \t\t\t}
+        \t\t\t// False means the caller broke out. Returning here is what
+        \t\t\t// makes break, continue and return work in their loop.
+        \t\t\tif !yield(value) {
+        \t\t\t\treturn
+        \t\t\t}
+        \t\t}
+        \t}
+        }
+        """
     )
 }

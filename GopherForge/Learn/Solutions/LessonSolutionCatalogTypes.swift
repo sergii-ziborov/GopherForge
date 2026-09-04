@@ -8,6 +8,50 @@ import Foundation
 /// literal that nobody can find anything in.
 extension LessonSolutionCatalog {
     static let typesAndGenerics: [String: String] = [
+        "collections.iterators": """
+        package main
+
+        func Take(values []string, n int) func(func(string) bool) {
+        \treturn func(yield func(string) bool) {
+        \t\tfor i, value := range values {
+        \t\t\tif i >= n {
+        \t\t\t\treturn
+        \t\t\t}
+        \t\t\tif !yield(value) {
+        \t\t\t\treturn
+        \t\t\t}
+        \t\t}
+        \t}
+        }
+
+        func main() {
+        \tfor value := range Take([]string{"go", "forge", "run"}, 2) {
+        \t\tprintln(value)
+        \t}
+        }
+        """,
+
+        "generics.methods": """
+        package main
+
+        type Bag[E any] struct {
+        \titems []E
+        }
+
+        func (b Bag[E]) Map[F any](f func(E) F) Bag[F] {
+        \tmapped := make([]F, 0, len(b.items))
+        \tfor _, item := range b.items {
+        \t\tmapped = append(mapped, f(item))
+        \t}
+        \treturn Bag[F]{items: mapped}
+        }
+
+        func main() {
+        \tb := Bag[int]{items: []int{1, 2, 3}}
+        \tprintln(len(b.Map(func(n int) string { return "x" }).items))
+        }
+        """,
+
         "structs.literals": """
         package main
 
