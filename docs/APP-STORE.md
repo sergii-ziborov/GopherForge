@@ -256,12 +256,13 @@ would have caught but a user would.
     policy calling the feature unavailable. The surface is gone, and
     `GameCenterAvailabilityTests` fails if the screen and the entitlement ever
     disagree again.
-13. **The listing advertised a course nobody could see.** The promotional text
-    said 40 lessons, the description said 49, and the app's own Learn screen
-    says 29 — the catalogue holds 49 but 20 of those are challenges the app
-    files under Practice. `ListingCopyTests` was checking that the *right*
-    number appeared somewhere, which a stale number does not disturb, so it
-    passed throughout. It now reads every course count in both documents and
+13. **The listing advertised a course nobody could see.** The promotional
+    text said 40 lessons and the description said 49, while the app's own
+    Learn screen showed 29 — the catalogue held 49 entries at the time, but
+    20 of those are challenges the app files under Practice.
+    `ListingCopyTests` was checking that the *right* number appeared
+    somewhere, which a stale number does not disturb, so it passed
+    throughout. It now reads every course count in both documents and
     requires each to be the one the Learn screen shows.
 14. **The bundled Go was three releases old.** Gate A was measured on 1.24.2
     and that is what shipped, in September 2026, with 1.27.1 current. Now
@@ -295,7 +296,7 @@ because the fields are truncated silently rather than refused.
 place to put anything time-bound):
 
 > A real Go compiler in your pocket. Build, vet, test and run Go with the
-> network switched off — beside a 29-lesson course judged by that same
+> network switched off — beside a 31-lesson course judged by that same
 > compiler.
 
 **Keywords** (100 characters, comma-separated, no spaces — a space costs a
@@ -314,7 +315,7 @@ comparing the listing, the screenshots and the app is exactly who notices.
 The count quoted is the one the Learn screen shows. The catalogue holds 49
 lessons, but 20 of those are question-and-answer challenges that the app
 gathers into Practice rather than offering as course steps, so its progress
-card reads "0 of 29 lessons". Advertising 49 would put the listing at odds with
+card reads "0 of 31 lessons". Advertising 49 would put the listing at odds with
 the first screen a reviewer opens.
 
 **Description:**
@@ -343,7 +344,7 @@ the first screen a reviewer opens.
 >
 > LEARNING GO
 >
-> • A course of 29 lessons across nine units, written for people who already
+> • A course of 31 lessons across nine units, written for people who already
 >   program and are carrying habits from another language, including the types
 >   you declare yourself and generics. Practice holds another
 >   20 question-and-answer challenges.

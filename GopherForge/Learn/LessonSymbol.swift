@@ -73,6 +73,8 @@ enum LessonSymbol {
         GoConcept.closure: "curlybraces.square",
 
         GoConcept.typeParameter: "chevron.left.forwardslash.chevron.right",
+        GoConcept.rangeOverFunc: "arrow.trianglehead.clockwise",
+        GoConcept.genericMethod: "point.forward.to.point.capsulepath",
         GoConcept.constraint: "line.3.horizontal.decrease",
         GoConcept.genericsOveruse: "exclamationmark.questionmark",
 

@@ -25,6 +25,7 @@ enum CourseUnitGenerics {
             typeParameters,
             constraintsAreInterfaces,
             genericContainers,
+            genericMethods,
             whenNotToUseThem,
         ]
     )
@@ -205,10 +206,13 @@ enum CourseUnitGenerics {
         explanation: """
         Types take parameters with the same syntax: `type Stack[T any] struct \
         { items []T }`. Methods on it repeat the parameter in the receiver — \
-        `func (s *Stack[T]) Push(v T)` — but they cannot introduce new ones. A \
-        method needing its own type parameter has to be a function instead, \
-        which is why `Map` is a function in every Go library and a method in \
-        none.
+        `func (s *Stack[T]) Push(v T)` — which makes the type's parameter \
+        available to the method.
+
+        For most of generics' life a method could not introduce a parameter of \
+        its own, which is why `Map` is a function in every Go library written \
+        before 1.27 and a method in none. That restriction is gone; the next \
+        lesson is about what replaced it.
 
         The zero value still has to work. `var s Stack[int]` gives you a struct \
         whose slice is nil, and appending to a nil slice is fine, so the stack \
@@ -359,5 +363,108 @@ enum CourseUnitGenerics {
             """
         ),
         idiomaticSolution: nil
+    )
+
+    static let genericMethods = Lesson(
+        id: "generics.methods",
+        title: "A method can take its own type parameter",
+        objective: "Write the method that could only be a function before Go 1.27.",
+        explanation: """
+        Go 1.27 lets a method declare type parameters of its own, in addition \
+        to the ones its receiver already carries:
+
+        ```
+        type List[E any] []E
+
+        func (l List[E]) Apply[F any](f func(E) F) List[F] {
+        \t...
+        }
+        ```
+
+        `E` comes from the receiver; `F` belongs to the method. Before this, \
+        the second one had no place to live, so every `Map` in every Go library \
+        is a package-level function taking the collection as its first \
+        argument. That was not a style choice — the language had no way to \
+        write it as a method.
+
+        Like a generic function, a generic method is instantiated before it is \
+        called, and in ordinary code the compiler infers the type argument from \
+        what you pass. The judgement from the previous lessons still applies: \
+        this removes a restriction, it does not create an obligation. A method \
+        earns a type parameter when the transformation genuinely produces a \
+        different element type, and not because it now can have one.
+        """,
+        conceptTags: [GoConcept.genericMethod],
+        task: .compile(
+            starter: """
+            package main
+
+            // Bag holds elements of one type. Give it a Map method that returns
+            // a Bag of whatever type the function produces — a method, not a
+            // package-level function.
+
+            type Bag[E any] struct {
+            \titems []E
+            }
+
+            func main() {
+            \tb := Bag[int]{items: []int{1, 2, 3}}
+            \tprintln(len(b.Map(func(n int) string { return "x" }).items))
+            }
+            """,
+            hiddenTest: """
+            package main
+
+            import "testing"
+
+            func TestMapChangesTheElementType(t *testing.T) {
+            \tb := Bag[int]{items: []int{1, 2, 3}}
+            \tgot := b.Map(func(n int) string {
+            \t\tif n%2 == 0 {
+            \t\t\treturn "even"
+            \t\t}
+            \t\treturn "odd"
+            \t})
+
+            \twant := []string{"odd", "even", "odd"}
+            \tif len(got.items) != len(want) {
+            \t\tt.Fatalf("Map returned %v, want %v", got.items, want)
+            \t}
+            \tfor i := range want {
+            \t\tif got.items[i] != want[i] {
+            \t\t\tt.Fatalf("Map returned %v, want %v", got.items, want)
+            \t\t}
+            \t}
+            }
+
+            func TestMapOnAnEmptyBag(t *testing.T) {
+            \tb := Bag[string]{}
+            \tif got := b.Map(func(s string) int { return len(s) }); len(got.items) != 0 {
+            \t\tt.Errorf("Map over an empty bag returned %v", got.items)
+            \t}
+            }
+
+            // The receiver's parameter and the method's are independent: this
+            // one keeps the element type and only changes the values.
+            func TestMapCanKeepTheSameType(t *testing.T) {
+            \tb := Bag[int]{items: []int{1, 2}}
+            \tgot := b.Map(func(n int) int { return n * 10 })
+            \tif len(got.items) != 2 || got.items[0] != 10 || got.items[1] != 20 {
+            \t\tt.Errorf("Map returned %v, want [10 20]", got.items)
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        // E is the receiver's; F is the method's own. Before Go 1.27 the second
+        // one had nowhere to go, and this had to be func Map[E, F any](Bag[E]…).
+        func (b Bag[E]) Map[F any](f func(E) F) Bag[F] {
+        \tmapped := make([]F, 0, len(b.items))
+        \tfor _, item := range b.items {
+        \t\tmapped = append(mapped, f(item))
+        \t}
+        \treturn Bag[F]{items: mapped}
+        }
+        """
     )
 }

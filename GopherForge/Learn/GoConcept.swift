@@ -61,6 +61,8 @@ enum GoConcept {
     static let structLiteral = "types.struct-literal"
     static let pointerReceiver = "types.pointer"
     static let closure = "functions.closure"
+    static let rangeOverFunc = "range-over-func"
+    static let genericMethod = "generic-method"
     static let typeParameter = "generics.type-parameter"
     static let constraint = "generics.constraint"
     static let genericsOveruse = "generics.overuse"
@@ -82,5 +84,6 @@ enum GoConcept {
         structLiteral, pointerReceiver, closure,
         typeParameter, constraint, genericsOveruse,
         channelDirection, stdlibStrconv,
+        rangeOverFunc, genericMethod,
     ]
 }

@@ -19,7 +19,7 @@ goroutine trace are what the app actually produced, not mock-ups.
 
 | | |
 | --- | --- |
-| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card reading 0 of 29 lessons over nine units, cards for Review, Practice, the Concurrency Lab, Examples and Achievements, and the units themselves on a rail, each with its own icon and a lessons-done badge"> | <img src="docs/screenshots/unit-path.png" alt="The Concurrency unit opened: its header reading 0 of 4 lessons, a note for people who already program, and its four lessons on a winding trail, each with its own icon and marked COMPILE"> |
+| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card reading 0 of 31 lessons over nine units, cards for Review, Practice, the Concurrency Lab, Examples and Achievements, and the units themselves on a rail, each with its own icon and a lessons-done badge"> | <img src="docs/screenshots/unit-path.png" alt="The Concurrency unit opened: its header reading 0 of 4 lessons, a note for people who already program, and its four lessons on a winding trail, each with its own icon and marked COMPILE"> |
 | **The course is a journey.** Nine units on a rail, then the lessons inside one on a winding path. A node says whether it was ticked by hand or sealed by a compiler pass — and nothing is locked, because a course for people who already program is one they enter at goroutines. | **Inside a unit.** Every lesson is marked `READ` or `COMPILE` before it is opened, so it is clear which ones the toolchain will judge. |
 | <img src="docs/screenshots/run-output.png" alt="The iPad workspace: a worker-pool program in the editor and an Output pane reporting it compiled and executed locally, printing 1 4 9 16 25"> | <img src="docs/screenshots/problems.png" alt="The Problems pane showing declared and not used: unusedTotal at main.go line 11 column 1, with the line marked in the gutter"> |
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
@@ -71,7 +71,7 @@ Concretely, the app currently contains:
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
-- a course of 29 lessons across nine units. Another
+- a course of 31 lessons across nine units. Another
   20 question-and-answer challenges are gathered into Practice rather than
   counted as course steps. Every code lesson ships a complete answer that a
   gate compiles against that lesson's own hidden test — so a lesson nobody can
