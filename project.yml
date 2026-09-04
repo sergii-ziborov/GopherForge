@@ -220,6 +220,13 @@ schemes:
     test:
       targets:
         - name: GopherForgeUITests
+          skippedTests:
+            # The listing capture, not a test of behaviour. It compiles Go
+            # under the interpreter twice and is budgeted 600s for it, which it
+            # cannot hold while the rest of the suite runs beside it on the
+            # same machine. `scripts/app_store_screenshots.sh` runs it alone,
+            # in Release, on a device of its own.
+            - AppStoreScreenshotUITests/testCaptureTheListingScreenshots()
         - name: GopherForgeTests
           skippedTests:
             - BundledCompilerGateTests/testBundledGoReportsUnusedVariable()
