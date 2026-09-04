@@ -48,7 +48,12 @@ struct LearnHomeView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 26) {
+            // Plain, so the unit rail below can be plain too. Laziness here
+            // bought nothing — this stack has five children — and it cost the
+            // rail its own: a lazy stack inside a lazy stack builds every row
+            // to report a size, then pays to negotiate that size again. See
+            // `CourseJourneyView`.
+            VStack(spacing: 26) {
                 CourseHeroCard(
                     doneCount: doneCount,
                     totalCount: teachingLessons.count,

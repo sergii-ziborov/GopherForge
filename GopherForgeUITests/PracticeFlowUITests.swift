@@ -47,8 +47,15 @@ final class PracticeFlowUITests: XCTestCase {
         XCTAssertTrue(tiles.firstMatch.waitForExistence(timeout: 10))
         XCTAssertGreaterThanOrEqual(tiles.count, 4, "a drill should show both sides")
 
-        let heights = Set((0..<tiles.count).map { tiles.element(boundBy: $0).frame.height })
-        XCTAssertEqual(heights.count, 1, "tiles differ in height: \(heights.sorted())")
+        // Compared with a tolerance rather than for exact equality. Frames are
+        // measured in floating point, and the same 78-point tile can come back
+        // as 78.0, 78.00001 and 78.00003 depending on where the layout rounded
+        // — which put three "different" heights in a set and failed a test
+        // about tiles that are visibly identical. What this is really asserting
+        // is that no tile is a different size to the eye.
+        let heights = (0..<tiles.count).map { tiles.element(boundBy: $0).frame.height }
+        let spread = (heights.max() ?? 0) - (heights.min() ?? 0)
+        XCTAssertLessThan(spread, 0.5, "tiles differ in height: \(heights.sorted())")
     }
 
     /// Connecting the right pair must not remove the tiles, because a row that

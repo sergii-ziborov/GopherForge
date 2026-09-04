@@ -125,7 +125,28 @@ struct CourseJourneyView<Destination: View>: View {
     @ViewBuilder let destination: (CoursePathItem) -> Destination
 
     var body: some View {
-        LazyVStack(spacing: 0) {
+        // Not a `LazyVStack`, and that is the whole performance story of this
+        // screen.
+        //
+        // This sits inside the Learn screen's own vertical stack inside a
+        // `ScrollView`. A lazy stack nested in another one cannot stay lazy:
+        // it has to report a size to its parent, so it builds and measures
+        // every row anyway — and pays for the size negotiation on top, again
+        // per row, whenever the outer layout runs. Measured on the 6.9" iPhone
+        // in Release, scrolling the nine-unit course: nested lazy stacks pinned
+        // the main thread past thirty seconds; plain stacks did the same
+        // journey in eleven seconds total.
+        //
+        // The cost was never in any one thing drawn here. Removing the rail,
+        // the card's background, its stroke, `fixedSize`, and the button style
+        // each changed nothing; cutting nine units to four fixed it, and so did
+        // replacing the row with a bare `Text`. That is the signature of a
+        // per-row structural cost rather than an expensive ornament.
+        //
+        // Nine rows is not a length that needs laziness. If the course ever
+        // grows to a hundred units, the fix is one lazy stack that owns the
+        // scroll — not a lazy stack inside a lazy stack.
+        VStack(spacing: 0) {
             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                 NavigationLink {
                     DeferredCourseDestination { destination(item) }
