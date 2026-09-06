@@ -31,7 +31,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode-beta.app/Contents/Developer}"
+# Stable Xcode, not the beta. Apple takes App Store builds from a released
+# Xcode, and a screenshot or a device build cut with a beta toolchain is not
+# the binary that ships. Override DEVELOPER_DIR to test against a beta.
+export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 
 OUTPUT="$PROJECT_ROOT/docs/app-store/screenshots"
 DERIVED="$PROJECT_ROOT/DerivedDataScreenshots"

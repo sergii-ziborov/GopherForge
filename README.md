@@ -311,7 +311,7 @@ the thermal envelope, stopping a runaway program — is listed in
 The normal test scheme excludes the expensive compiler gates:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForge \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
@@ -331,7 +331,7 @@ Run the real bundled-toolchain gates with the dedicated scheme, which requires a
 staged toolchain and its own configuration:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForgeCompilerGate \
   -configuration Gate \

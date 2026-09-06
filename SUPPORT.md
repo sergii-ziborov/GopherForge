@@ -2,8 +2,7 @@
 
 ## Contact
 
-<!-- REPLACE BEFORE SUBMISSION -->
-**Email:** _add the address you want published here_
+**Email:** <sergii.ziborov@gmail.com>
 
 Apple asks the Support URL to lead to real contact information, and an issue
 tracker is not that: filing an issue needs a GitHub account, and someone whose
