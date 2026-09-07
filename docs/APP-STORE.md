@@ -287,25 +287,33 @@ because the fields are truncated silently rather than refused.
 
 | Field | Value | Limit |
 | --- | --- | --- |
-| Name | `GopherForge` | 30 |
-| Subtitle | `Write, test and run Go offline` (29) | 30 |
+| Name | `GopherForge: Go Workbench` (25) | 30 |
+| Subtitle | `Build, test & learn offline` (27) | 30 |
 | Category | Developer Tools, then Education | — |
 | Age rating | 4+ | — |
 
-**Promotional text** (170; can be changed without a new build, so it is the
-place to put anything time-bound):
+The storefront name is not the name on the Home screen, which stays
+`GopherForge`. On the store the brand is unknown and has to say what it is: the
+word Go belongs in the strongest indexed field, and *Workbench* separates this
+from both the courses and the snippet runners. On a device the app has already
+been chosen and the short name is the better one.
 
-> A real Go compiler in your pocket. Build, vet, test and run Go with the
-> network switched off — beside a 31-lesson course judged by that same
-> compiler.
+**Promotional text** (152/170; can be changed without a new build, so it is the
+place to put anything time-bound — the toolchain version is exactly that):
+
+> Stock Go 1.27.1, on your device. Compile, vet, test and run with no cloud compiler — then learn Go idioms and concurrency judged by that same toolchain.
 
 **Keywords** (100 characters, comma-separated, no spaces — a space costs a
 character and buys nothing). The name and subtitle are indexed separately, so
 none of their words are repeated here:
 
 ```
-golang,go,compiler,ide,editor,programming,learn,code,goroutines,offline,developer,wasm,tutorial
+golang,compiler,programming,editor,goroutines,concurrency,backend,modules,packages,ide,tutorial,wasi
 ```
+
+(100/100. Nothing here repeats the name or the subtitle: *go*,
+*build*, *test*, *learn* and *offline* are indexed from those already, and a
+keyword byte spent twice buys nothing.)
 
 The lesson and unit counts above are the ones `ListingCopyTests` checks against
 the catalogue. They were wrong once — the document said forty lessons across
@@ -320,9 +328,14 @@ the first screen a reviewer opens.
 
 **Description:**
 
-> GopherForge is a Go workspace that runs on the device. The Go compiler,
-> linker, vet and gofmt are inside the app, so you can build, test and run Go
-> with the network switched off.
+> GopherForge is a Go workbench for developers arriving at Go from another
+> language. The stock Go compiler, linker, vet and gofmt live inside the app,
+> so you build, test and run Go on your iPhone or iPad with no cloud compiler
+> and no network.
+>
+> The same toolchain teaches and works: a lesson passes because the compiler
+> says so, and the compiler that judged it is the one waiting in your own
+> project.
 >
 > WHAT IT DOES
 >
@@ -448,11 +461,10 @@ These cannot be done from the source tree.
 - [ ] Publish `PRIVACY.md` at a public URL and enter it as the privacy policy
       URL. **Required — a submission without one is rejected.**
 - [ ] Provide a support URL. Use [`SUPPORT.md`](../SUPPORT.md), published at a
-      public URL — **and fill in the contact email in it first.** It ships with
-      that line marked and unset on purpose: publishing an address is a
-      decision about which address, and Apple asks the Support URL to lead to
-      real contact information rather than to an issue tracker that needs a
-      GitHub account to use.
+      public URL. Its contact address is filled in; Apple asks the Support URL
+      to lead to real contact information rather than to an issue tracker that
+      needs a GitHub account to use, so the email is the first channel there
+      and the tracker the second.
 - [ ] Answer the App Privacy questionnaire: *Data Not Collected* throughout.
 - [ ] Upload the screenshots, which are `01-compiler` through `06-projects`
       in listing order. They are captured by driving the real app:
@@ -509,8 +521,22 @@ These cannot be done from the source tree.
       what we shipped" stops being a statement anybody can make. The staged
       toolchain gets a `toolchain-provenance.json` recording the version, the
       artifact URL and its hash.
-- [ ] Choose a signing team and archive with the Release configuration, using
-      **stable Xcode** (`/Applications/Xcode.app`), not a beta.
+- [ ] Create an **Apple Distribution** certificate if this Mac has none.
+      Xcode → Settings → Accounts → the Apple ID → Manage Certificates → **+**
+      → Apple Distribution. A Mac that has only ever built onto a device has an
+      Apple Development certificate, which archives fine and cannot be exported
+      for the store; the export is where that shows up.
+- [ ] Cut and export the build:
+
+      ```bash
+      ./scripts/release_archive.sh
+      ```
+
+      It uses stable Xcode, checks for the distribution certificate before
+      building rather than after, and prints the version, the commit and the
+      bundled Go version so an uploaded build can be matched to source later.
+      `--archive-only` stops before the export, for checking the build without
+      shipping it.
 
 ### Metadata that is already set
 

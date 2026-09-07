@@ -308,6 +308,20 @@ the thermal envelope, stopping a runaway program — is listed in
 
 ## Verification
 
+Every `xcodebuild` here passes `SWIFT_SUPPRESS_WARNINGS=NO`, and leaving it out
+fails the build rather than producing a warning. Xcode 26.6 suppresses warnings
+in package dependencies, WasmKit's `Package.swift` asks for warnings to be
+treated as errors, and swiftc refuses both at once:
+
+```
+error: conflicting options '-warnings-as-errors' and '-suppress-warnings'
+```
+
+It cannot be set in `project.yml` — package dependencies build as their own
+generated projects and do not inherit this one's settings, which was tried. On
+the invocation it reaches every target. Xcode 27 beta does not add the flag, so
+this appears only on the released Xcode, which is the one that builds releases.
+
 The normal test scheme excludes the expensive compiler gates:
 
 ```bash
@@ -315,6 +329,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForge \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
+  SWIFT_SUPPRESS_WARNINGS=NO \
   test
 ```
 
@@ -336,6 +351,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   -scheme GopherForgeCompilerGate \
   -configuration Gate \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
+  SWIFT_SUPPRESS_WARNINGS=NO \
   test
 ```
 

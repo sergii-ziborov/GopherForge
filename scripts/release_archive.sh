@@ -104,7 +104,8 @@ xcodebuild -exportArchive \
   -archivePath "$ARCHIVE" \
   -exportOptionsPlist "$PROJECT_ROOT/ExportOptions.plist" \
   -exportPath "$OUT" \
-  -allowProvisioningUpdates
+  -allowProvisioningUpdates \
+  SWIFT_SUPPRESS_WARNINGS=NO
 
 echo
 echo "Archive:  $ARCHIVE"

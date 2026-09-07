@@ -29,6 +29,19 @@ set -euo pipefail
 # override` works on a booted device — checked — but does not survive into
 # screenshots taken inside the test run, and Apple does not ask for 9:41.
 
+# Every xcodebuild call here passes SWIFT_SUPPRESS_WARNINGS=NO, and it has to.
+#
+# Xcode 26.6 suppresses warnings in package dependencies; WasmKit's Package.swift
+# asks for warnings to be treated as errors; swiftc refuses both at once and the
+# build dies with "conflicting options '-warnings-as-errors' and
+# '-suppress-warnings'". Xcode 27 beta does not add the flag, which is why this
+# was invisible until the release path moved to the released Xcode — measured
+# both ways on the same commit.
+#
+# It cannot live in project.yml. Package dependencies build as their own
+# generated projects and do not inherit this project's settings; that was tried
+# and the archive still failed. A setting on the invocation reaches every target.
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Stable Xcode, not the beta. Apple takes App Store builds from a released
@@ -114,6 +127,7 @@ for entry in "${DEVICES[@]}"; do
     -configuration Release \
     -destination "platform=iOS Simulator,id=$udid" \
     -derivedDataPath "$DERIVED" \
+    SWIFT_SUPPRESS_WARNINGS=NO \
     test
 
   result="$(ls -td "$DERIVED"/Logs/Test/*.xcresult | head -1)"

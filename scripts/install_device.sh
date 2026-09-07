@@ -60,12 +60,19 @@ MESSAGE
 fi
 
 echo "Building $CONFIGURATION for device $DEVICE_ID…"
+# SWIFT_SUPPRESS_WARNINGS=NO, for the same reason the release archive needs it.
+# Xcode suppresses warnings in package dependencies when it builds for a device
+# or archives, WasmKit's Package.swift asks for warnings to be treated as
+# errors, and swiftc refuses both at once. Simulator builds are unaffected,
+# which is why this surfaced only when the release path moved off the beta:
+# Xcode 26.6 adds the flag here and the beta did not.
 xcodebuild -project "$PROJECT_ROOT/GopherForge.xcodeproj" \
   -scheme GopherForge \
   -configuration "$CONFIGURATION" \
   -destination 'generic/platform=iOS' \
   -derivedDataPath "$PROJECT_ROOT/DerivedDataDeviceSigned" \
   -allowProvisioningUpdates \
+  SWIFT_SUPPRESS_WARNINGS=NO \
   build
 
 APP="$PROJECT_ROOT/DerivedDataDeviceSigned/Build/Products/$CONFIGURATION-iphoneos/GopherForge.app"
