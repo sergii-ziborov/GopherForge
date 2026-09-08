@@ -10,6 +10,10 @@ struct WorkspacePaneContent: View {
     let terminal: ProjectTerminalSession
     let fontSize: Double
 
+    /// What a tap on a diagnostic does after moving the editor; the phone
+    /// switches to the Code tab, the iPad has nothing to switch.
+    var onRevealCode: () -> Void = {}
+
     var body: some View {
         @Bindable var workspace = workspace
 
@@ -31,7 +35,7 @@ struct WorkspacePaneContent: View {
                 onReveal: workspace.clearReveal
             )
         case .problems:
-            DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [])
+            DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [], onReveal: onRevealCode)
         case .output:
             OutputStreamView(result: workspace.lastResult)
         case .tests:

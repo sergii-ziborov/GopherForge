@@ -19,6 +19,13 @@ struct WorkspaceView: View {
     /// iPhone it is a drawer over the editor. One flag, because it is the same
     /// question — is the file list showing — asked of two layouts.
     @AppStorage("navigatorVisible") private var isNavigatorVisible = true
+    /// The dock's height on iPad, dragged at the seam and remembered. 280 fits
+    /// a handful of diagnostics; someone reading a long test log wants more,
+    /// someone writing wants the editor back, and neither should have to take
+    /// whatever was chosen for them.
+    @AppStorage("dockHeight") private var dockHeight: Double = 280
+    @State private var dockDragStart: Double?
+    private let dockHeightRange: ClosedRange<Double> = 120...640
     @State private var isDrawerOpen = false
 
     var body: some View {
@@ -76,7 +83,7 @@ struct WorkspaceView: View {
                 WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
             }
 
-            Divider()
+            dockResizeHandle
 
             VStack(spacing: 0) {
                 WorkspacePanePicker(selection: $dockPane, panes: WorkspacePane.dockPanes)
@@ -84,7 +91,7 @@ struct WorkspaceView: View {
                 WorkspacePaneContent(pane: dockPane, terminal: terminal, fontSize: fontSize)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-            .frame(height: 280)
+            .frame(height: dockHeight)
             .background(Color(.secondarySystemBackground))
         }
     }
@@ -97,7 +104,24 @@ struct WorkspaceView: View {
     /// phone does.
     private func compactLayout(terminal: ProjectTerminalSession) -> some View {
         ZStack(alignment: .leading) {
-            paneStack(terminal: terminal)
+            HStack(spacing: 0) {
+                // The file tree stays on screen beside the code, narrow.
+                //
+                // It used to live only in the drawer, which meant switching
+                // files was: tap Files, read the list, tap a file, watch the
+                // drawer close. Three taps and a covered editor to do the thing
+                // a project does most. 132 points fits a Go file name at
+                // footnote size with the extension intact, and the drawer stays
+                // for search and for reaching deep paths.
+                if pane == .code {
+                    ProjectNavigatorView(isNarrow: true)
+                        .frame(width: 132)
+                        .background(Color(.secondarySystemBackground))
+                    Divider()
+                }
+
+                paneStack(terminal: terminal)
+            }
 
             if isDrawerOpen {
                 Color.black.opacity(0.35)
@@ -114,6 +138,41 @@ struct WorkspaceView: View {
         }
     }
 
+    /// The seam between editor and dock. Dragging it up gives the dock room,
+    /// dragging it down gives it back to the code; the grabber says it moves.
+    private var dockResizeHandle: some View {
+        ZStack {
+            Divider()
+            Capsule()
+                .fill(Color(.tertiaryLabel))
+                .frame(width: 44, height: 5)
+        }
+        .frame(height: 14)
+        .frame(maxWidth: .infinity)
+        .background(Color(.secondarySystemBackground))
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 2)
+                .onChanged { value in
+                    if dockDragStart == nil { dockDragStart = dockHeight }
+                    // Dragging up (negative translation) makes the dock taller.
+                    let proposed = (dockDragStart ?? dockHeight) - value.translation.height
+                    dockHeight = min(max(proposed, dockHeightRange.lowerBound), dockHeightRange.upperBound)
+                }
+                .onEnded { _ in dockDragStart = nil }
+        )
+        .accessibilityIdentifier(AccessibilityID.dockResizeHandle)
+        .accessibilityLabel("Resize dock")
+        .accessibilityAdjustableAction { direction in
+            let step: Double = 40
+            switch direction {
+            case .increment: dockHeight = min(dockHeight + step, dockHeightRange.upperBound)
+            case .decrement: dockHeight = max(dockHeight - step, dockHeightRange.lowerBound)
+            @unknown default: break
+            }
+        }
+    }
+
     private func paneStack(terminal: ProjectTerminalSession) -> some View {
         VStack(spacing: 0) {
             // The switcher sits at the top rather than the bottom: on a phone
@@ -124,8 +183,13 @@ struct WorkspaceView: View {
 
             Divider()
 
-            WorkspacePaneContent(pane: pane, terminal: terminal, fontSize: fontSize)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            WorkspacePaneContent(
+                pane: pane,
+                terminal: terminal,
+                fontSize: fontSize,
+                onRevealCode: { withAnimation(.easeOut(duration: 0.2)) { pane = .code } }
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
     }
 
@@ -158,7 +222,12 @@ struct WorkspaceView: View {
 
 /// One phase button, so the toolbar cannot drift from what the model supports.
 private struct PhaseButton: View {
-    static let primaryPhases: [CompilationResult.Phase] = [.build, .test, .run]
+    // Format leads: gofmt is bundled and was wired to a phase from the start,
+    // and until now nothing on screen could invoke it — a working formatter
+    // with no button. It is the one action here that changes the file rather
+    // than reporting on it, and it goes first so the row reads tidy, build,
+    // test, run.
+    static let primaryPhases: [CompilationResult.Phase] = [.format, .build, .test, .run]
 
     @Environment(WorkspaceModel.self) private var workspace
     let phase: CompilationResult.Phase
@@ -183,7 +252,7 @@ private struct PhaseButton: View {
 
 /// The strip above the editor, which is usually nothing at all.
 ///
-/// A working compiler is not news. Saying "Bundled Go 1.24.2" on every screen
+/// A working compiler is not news. Saying "Bundled Go 1.27.1" on every screen
 /// spends a line of a phone's height on a fact that does not change and that
 /// Settings already reports. So this appears only when it has something to
 /// say: that no compiler is staged, which is the only explanation for the

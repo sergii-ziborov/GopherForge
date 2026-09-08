@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// The adaptive shell.
+/// The shell: four sections in a tab bar, on both devices.
 ///
-/// iPad gets a sidebar because there is room for the project list and the
-/// workspace at once; iPhone gets a tab bar because a sidebar there costs a
-/// third of the screen for navigation nobody is looking at while they code.
+/// The workspace inside still adapts — iPad shows the file tree beside the
+/// editor and a dock below it, iPhone stacks them — but which section you are
+/// in is a shallow, four-way choice, and that is a tab bar's job on either
+/// screen.
 struct ContentView: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.scenePhase) private var scenePhase
     @State private var workspace = WorkspaceModel()
     @State private var navigation = AppNavigation()
@@ -18,56 +18,32 @@ struct ContentView: View {
     @State private var learnProgress = LearnProgress()
 
     var body: some View {
-        Group {
-            if horizontalSizeClass == .regular {
-                regularLayout
-            } else {
-                compactLayout
+        // One layout, both devices.
+        //
+        // iPad had a split view whose sidebar held the same four sections the
+        // phone puts in a tab bar. Pinned open it took a third of the width for
+        // navigation nobody was looking at while coding, and collapsed it was a
+        // button that did what the tab bar does — with the added cost that the
+        // sidebar and the workspace's own file navigator are two drawers on the
+        // same edge, and it was never obvious which one the leading button
+        // meant. The sections are shallow and always four; a tab bar says that
+        // and gets out of the way.
+        tabLayout
+            .tint(GopherForgeTheme.accent)
+            .environment(workspace)
+            .environment(navigation)
+            .environment(learnProgress)
+            .task { await workspace.prepare() }
+            // Editor text lives in the model and is written back on a debounce,
+            // and a debounce that has not fired does not survive the process
+            // being suspended or killed — so leaving the foreground writes now.
+            .onChange(of: scenePhase) { _, phase in
+                guard phase != .active else { return }
+                Task { await workspace.flush() }
             }
-        }
-        .tint(GopherForgeTheme.accent)
-        .environment(workspace)
-        .environment(navigation)
-        .environment(learnProgress)
-        .task { await workspace.prepare() }
-        // The last chance to keep what is in the editor. Autosave debounces,
-        // and a debounce that has not fired does not survive the process being
-        // suspended or killed — so leaving the foreground writes now.
-        .onChange(of: scenePhase) { _, phase in
-            guard phase != .active else { return }
-            Task { await workspace.flush() }
-        }
     }
 
-    private var regularLayout: some View {
-        // Pinned open. On iPad the sidebar is the only thing that says where
-        // you are, and a split view will otherwise collapse it on rotation or
-        // when a detail wants the room — so the four sections disappear behind
-        // a button for reasons the person did not ask for. A constant binding
-        // rather than state, because state is something the system may change.
-        NavigationSplitView(columnVisibility: .constant(.all)) {
-            List(selection: sidebarSelection) {
-                ForEach(AppSection.allCases) { item in
-                    NavigationLink(value: item) {
-                        Label(item.title, systemImage: item.systemImage)
-                    }
-                    .accessibilityIdentifier(AccessibilityID.section(item))
-                }
-            }
-            .navigationTitle("GopherForge")
-            .listStyle(.sidebar)
-            // The toggle would offer to collapse what cannot collapse, which
-            // is worse than not offering it.
-            .toolbar(removing: .sidebarToggle)
-        } detail: {
-            NavigationStack {
-                destination(for: navigation.section)
-            }
-        }
-        .navigationSplitViewStyle(.balanced)
-    }
-
-    private var compactLayout: some View {
+    private var tabLayout: some View {
         TabView(selection: tabSelection) {
             ForEach(AppSection.allCases) { item in
                 NavigationStack {
@@ -78,16 +54,7 @@ struct ContentView: View {
                 .accessibilityIdentifier(AccessibilityID.section(item))
             }
         }
-    }
-
-    /// The sidebar's selection is optional because a split view can have
-    /// none; the app always has a section, so the two are bridged here rather
-    /// than making every screen deal with nil.
-    private var sidebarSelection: Binding<AppSection?> {
-        Binding(
-            get: { navigation.section },
-            set: { if let value = $0 { navigation.section = value } }
-        )
+        .tabViewStyle(.tabBarOnly)
     }
 
     private var tabSelection: Binding<AppSection> {

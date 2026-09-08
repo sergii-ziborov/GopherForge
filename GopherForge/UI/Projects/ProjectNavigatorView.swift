@@ -13,11 +13,16 @@ struct ProjectNavigatorView: View {
     @State private var query = ""
     /// Called after a file is chosen, so a drawer can close itself.
     var onSelect: () -> Void = {}
+    /// The pinned column on iPhone, which is too narrow for a search field.
+    /// Searching stays in the drawer, where there is room to read a result.
+    var isNarrow = false
 
     var body: some View {
         VStack(spacing: 0) {
-            ProjectSearchField(query: $query)
-            Divider()
+            if !isNarrow {
+                ProjectSearchField(query: $query)
+                Divider()
+            }
 
             if query.isEmpty {
                 tree
@@ -31,27 +36,58 @@ struct ProjectNavigatorView: View {
     // MARK: - Tree
 
     private var tree: some View {
-        List {
-            ForEach(groups, id: \.directory) { group in
-                Section(group.title) {
-                    ForEach(group.paths, id: \.self) { path in
-                        Button {
-                            workspace.select(file: path)
-                            onSelect()
-                        } label: {
-                            ProjectFileRow(
-                                path: path,
-                                isSelected: workspace.selectedFile == path,
-                                detail: nil
-                            )
+        Group {
+            if isNarrow {
+                // Plain and tight. The sidebar style's grouped insets and
+                // rounded cards cost more width than the names themselves at
+                // this size, and wrapped "g o . m o d" one letter per line.
+                List {
+                    ForEach(groups, id: \.directory) { group in
+                        Section {
+                            rows(in: group)
+                                .listRowInsets(EdgeInsets(top: 5, leading: 6, bottom: 5, trailing: 4))
+                        } header: {
+                            Text(group.title)
+                                .font(.caption2)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier(AccessibilityID.file(path))
                     }
                 }
+                .listStyle(.plain)
+            } else {
+                List {
+                    ForEach(groups, id: \.directory) { group in
+                        Section(group.title) { rows(in: group) }
+                    }
+                }
+                .listStyle(.sidebar)
             }
         }
-        .listStyle(.sidebar)
+    }
+
+    private func rows(in group: (directory: String, title: String, paths: [String])) -> some View {
+        ForEach(group.paths, id: \.self) { path in
+            Button {
+                workspace.select(file: path)
+                onSelect()
+            } label: {
+                ProjectFileRow(
+                    path: path,
+                    isSelected: workspace.selectedFile == path,
+                    detail: nil,
+                    isNarrow: isNarrow
+                )
+            }
+            .buttonStyle(.plain)
+            // The pinned column and the drawer can both be on screen on a
+            // phone, and one identifier on two buttons is an ambiguous match
+            // that fails every tap. The column gets its own; `file.<path>`
+            // stays the drawer's and the iPad tree's.
+            .accessibilityIdentifier(
+                isNarrow ? AccessibilityID.columnFile(path) : AccessibilityID.file(path)
+            )
+        }
     }
 
     // MARK: - Search

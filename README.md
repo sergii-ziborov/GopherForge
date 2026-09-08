@@ -51,8 +51,9 @@ never be presented as if it had settled it.
 
 Concretely, the app currently contains:
 
-- an adaptive native `Projects / Build / Learn / Settings` shell — sidebar on
-  iPad, tab bar on iPhone;
+- a native `Projects / Build / Learn / Settings` shell in a tab bar on both
+  devices, with the workspace inside it adapting: file tree beside the editor
+  and a dock below it on iPad, a pinned file column beside the code on iPhone;
 - what you type is kept without being asked to keep it. Every edit reaches the
   project immediately and the library shortly after, and leaving the foreground
   writes rather than waiting. There was a version where an edit lived only in

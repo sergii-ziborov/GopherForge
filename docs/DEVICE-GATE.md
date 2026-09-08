@@ -102,7 +102,7 @@ cannot:
 | --- | --- |
 | The oldest hardware the deployment target admits | `iOS 18.0` is the declared minimum, so the App Store will offer this app to hardware several generations old. A local compiler in an interpreter is the worst possible workload for it. |
 | A current iPhone | The ordinary case, and the one most reviews will come from. |
-| An iPad | A different layout — sidebar, editor and dock at once — and probably the main way this app gets used seriously. |
+| An iPad | A different layout — file tree, editor and dock at once — and probably the main way this app gets used seriously. |
 
 **The minimum-OS decision belongs to this measurement.** If the oldest
 supported hardware throttles, gets killed by jetsam, or takes long enough that

@@ -78,7 +78,7 @@ struct SyntaxAttributedStringBuilder {
             if markedLines.contains(lineNumber) {
                 attributed.addAttribute(
                     .backgroundColor,
-                    value: UIColor.systemRed.withAlphaComponent(0.12),
+                    value: UIColor.systemRed.withAlphaComponent(0.22),
                     range: lineRange
                 )
             }

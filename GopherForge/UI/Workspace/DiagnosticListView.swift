@@ -2,7 +2,11 @@ import SwiftUI
 
 /// Compiler and vet findings, with the source line each one points at.
 struct DiagnosticListView: View {
+    @Environment(WorkspaceModel.self) private var workspace
     let diagnostics: [GoDiagnostic]
+    /// Called after a row has moved the editor, so a phone can switch to the
+    /// Code tab — on iPad the editor is already on screen and this is a no-op.
+    var onReveal: () -> Void = {}
 
     var body: some View {
         if diagnostics.isEmpty {
@@ -15,6 +19,25 @@ struct DiagnosticListView: View {
             )
         } else {
             List(diagnostics) { diagnostic in
+                // The row goes to the line. A list of errors that only
+                // describes where they are leaves the person to find each one
+                // by hand, which on a phone means leaving this tab, opening the
+                // file, and scrolling by line number from memory.
+                Button {
+                    reveal(diagnostic)
+                } label: {
+                    row(diagnostic)
+                }
+                .buttonStyle(.plain)
+                .disabled(!canReveal(diagnostic))
+                .accessibilityIdentifier(AccessibilityID.diagnostic(testKey(diagnostic)))
+                .accessibilityHint(canReveal(diagnostic) ? "Opens the line in the editor" : "")
+            }
+            .listStyle(.plain)
+        }
+    }
+
+    private func row(_ diagnostic: GoDiagnostic) -> some View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
                         Image(systemName: diagnostic.isBlocking ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
@@ -46,9 +69,26 @@ struct DiagnosticListView: View {
                     }
                 }
                 .padding(.vertical, 2)
-            }
-            .listStyle(.plain)
-        }
+                .contentShape(Rectangle())
+    }
+
+    /// Stable across runs, unlike the UUID: a test can find "main.go:10".
+    private func testKey(_ diagnostic: GoDiagnostic) -> String {
+        diagnostic.span.map { "\($0.fileName):\($0.line)" } ?? diagnostic.id.uuidString
+    }
+
+    /// Only a diagnostic that names a file this project actually has. The
+    /// toolchain can report against a generated or vendored path, and jumping
+    /// to a file that is not in the editor would blank it.
+    private func canReveal(_ diagnostic: GoDiagnostic) -> Bool {
+        guard let span = diagnostic.span else { return false }
+        return workspace.project?.files[span.fileName] != nil
+    }
+
+    private func reveal(_ diagnostic: GoDiagnostic) {
+        guard canReveal(diagnostic), let span = diagnostic.span else { return }
+        workspace.select(file: span.fileName, revealingLine: span.line)
+        onReveal()
     }
 }
 

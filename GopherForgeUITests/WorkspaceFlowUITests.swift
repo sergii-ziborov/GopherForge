@@ -205,6 +205,45 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "07-terminal")
     }
 
+    /// A diagnostic is a link to its line, and on a phone that means leaving
+    /// the Problems tab for the editor. Without this the row only described
+    /// where the error was and left finding it to the person.
+    func testTappingADiagnosticOpensItsLine() throws {
+        launch(section: .build)
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        let build = app.buttons["phase.build"]
+        XCTAssertTrue(build.waitForExistence(timeout: 10))
+        guard build.isEnabled else {
+            throw XCTSkip("no toolchain staged; the diagnostic needs a real build")
+        }
+
+        // Break the file: Go's best-known error, which every build reports.
+        editor.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)).tap()
+        editor.typeText("\n\nfunc unusedExample() {\n    unusedTotal := 0\n}\n")
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        if hide.waitForExistence(timeout: 5) { hide.tap() }
+
+        build.tap()
+        let deadline = Date().addingTimeInterval(600)
+        while Date() < deadline, !build.isEnabled { _ = build.waitForExistence(timeout: 1) }
+        XCTAssertTrue(build.isEnabled, "the build did not finish")
+
+        // The failure opened Problems on its own; the row is the link.
+        let row = app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH 'diagnostic.'")
+        ).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 30), "a failed build should list a diagnostic")
+        XCTAssertTrue(row.isEnabled, "a diagnostic in a project file should be openable")
+        row.tap()
+
+        // On a phone the editor had left the screen for the Problems tab;
+        // it being back is the proof the tap navigated.
+        XCTAssertTrue(editor.waitForExistence(timeout: 10), "tapping a diagnostic should show the editor")
+        attachScreenshot(named: "08-diagnostic-opened")
+    }
+
     /// The invariant, not a snapshot of one configuration: an action that needs
     /// the compiler is offered exactly when the compiler is there, and never
     /// offered as a button that can only fail.
@@ -219,7 +258,7 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertTrue(build.waitForExistence(timeout: 10), "the build action should always be present")
         let isMissing = app.staticTexts["Toolchain missing"].exists
 
-        for phase in ["build", "test", "run"] {
+        for phase in ["format", "build", "test", "run"] {
             let button = app.buttons["phase.\(phase)"]
             XCTAssertTrue(button.exists, "the \(phase) button should be present either way")
             XCTAssertEqual(
