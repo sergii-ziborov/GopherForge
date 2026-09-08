@@ -106,7 +106,7 @@ final class WorkspaceModel {
         // wait for this write rather than race it: an actor takes messages in
         // the order they arrive, and two loose tasks have no order at all.
         remembering = Task { [library] in
-            try? await library.record(project: project, lastBuild: nil)
+            _ = try? await library.record(project: project, lastBuild: nil)
         }
     }
 
@@ -192,7 +192,7 @@ final class WorkspaceModel {
     func flush() async {
         commitEditorText()
         guard let project else { return }
-        try? await library.record(project: project, lastBuild: nil)
+        _ = try? await library.record(project: project, lastBuild: nil)
     }
 
     func run(_ phase: CompilationResult.Phase) async {
@@ -219,7 +219,7 @@ final class WorkspaceModel {
             apply(formattedFiles: result.formattedFiles)
         }
 
-        try? await library.record(
+        _ = try? await library.record(
             project: project,
             lastBuild: ProjectBuildRecord(result: result)
         )

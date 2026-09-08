@@ -86,7 +86,7 @@ enum GoVendorWriter {
     /// `go.sum` lines are unique and sorted, and adding one twice is the most
     /// common way to corrupt the file by hand.
     static func appendGoSum(_ lines: String, to existing: String) -> String {
-        var all = Set(
+        let all = Set(
             (existing + "\n" + lines)
                 .components(separatedBy: "\n")
                 .map { $0.trimmingCharacters(in: .whitespaces) }

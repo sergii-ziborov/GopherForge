@@ -137,7 +137,9 @@ private final class StreamCapture {
 /// Not private so the limit can be tested directly. Proving it through a real
 /// guest would mean compiling and running a Go program that never stops, which
 /// is not something a unit test should need to do.
-final class BoundedStream {
+// The reader thread and take() share only lock-protected state. take() closes
+// the read handle only after the reader signals that it has finished.
+final class BoundedStream: @unchecked Sendable {
     private let pipe = Pipe()
     private let limitBytes: Int
     private let lock = NSLock()

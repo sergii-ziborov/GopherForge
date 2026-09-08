@@ -26,7 +26,7 @@ struct GoModuleArchive {
     let reference: GoModuleReference
 
     init(data: Data, reference: GoModuleReference) throws {
-        guard let archive = try? Archive(data: data, accessMode: .read) else {
+        guard let archive = try? Archive(data: data, accessMode: .read, pathEncoding: nil) else {
             throw ArchiveError.unreadable
         }
 
