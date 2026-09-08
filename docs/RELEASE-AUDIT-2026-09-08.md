@@ -78,3 +78,14 @@ The product is proprietary even though its repository is public.
 
 References: [Apple required-reason APIs](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype),
 [Apple submission requirements](https://developer.apple.com/app-store/submitting/).
+
+## Pricing and domain follow-up
+
+- Saved App Store pricing: US base USD 6.99, Ukraine manual override USD 4.99;
+  Ukraine verified by reopening the pricing page. Other territories use Apple localization.
+- Published Lovable pricing, FAQ/support and five real Simulator screenshots.
+- Connected `gopherforge.app` and `www.gopherforge.app` to the GopherForge project.
+  DNS A resolves to `185.158.133.1`; HTTPS with this resolved address validates
+  the certificate and serves the expected product, both prices and screenshot content.
+  System DNS cache still returned NXDOMAIN at first; Lovable root-domain status
+  check reports an error while www reports Live. No App Store release is claimed.

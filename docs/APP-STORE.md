@@ -396,7 +396,9 @@ the first screen a reviewer opens.
 
 **Decided: paid up front. No free tier, no in-app purchase.**
 
-**Decided: $6.99, flat. No launch price, no changes planned.**
+**Confirmed 8 September 2026: US base price $6.99; Ukraine $4.99.**
+Other storefronts use Apple’s localized prices from the US base. Ukraine has
+an explicit regional override. One-time purchase; no subscription or in-app unlock.
 
 ### What a paid app already gives the buyer
 
@@ -497,9 +499,10 @@ These cannot be done from the source tree.
       out of the same walk rather than being taken by hand and left to age.
 - [ ] Paste the name, subtitle, keywords, promotional text and description from
       section 8.
-- [ ] Set the price to **$6.99, paid up front**, and confirm availability in
-      every territory you intend to sell in. No in-app purchases exist, so the
-      pricing section is the only place this is configured.
+- [x] Set the US base price to **$6.99, paid up front**, with **Ukraine $4.99**.
+      Saved in App Store Connect on 8 September 2026; the Ukraine override
+      was verified after reopening the pricing page.
+- [ ] Confirm availability in every intended territory. No in-app purchases exist.
 - [ ] Set the age rating (4+; the app has no objectionable content).
 - [ ] Answer the **Digital Services Act** status. App Store Connect asks every
       developer to declare trader status, and it asks even when the app is not

@@ -21,7 +21,13 @@ than screens.
 [Support](https://gopherforge.lovable.app/support) ·
 [Privacy](https://gopherforge.lovable.app/privacy) ·
 [Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
-The intended domain is **gopherforge.app**, pending DNS connection. App features,
+Custom domain: **[gopherforge.app](https://gopherforge.app)**. Connected in Lovable
+on 8 September 2026; DNS now points to the hosting server and HTTPS serves the
+site. DNS caches may still need time to refresh.
+
+**Launch pricing:** $6.99 in the US, $4.99 in Ukraine, and Apple-localized
+prices elsewhere. One-time purchase, no subscription. App Store release
+is still being prepared. App features,
 limitations, privacy and support are shared with this repository; the website
 must not advertise App Store availability until Apple actually releases it.
 
