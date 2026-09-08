@@ -13,7 +13,9 @@
   used Xcode 26.6 on macOS 26.6.2. Its earlier failures included ITMS-90111,
   loose static-library resources, and incomplete App Group privacy reasons.
 - GopherForge's saved review notes now describe the interpreter and CPU limit;
-  the incorrect Sign-in required checkbox is off. Review contact is incomplete.
+  the incorrect Sign-in required checkbox is off. Review contact was reused
+  from the same owner’s existing Crabrix submission; the phone is not recorded
+  in this public repository. Marketing/support URLs point to the live website.
 
 ## Changes
 
@@ -42,7 +44,7 @@
    artifact once; the later app build reuses those verified resources.
 5. Record Cloud run, commit, macOS/Xcode/SDK versions and uploaded build number.
    Verify Apple's processing/validation before selecting the build for review.
-6. Finish contact phone, pricing, privacy publication, rating and device tests;
+6. Finish pricing, privacy publication, rating and device tests;
    confirm screenshot sizes/order against the current screenshots directory.
    Only then submit the version. Apple's review outcome is external.
 
