@@ -244,6 +244,67 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "08-diagnostic-opened")
     }
 
+    /// The seam between editor and dock moves, and where it was put is where
+    /// it stays. iPad only: the phone stacks its panes and has no dock.
+    func testTheDockResizesAndRemembersItsHeight() throws {
+        launch(section: .build)
+
+        let handle = app.otherElements[AccessibilityIdentifier.dockResizeHandle]
+        guard handle.waitForExistence(timeout: 10) else {
+            throw XCTSkip("no dock on this layout; the phone stacks its panes")
+        }
+        // The dock's top edge is where its pane picker sits.
+        let dockTop = app.buttons["pane.output"]
+        XCTAssertTrue(dockTop.waitForExistence(timeout: 5), "the dock should show its picker")
+
+        // The height is remembered between launches, so a simulator that ran
+        // this before may already be at the ceiling, where an upward drag can
+        // do nothing. Push it down first so there is room to grow into.
+        let seat = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        seat.press(
+            forDuration: 0.3,
+            thenDragTo: seat.withOffset(CGVector(dx: 0, dy: 250)),
+            withVelocity: .slow,
+            thenHoldForDuration: 0.3
+        )
+        _ = handle.waitForExistence(timeout: 1)
+        let before = dockTop.frame.minY
+
+        // Slowly, with a hold at each end. The plain press-then-drag moves in
+        // one jump with no events between, and a gesture that wants to see
+        // the finger travel never gets to.
+        let lift: CGFloat = 150
+        let start = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        start.press(
+            forDuration: 0.3,
+            thenDragTo: start.withOffset(CGVector(dx: 0, dy: -lift)),
+            withVelocity: .slow,
+            thenHoldForDuration: 0.3
+        )
+
+        // Read once at once, then again until it stops moving: a frame taken
+        // the instant the finger lifts can be the layout mid-way.
+        let immediate = dockTop.frame.minY
+        var after = immediate
+        for _ in 0..<12 {
+            _ = handle.waitForExistence(timeout: 0.25)
+            let now = dockTop.frame.minY
+            if now == after { break }
+            after = now
+        }
+        print("DOCK before=\(before) immediate=\(immediate) settled=\(after) lift=\(lift) value=\(handle.value ?? "nil")")
+        XCTAssertLessThan(after, before - lift + 40, "dragging the seam up should make the dock taller")
+        attachScreenshot(named: "09-dock-resized")
+
+        // Remembered: the height survives the app being relaunched.
+        launch(section: .build)
+        XCTAssertTrue(dockTop.waitForExistence(timeout: 10))
+        XCTAssertEqual(
+            dockTop.frame.minY, after, accuracy: 4,
+            "the dock should come back at the height it was left at"
+        )
+    }
+
     /// The invariant, not a snapshot of one configuration: an action that needs
     /// the compiler is offered exactly when the compiler is there, and never
     /// offered as a button that can only fail.
@@ -373,4 +434,5 @@ enum AccessibilityIdentifier {
     static let lessonCompleted = "lesson.completed"
     static let lessonUncomplete = "lesson.uncomplete"
     static let lessonVerified = "lesson.verified"
+    static let dockResizeHandle = "workspace.dockResize"
 }

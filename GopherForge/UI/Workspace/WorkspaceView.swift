@@ -151,8 +151,16 @@ struct WorkspaceView: View {
         .frame(maxWidth: .infinity)
         .background(Color(.secondarySystemBackground))
         .contentShape(Rectangle())
-        .gesture(
-            DragGesture(minimumDistance: 2)
+        // High priority: the seam sits between a text view and a list, both
+        // of which scroll, and a drag that starts on it belongs to it.
+        // Global coordinates, and that is the whole fix for a seam that moved
+        // half as far as the finger. A drag gesture measures translation in
+        // its own view's space by default, and this view moves with the drag:
+        // every point the dock grows lifts the handle a point, so the finger
+        // appears to have travelled only the difference. Measured against the
+        // screen, the translation is the finger's.
+        .highPriorityGesture(
+            DragGesture(minimumDistance: 2, coordinateSpace: .global)
                 .onChanged { value in
                     if dockDragStart == nil { dockDragStart = dockHeight }
                     // Dragging up (negative translation) makes the dock taller.
@@ -163,6 +171,7 @@ struct WorkspaceView: View {
         )
         .accessibilityIdentifier(AccessibilityID.dockResizeHandle)
         .accessibilityLabel("Resize dock")
+        .accessibilityValue("\(Int(dockHeight.rounded())) points")
         .accessibilityAdjustableAction { direction in
             let step: Double = 40
             switch direction {
@@ -222,12 +231,17 @@ struct WorkspaceView: View {
 
 /// One phase button, so the toolbar cannot drift from what the model supports.
 private struct PhaseButton: View {
-    // Format leads: gofmt is bundled and was wired to a phase from the start,
-    // and until now nothing on screen could invoke it — a working formatter
-    // with no button. It is the one action here that changes the file rather
-    // than reporting on it, and it goes first so the row reads tidy, build,
-    // test, run.
-    static let primaryPhases: [CompilationResult.Phase] = [.format, .build, .test, .run]
+    // Format is last, and the order is not cosmetic. On an 11-inch iPad the
+    // top tab bar shares the row with these, four do not fit, and SwiftUI
+    // folds the tail of the group into a "…" menu. With Format first, what
+    // folded away was Test and Run — the two actions the app exists for. Now
+    // the one that folds on a narrow iPad is Format, still one tap away in
+    // the menu; on every wider screen all four show.
+    //
+    // gofmt itself is bundled and was wired to a phase from the start; until
+    // now nothing on screen could invoke it — a working formatter with no
+    // button.
+    static let primaryPhases: [CompilationResult.Phase] = [.build, .test, .run, .format]
 
     @Environment(WorkspaceModel.self) private var workspace
     let phase: CompilationResult.Phase
