@@ -1,10 +1,13 @@
 import Foundation
+import CryptoKit
+import ZIPFoundation
 
 /// Resolves the bundled toolchain layout and reports what is actually present.
 ///
 /// The whole toolchain lives under `Resources/Toolchain/<tag>/`, staged at build
-/// time by `scripts/fetch_toolchain.sh`. The running app never downloads
-/// compiler components, so this type only ever reads.
+/// time by `scripts/fetch_toolchain.sh` and `scripts/package_toolchain.py`.
+/// Library data is extracted from the signed bundle into Caches when needed;
+/// the running app never downloads compiler components.
 ///
 /// There is no `go` driver in the bundle, and that is the design rather than an
 /// omission: `cmd/go` builds by spawning `compile` and `link` as child
@@ -56,7 +59,7 @@ struct GoToolchainLocator {
     /// Locates the newest staged toolchain. The tag is discovered rather than
     /// hard-coded so a toolchain bump is a build-input change, not a code
     /// change that could drift from what was actually bundled.
-    func resolve() -> Layout? {
+    func resolve(prepareLibrary: Bool = true) -> Layout? {
         guard let toolchainRoot = bundle.resourceURL?
             .appendingPathComponent("Toolchain", isDirectory: true)
         else {
@@ -70,23 +73,34 @@ struct GoToolchainLocator {
         )) ?? []
 
         for directory in candidates.sorted(by: { $0.lastPathComponent > $1.lastPathComponent }) {
-            if let layout = layout(at: directory) { return layout }
+            if let layout = layout(at: directory, prepareLibrary: prepareLibrary) { return layout }
         }
         return nil
     }
 
-    private func layout(at directory: URL) -> Layout? {
+    private func layout(at directory: URL, prepareLibrary: Bool) -> Layout? {
         let compiler = directory.appendingPathComponent("compile.wasm")
         let linker = directory.appendingPathComponent("link.wasm")
-        let goroot = directory.appendingPathComponent("goroot", isDirectory: true)
+        let archive = directory.appendingPathComponent("goroot.zip")
+        guard let checksum = try? String(contentsOf: directory.appendingPathComponent("goroot.sha256"), encoding: .utf8),
+              checksum.count == 64, checksum.allSatisfy({ $0.isHexDigit }),
+              let cache = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first
+        else { return nil }
+        let destination = cache.appendingPathComponent("GopherForge/BundledLibrary/" + checksum)
+        let goroot = destination.appendingPathComponent("goroot", isDirectory: true)
         let marker = directory.appendingPathComponent(".complete")
 
         guard fileManager.fileExists(atPath: marker.path),
               fileManager.fileExists(atPath: compiler.path),
               fileManager.fileExists(atPath: linker.path),
-              isDirectory(goroot)
+              fileManager.fileExists(atPath: archive.path)
         else {
             return nil
+        }
+
+        if prepareLibrary {
+            guard (try? BundledGoLibrary.prepare(archive: archive, checksum: checksum, destination: destination)) != nil
+            else { return nil }
         }
 
         return Layout(
@@ -101,7 +115,7 @@ struct GoToolchainLocator {
     }
 
     func probe() -> ToolchainStatus {
-        guard let layout = resolve() else { return .missing }
+        guard let layout = resolve(prepareLibrary: false) else { return .missing }
 
         let size = [layout.compiler, layout.linker]
             .compactMap { try? $0.resourceValues(forKeys: [.fileSizeKey]).fileSize }
@@ -129,7 +143,7 @@ struct GoToolchainLocator {
     /// The staged GOROOT carries the release it was cut from in `VERSION`,
     /// exactly as a normal Go installation does.
     private func goVersion(in layout: Layout) -> String? {
-        let versionFile = layout.goroot.appendingPathComponent("VERSION")
+        let versionFile = layout.root.appendingPathComponent("VERSION")
         guard let data = try? Data(contentsOf: versionFile) else { return nil }
         return String(decoding: data, as: UTF8.self)
             .split(separator: "\n")
@@ -145,9 +159,36 @@ struct GoToolchainLocator {
         fileManager.fileExists(atPath: url.path) ? url : nil
     }
 
-    private func isDirectory(_ url: URL) -> Bool {
-        var isDirectory: ObjCBool = false
-        let exists = fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory)
-        return exists && isDirectory.boolValue
+}
+
+/// Unpacks only a resource shipped and signed with the app, on the compiler
+/// queue. ZIP packaging keeps WASI export archives out of iOS's library scan.
+enum BundledGoLibrary {
+    private static let lock = NSLock()
+
+    static func prepare(archive: URL, checksum: String, destination: URL) throws {
+        lock.lock()
+        defer { lock.unlock() }
+        let fm = FileManager.default
+        let marker = destination.appendingPathComponent(".complete")
+        if (try? String(contentsOf: marker, encoding: .utf8)) == checksum,
+           fm.fileExists(atPath: destination.appendingPathComponent("goroot/pkg/wasip1_wasm/runtime.a").path) {
+            return
+        }
+        let data = try Data(contentsOf: archive, options: [.mappedIfSafe])
+        let actual = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        guard actual == checksum else { throw CocoaError(.fileReadCorruptFile) }
+        let parent = destination.deletingLastPathComponent()
+        try fm.createDirectory(at: parent, withIntermediateDirectories: true)
+        let staging = parent.appendingPathComponent(".stage-" + UUID().uuidString)
+        defer { try? fm.removeItem(at: staging) }
+        try fm.unzipItem(at: archive, to: staging)
+        for file in ["goroot/VERSION", "goroot/LICENSE", "goroot/pkg/wasip1_wasm/runtime.a"] {
+            guard fm.fileExists(atPath: staging.appendingPathComponent(file).path)
+            else { throw CocoaError(.fileReadCorruptFile) }
+        }
+        try checksum.write(to: staging.appendingPathComponent(".complete"), atomically: true, encoding: .utf8)
+        if fm.fileExists(atPath: destination.path) { try fm.removeItem(at: destination) }
+        try fm.moveItem(at: staging, to: destination)
     }
 }

@@ -42,7 +42,15 @@ OUT="${ARGS[0]:-$PROJECT_ROOT/build/release}"
 ARCHIVE="$OUT/GopherForge.xcarchive"
 
 if [[ "$DEVELOPER_DIR" == *Xcode-beta* ]]; then
-  echo "warning: archiving with a beta Xcode; App Store builds want the released one" >&2
+  echo "error: use a released Xcode for App Store archives" >&2
+  exit 1
+fi
+
+OS_BUILD="$(sw_vers -buildVersion)"
+if [[ "$OS_BUILD" =~ [a-z]$ && "$ARCHIVE_ONLY" != "1" ]]; then
+  echo "error: macOS build $OS_BUILD is prerelease; use stable macOS/Xcode in Xcode Cloud" >&2
+  echo "Use --archive-only for local build verification; do not upload that archive." >&2
+  exit 1
 fi
 
 # Checked before the build rather than after it. Without a distribution

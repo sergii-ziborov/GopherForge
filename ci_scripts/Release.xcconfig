@@ -1,0 +1,3 @@
+// Applied to every target, including SwiftPM dependencies, through
+// XCODE_XCCONFIG_FILE in the Xcode Cloud workflow environment.
+SWIFT_SUPPRESS_WARNINGS = NO

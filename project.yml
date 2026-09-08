@@ -56,7 +56,7 @@ targets:
         excludes:
           - Resources/Toolchain
           - Resources/VendoredModules
-      - path: GopherForge/Resources/Toolchain
+      - path: build/Resources/Toolchain
         type: folder
         buildPhase: resources
       # A folder reference rather than a group: these are Go sources that must
@@ -123,6 +123,7 @@ targets:
       - name: Prepare bundled Go toolchain
         script: |
           "$SRCROOT/scripts/fetch_toolchain.sh"
+          /usr/bin/python3 "$SRCROOT/scripts/package_toolchain.py"
         basedOnDependencyAnalysis: false
       - name: Check the app icon
         script: |

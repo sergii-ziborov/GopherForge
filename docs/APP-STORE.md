@@ -1,7 +1,7 @@
 # Submitting GopherForge to the App Store
 
-Everything the source tree can settle is settled. What is left needs an
-App Store Connect account and is listed at the end.
+Release preparation is in progress. The current status, packaging fixes and
+remaining validation are in [the release audit](RELEASE-AUDIT-2026-09-08.md).
 
 ---
 
@@ -43,7 +43,8 @@ change the app's own features.
 
 > GopherForge is a Go programming environment for learning and development.
 > The Go toolchain (compiler, linker, vet, gofmt) is compiled to WebAssembly
-> and bundled inside the app — no executable code is ever downloaded. The app
+> and bundled inside the app. Standard-library export data is bundled as a ZIP
+> and extracted locally into the app cache before compilation — no executable code is ever downloaded. The app
 > optionally downloads Go **source code** from the public Go module proxy and
 > from GitHub at the user's request; that source is written into the user's
 > project as ordinary files and is fully viewable and editable in the app's
@@ -82,7 +83,8 @@ change the app's own features.
   `NSPrivacyAccessedAPICategoryFileTimestamp` (**C617.1**, evicting the oldest
   entries from the on-device build cache) and
   `NSPrivacyAccessedAPICategoryUserDefaults` (**CA92.1**, the app's own
-  settings through `@AppStorage`).
+  settings through `@AppStorage`), plus **1C8F.1** for App Group UserDefaults
+  shared with the Share Extension. The extension declares **1C8F.1** too.
 - No analytics SDK, no crash reporter, no advertising identifier, no account.
 - The policy text is in [`PRIVACY.md`](../PRIVACY.md) and must be published at a
   public URL before submission — App Store Connect requires one for every app.

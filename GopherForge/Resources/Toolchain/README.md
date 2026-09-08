@@ -7,8 +7,10 @@ fresh checkout on purpose. Build it:
 
 That produces `go<version>-wasm-1/` from the Go installation already on the
 machine — `compile.wasm`, `link.wasm`, `vet.wasm`, `gofmt.wasm` and the
-standard library's export data. The app discovers whatever is here at launch,
-so nothing else has to be configured. It also writes
+standard library's export data. `scripts/package_toolchain.py` then prepares
+`build/Resources/Toolchain` for the app: Wasm tools and a checksum-verified ZIP
+of GOROOT. The ZIP is extracted locally into Caches before compilation; no
+static Go archives are shipped loose as iOS app resources. It also writes
 `toolchain-provenance.json`, which records the Go release and says plainly that
 this one was built locally rather than from a pinned artifact.
 

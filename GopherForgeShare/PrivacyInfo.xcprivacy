@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <!-- The share extension hands a received file to the app and does
-         nothing else: it collects nothing and uses no required-reason API.
+         nothing else: it collects nothing and uses App Group UserDefaults.
          GopherForge collects nothing either. There is no analytics SDK, no crash
          reporter, no account, and no identifier of any kind. Everything a
          learner does stays in the app's own container. -->
@@ -17,6 +17,14 @@
 
     <key>NSPrivacyAccessedAPITypes</key>
     <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>1C8F.1</string>
+            </array>
+        </dict>
     </array>
 </dict>
 </plist>

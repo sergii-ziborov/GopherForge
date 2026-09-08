@@ -10,6 +10,7 @@ if ! command -v xcodegen >/dev/null 2>&1; then
 fi
 
 "$SCRIPT_DIR/fetch_toolchain.sh"
+python3 "$SCRIPT_DIR/package_toolchain.py"
 xcodegen generate --spec "$PROJECT_ROOT/project.yml" --project "$PROJECT_ROOT"
 
 echo "Generated $PROJECT_ROOT/GopherForge.xcodeproj"

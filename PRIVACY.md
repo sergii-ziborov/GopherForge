@@ -1,6 +1,6 @@
 # GopherForge Privacy Policy
 
-_Last updated: 27 August 2026_
+_Last updated: 8 September 2026_
 
 GopherForge does not collect your personal data. There is no account, no
 analytics, no advertising, no tracking, and no crash reporter.
@@ -15,7 +15,8 @@ Everything you make and everything the app records about your learning:
 - The build cache, which holds compiled artifacts so a rebuild is fast
 
 These live in the app's own container on your device and in your device
-backups, if you make them. They are never uploaded anywhere. Deleting the app
+backups, if you make them. The app does not upload them automatically. You can explicitly export and
+share project files using the system share sheet. Deleting the app
 deletes them.
 
 ## When the app uses the network
@@ -26,7 +27,7 @@ contacts a server only when you ask it to, for one of these three things:
 
 | You do this | The app contacts | It sends |
 | --- | --- | --- |
-| Search for a Go package | `deps.dev` (Google) | The words you typed |
+| Search for a Go package | `deps.dev` and `api.deps.dev` (Google) | The words you typed |
 | Install a package | `proxy.golang.org` and `sum.golang.org` (Google) | The module path and version |
 | Import a GitHub repository | `codeload.github.com` (GitHub) | The repository URL you gave |
 

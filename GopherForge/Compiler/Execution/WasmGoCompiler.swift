@@ -44,7 +44,7 @@ final class WasmGoCompiler: @unchecked Sendable {
         for cache in programs { cache.clear() }
         for cache in steps { cache.clear() }
         // A tag with no cache yet still has a directory from a previous run.
-        if let layout = locator.resolve() {
+        if let layout = locator.resolve(prepareLibrary: false) {
             GoArtifactCache(toolchainTag: layout.tag).clear()
             GoStepArtifactCache(toolchainTag: layout.tag).clear()
         }
@@ -53,7 +53,7 @@ final class WasmGoCompiler: @unchecked Sendable {
     /// Bytes the build cache currently occupies: finished programs and the
     /// per-package archives that make the next build fast.
     var buildCacheByteCount: Int64 {
-        guard let layout = locator.resolve() else { return 0 }
+        guard let layout = locator.resolve(prepareLibrary: false) else { return 0 }
         return artifactCache(for: layout.tag).storedByteCount
             + stepCache(for: layout.tag).storedByteCount
     }

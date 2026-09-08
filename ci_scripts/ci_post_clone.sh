@@ -4,9 +4,8 @@ set -euo pipefail
 # Xcode Cloud runs this after cloning and before it resolves the project.
 #
 # A clean checkout is missing two things a local build takes for granted: the
-# Xcode project, which XcodeGen generates from project.yml, and the Go
-# toolchain, which is 220 MB of WebAssembly that does not live in git. Both are
-# produced here, the same way for every cloud build, so what Apple archives is
+# generated resources and the Go toolchain, which does not live in git. Both are
+# prepared here before regenerating the tracked project, so what Apple archives is
 # decided by this file and a pinned artifact rather than by whichever machine
 # ran last.
 #
@@ -24,7 +23,12 @@ done
 
 cd "${CI_PRIMARY_REPOSITORY_PATH:?Xcode Cloud checkout path is required}"
 
-xcodegen generate
+# Exports from this child script do not configure Cloud's later xcodebuild.
+# Set this in the workflow environment so it reaches SwiftPM targets too.
+if [[ "${XCODE_XCCONFIG_FILE:-}" != "$PWD/ci_scripts/Release.xcconfig" ]]; then
+  echo "error: set workflow XCODE_XCCONFIG_FILE=$PWD/ci_scripts/Release.xcconfig" >&2
+  exit 1
+fi
 
 export GOPHERFORGE_DISTRIBUTION_BUILD=1
 export GOPHERFORGE_TOOLCHAIN_URL="https://github.com/sergii-ziborov/GopherForge/releases/download/toolchain-go1.27.1-wasm-1/go-wasm-toolchain.tar.zst"
@@ -32,3 +36,5 @@ export GOPHERFORGE_TOOLCHAIN_SHA256="e260dc4d45c3b405ce0da94a4742ed5b02a60dfd6e5
 export GOPHERFORGE_EXPECTED_GO_VERSION="go1.27.1"
 export GOPHERFORGE_TOOLCHAIN_TAG="go1.27.1-wasm-1"
 ./scripts/fetch_toolchain.sh
+python3 scripts/package_toolchain.py
+xcodegen generate

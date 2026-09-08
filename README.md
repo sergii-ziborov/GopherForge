@@ -11,6 +11,20 @@ than screens.
 
 > Forge real Go, anywhere.
 
+> **Release status — 8 September 2026:** App Store Connect app **6809702319**
+> remains **Prepare for Submission**, with no uploaded build selected. Xcode
+> Cloud onboarding requires signing in to Xcode. The release must be built on
+> stable macOS and released Xcode; this Mac runs macOS 27 beta. Physical-device
+> Gate B remains unverified. See [release audit](docs/RELEASE-AUDIT-2026-09-08.md).
+
+[**Product website**](https://gopherforge.lovable.app) ·
+[Support](https://gopherforge.lovable.app/support) ·
+[Privacy](https://gopherforge.lovable.app/privacy) ·
+[Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
+The intended domain is **gopherforge.app**, pending DNS connection. App features,
+limitations, privacy and support are shared with this repository; the website
+must not advertise App Store availability until Apple actually releases it.
+
 ## What it looks like
 
 Every compiler result below is a real run of the bundled toolchain in the
@@ -171,8 +185,9 @@ can only fail: Build, Run, Test, the lab and every compile lesson are disabled
 with the toolchain's own reason shown while none is staged.
 
 The toolchain is staged **at build time** — built from the Go on the machine,
-or unpacked from a pinned archive verified by SHA-256 — and copied into the app
-bundle. The running app never downloads compiler components.
+or unpacked from a pinned archive verified by SHA-256. The Wasm tools are
+copied into the app bundle; standard-library data is bundled as `goroot.zip`
+and extracted locally into Caches before compilation, with a SHA-256 check. The running app never downloads compiler components.
 
 ## Boundaries, stated up front
 

@@ -15,3 +15,5 @@ DerivedData*/
 GopherForge/Resources/Toolchain/*/
 GopherForge/Resources/Toolchain/*.staging.*/
 *.xcresult
+xcuserdata/
+build/
