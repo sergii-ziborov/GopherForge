@@ -1,0 +1,22 @@
+{
+  "appId": "6809702319",
+  "appName": "GopherForge: Go Workbench",
+  "listingVersion": "1.0",
+  "binaryVersion": "1.0.0",
+  "buildNumber": "4",
+  "sourceCommit": "aeb751654b823e5c62cdc59aa2c6572ba44a849e",
+  "cloudBuildId": "f8503a41-fe42-4934-9fc8-d81a24ee5b64",
+  "workflowId": "50A4CEF5-A8D9-40BE-AB9C-C1A4A677880F",
+  "xcode": "26.6 (17F113)",
+  "macOS": "26.6.2 (25G83)",
+  "binaryId": "5ff1ec55-5e58-47a6-9b41-e5707b228bd8",
+  "submissionId": "c9179887-1814-43ee-badc-fce5bbd1ac48",
+  "submittedAt": "2026-09-08T20:57:00+03:00",
+  "observedStatus": "Waiting for Review",
+  "reviewURL": "https://appstoreconnect.apple.com/apps/6809702319/distribution/reviewsubmissions/details/c9179887-1814-43ee-badc-fce5bbd1ac48",
+  "releaseMethod": "Automatic after approval",
+  "website": "https://gopherforge.app",
+  "basePriceUSD": "6.99",
+  "ukrainePriceUSD": "4.99",
+  "physicalDeviceValidation": "Pending"
+}

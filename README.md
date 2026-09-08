@@ -1,6 +1,6 @@
 # GopherForge — native Go workspace for iPhone and iPad
 
-GopherForge is an early-development **native SwiftUI application** for learning,
+GopherForge is a **native SwiftUI application** for learning,
 editing, checking, testing and running Go locally on iPhone and iPad. There is
 no WebView, localhost server, JavaScript runtime, or cloud compiler in the app.
 
@@ -12,22 +12,24 @@ than screens.
 > Forge real Go, anywhere.
 
 > **Release status — 8 September 2026:** App Store Connect app **6809702319**
-> remains **Prepare for Submission**, with no uploaded build selected. Xcode
-> Cloud onboarding requires signing in to Xcode. The release must be built on
-> stable macOS and released Xcode; this Mac runs macOS 27 beta. Physical-device
-> Gate B remains unverified. See [release audit](docs/RELEASE-AUDIT-2026-09-08.md).
+> is **Waiting for Review**: version **1.0**, build **1.0.0 (4)**, submitted at
+> **20:57 Asia/Jerusalem**. Xcode Cloud built commit `aeb7516` using released
+> **Xcode 26.6 (17F113)** and **macOS 26.6.2 (25G83)**. Seven Swift warnings
+> were fixed; the local Release build and 18 focused tests passed. Physical-device
+> Gate B remains unverified. The app is awaiting Apple review and is not yet
+> available to download. See [release audit](docs/RELEASE-AUDIT-2026-09-08.md).
 
-[**Product website**](https://gopherforge.lovable.app) ·
-[Support](https://gopherforge.lovable.app/support) ·
-[Privacy](https://gopherforge.lovable.app/privacy) ·
+[**Product website**](https://gopherforge.app) ·
+[Support](https://gopherforge.app/support) ·
+[Privacy](https://gopherforge.app/privacy) ·
 [Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
 Custom domain: **[gopherforge.app](https://gopherforge.app)**. Connected in Lovable
 on 8 September 2026; DNS now points to the hosting server and HTTPS serves the
-site. DNS caches may still need time to refresh.
+site.
 
 **Launch pricing:** $6.99 in the US, $4.99 in Ukraine, and Apple-localized
-prices elsewhere. One-time purchase, no subscription. App Store release
-is still being prepared. App features,
+prices elsewhere. One-time purchase, no subscription. The app has been submitted
+and is awaiting Apple review. App features,
 limitations, privacy and support are shared with this repository; the website
 must not advertise App Store availability until Apple actually releases it.
 

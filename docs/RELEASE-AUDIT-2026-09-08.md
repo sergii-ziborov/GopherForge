@@ -2,13 +2,16 @@
 
 ## Observed state
 
-- GitHub source starts at `74a7fd7`; public repository
+- Submitted source is `aeb7516`; public repository
   `sergii-ziborov/GopherForge`, branch `main`.
 - App Store Connect: GopherForge: Go Workbench, app `6809702319`, version 1.0,
-  Prepare for Submission. No build selected. Xcode Cloud shows onboarding.
+  **Waiting for Review**. Cloud build **1.0.0 (4)** was submitted for listing
+  version **1.0** at **20:57 Asia/Jerusalem**. Submission ID:
+  `c9179887-1814-43ee-badc-fce5bbd1ac48`. Apple displayed "1 Item Submitted"
+  and then Waiting for Review for this exact version and build.
 - Local Xcode: 26.6 (`17F113`); local macOS: 27.0 beta (`26A5388g`).
-  Only an Apple Development signing identity is present; Xcode Apple Accounts
-  is empty. A local archive is build evidence, not a distributable release.
+  Xcode Apple Account is now signed in to the developer team. Distribution
+  was built in Xcode Cloud; the local beta-OS archive was not uploaded.
 - Crabrix build 6 is Waiting for Review. Its recorded successful cloud build
   used Xcode 26.6 on macOS 26.6.2. Its earlier failures included ITMS-90111,
   loose static-library resources, and incomplete App Group privacy reasons.
@@ -30,10 +33,10 @@
 - Local release script refuses an explicitly selected Xcode-beta path.
   This path guard does not certify that arbitrary renamed Xcode/OS is stable.
 
-## Xcode Cloud workflow to finish
+## Xcode Cloud workflow configuration
 
-1. Sign in to the developer Apple Account in Xcode; select GopherForge and
-   Product → Xcode Cloud → Create Workflow. Reuse the GitHub repository above.
+1. Reuse existing workflow `App Store Release` in App Store Connect. For a
+   genuinely new project, sign in to Xcode and use Integrate → Create Workflow.
 2. Select released Xcode 26.6 and stable macOS, not a beta environment.
 3. Add workflow environment variable `XCODE_XCCONFIG_FILE` with value
    `/Volumes/workspace/repository/ci_scripts/Release.xcconfig` (the post-clone
@@ -44,9 +47,9 @@
    artifact once; the later app build reuses those verified resources.
 5. Record Cloud run, commit, macOS/Xcode/SDK versions and uploaded build number.
    Verify Apple's processing/validation before selecting the build for review.
-6. Finish pricing, privacy publication, rating and device tests;
-   confirm screenshot sizes/order against the current screenshots directory.
-   Only then submit the version. Apple's review outcome is external.
+6. Finish pricing, privacy publication and rating; confirm screenshot sizes
+   against the current screenshots directory. Record any outstanding device
+   testing accurately. Apple's review outcome is external.
 
 The pinned input is release `toolchain-go1.27.1-wasm-1`, SHA-256
 `e260dc4d45c3b405ce0da94a4742ed5b02a60dfd6e5bbf0e025934044d714ebf`.
@@ -54,9 +57,9 @@ The pinned input is release `toolchain-go1.27.1-wasm-1`, SHA-256
 ## Website
 
 Lovable project: `c56d903d-f45d-4e68-818f-1c334f7e4420`.
-Published and opened successfully: https://gopherforge.lovable.app .
-Pages: home, privacy, support. Intended domain: `gopherforge.app`.
-DNS currently returns NXDOMAIN; domain ownership/provider input is needed.
+Published and opened successfully: https://gopherforge.app and
+https://gopherforge.lovable.app. Pages: home, privacy, support. The custom
+domain is connected to Lovable and serves the site over valid HTTPS.
 The product is proprietary even though its repository is public.
 
 ## Validation
@@ -73,8 +76,15 @@ The product is proprietary even though its repository is public.
 - Two additional regression tests passed: corrupted ZIP rejected without
   installation, and library bytes restored after cache eviction.
 - Shell syntax, plist validation and git diff whitespace checks passed.
-- No physical-device test or Apple distribution validation has been completed
-  in this audit. These three gates are targeted checks, not a full-suite rerun.
+- No physical-device test has been completed in this audit. Apple successfully
+  processed cloud builds 1, 2 and 4. These three gates are targeted checks, not a
+  full-suite rerun.
+- Warning cleanup `aeb7516`: selects ZIPFoundation's throwing initializer,
+  declares the lock-protected output stream Sendable, uses an immutable set,
+  and explicitly discards optional workspace-save return values. Release build
+  succeeds with none of the seven reported Swift warnings. Xcode still emits
+  its informational AppIntents metadata-extraction warning. All 18 selected
+  OutputLimit, GoVendorWriter, and WorkspaceAutosave tests passed (1.565 s).
 
 References: [Apple required-reason APIs](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype),
 [Apple submission requirements](https://developer.apple.com/app-store/submitting/).
@@ -83,9 +93,43 @@ References: [Apple required-reason APIs](https://developer.apple.com/documentati
 
 - Saved App Store pricing: US base USD 6.99, Ukraine manual override USD 4.99;
   Ukraine verified by reopening the pricing page. Other territories use Apple localization.
+- App Availability was still unset despite the ready review draft. Set it to
+  all 175 countries/regions and future storefronts, effective after release;
+  Apple confirms Available on App Release, including the US and Ukraine.
+  Regional content and regulatory eligibility still apply.
 - Published Lovable pricing, FAQ/support and five real Simulator screenshots.
 - Connected `gopherforge.app` and `www.gopherforge.app` to the GopherForge project.
   DNS A resolves to `185.158.133.1`; HTTPS with this resolved address validates
   the certificate and serves the expected product, both prices and screenshot content.
-  System DNS cache still returned NXDOMAIN at first; Lovable root-domain status
-  check reports an error while www reports Live. No App Store release is claimed.
+  Initial NXDOMAIN has cleared: a normal HTTPS request now returns HTTP 200.
+  The website reports submission/awaiting review, with no approval or download claim.
+
+## Submission progress
+
+- Workflow `App Store Release` (`50A4CEF5-A8D9-40BE-AB9C-C1A4A677880F`), main.
+- Initial cloud builds 1 and 2 Succeeded using Xcode 26.6 (17F113), macOS
+  Tahoe 26.6.2 (25G83). Build 2 was replaced with warning-fix build 4 before
+  final submission.
+- Marketing/support URLs saved as `https://gopherforge.app` and `/support`.
+- Privacy URL `/privacy` saved; Data Not Collected published in App Store Connect.
+- Developer Tools primary and Education secondary categories saved; licensed
+  third-party-content rights saved. Existing age questionnaire checked through
+  all seven steps; the existing 13+ override is retained. No mature, violent,
+  medical, sexual, gambling or social-media content is declared; contests are
+  Infrequent. Apple displays regional age equivalents and territorial exceptions.
+- The initial draft passed Add for Review at 19:39. Its build 2 was removed
+  from the draft and replaced with 1.0.0 (4). The new draft passed validation
+  and was submitted at 20:57; Apple's detail page confirms Waiting for Review.
+- Cloud temporarily showed its onboarding page, and Xcode's onboarding wizard
+  reported success but then returned "Workflow does not exist" on Start Build.
+  The original workflow reappeared with its existing ID and unchanged settings.
+  It was started manually from App Store Connect: build **4**, ID
+  `f8503a41-fe42-4934-9fc8-d81a24ee5b64`, commit `aeb7516`, Xcode 26.6 (17F113),
+  macOS Tahoe 26.6.2 (25G83). Build started at 20:30 local time.
+- Apple received build 4 at 20:34, processed it to Ready to Submit, and allowed
+  its selection for review. Binary ID: `5ff1ec55-5e58-47a6-9b41-e5707b228bd8`.
+  The Cloud dashboard intermittently reverted to onboarding, so no final
+  dashboard warning count is claimed. The seven Swift diagnostics are absent
+  from the local Release compilation of the same submitted commit.
+- Website icons now derive from the actual native 1024-pixel app icon.
+  Lovable publishing setting hides its badge on both public domains.

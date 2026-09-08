@@ -1,7 +1,8 @@
 # Submitting GopherForge to the App Store
 
-Release preparation is in progress. The current status, packaging fixes and
-remaining validation are in [the release audit](RELEASE-AUDIT-2026-09-08.md).
+Version **1.0**, build **1.0.0 (4)**, was submitted on 8 September 2026 at
+**20:57 Asia/Jerusalem** and is **Waiting for Review**. Packaging, validation
+and submission evidence are in [the release audit](RELEASE-AUDIT-2026-09-08.md).
 
 ---
 
@@ -379,7 +380,8 @@ the first screen a reviewer opens.
 > PRIVACY
 >
 > No account, no analytics, no tracking, nothing collected. The app reaches the
-> network only when you ask it to import a repository or install a package.
+> network when you ask it to import a repository, search for or install a
+> package, or open an external support or privacy link.
 >
 > WHAT IT DOES NOT DO
 >
@@ -457,111 +459,43 @@ because that model's whole advantage is volume it cannot get without them.
 
 ---
 
-## 10. What still needs an App Store Connect account
+## 10. Submission state — 8 September 2026
 
-These cannot be done from the source tree.
+- [x] App record `6809702319`, bundle `com.sergiiziborov.GopherForge`.
+- [x] Privacy URL: https://gopherforge.app/privacy. Data Not Collected published.
+- [x] Support URL: https://gopherforge.app/support. Marketing URL: https://gopherforge.app.
+- [x] Six screenshot sets uploaded: iPhone 6.9", 6.5", 6.3" and 6.1", iPad 13" and 11".
+      Uploaded images are the six actual `01-compiler` through `06-projects`
+      captures for each size; the displayed iPhone 6.5" order is lab, lesson,
+      projects, course, tests, compiler. Dimensions and alpha-channel checks passed.
+- [x] Name, keywords, promotional text and description saved. Optional subtitle is blank.
+- [x] US base price **$6.99**, Ukraine manual price **$4.99**; other regions
+      use Apple's localized prices. One-time paid app, no in-app purchases.
+- [x] All 175 countries/regions and future storefronts selected for availability
+      after release, subject to Apple's regional eligibility rules.
+- [x] Developer Tools primary category, Education secondary category.
+- [x] Licensed third-party-content rights declaration saved.
+- [x] Age questionnaire completed and checked; existing **13+** override retained,
+      with regional equivalents. Social-media capabilities are absent.
+- [x] Existing DSA declaration identifies the developer as a trader.
+- [x] Review notes and contact saved; sign-in is not required.
+- [x] Cloud archive and distribution signing completed with stable **Xcode 26.6
+      (17F113)** and **macOS 26.6.2 (25G83)**. The local beta-macOS archive was
+      not uploaded. A local Apple Distribution certificate was unnecessary.
+- [x] Apple processed build 4 and accepted the review submission. Automatic release
+      after approval is selected. The app is not yet available to download.
+- [ ] Physical-device offline, thermal and memory validation remains pending,
+      as disclosed in review notes and public documentation.
 
-- [ ] Create the app record for `com.sergiiziborov.GopherForge`.
-- [ ] Publish `PRIVACY.md` at a public URL and enter it as the privacy policy
-      URL. **Required — a submission without one is rejected.**
-- [ ] Provide a support URL. Use [`SUPPORT.md`](../SUPPORT.md), published at a
-      public URL. Its contact address is filled in; Apple asks the Support URL
-      to lead to real contact information rather than to an issue tracker that
-      needs a GitHub account to use, so the email is the first channel there
-      and the tracker the second.
-- [ ] Answer the App Privacy questionnaire: *Data Not Collected* throughout.
-- [x] Upload the screenshots, which are `01-compiler` through `06-projects`
-      in listing order. Six sizes are captured and uploaded: iPhone 6.9", 6.5",
-      6.3" and 6.1", and iPad 13" and 11".
+Use the existing **App Store Release** Xcode Cloud workflow for subsequent
+releases. Its `ci_post_clone.sh` stages the pinned Go release asset, verifies
+its SHA-256 and version, packages the standard library, and generates the
+project. Set `XCODE_XCCONFIG_FILE` to
+`/Volumes/workspace/repository/ci_scripts/Release.xcconfig` in the workflow.
+Keep Archive distribution preparation set to **App Store Connect**.
 
-      The remaining slots App Store Connect offers are left empty on purpose.
-      iPhone 5.5", 4.7" and 4" are iPhone 8 and SE hardware; iPad 12.9" (2nd
-      generation), 10.5" and 9.7" are 2017 and older. All of them stop at iOS
-      16 or 17, and this app needs iOS 18 — a screenshot there would advertise
-      it to devices that cannot install it.
-
-      Each slot lists the dimensions it accepts, and they are not always the
-      ones the obvious device produces. The 6.1" slot takes 1170x2532 and
-      rejects the 1178x2556 an iPhone 16 renders, which is why
-      `scripts/app_store_screenshots.sh` shoots that size on an iPhone 14. They are captured by driving the real app:
-      `scripts/app_store_screenshots.sh` creates a 6.9" iPhone and a 13" iPad
-      of its own, erases them, forces light appearance, runs
-      `AppStoreScreenshotUITests` on each, and writes the results to
-      `docs/app-store/screenshots/`. Apple scales those two sets down to the
-      smaller device sizes, so no others need capturing.
-
-      The simulators are the script's own because shared ones carry whatever
-      else has run on them — one capture came back showing this app under
-      another project's back breadcrumb, and another came back in dark mode.
-
-      The same run also writes `07-unit` and `08-problems`, which are not part
-      of the listing: they exist so `docs/screenshots/` for the README comes
-      out of the same walk rather than being taken by hand and left to age.
-- [ ] Paste the name, subtitle, keywords, promotional text and description from
-      section 8.
-- [x] Set the US base price to **$6.99, paid up front**, with **Ukraine $4.99**.
-      Saved in App Store Connect on 8 September 2026; the Ukraine override
-      was verified after reopening the pricing page.
-- [ ] Confirm availability in every intended territory. No in-app purchases exist.
-- [ ] Set the age rating (4+; the app has no objectionable content).
-- [ ] Answer the **Digital Services Act** status. App Store Connect asks every
-      developer to declare trader status, and it asks even when the app is not
-      sold in the EU. Apple states explicitly that it does not make this
-      determination on the developer's behalf. For a paid app sold
-      commercially this cannot be deferred: decide the territories, complete
-      the declaration, and if the answer is *trader*, verify the contact
-      details Apple will then display on the public product page. If the status
-      is not obvious, it is a question for a lawyer rather than for this
-      document.
-- [ ] Answer the social-media capability questions: the app has no accounts, no
-      profiles, no messaging and no user-to-user content of any kind.
-- [ ] Paste the review note from section 2 into App Review Notes.
-- [ ] Confirm the export compliance answer: **no**, the app does not use
-      non-exempt encryption (see section 4).
-- [ ] Run `scripts/check_app_store_screenshots.sh` before uploading. It checks
-      the sizes App Store Connect enforces and refuses an alpha channel, which
-      is invisible locally and rejected on upload.
-- [ ] Cut the archive as a **distribution build**, which is a different thing
-      from a Release build:
-
-      ```bash
-      export GOPHERFORGE_DISTRIBUTION_BUILD=1
-      export GOPHERFORGE_TOOLCHAIN_URL=<published artifact>
-      export GOPHERFORGE_TOOLCHAIN_SHA256=<sha256 of it>
-      export GOPHERFORGE_EXPECTED_GO_VERSION=go1.27.1
-      ```
-
-      With `GOPHERFORGE_DISTRIBUTION_BUILD=1`, `scripts/fetch_toolchain.sh`
-      refuses to build a toolchain from whatever Go is on `PATH` and refuses to
-      reuse one that happens to be staged. Without that, two archives from the
-      same commit could carry different Go releases, and "we tested exactly
-      what we shipped" stops being a statement anybody can make. The staged
-      toolchain gets a `toolchain-provenance.json` recording the version, the
-      artifact URL and its hash.
-- [ ] Create an **Apple Distribution** certificate if this Mac has none.
-      Xcode → Settings → Accounts → the Apple ID → Manage Certificates → **+**
-      → Apple Distribution. A Mac that has only ever built onto a device has an
-      Apple Development certificate, which archives fine and cannot be exported
-      for the store; the export is where that shows up.
-- [ ] Cut and export the build:
-
-      ```bash
-      ./scripts/release_archive.sh
-      ```
-
-      It uses stable Xcode, checks for the distribution certificate before
-      building rather than after, and prints the version, the commit and the
-      bundled Go version so an uploaded build can be matched to source later.
-      `--archive-only` stops before the export, for checking the build without
-      shipping it.
-
-### Metadata that is already set
-
-| Field | Value |
-| --- | --- |
-| Bundle identifier | `com.sergiiziborov.GopherForge` |
-| Version | 1.0.0 (build 1) |
-| Category | Developer Tools |
-| Minimum iOS | 18 |
-| Devices | iPhone and iPad |
-| Copyright | © 2026 Serhii Ziborov |
+Submitted source: `aeb751654b823e5c62cdc59aa2c6572ba44a849e`. Seven Swift warnings
+were fixed and the local Release build plus 18 focused tests passed. The
+[submission record](app-store/submission-2026-09-08.json) links the source,
+cloud build, binary and review submission. Minimum iOS is 18; supported native
+layouts are iPhone and iPad.
