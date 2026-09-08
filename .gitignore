@@ -4,7 +4,11 @@
 .artifact-cache/
 .build/
 DerivedData*/
-GopherForge.xcodeproj/
+# The generated project is tracked, and only because Xcode Cloud discovers
+# products from the repository at workflow setup, before ci_post_clone.sh has
+# had a chance to generate it. project.yml stays the source of truth; regenerate
+# and commit together.
+# GopherForge.xcodeproj/  (tracked; see above)
 # The bundled toolchain is built, not committed: scripts/build_toolchain.sh
 # produces ~180 MB from a stock Go release in about fifteen seconds, and a
 # binary artifact in git would be a copy of Go that nobody rebases.

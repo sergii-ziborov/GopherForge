@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "1430"
+   version = "1.7">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "88DCEAA75A5F0B4E8E532A9C"
+               BuildableName = "GopherForge.app"
+               BlueprintName = "GopherForge"
+               ReferencedContainer = "container:GopherForge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "523D8892B95EB951FEF84465"
+               BuildableName = "GopherForgeTests.xctest"
+               BlueprintName = "GopherForgeTests"
+               ReferencedContainer = "container:GopherForge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "87112E8E5373BEE79932B103"
+               BuildableName = "GopherForgeUITests.xctest"
+               BlueprintName = "GopherForgeUITests"
+               ReferencedContainer = "container:GopherForge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "88DCEAA75A5F0B4E8E532A9C"
+            BuildableName = "GopherForge.app"
+            BlueprintName = "GopherForge"
+            ReferencedContainer = "container:GopherForge.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "87112E8E5373BEE79932B103"
+               BuildableName = "GopherForgeUITests.xctest"
+               BlueprintName = "GopherForgeUITests"
+               ReferencedContainer = "container:GopherForge.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AppStoreScreenshotUITests/testCaptureTheListingScreenshots()">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "523D8892B95EB951FEF84465"
+               BuildableName = "GopherForgeTests.xctest"
+               BlueprintName = "GopherForgeTests"
+               ReferencedContainer = "container:GopherForge.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testBundledGoReportsUnusedVariable()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testBundledGoCompilesAndRunsRepairedProgram()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testBundledGoCompilesMultiPackageProject()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testBundledGoRunsPackageTests()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testBundledGoSurvivesRepeatedBuilds()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testUserProgramCannotGrowPastSandboxMemoryLimit()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testGeneratedModulesNeverAskForMoreGoThanIsBundled()">
+               </Test>
+               <Test
+                  Identifier = "BundledCompilerGateTests/testABuildReportsEveryStepItTakes()">
+               </Test>
+               <Test
+                  Identifier = "IncrementalBuildGateTests/testEditingOneFileRecompilesOnlyThatPackage()">
+               </Test>
+               <Test
+                  Identifier = "IncrementalBuildGateTests/testChangingADependencyRebuildsWhatImportsIt()">
+               </Test>
+               <Test
+                  Identifier = "BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()">
+               </Test>
+               <Test
+                  Identifier = "BundledContentGateTests/testExampleIdentifiersAreUnique()">
+               </Test>
+               <Test
+                  Identifier = "LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()">
+               </Test>
+               <Test
+                  Identifier = "LessonSolutionGateTests/testAStarterDoesNotAlreadyPass()">
+               </Test>
+               <Test
+                  Identifier = "BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()">
+               </Test>
+               <Test
+                  Identifier = "BundledContentGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
+      </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Release"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "88DCEAA75A5F0B4E8E532A9C"
+            BuildableName = "GopherForge.app"
+            BlueprintName = "GopherForge"
+            ReferencedContainer = "container:GopherForge.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Release"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "88DCEAA75A5F0B4E8E532A9C"
+            BuildableName = "GopherForge.app"
+            BlueprintName = "GopherForge"
+            ReferencedContainer = "container:GopherForge.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>
