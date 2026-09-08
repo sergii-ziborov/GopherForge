@@ -466,8 +466,20 @@ These cannot be done from the source tree.
       needs a GitHub account to use, so the email is the first channel there
       and the tracker the second.
 - [ ] Answer the App Privacy questionnaire: *Data Not Collected* throughout.
-- [ ] Upload the screenshots, which are `01-compiler` through `06-projects`
-      in listing order. They are captured by driving the real app:
+- [x] Upload the screenshots, which are `01-compiler` through `06-projects`
+      in listing order. Six sizes are captured and uploaded: iPhone 6.9", 6.5",
+      6.3" and 6.1", and iPad 13" and 11".
+
+      The remaining slots App Store Connect offers are left empty on purpose.
+      iPhone 5.5", 4.7" and 4" are iPhone 8 and SE hardware; iPad 12.9" (2nd
+      generation), 10.5" and 9.7" are 2017 and older. All of them stop at iOS
+      16 or 17, and this app needs iOS 18 — a screenshot there would advertise
+      it to devices that cannot install it.
+
+      Each slot lists the dimensions it accepts, and they are not always the
+      ones the obvious device produces. The 6.1" slot takes 1170x2532 and
+      rejects the 1178x2556 an iPhone 16 renders, which is why
+      `scripts/app_store_screenshots.sh` shoots that size on an iPhone 14. They are captured by driving the real app:
       `scripts/app_store_screenshots.sh` creates a 6.9" iPhone and a 13" iPad
       of its own, erases them, forces light appearance, runs
       `AppStoreScreenshotUITests` on each, and writes the results to

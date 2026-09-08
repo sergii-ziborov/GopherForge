@@ -53,10 +53,26 @@ OUTPUT="$PROJECT_ROOT/docs/app-store/screenshots"
 DERIVED="$PROJECT_ROOT/DerivedDataScreenshots"
 
 # device type : output folder : the name this script owns
+#
+# The first two are the sizes Apple requires; the other two fill the remaining
+# slots App Store Connect offers for devices that can actually run this app.
+# Its deployment target is iOS 18, so the 12.9-inch (2nd generation), 10.5-inch
+# and 9.7-inch iPad slots are deliberately left empty: those are 2017 hardware
+# and older, they stop at iPadOS 17, and a screenshot there would advertise the
+# app to devices that cannot install it.
 DEVICES=(
   "iPhone 17 Pro Max:iphone-6.9:GopherForge Shots iPhone"
   "iPad Pro 13-inch (M5):ipad-13:GopherForge Shots iPad"
+  "iPhone 14 Plus:iphone-6.5:GopherForge Shots iPhone 6.5"
+  "iPhone 16 Pro:iphone-6.3:GopherForge Shots iPhone 6.3"
+  "iPhone 14:iphone-6.1:GopherForge Shots iPhone 6.1"
+  "iPad Pro 11-inch (M4):ipad-11:GopherForge Shots iPad 11"
 )
+
+# Named folders limit the run to those devices; no arguments captures them all.
+# A full pass is four simulators and the better part of an hour, and most of the
+# time only one size has changed.
+WANTED=("$@")
 
 # The udid of a simulator this script owns, creating it the first time.
 own_device() {
@@ -101,6 +117,14 @@ for entry in "${DEVICES[@]}"; do
   rest="${entry#*:}"
   folder="${rest%%:*}"
   own_name="${rest#*:}"
+
+  if (( ${#WANTED[@]} > 0 )); then
+    match=0
+    for wanted in "${WANTED[@]}"; do
+      [[ "$wanted" == "$folder" ]] && match=1
+    done
+    (( match )) || continue
+  fi
 
   if ! udid="$(own_device "$device_type" "$own_name")" || [[ -z "$udid" ]]; then
     echo "warning: could not find or create a '$device_type'; skipping $folder" >&2
