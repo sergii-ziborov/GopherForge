@@ -13,7 +13,6 @@ enum AccessibilityID {
     static func phase(_ phase: CompilationResult.Phase) -> String { "phase.\(phase.rawValue)" }
     static let dockResizeHandle = "workspace.dockResize"
     static func diagnostic(_ id: String) -> String { "diagnostic.\(id)" }
-    static func columnFile(_ path: String) -> String { "column.file.\(path)" }
     static func file(_ path: String) -> String { "file.\(path)" }
 
     static let welcomeCard = "projects.welcome"

@@ -7,33 +7,26 @@ struct ProjectFileRow: View {
     let isSelected: Bool
     /// A search hit's line and text, or nil in the plain tree.
     let detail: String?
-    /// The pinned phone column. Names get one line, cut in the middle so the
-    /// extension survives — `main.go` matters more than `ma…` — and the path
-    /// caption goes, because its section header already said the directory.
-    var isNarrow = false
-
     private var badge: SourceFileBadge { SourceFileBadge.of(path: path) }
     private var name: String { path.split(separator: "/").last.map(String.init) ?? path }
 
     var body: some View {
-        HStack(alignment: .top, spacing: isNarrow ? 5 : 9) {
+        HStack(alignment: .top, spacing: 9) {
             // Fixed width so names line up whatever symbol each row gets; a
             // ragged left edge is harder to scan than no icons at all.
             Image(systemName: badge.systemImage)
                 .foregroundStyle(badge.tint)
-                .font(isNarrow ? .footnote : .callout)
-                .frame(width: isNarrow ? 16 : 20, alignment: .center)
+                .font(.callout)
+                .frame(width: 20, alignment: .center)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
-                    .font(isNarrow ? .footnote : .callout)
+                    .font(.callout)
                     .fontWeight(isSelected ? .semibold : .regular)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                if isNarrow {
-                    EmptyView()
-                } else if let detail {
+                if let detail {
                     Text(detail)
                         .font(.caption2.monospaced())
                         .foregroundStyle(.secondary)

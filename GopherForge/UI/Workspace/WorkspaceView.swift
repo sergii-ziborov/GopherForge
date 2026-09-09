@@ -18,7 +18,6 @@ struct WorkspaceView: View {
     /// The navigator's state. On iPad it is a column that can be collapsed; on
     /// iPhone it is a drawer over the editor. One flag, because it is the same
     /// question — is the file list showing — asked of two layouts.
-    @AppStorage("navigatorVisible") private var isNavigatorVisible = true
     /// The dock's height on iPad, dragged at the seam and remembered. 280 fits
     /// a handful of diagnostics; someone reading a long test log wants more,
     /// someone writing wants the editor back, and neither should have to take
@@ -74,12 +73,13 @@ struct WorkspaceView: View {
     private func regularLayout(terminal: ProjectTerminalSession) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                if isNavigatorVisible {
-                    ProjectNavigatorView()
-                        .frame(width: 260)
-                        .transition(.move(edge: .leading).combined(with: .opacity))
-                    Divider()
-                }
+                // Always there. On iPad the tree is part of the workspace, the
+                // way it is in any desktop editor: it does not slide away, and
+                // there is no button that hides it. The phone is the only
+                // layout without room for it, and the phone gets the drawer.
+                ProjectNavigatorView()
+                    .frame(width: 260)
+                Divider()
                 WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
             }
 
@@ -104,24 +104,7 @@ struct WorkspaceView: View {
     /// phone does.
     private func compactLayout(terminal: ProjectTerminalSession) -> some View {
         ZStack(alignment: .leading) {
-            HStack(spacing: 0) {
-                // The file tree stays on screen beside the code, narrow.
-                //
-                // It used to live only in the drawer, which meant switching
-                // files was: tap Files, read the list, tap a file, watch the
-                // drawer close. Three taps and a covered editor to do the thing
-                // a project does most. 132 points fits a Go file name at
-                // footnote size with the extension intact, and the drawer stays
-                // for search and for reaching deep paths.
-                if pane == .code {
-                    ProjectNavigatorView(isNarrow: true)
-                        .frame(width: 132)
-                        .background(Color(.secondarySystemBackground))
-                    Divider()
-                }
-
-                paneStack(terminal: terminal)
-            }
+            paneStack(terminal: terminal)
 
             if isDrawerOpen {
                 Color.black.opacity(0.35)
@@ -206,19 +189,15 @@ struct WorkspaceView: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                withAnimation(.easeOut(duration: 0.2)) {
-                    if horizontalSizeClass == .compact {
-                        isDrawerOpen.toggle()
-                    } else {
-                        isNavigatorVisible.toggle()
-                    }
+        if horizontalSizeClass == .compact {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen.toggle() }
+                } label: {
+                    Label("Files", systemImage: "sidebar.leading")
                 }
-            } label: {
-                Label("Files", systemImage: "sidebar.leading")
+                .accessibilityIdentifier(AccessibilityID.filesToggle)
             }
-            .accessibilityIdentifier(AccessibilityID.filesToggle)
         }
 
         ToolbarItemGroup(placement: .topBarTrailing) {
