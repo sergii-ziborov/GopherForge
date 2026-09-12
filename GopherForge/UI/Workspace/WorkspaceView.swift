@@ -9,15 +9,11 @@ import SwiftUI
 /// thumb reaches it.
 struct WorkspaceView: View {
     @Environment(WorkspaceModel.self) private var workspace
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage("editorFontSize") private var fontSize: Double = 14
 
     @State private var pane: WorkspacePane = .code
     @State private var dockPane: WorkspacePane = .problems
     @State private var terminal: ProjectTerminalSession?
-    /// The navigator's state. On iPad it is a column that can be collapsed; on
-    /// iPhone it is a drawer over the editor. One flag, because it is the same
-    /// question — is the file list showing — asked of two layouts.
     /// The dock's height on iPad, dragged at the seam and remembered. 280 fits
     /// a handful of diagnostics; someone reading a long test log wants more,
     /// someone writing wants the editor back, and neither should have to take
@@ -27,12 +23,19 @@ struct WorkspaceView: View {
     private let dockHeightRange: ClosedRange<Double> = 120...640
     @State private var isDrawerOpen = false
 
+    /// The file tree belongs to the iPad workspace even when an iPad window
+    /// becomes narrow. Size class alone can switch that window to the phone
+    /// drawer layout, leaving the promised persistent tree behind a button.
+    private var hasPersistentNavigator: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             WorkspaceStatusStrip(status: workspace.toolchain, progress: workspace.runningStep)
 
             if let terminal {
-                if horizontalSizeClass == .regular {
+                if hasPersistentNavigator {
                     regularLayout(terminal: terminal)
                 } else {
                     compactLayout(terminal: terminal)
@@ -57,7 +60,7 @@ struct WorkspaceView: View {
                 return
             }
             withAnimation(.easeInOut(duration: 0.2)) {
-                if horizontalSizeClass == .regular {
+                if hasPersistentNavigator {
                     // The iPad keeps the editor on screen, so only the dock
                     // moves and the code the person was reading stays put.
                     dockPane = destination
@@ -189,7 +192,7 @@ struct WorkspaceView: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        if horizontalSizeClass == .compact {
+        if !hasPersistentNavigator {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen.toggle() }

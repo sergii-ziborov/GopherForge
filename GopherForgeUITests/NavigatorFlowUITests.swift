@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 /// The file navigator: a column on iPad, a drawer on iPhone, and a search that
@@ -64,6 +65,48 @@ final class NavigatorFlowUITests: XCTestCase {
         attachScreenshot(named: "05-gomod")
     }
 
+    /// The phone once rendered a narrow file column underneath its Files
+    /// drawer. The editor started halfway across the screen, and tapping Files
+    /// opened a second copy of the tree. iPad should keep its single column.
+    func testNavigatorOccupiesOnePlaceForTheDevice() {
+        launch()
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        let search = app.textFields[AccessibilityIdentifier.fileSearch]
+        let goMod = app.buttons["file.go.mod"]
+
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            XCTAssertFalse(files.exists, "iPad should not offer a button to open a second tree")
+            XCTAssertTrue(search.waitForExistence(timeout: 5), "iPad should show its file tree")
+            XCTAssertTrue(goMod.waitForExistence(timeout: 5))
+            goMod.tap()
+            XCTAssertTrue(search.exists, "choosing a file should leave the iPad tree in place")
+        } else {
+            XCTAssertTrue(files.waitForExistence(timeout: 5))
+            XCTAssertFalse(search.exists, "the phone drawer should start closed")
+
+            let window = app.windows.firstMatch.frame
+            let initialEditor = editor.frame
+            XCTAssertLessThan(
+                initialEditor.minX, window.width * 0.15,
+                "a phantom file column must not push the phone editor sideways"
+            )
+            XCTAssertGreaterThan(initialEditor.width, window.width * 0.7)
+
+            files.tap()
+            XCTAssertTrue(search.waitForExistence(timeout: 5), "Files should open the drawer")
+            XCTAssertEqual(editor.frame.minX, initialEditor.minX, accuracy: 2)
+            XCTAssertEqual(editor.frame.width, initialEditor.width, accuracy: 2)
+
+            XCTAssertTrue(goMod.waitForExistence(timeout: 5))
+            goMod.tap()
+            XCTAssertTrue(search.waitForNonExistence(timeout: 5), "selecting a file should close the drawer")
+            XCTAssertEqual(editor.frame.minX, initialEditor.minX, accuracy: 2)
+        }
+    }
 
     private func launch() {
         app.launchArguments = ["-GopherForgeSection", "build"]

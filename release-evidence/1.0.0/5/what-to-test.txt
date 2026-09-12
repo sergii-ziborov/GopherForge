@@ -1,0 +1,5 @@
+Build 5 — file navigator
+
+On iPhone, open Build. The code editor should use the full screen width, with no narrow file strip beside it. Tap Files: one searchable drawer opens over the editor. Choose go.mod; the drawer closes and the module file appears in the editor. Reopen Files and select main.go.
+
+On iPad, open Build. One searchable file tree should remain beside the editor, including after switching files. There should be no Files button that opens a second tree. Check again with a narrow iPad window if you use Stage Manager.
