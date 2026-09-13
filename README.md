@@ -11,13 +11,14 @@ than screens.
 
 > Forge real Go, anywhere.
 
-> **Release status — 8 September 2026:** App Store Connect app **6809702319**
-> is **Waiting for Review**: version **1.0**, build **1.0.0 (4)**, submitted at
-> **20:57 Asia/Jerusalem**. Xcode Cloud built commit `aeb7516` using released
-> **Xcode 26.6 (17F113)** and **macOS 26.6.2 (25G83)**. Seven Swift warnings
-> were fixed; the local Release build and 18 focused tests passed. Physical-device
-> Gate B remains unverified. The app is awaiting Apple review and is not yet
-> available to download. See [release audit](docs/RELEASE-AUDIT-2026-09-08.md).
+> **Release status — 13 September 2026:** Apple rejected version **1.0**,
+> build **1.0.0 (4)** under Guideline 2.1, requesting a recording of the app on
+> a physical device and additional review information. Build **1.0.0 (5)**
+> contains the file-navigator fix and is prepared for TestFlight; it has not
+> been uploaded yet. See the
+> [release audit](docs/RELEASE-AUDIT-2026-09-08.md) and
+> [build 5 test guide](docs/TESTFLIGHT-1.0.0-5.md). Physical-device Gate B
+> remains unverified.
 
 [**Product website**](https://gopherforge.app) ·
 [Support](https://gopherforge.app/support) ·
@@ -28,10 +29,9 @@ on 8 September 2026; DNS now points to the hosting server and HTTPS serves the
 site.
 
 **Launch pricing:** $6.99 in the US, $4.99 in Ukraine, and Apple-localized
-prices elsewhere. One-time purchase, no subscription. The app has been submitted
-and is awaiting Apple review. App features,
+prices elsewhere. One-time purchase, no subscription. App features,
 limitations, privacy and support are shared with this repository; the website
-must not advertise App Store availability until Apple actually releases it.
+should reflect the app's actual App Store availability.
 
 ## What it looks like
 
@@ -47,8 +47,13 @@ goroutine trace are what the app actually produced, not mock-ups.
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
 | <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane reading 4 passed, 0 failed with per-case rows for TestReverse and its subtests"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab: nine runnable scenarios on a shelf, grouped into channels, coordination and ways it goes wrong"> |
 | **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Concurrency Lab.** Nine scenarios that print structured events from ordinary instrumentation; each one draws a lane per goroutine and names what blocked. |
-| <img src="docs/screenshots/my-projects.png" alt="My projects: a search field for name, folder, tag or file, and three projects under Unfiled — Playground, Package with tests with a Build failed chip, and Worker pool with a Run ok chip"> | <img src="docs/screenshots/iphone-workspace.png" width="300" alt="The same workspace on iPhone: Worker pool with Build, Test, Run and Format in the toolbar, Code, Problems, Output, Tests and Idioms as full-height tabs with Output selected and printing 1 4 9 16 25, above a bottom tab bar"> |
-| **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone.** The workspace becomes full-height tabs with the switcher at the top, where the keyboard cannot bury it. |
+| <img src="docs/screenshots/my-projects.png" alt="My projects: a search field for name, folder, tag or file, and three projects under Unfiled — Playground, Package with tests with a Build failed chip, and Worker pool with a Run ok chip"> | <img src="docs/screenshots/navigator-iphone-code.png" width="300" alt="The iPhone Build workspace with the file drawer closed: the code editor spans the available width, with no file column behind it"> |
+| **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone editor.** Code uses the available width; Files opens one drawer only when tapped. |
+| <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
+| **iPhone files.** The file tree overlays the editor, and choosing a file closes it. | **iPad files.** One file tree stays beside the editor, including in a narrow iPad window. |
+
+The navigator images come from the UI regression in
+`NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
 
 ## What is built, and what is not
 
@@ -75,7 +80,7 @@ Concretely, the app currently contains:
 
 - a native `Projects / Build / Learn / Settings` shell in a tab bar on both
   devices, with the workspace inside it adapting: file tree beside the editor
-  and a dock below it on iPad, a Files drawer over the code on iPhone;
+  and a dock below it on iPad, a Files drawer over the full-width code on iPhone;
 - what you type is kept without being asked to keep it. Every edit reaches the
   project immediately and the library shortly after, and leaving the foreground
   writes rather than waiting. There was a version where an edit lived only in

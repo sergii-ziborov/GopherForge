@@ -64,6 +64,14 @@ the same.
 Only a real device can answer these, and a Simulator run must never be
 presented as if it had.
 
+Before measuring the compiler on build **1.0.0 (5)**, check the workspace
+layout on the devices. On iPhone, Build → Code fills the width; Files opens one
+drawer over the editor and selecting a file closes it. On iPad, one file tree
+remains beside the editor when files are selected and when the window is
+narrowed. There is no second Files drawer. The
+[build 5 TestFlight guide](TESTFLIGHT-1.0.0-5.md) gives the exact taps and
+expected screenshots.
+
 1. **Airplane mode before launch.** Not "network unused" — actually offline,
    enabled before the app starts, for the whole session.
 2. **Reported toolchain.** The Build banner names the bundled Go version, and

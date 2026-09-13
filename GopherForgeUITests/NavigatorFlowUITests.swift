@@ -82,6 +82,7 @@ final class NavigatorFlowUITests: XCTestCase {
             XCTAssertFalse(files.exists, "iPad should not offer a button to open a second tree")
             XCTAssertTrue(search.waitForExistence(timeout: 5), "iPad should show its file tree")
             XCTAssertTrue(goMod.waitForExistence(timeout: 5))
+            attachScreenshot(named: "navigator-ipad-persistent")
             goMod.tap()
             XCTAssertTrue(search.exists, "choosing a file should leave the iPad tree in place")
         } else {
@@ -95,11 +96,13 @@ final class NavigatorFlowUITests: XCTestCase {
                 "a phantom file column must not push the phone editor sideways"
             )
             XCTAssertGreaterThan(initialEditor.width, window.width * 0.7)
+            attachScreenshot(named: "navigator-iphone-code")
 
             files.tap()
             XCTAssertTrue(search.waitForExistence(timeout: 5), "Files should open the drawer")
             XCTAssertEqual(editor.frame.minX, initialEditor.minX, accuracy: 2)
             XCTAssertEqual(editor.frame.width, initialEditor.width, accuracy: 2)
+            attachScreenshot(named: "navigator-iphone-files")
 
             XCTAssertTrue(goMod.waitForExistence(timeout: 5))
             goMod.tap()

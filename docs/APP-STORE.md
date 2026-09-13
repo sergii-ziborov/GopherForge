@@ -1,8 +1,12 @@
 # Submitting GopherForge to the App Store
 
 Version **1.0**, build **1.0.0 (4)**, was submitted on 8 September 2026 at
-**20:57 Asia/Jerusalem** and is **Waiting for Review**. Packaging, validation
-and submission evidence are in [the release audit](RELEASE-AUDIT-2026-09-08.md).
+**20:57 Asia/Jerusalem**. Packaging, validation and submission evidence are in
+[the release audit](RELEASE-AUDIT-2026-09-08.md). On 9 September, Apple
+rejected the submission under Guideline 2.1, requesting more information and a
+physical-device screen recording. Build **1.0.0 (5)** prepares the
+file-navigator fix for TestFlight; its release steps and device checks are in
+[the build 5 guide](TESTFLIGHT-1.0.0-5.md).
 
 ---
 
@@ -461,6 +465,14 @@ because that model's whole advantage is volume it cannot get without them.
 
 ## 10. Submission state — 8 September 2026
 
+This checklist records the original submission. The App Review submission is
+now **Rejected / Unresolved Issues**. Apple's 9 September message requests a
+screen recording from a physical device running the latest operating system,
+starting with app launch and showing a typical flow, plus a reply and matching
+information in App Review Information → Notes. This is separate from the
+TestFlight delivery of build 5. The full request is in
+[App Store Connect](https://appstoreconnect.apple.com/apps/6809702319/distribution/reviewsubmissions/details/c9179887-1814-43ee-badc-fce5bbd1ac48).
+
 - [x] App record `6809702319`, bundle `com.sergiiziborov.GopherForge`.
 - [x] Privacy URL: https://gopherforge.app/privacy. Data Not Collected published.
 - [x] Support URL: https://gopherforge.app/support. Marketing URL: https://gopherforge.app.
@@ -487,12 +499,13 @@ because that model's whole advantage is volume it cannot get without them.
 - [ ] Physical-device offline, thermal and memory validation remains pending,
       as disclosed in review notes and public documentation.
 
-Use the existing **App Store Release** Xcode Cloud workflow for subsequent
-releases. Its `ci_post_clone.sh` stages the pinned Go release asset, verifies
-its SHA-256 and version, packages the standard library, and generates the
-project. Set `XCODE_XCCONFIG_FILE` to
+The **App Store Release** Xcode Cloud workflow prepared build 4. Restore or
+recreate it if it is unavailable for build 5. Its `ci_post_clone.sh` stages the
+pinned Go release asset, verifies its SHA-256 and version, packages the
+standard library, and generates the project. Set `XCODE_XCCONFIG_FILE` to
 `/Volumes/workspace/repository/ci_scripts/Release.xcconfig` in the workflow.
-Keep Archive distribution preparation set to **App Store Connect**.
+Keep Archive distribution preparation set to **App Store Connect**. The
+[build 5 guide](TESTFLIGHT-1.0.0-5.md) records the exact TestFlight steps.
 
 Submitted source: `aeb751654b823e5c62cdc59aa2c6572ba44a849e`. Seven Swift warnings
 were fixed and the local Release build plus 18 focused tests passed. The
