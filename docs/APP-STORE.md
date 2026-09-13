@@ -499,8 +499,11 @@ TestFlight delivery of build 5. The full request is in
 - [ ] Physical-device offline, thermal and memory validation remains pending,
       as disclosed in review notes and public documentation.
 
-The **App Store Release** Xcode Cloud workflow prepared build 4. Restore or
-recreate it if it is unavailable for build 5. Its `ci_post_clone.sh` stages the
+The **App Store Release** Xcode Cloud workflow prepared build 4. A replacement
+**Default** workflow was connected to the public repository on 13 September
+2026 and configured to archive for App Store Connect, then distribute to the
+**Internal QA** TestFlight group. Cloud build 5 succeeded and App Store Connect
+completed the upload of **1.0.0 (5)**. Its `ci_post_clone.sh` stages the
 pinned Go release asset, verifies its SHA-256 and version, packages the
 standard library, and generates the project. Set `XCODE_XCCONFIG_FILE` to
 `/Volumes/workspace/repository/ci_scripts/Release.xcconfig` in the workflow.

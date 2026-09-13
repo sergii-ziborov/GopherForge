@@ -64,6 +64,10 @@ the same.
 Only a real device can answer these, and a Simulator run must never be
 presented as if it had.
 
+GopherForge **1.0.0 (5)** is available to the **Internal QA** TestFlight group
+as of 13 September 2026. Use that build for the checks below; the gate remains
+open until the results are recorded on hardware.
+
 Before measuring the compiler on build **1.0.0 (5)**, check the workspace
 layout on the devices. On iPhone, Build → Code fills the width; Files opens one
 drawer over the editor and selecting a file closes it. On iPad, one file tree

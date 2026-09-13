@@ -6,12 +6,12 @@ searchable file tree remains beside the editor, even when the iPad window is
 narrow. The UI regression test is
 `NavigatorFlowUITests.testNavigatorOccupiesOnePlaceForTheDevice`.
 
-As of 13 September 2026, build 5 has been archived locally and tested in the
-Simulator but **has not been uploaded to TestFlight**. The local archive was
-signed for development, and this Mac has neither an Apple Distribution
-certificate nor App Store provisioning profiles. Xcode Cloud prepared build 4
-with distribution signing on released Xcode and macOS; use that route for the
-new upload. Do not present the local archive as a distributed build.
+On 13 September 2026, Xcode Cloud **build 5 succeeded** from `main` commit
+`4f717ea8b30bece03ff603917d14c4c82552e1f2`, and App Store Connect
+completed the upload of **GopherForge 1.0.0 (5)**. The **Internal QA** group
+has access to the build, and its **What to Test** field contains the
+[navigator check](../release-evidence/1.0.0/5/what-to-test.txt). The separate
+local archive was development-signed and was not uploaded.
 
 Apple rejected the build 4 App Review submission under Guideline 2.1 and
 requested a physical-device recording of a typical app flow, starting at app
@@ -25,29 +25,31 @@ has the complete instructions.
 1. Push the build 5 source and this guide to `main`. Both the app and Share
    Extension must have `CURRENT_PROJECT_VERSION = 5` in `project.yml` and the
    generated Xcode project.
-2. In App Store Connect, run the **App Store Release** Xcode Cloud workflow on
-   `main`. It needs released **Xcode 26.6** and **macOS 26.6.2**, Archive
+2. In App Store Connect, run the GopherForge Xcode Cloud workflow on `main`.
+   It needs released **Xcode 26.6** and **macOS 26.6.2**, Archive
    distribution preparation **App Store Connect**, and
    `XCODE_XCCONFIG_FILE=/Volumes/workspace/repository/ci_scripts/Release.xcconfig`.
    `ci_scripts/ci_post_clone.sh` stages the pinned Go toolchain and generates
    the project. [Apple says public Swift package dependencies require no
    separate Xcode Cloud connection](https://developer.apple.com/documentation/xcode/making-dependencies-available-to-xcode-cloud).
 3. Check that the Cloud archive identifies **GopherForge 1.0.0 (5)** and the
-   intended `main` commit. Wait for Apple to process it in TestFlight, then
-   assign it to **Internal QA** and paste
+   intended `main` commit. Wait for Apple to process it in TestFlight, confirm
+   the **Internal QA** post-action assigned the group, and paste
    [`what-to-test.txt`](../release-evidence/1.0.0/5/what-to-test.txt) into the
    build's What to Test field.
 
-The original GopherForge Cloud product and **App Store Release** workflow are
-currently absent from the App Store Connect Cloud page, although build 4 was
-created by that workflow. Re-creating it in Xcode 27 beta stops at a GitHub
-authorization screen that asks for installation rights in upstream public
-organizations such as `apple` and `swiftwasm`; this account cannot grant those
-rights. [Apple's dependency guide](https://developer.apple.com/documentation/xcode/making-dependencies-available-to-xcode-cloud)
-says public packages need no separate connection. Restore the original Cloud
-product/workflow or resolve this onboarding defect with Apple before step 2.
-A local development-signed archive is not a substitute for App Store Connect
-distribution signing.
+The original **App Store Release** workflow created build 4 but disappeared
+from the Cloud page. On 13 September, a replacement **Default** workflow was
+connected to the public [main repository](https://github.com/sergii-ziborov/GopherForge).
+It has Manual Start, released Xcode/macOS, the release xcconfig variable,
+**Archive - iOS** with **App Store Connect** distribution preparation, and a
+**TestFlight Internal Testing** post-action for **Internal QA**. Its first,
+temporary Build-only run failed because the environment variable had not yet
+been saved. The first Archive run, Cloud build 2, reached distribution but
+failed because the replacement Cloud product started numbering at 1 while
+App Store Connect already had build 4 of version 1.0.0. Set **Next Build
+Number** to **5** in Cloud Settings; Cloud build 5 then archived and delivered
+successfully. [Apple documents this setting](https://developer.apple.com/documentation/xcode/setting-the-next-build-number-for-xcode-cloud-builds/).
 
 ## Device check
 

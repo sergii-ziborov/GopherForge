@@ -14,8 +14,8 @@ than screens.
 > **Release status — 13 September 2026:** Apple rejected version **1.0**,
 > build **1.0.0 (4)** under Guideline 2.1, requesting a recording of the app on
 > a physical device and additional review information. Build **1.0.0 (5)**
-> contains the file-navigator fix and is prepared for TestFlight; it has not
-> been uploaded yet. See the
+> contains the file-navigator fix and is available to the **Internal QA**
+> TestFlight group. See the
 > [release audit](docs/RELEASE-AUDIT-2026-09-08.md) and
 > [build 5 test guide](docs/TESTFLIGHT-1.0.0-5.md). Physical-device Gate B
 > remains unverified.
