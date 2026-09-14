@@ -20,6 +20,12 @@ than screens.
 > [build 5 test guide](docs/TESTFLIGHT-1.0.0-5.md). Physical-device Gate B
 > remains unverified.
 
+The 14 September core-hardening work is tracked in
+[its requirement and test evidence](docs/HARDEN-GOPHERFORGE-CORE.md).
+Source recovery and command selection passed simulator regression tests; the new
+one-second Stop and pre-write file quota requirements are still blocked by
+the pinned WasmKit/WASI integration. No new TestFlight build is claimed here.
+
 [**Product website**](https://gopherforge.app) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·

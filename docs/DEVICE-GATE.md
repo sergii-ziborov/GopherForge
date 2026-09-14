@@ -61,6 +61,16 @@ the same.
 
 ## Gate B — the physical device
 
+The 14 September `harden-gopherforge-core` change adds a stricter requirement:
+Stop must terminate a CPU loop and a blocked guest within one second, and
+guest file writes must be refused before exceeding a quota. These are **new
+acceptance criteria**, not measurements of build 5. WasmKit 0.3.1 currently
+exposes neither a guest-instruction interrupt nor a quota-capable host-file
+system adapter through the APIs used by this app, so those checks remain
+**BLOCKED**. See [the hardening evidence](HARDEN-GOPHERFORGE-CORE.md). The
+older runaway-program observation below must not be read as a passing Stop
+test.
+
 Only a real device can answer these, and a Simulator run must never be
 presented as if it had.
 
