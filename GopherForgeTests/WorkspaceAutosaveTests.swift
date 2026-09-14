@@ -128,4 +128,93 @@ final class WorkspaceAutosaveTests: XCTestCase {
             "package main\n\n// first\nfunc main() {}\n"
         )
     }
+
+    func testSwitchingProjectsBeforeDebounceKeepsTheFirstEdit() async throws {
+        let workspace = await openedWorkspace()
+        let firstID = try XCTUnwrap(workspace.projectID)
+        workspace.updateEditorText("package main\n// changed before switch\n")
+        workspace.open(GopherForgeProject(
+            name: "Second", files: ["main.go": "package main\n"],
+            entryFile: "main.go", provenance: nil
+        ))
+        await workspace.libraryUpdated()
+
+        let first = try await library.project(id: firstID)
+        XCTAssertEqual(first?.project.files["main.go"], "package main\n// changed before switch\n")
+        let items = try await library.items()
+        XCTAssertEqual(items.count, 2)
+    }
+
+    func testPrepareRestoresSavedProjectInsteadOfReplacingItWithPlayground() async throws {
+        let id = UUID()
+        let original = ProjectTemplate.commandLineTool.project(named: "Playground")
+        var files = original.files
+        files[original.entryFile] = "package main\n// kept after relaunch\nfunc main() {}\n"
+        let edited = GopherForgeProject(
+            name: original.name, files: files,
+            entryFile: original.entryFile, provenance: original.provenance
+        )
+        _ = try await library.recordSource(id: id, revision: 3, project: edited)
+
+        let reopened = WorkspaceModel(library: library)
+        await reopened.prepare()
+        XCTAssertEqual(reopened.projectID, id)
+        XCTAssertEqual(reopened.editorText, files[original.entryFile])
+        let restoredItems = try await library.items()
+        XCTAssertEqual(restoredItems.count, 1)
+    }
+
+    func testSaveFailureIsVisibleAndRetryKeepsTheEdit() async throws {
+        let root = storageURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        let blocker = root.appending(path: "blocked")
+        try Data("not a directory".utf8).write(to: blocker)
+        let failingLibrary = ProjectLibrary(storageURL: blocker.appending(path: "projects.json"))
+        let workspace = WorkspaceModel(library: failingLibrary)
+        workspace.open(GopherForgeProject(
+            name: "Retry", files: ["main.go": "package main\n"],
+            entryFile: "main.go", provenance: nil
+        ))
+        await workspace.libraryUpdated()
+        workspace.updateEditorText("package main\n// still here\n")
+        await workspace.flush()
+        XCTAssertNotNil(workspace.saveError)
+        XCTAssertTrue(workspace.hasUnsavedChanges)
+
+        try FileManager.default.removeItem(at: blocker)
+        await workspace.retrySave()
+        XCTAssertNil(workspace.saveError)
+        XCTAssertFalse(workspace.hasUnsavedChanges)
+        let stored = try await failingLibrary.items()
+        XCTAssertEqual(stored.first?.project.files["main.go"], "package main\n// still here\n")
+    }
+
+    func testRenameKeepsLiveUnsavedSourceAndProjectID() async throws {
+        let workspace = await openedWorkspace()
+        let id = try XCTUnwrap(workspace.projectID)
+        workspace.updateEditorText("package main\n// not yet saved\n")
+        _ = try await library.update(id: id, name: "Renamed")
+        let updatedItem = try await library.project(id: id)
+        workspace.refreshMetadata(from: try XCTUnwrap(updatedItem))
+
+        XCTAssertEqual(workspace.projectID, id)
+        XCTAssertEqual(workspace.project?.name, "Renamed")
+        XCTAssertEqual(workspace.editorText, "package main\n// not yet saved\n")
+        await workspace.flush()
+        let stored = try await library.project(id: id)
+        XCTAssertEqual(stored?.project.name, "Renamed")
+        XCTAssertEqual(stored?.project.files["main.go"], "package main\n// not yet saved\n")
+    }
+
+    func testSelectingAnotherMainFileChangesTheRunTarget() async {
+        let workspace = await openedWorkspace()
+        var files = workspace.project?.files ?? [:]
+        files["cmd/other/main.go"] = "package main\nfunc main() {}\n"
+        workspace.replaceFiles(with: files)
+        XCTAssertEqual(workspace.selectedTargetPattern, ".")
+        workspace.select(file: "cmd/other/main.go")
+        XCTAssertEqual(workspace.selectedTargetPattern, "./cmd/other")
+        workspace.select(file: "go.mod")
+        XCTAssertEqual(workspace.selectedTargetPattern, ".")
+    }
 }

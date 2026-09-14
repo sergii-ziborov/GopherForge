@@ -41,8 +41,7 @@ struct ExampleLibraryView: View {
     /// Opening an example puts it in the workspace as an ordinary project, so
     /// it can be edited and broken — which is most of what an example is for.
     private func open(_ example: GoExample) {
-        workspace.open(example.project())
-        navigation.section = .build
+        if workspace.open(example.project()) { navigation.section = .build }
     }
 }
 

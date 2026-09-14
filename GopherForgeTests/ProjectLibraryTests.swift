@@ -47,11 +47,28 @@ final class ProjectLibraryTests: XCTestCase {
         )
     }
 
-    func testReopeningTheSameProjectUpdatesItRatherThanDuplicating() async throws {
-        _ = try await library.record(project: project(named: "same"), lastBuild: nil)
+    func testTwoProjectsWithTheSameNameKeepIndependentSource() async throws {
         _ = try await library.record(
-            project: project(named: "same", files: ["main.go": "package main\n\n// edited\n"]),
+            project: project(named: "same", files: ["main.go": "package main\n// first\n"]),
             lastBuild: nil
+        )
+        _ = try await library.record(
+            project: project(named: "same", files: ["main.go": "package main\n// second\n"]),
+            lastBuild: nil
+        )
+
+        let items = try await library.items()
+        XCTAssertEqual(items.count, 2)
+        XCTAssertEqual(Set(items.compactMap { $0.project.files["main.go"] }).count, 2)
+    }
+
+    func testReopeningTheSameProjectUpdatesItRatherThanDuplicating() async throws {
+        let id = UUID()
+        _ = try await library.recordSource(id: id, revision: 0, project: project(named: "same"))
+        _ = try await library.recordSource(
+            id: id,
+            revision: 1,
+            project: project(named: "same", files: ["main.go": "package main\n\n// edited\n"])
         )
 
         let items = try await library.items()
@@ -163,13 +180,69 @@ final class ProjectLibraryTests: XCTestCase {
         _ = try await library.setFavorite(id: id, true)
 
         // Opening it again records it, which used to overwrite the whole entry.
-        _ = try await library.record(project: project(named: "starred"), lastBuild: nil)
+        _ = try await library.recordSource(id: id, revision: 1, project: project(named: "starred"))
 
         let found = try await library.project(id: id)
         let item = try XCTUnwrap(found)
         XCTAssertTrue(item.favorite, "reopening a project should not unstar it")
         let remaining = try await library.items()
         XCTAssertEqual(remaining.count, 1)
+    }
+
+    func testOlderSourceSaveCannotRollBackANewerRevision() async throws {
+        let id = UUID()
+        _ = try await library.recordSource(id: id, revision: 0, project: project(named: "same"))
+        _ = try await library.recordSource(
+            id: id, revision: 2,
+            project: project(named: "same", files: ["main.go": "package main\n// B\n"])
+        )
+        _ = try await library.recordSource(
+            id: id, revision: 1,
+            project: project(named: "same", files: ["main.go": "package main\n// A\n"])
+        )
+        let stored = try await library.project(id: id)
+        XCTAssertEqual(stored?.project.files["main.go"], "package main\n// B\n")
+        XCTAssertEqual(stored?.sourceRevision, 2)
+    }
+
+    func testBuildResultCannotReplaceSourceEditedAfterBuildStarted() async throws {
+        let id = UUID()
+        let first = project(named: "build", files: ["main.go": "package main\n// A\n"])
+        let second = project(named: "build", files: ["main.go": "package main\n// B\n"])
+        _ = try await library.recordSource(id: id, revision: 0, project: first)
+        _ = try await library.recordSource(id: id, revision: 1, project: second)
+        let result = CompilationResult(
+            succeeded: true, phase: .build, exitCode: 0, diagnostics: [],
+            stdout: "", stderr: "", duration: .zero, detail: "built A"
+        )
+        try await library.recordBuild(id: id, result: ProjectBuildRecord(result: result))
+        let stored = try await library.project(id: id)
+        XCTAssertEqual(stored?.project.files["main.go"], second.files["main.go"])
+        XCTAssertEqual(stored?.sourceRevision, 1)
+        XCTAssertNotNil(stored?.lastBuild)
+    }
+
+    func testRenameAndFilingSurviveSourceSave() async throws {
+        let id = UUID()
+        _ = try await library.recordSource(id: id, revision: 0, project: project(named: "before"))
+        _ = try await library.update(id: id, name: "after", folder: "Work", tags: ["go"], isFavorite: true)
+        let renamedItem = try await library.project(id: id)
+        let renamed = try XCTUnwrap(renamedItem)
+        _ = try await library.recordSource(
+            id: id, revision: 1,
+            project: GopherForgeProject(
+                name: "before", // stale editor snapshot must not undo the library rename
+                files: ["main.go": "package main\n// new\n"],
+                entryFile: renamed.project.entryFile,
+                provenance: renamed.project.provenance
+            )
+        )
+        let storedItem = try await library.project(id: id)
+        let stored = try XCTUnwrap(storedItem)
+        XCTAssertEqual(stored.project.name, "after")
+        XCTAssertEqual(stored.folder, "Work")
+        XCTAssertEqual(stored.tags, ["go"])
+        XCTAssertTrue(stored.favorite)
     }
 
     /// A library written before folders existed must still open.
@@ -198,6 +271,7 @@ final class ProjectLibraryTests: XCTestCase {
         let reopened = ProjectLibrary(storageURL: storageURL)
         let items = try await reopened.items()
         XCTAssertEqual(items.map(\.project.name), ["old"])
+        XCTAssertNil(items[0].sourceRevision)
         XCTAssertFalse(items[0].favorite)
         XCTAssertEqual(items[0].folderLabel, ProjectLibraryItem.looseFolder)
     }

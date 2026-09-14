@@ -33,6 +33,31 @@ struct WorkspaceView: View {
     var body: some View {
         VStack(spacing: 0) {
             WorkspaceStatusStrip(status: workspace.toolchain, progress: workspace.runningStep)
+            if workspace.hasUnsavedChanges || workspace.saveError != nil {
+                HStack(spacing: 8) {
+                    Label(
+                        workspace.saveError ?? "Сохранение…",
+                        systemImage: workspace.saveError == nil ? "arrow.clockwise" : "exclamationmark.triangle"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(workspace.saveError == nil ? Color.secondary : Color.red)
+                    Spacer(minLength: 0)
+                    if workspace.saveError != nil {
+                        Button("Повторить") { Task { await workspace.retrySave() } }
+                            .font(.caption)
+                        if let project = workspace.recoveryProject ?? workspace.project {
+                            ShareLink(
+                                item: ProjectExport(project: project),
+                                preview: SharePreview(project.name)
+                            ) {
+                                Text("Экспорт").font(.caption)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+            }
 
             if let terminal {
                 if hasPersistentNavigator {

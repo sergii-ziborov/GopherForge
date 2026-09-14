@@ -61,7 +61,7 @@ struct ProjectsHomeView: View {
                     NavigationLink {
                         MyProjectsView(
                             items: recents,
-                            onOpen: { open($0.project) },
+                            onOpen: { open($0) },
                             onToggleFavorite: toggleFavorite,
                             onOrganize: organize,
                             onDelete: delete
@@ -111,7 +111,7 @@ struct ProjectsHomeView: View {
                     // tap away in My projects.
                     ForEach(recents.prefix(5)) { item in
                         Button {
-                            open(item.project)
+                            open(item)
                         } label: {
                             ProjectLibraryRow(item: item)
                         }
@@ -149,7 +149,14 @@ struct ProjectsHomeView: View {
     }
 
     private func open(_ project: GopherForgeProject) {
-        workspace.open(project)
+        if workspace.open(project) { finishOpening() }
+    }
+
+    private func open(_ item: ProjectLibraryItem) {
+        if workspace.open(item) { finishOpening() }
+    }
+
+    private func finishOpening() {
         navigation.show(.build)
         Task {
             // Opening writes the project into the library; waiting for that
@@ -196,14 +203,21 @@ struct ProjectsHomeView: View {
 
     private func organize(_ item: ProjectLibraryItem, _ draft: ProjectFilingDraft) {
         Task {
-            _ = try? await library.update(
-                id: item.id,
-                name: draft.trimmedName,
-                folder: draft.folder,
-                tags: draft.tags,
-                isFavorite: draft.isFavorite,
-                summary: draft.summary
-            )
+            do {
+                _ = try await library.update(
+                    id: item.id,
+                    name: draft.trimmedName,
+                    folder: draft.folder,
+                    tags: draft.tags,
+                    isFavorite: draft.isFavorite,
+                    summary: draft.summary
+                )
+                if let refreshed = try await library.project(id: item.id) {
+                    workspace.refreshMetadata(from: refreshed)
+                }
+            } catch {
+                importFailure = "Не удалось сохранить проект: \(error.localizedDescription)"
+            }
             await reload()
         }
     }

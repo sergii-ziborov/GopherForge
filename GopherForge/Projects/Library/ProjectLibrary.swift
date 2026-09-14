@@ -69,27 +69,53 @@ actor ProjectLibrary {
         project: GopherForgeProject,
         lastBuild: ProjectBuildRecord?
     ) throws -> [ProjectLibraryItem] {
-        var current = try state()
-        let key = projectKey(project)
+        let id = UUID()
+        _ = try recordSource(id: id, revision: 0, project: project)
+        if let lastBuild { try recordBuild(id: id, result: lastBuild) }
+        return try items()
+    }
 
-        if let index = current.items.firstIndex(where: { projectKey($0.project) == key }) {
-            current.items[index].project = project
+    /// Source writes are keyed by the library UUID, never by a mutable name.
+    /// A delayed save from an older editor revision cannot replace newer code.
+    @discardableResult
+    func recordSource(id: UUID, revision: UInt64, project: GopherForgeProject) throws -> ProjectLibraryItem {
+        var current = try state()
+        if let index = current.items.firstIndex(where: { $0.id == id }) {
+            guard revision > (current.items[index].sourceRevision ?? 0) else {
+                return current.items[index]
+            }
+            // Filing may have renamed this entry while an editor snapshot was
+            // in flight. Source writes own files, not the library name.
+            current.items[index].project = GopherForgeProject(
+                name: current.items[index].project.name,
+                files: project.files,
+                entryFile: project.entryFile,
+                provenance: project.provenance
+            )
+            current.items[index].sourceRevision = revision
             current.items[index].lastOpenedAt = Date()
-            if let lastBuild { current.items[index].lastBuild = lastBuild }
         } else {
             current.items.append(
                 ProjectLibraryItem(
-                    id: UUID(),
+                    id: id,
                     project: project,
                     lastOpenedAt: Date(),
-                    lastBuild: lastBuild
+                    sourceRevision: revision
                 )
             )
         }
 
         current.items.sort { $0.lastOpenedAt > $1.lastOpenedAt }
         try persist(current)
-        return current.items
+        return current.items.first { $0.id == id }!
+    }
+
+    /// A build describes the snapshot that ran. It must never write source.
+    func recordBuild(id: UUID, result: ProjectBuildRecord) throws {
+        var current = try state()
+        guard let index = current.items.firstIndex(where: { $0.id == id }) else { return }
+        current.items[index].lastBuild = result
+        try persist(current)
     }
 
     /// Files a project: its name, folder, tags, star and one-line summary.
@@ -156,22 +182,6 @@ actor ProjectLibrary {
     }
 
     // MARK: - Storage
-
-    /// A project is identified by its name and provenance rather than by a
-    /// generated id, so reopening the same folder updates the entry instead of
-    /// growing a duplicate.
-    private func projectKey(_ project: GopherForgeProject) -> String {
-        let provenance = project.provenance
-        let origin = [
-            provenance?.source.rawValue,
-            provenance?.owner,
-            provenance?.repository,
-            provenance?.reference,
-        ]
-        .compactMap { $0 }
-        .joined(separator: "/")
-        return "\(project.name)#\(origin)"
-    }
 
     private func state() throws -> State {
         if let cachedState { return cachedState }

@@ -17,6 +17,8 @@ struct ProjectLibraryItem: Codable, Equatable, Identifiable, Sendable {
     var project: GopherForgeProject
     var lastOpenedAt: Date
     var lastBuild: ProjectBuildRecord?
+    /// Monotonic source version. Optional so libraries written by older builds decode.
+    var sourceRevision: UInt64?
     /// The folder its owner filed it under, or nil for the loose ones.
     var folder: String?
     var tags: [String]?
@@ -29,6 +31,7 @@ struct ProjectLibraryItem: Codable, Equatable, Identifiable, Sendable {
         project: GopherForgeProject,
         lastOpenedAt: Date,
         lastBuild: ProjectBuildRecord? = nil,
+        sourceRevision: UInt64? = nil,
         folder: String? = nil,
         tags: [String]? = nil,
         isFavorite: Bool? = nil,
@@ -38,6 +41,7 @@ struct ProjectLibraryItem: Codable, Equatable, Identifiable, Sendable {
         self.project = project
         self.lastOpenedAt = lastOpenedAt
         self.lastBuild = lastBuild
+        self.sourceRevision = sourceRevision
         self.folder = folder
         self.tags = tags
         self.isFavorite = isFavorite
