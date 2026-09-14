@@ -194,6 +194,62 @@ final class BundledCompilerGateTests: XCTestCase {
         XCTAssertEqual(progress.first?.fraction ?? 0, 1.0 / Double(progress.count), accuracy: 0.001)
     }
 
+    /// A build records its own result, but an edit made while it compiles must
+    /// remain the source on disk. Use the real compiler so the editor and the
+    /// library race against actual build progress rather than a mocked delay.
+    @MainActor
+    func testBuildFinishingAfterAnEditKeepsTheNewSource() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appending(path: "build-edit-\(UUID().uuidString)", directoryHint: .isDirectory)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let library = ProjectLibrary(storageURL: root.appending(path: "projects.json"))
+        let workspace = WorkspaceModel(compiler: compiler, library: library)
+        let original = """
+        package main
+
+        import (
+        \t"fmt"
+        \t"example.com/forge/greet"
+        )
+
+        func main() { fmt.Println(greet.Message()) }
+        """
+        XCTAssertTrue(workspace.open(GopherForgeProject(
+            name: "Build while editing",
+            files: [
+                "go.mod": GoLanguage.module("example.com/forge"),
+                "main.go": original,
+                "greet/greet.go": "package greet\n\nfunc Message() string { return \"A\" }\n",
+            ],
+            entryFile: "main.go",
+            provenance: nil
+        )))
+        await workspace.libraryUpdated()
+        let id = try XCTUnwrap(workspace.projectID)
+
+        let build = Task { await workspace.run(.build) }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(90))
+        while !workspace.isRunning && ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        while workspace.runningStep == nil && workspace.isRunning && ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        XCTAssertNotNil(workspace.runningStep, "the edit must happen during a real build")
+        XCTAssertTrue(workspace.isRunning)
+
+        let edited = original + "\n// B: saved while build A was still running\n"
+        workspace.updateEditorText(edited)
+        await workspace.flush()
+        await build.value
+
+        let savedItem = try await library.project(id: id)
+        let stored = try XCTUnwrap(savedItem)
+        XCTAssertEqual(stored.project.files["main.go"], edited)
+        XCTAssertEqual(stored.sourceRevision, workspace.sourceRevision)
+        XCTAssertNotNil(stored.lastBuild, "the old build result may still be recorded")
+    }
+
     /// The handler is called from the compiler's own queue, so collecting has
     /// to be safe from there rather than only from the test's actor.
     private final class ProgressCollector: @unchecked Sendable {

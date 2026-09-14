@@ -11,11 +11,13 @@ than screens.
 
 > Forge real Go, anywhere.
 
-> **Release status — 13 September 2026:** Apple rejected version **1.0**,
+> **Release status — 14 September 2026:** Apple rejected version **1.0**,
 > build **1.0.0 (4)** under Guideline 2.1, requesting a recording of the app on
 > a physical device and additional review information. Build **1.0.0 (5)**
 > contains the file-navigator fix and is available to the **Internal QA**
-> TestFlight group. See the
+> TestFlight group. Build **1.0.0 (6)** is prepared on `main` for internal
+> TestFlight verification of project recovery and Go command selection; its
+> delivery status is in the [build 6 guide](docs/TESTFLIGHT-1.0.0-6.md). See the
 > [release audit](docs/RELEASE-AUDIT-2026-09-08.md) and
 > [build 5 test guide](docs/TESTFLIGHT-1.0.0-5.md). Physical-device Gate B
 > remains unverified.
@@ -24,7 +26,8 @@ The 14 September core-hardening work is tracked in
 [its requirement and test evidence](docs/HARDEN-GOPHERFORGE-CORE.md).
 Source recovery and command selection passed simulator regression tests; the new
 one-second Stop and pre-write file quota requirements are still blocked by
-the pinned WasmKit/WASI integration. No new TestFlight build is claimed here.
+the pinned WasmKit/WASI integration. The new build is not claimed delivered
+until App Store Connect confirms its processing and Internal QA assignment.
 
 [**Product website**](https://gopherforge.app) ·
 [Support](https://gopherforge.app/support) ·

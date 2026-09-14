@@ -509,6 +509,9 @@ standard library, and generates the project. Set `XCODE_XCCONFIG_FILE` to
 `/Volumes/workspace/repository/ci_scripts/Release.xcconfig` in the workflow.
 Keep Archive distribution preparation set to **App Store Connect**. The
 [build 5 guide](TESTFLIGHT-1.0.0-5.md) records the exact TestFlight steps.
+The [build 6 guide](TESTFLIGHT-1.0.0-6.md) covers the subsequent workspace
+hardening and its separate internal TestFlight delivery check; it does not
+change this rejected App Review submission or its physical-device request.
 
 Submitted source: `aeb751654b823e5c62cdc59aa2c6572ba44a849e`. Seven Swift warnings
 were fixed and the local Release build plus 18 focused tests passed. The

@@ -77,6 +77,10 @@ presented as if it had.
 GopherForge **1.0.0 (5)** is available to the **Internal QA** TestFlight group
 as of 13 September 2026. Use that build for the checks below; the gate remains
 open until the results are recorded on hardware.
+Build **1.0.0 (6)** is prepared for the same group with the project-recovery
+and command-selection fixes; its [TestFlight guide](TESTFLIGHT-1.0.0-6.md)
+records delivery status and the additional checks. Neither build satisfies the
+new Stop or guest-file-quota criteria.
 
 Before measuring the compiler on build **1.0.0 (5)**, check the workspace
 layout on the devices. On iPhone, Build → Code fills the width; Files opens one
@@ -97,12 +101,10 @@ expected screenshots.
    results, including a deliberate failure.
 6. **Thermal and memory envelope.** Repeated builds do not push the device into
    throttling or termination. Record the state before and after.
-7. **A runaway program.** `for { fmt.Println("x") }` must stop being kept after
-   1 MiB, report that it was truncated, and leave the device's storage where it
-   was. `for {}` will *not* stop — that is a known and documented limit, not a
-   test failure — so what is being measured here is what it costs: whether the
-   app stays responsive, whether anything is lost, and how the device behaves
-   thermally until the app is closed.
+7. **Runaway program — deferred.** Do not run `for {}` or an unbounded writer
+   on a device in build 5 or 6. The new Stop and pre-write quota checks remain
+   blocked; output truncation at 1 MiB does not terminate guest execution or
+   enforce a guest-file quota.
 8. **An allocation bomb.** A program growing memory without bound is refused at
    64 MiB rather than taking the app down with it.
 9. **Repeated unique edits.** Twenty to fifty edit-and-run cycles, each with

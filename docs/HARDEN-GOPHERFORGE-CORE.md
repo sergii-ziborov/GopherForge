@@ -1,7 +1,7 @@
 # Core hardening evidence — 14 September 2026
 
 Base: `de40934de4c5adb8cd2a59d85793a00b8333eab8`.
-Change branch: `codex/harden-gopherforge-core`.
+Integrated into `main` for build 1.0.0 (6).
 
 This change keeps library identity in the existing `ProjectLibraryItem.id` UUID.
 The optional `sourceRevision` field decodes old JSON without changing exported
@@ -14,7 +14,7 @@ retains an unsaved project for retry/export when switching races a disk error.
 | Two same-name projects remain independent | `ProjectLibraryTests.testTwoProjectsWithTheSameNameKeepIndependentSource` | PASS in simulator |
 | Rename keeps ID, files and filing; legacy JSON decodes | `testRenameAndFilingSurviveSourceSave`, `testADocumentWrittenBeforeFilingExistedStillDecodes`, `WorkspaceAutosaveTests.testRenameKeepsLiveUnsavedSourceAndProjectID` | PASS in simulator |
 | Relaunch does not replace edited Playground | `WorkspaceAutosaveTests.testPrepareRestoresSavedProjectInsteadOfReplacingItWithPlayground` | PASS in simulator |
-| Older source saves and build results do not roll back newer source | `ProjectLibraryTests.testOlderSourceSaveCannotRollBackANewerRevision`, `testBuildResultCannotReplaceSourceEditedAfterBuildStarted`; workspace format checks project ID and revision | PASS for library logic; actual Build A/edit B/finish A integration NOT RUN |
+| Older source saves and build results do not roll back newer source | `ProjectLibraryTests.testOlderSourceSaveCannotRollBackANewerRevision`, `testBuildResultCannotReplaceSourceEditedAfterBuildStarted`, real-toolchain `BundledCompilerGateTests.testBuildFinishingAfterAnEditKeepsTheNewSource`; workspace format checks project ID and revision | PASS in simulator, including Build A → edit/save B → finish A |
 | Switch before debounce keeps an edit | `WorkspaceAutosaveTests.testSwitchingProjectsBeforeDebounceKeepsTheFirstEdit` | PASS in simulator |
 | Write failure is visible and retryable; export remains available | `WorkspaceAutosaveTests.testSaveFailureIsVisibleAndRetryKeepsTheEdit` forces a filesystem write failure | PASS for write failure; actual ENOSPC NOT RUN |
 | Format ignores imports; Run ignores test-only imports; Test still validates them | `GoBuildPlannerTests.testFormatDoesNotResolveImports`, `testRunIgnoresImportsUsedOnlyByTests` | PASS in simulator |
@@ -24,7 +24,7 @@ retains an unsaved project for retry/export when switching races a disk error.
 | Guest file quota rejects write/seek/truncate before exceeding limit | WasmKit 0.3.1 `WASIBridgeToHost.FileSystemOptions` publicly offers host or memory FS, but its factory is internal and neither implementation has a pre-write quota. Output capture limits stdout/stderr only. | BLOCKED; no after-the-fact truncation claimed |
 | Physical iPhone/iPad Gate B | `docs/DEVICE-GATE.md` requires real devices, currently unavailable to this session | NOT RUN |
 | OpenSpec strict validation | The described archive/catalog `openspec/changes/harden-gopherforge-core/` was not attached or found locally; `openspec` CLI is not installed | NOT RUN |
-| TestFlight upload | Requires a complete release gate and stable Xcode Cloud upload | NOT RUN |
+| TestFlight upload | Build 1.0.0 (6) release procedure in `docs/TESTFLIGHT-1.0.0-6.md`; App Store Connect Xcode Cloud | PENDING; this simulator evidence is not a delivery receipt |
 
 The first controlled run against the base failed the three new regression
 tests for duplicate names, Format with an unresolved import and Run with a
@@ -51,6 +51,13 @@ xcodebuild build -quiet -project GopherForge.xcodeproj -scheme GopherForge \
 
 The final ordinary suite passed **309/309** tests in the iOS 18.2 Simulator.
 The separate bundled compiler gate passed **8/8** tests on the same simulator.
+After integrating into `main`, the ordinary suite passed **309/309** and the
+compiler gate passed **8/8** again. The added real-toolchain Build A/edit B
+race test passed **1/1** on `main`; the final compiler-gate run with that test
+passed **9/9**. The navigator regression passed **1/1** on each of the iPhone
+17 Pro Max and iPad Pro 13-inch simulators after integration.
+The final ordinary scheme reports one intentional skip: the compiler-gate
+class runs in its dedicated scheme, where none of its nine tests were skipped.
 The gate runs real bundled Go compile, link, run and test work, but these
 simulator results do not close physical-device Gate B.
 The Release simulator build passed under Xcode 27.0 beta (27A5228h). Its
