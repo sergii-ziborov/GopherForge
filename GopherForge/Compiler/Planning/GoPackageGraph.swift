@@ -35,6 +35,7 @@ struct GoPackageGraph {
         case conflictingPackageNames(directory: String, names: [String])
         case importCycle(path: [String])
         case unresolvedImport(String, importedBy: String)
+        case ambiguousMainPackages([String])
     }
 
     let modulePath: String
@@ -53,16 +54,35 @@ struct GoPackageGraph {
         files: [String: String],
         modulePath: String,
         standardLibrary: some Collection<String>,
-        constraint: GoBuildConstraint? = nil
+        constraint: GoBuildConstraint? = nil,
+        includeTestImports: Bool = true,
+        targetDirectory: String? = nil
     ) throws -> GoPackageGraph {
         let grouped = try group(files: files, modulePath: modulePath, constraint: constraint)
         guard !grouped.isEmpty else { throw GraphError.noGoFiles }
 
         let byPath = Dictionary(uniqueKeysWithValues: grouped.map { ($0.importPath, $0) })
+        // A Run/Build for one main must not validate or compile a separate
+        // command's imports. Keep only the requested main and its local deps.
+        var selectedPaths: Set<String> = []
+        if let targetDirectory,
+           let target = grouped.first(where: { $0.directory == targetDirectory && $0.isMain }) {
+            func visit(_ package: GoPackage) {
+                guard selectedPaths.insert(package.importPath).inserted else { return }
+                for imported in package.imports {
+                    if let dependency = byPath[imported] { visit(dependency) }
+                }
+            }
+            visit(target)
+        }
+        let selected = selectedPaths.isEmpty
+            ? grouped : grouped.filter { selectedPaths.contains($0.importPath) }
         let known = Set(standardLibrary)
 
-        for package in grouped {
-            for imported in package.imports.union(package.testImports) {
+        for package in selected {
+            let imports = includeTestImports
+                ? package.imports.union(package.testImports) : package.imports
+            for imported in imports {
                 let isLocal = byPath[imported] != nil
                 let isStandard = known.contains(imported)
                 guard isLocal || isStandard else {
@@ -71,7 +91,7 @@ struct GoPackageGraph {
             }
         }
 
-        return GoPackageGraph(modulePath: modulePath, packages: try ordered(grouped, byPath: byPath))
+        return GoPackageGraph(modulePath: modulePath, packages: try ordered(selected, byPath: byPath))
     }
 
     // MARK: - Grouping

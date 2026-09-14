@@ -25,6 +25,50 @@ final class GoBuildPlannerTests: XCTestCase {
         "main.go": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
     ]
 
+    func testFormatDoesNotResolveImports() throws {
+        let files = [
+            "go.mod": "module example.com/forge\n\ngo 1.24\n",
+            "main.go": "package main\nimport \"not.installed/dep\"\nfunc main() {}\n",
+        ]
+        let plan = try planner().plan(phase: .format, files: files)
+        XCTAssertEqual(plan.steps.map(\.tool), [.format])
+    }
+
+    func testRunIgnoresImportsUsedOnlyByTests() throws {
+        var files = helloWorld
+        files["main_test.go"] = "package main\nimport \"not.installed/testdep\"\n"
+        let plan = try planner().plan(phase: .run, files: files)
+        XCTAssertEqual(plan.steps.map(\.tool), [.compile, .link])
+        XCTAssertThrowsError(try planner().plan(phase: .test, files: files))
+    }
+
+    func testRunSelectsTheRequestedMainPackage() throws {
+        let files = [
+            "go.mod": "module example.com/forge\n\ngo 1.24\n",
+            "cmd/one/main.go": "package main\nfunc main() {}\n",
+            "cmd/two/main.go": "package main\nfunc main() {}\n",
+        ]
+        let one = try planner().plan(phase: .run, files: files, packagePattern: "./cmd/one")
+        let two = try planner().plan(phase: .run, files: files, packagePattern: "./cmd/two")
+        let oneMain = try XCTUnwrap(one.steps.first { $0.arguments.contains("main") })
+        let twoMain = try XCTUnwrap(two.steps.first { $0.arguments.contains("main") })
+        XCTAssertTrue(oneMain.arguments.contains(GoGuestPath.source("cmd/one/main.go")))
+        XCTAssertTrue(twoMain.arguments.contains(GoGuestPath.source("cmd/two/main.go")))
+        XCTAssertThrowsError(try planner().plan(phase: .run, files: files))
+    }
+
+    func testRunDoesNotCompileAnUnrelatedMainTarget() throws {
+        let files = [
+            "go.mod": "module example.com/forge\n\ngo 1.24\n",
+            "cmd/one/main.go": "package main\nfunc main() {}\n",
+            "cmd/two/main.go": "package main\nimport \"not.installed/dep\"\nfunc main() {}\n",
+        ]
+        let plan = try planner().plan(phase: .run, files: files, packagePattern: "./cmd/one")
+        XCTAssertFalse(plan.steps.contains {
+            $0.arguments.contains(GoGuestPath.source("cmd/two/main.go"))
+        })
+    }
+
     // MARK: - Build and run
 
     func testRunCompilesThenLinks() throws {

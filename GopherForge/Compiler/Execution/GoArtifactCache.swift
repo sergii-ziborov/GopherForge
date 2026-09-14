@@ -47,9 +47,13 @@ final class GoArtifactCache: @unchecked Sendable {
         self.fileManager = fileManager
     }
 
-    func key(phase: CompilationResult.Phase, files: [String: String]) -> String {
+    func key(
+        phase: CompilationResult.Phase,
+        files: [String: String],
+        packagePattern: String = "./..."
+    ) -> String {
         var hasher = SHA256()
-        for value in [toolchainTag, Self.schemaVersion, phase.rawValue] {
+        for value in [toolchainTag, Self.schemaVersion, phase.rawValue, packagePattern] {
             hasher.update(data: Data(value.utf8))
             hasher.update(data: Data([0]))
         }

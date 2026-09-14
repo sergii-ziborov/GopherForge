@@ -21,6 +21,9 @@ enum GoPlanFailureReader {
             "\(importedBy) imports \(importPath), which is neither a package in this module nor part "
                 + "of the bundled standard library. The app compiles offline, so it can only build "
                 + "what it ships with and what you wrote."
+        case let .ambiguousMainPackages(paths):
+            "This module has multiple runnable packages: \(paths.joined(separator: ", ")). "
+                + "Open the main.go for the package you want to run."
         }
     }
 

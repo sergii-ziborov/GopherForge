@@ -120,7 +120,9 @@ final class WasmGoCompiler: @unchecked Sendable {
 
         let plan: GoBuildPlan
         do {
-            plan = try planner(for: layout, project: project).plan(phase: phase, files: project.files)
+            plan = try planner(for: layout, project: project).plan(
+                phase: phase, files: project.files, packagePattern: project.packagePattern
+            )
         } catch let error as GoPackageGraph.GraphError {
             return .failure(
                 phase: .setup,
@@ -136,7 +138,7 @@ final class WasmGoCompiler: @unchecked Sendable {
         }
 
         let cache = artifactCache(for: layout.tag)
-        let key = cache.key(phase: phase, files: project.files)
+        let key = cache.key(phase: phase, files: project.files, packagePattern: project.packagePattern)
         if let cached = cachedResult(phase: phase, key: key, cache: cache, started: started) {
             return cached
         }

@@ -20,24 +20,38 @@ struct GoBuildPlanner {
     /// which is only right for content this app authored itself.
     var constraint: GoBuildConstraint?
 
-    func plan(phase: CompilationResult.Phase, files: [String: String]) throws -> GoBuildPlan {
+    func plan(
+        phase: CompilationResult.Phase,
+        files: [String: String],
+        packagePattern: String = "."
+    ) throws -> GoBuildPlan {
+        if phase == .format { return formatPlan() }
+        if phase == .setup { return GoBuildPlan(steps: [], products: []) }
+        let targetDirectory = packagePattern == "."
+            ? "" : String(packagePattern.dropFirst(packagePattern.hasPrefix("./") ? 2 : 0))
         let graph = try GoPackageGraph.build(
             files: files,
             modulePath: modulePath,
             standardLibrary: standardLibrary,
-            constraint: constraint
+            constraint: constraint,
+            includeTestImports: phase == .test || phase == .vet,
+            targetDirectory: phase == .run || phase == .build ? targetDirectory : nil
         )
 
         return switch phase {
         case .test: testPlan(graph: graph, files: files)
         case .run:
-            buildPlan(graph: graph, files: files, output: GoGuestPath.runProgram, keepProduct: true)
+            try buildPlan(
+                graph: graph, files: files, output: GoGuestPath.runProgram,
+                keepProduct: true, packagePattern: packagePattern
+            )
         case .build:
-            buildPlan(
+            try buildPlan(
                 graph: graph,
                 files: files,
                 output: GoGuestPath.program(for: "build", suffix: ""),
-                keepProduct: false
+                keepProduct: false,
+                packagePattern: packagePattern
             )
         case .vet: vetPlan(graph: graph)
         case .format: formatPlan()
@@ -51,12 +65,13 @@ struct GoBuildPlanner {
         graph: GoPackageGraph,
         files: [String: String],
         output: String,
-        keepProduct: Bool
-    ) -> GoBuildPlan {
+        keepProduct: Bool,
+        packagePattern: String
+    ) throws -> GoBuildPlan {
         var steps: [GoToolStep] = []
         var archives: [String: String] = [:]
         var dependencyKeys: [String: String] = [:]
-        let entryPoint = graph.mainPackage
+        let entryPoint = try selectedMain(in: graph, pattern: packagePattern)
 
         for package in graph.packages where !package.goFiles.isEmpty {
             // The package that will be linked is compiled as `main`, not under
@@ -80,7 +95,7 @@ struct GoBuildPlanner {
             }
         }
 
-        guard let main = graph.mainPackage, !main.goFiles.isEmpty else {
+        guard let main = entryPoint, !main.goFiles.isEmpty else {
             // A module with no main is a library. Type-checking every package
             // is the whole job, and reporting a missing entry point would be
             // wrong rather than strict.
@@ -98,6 +113,14 @@ struct GoBuildPlanner {
             ? [GoBuildPlan.Product(guestPath: output, importPath: main.importPath)]
             : []
         return GoBuildPlan(steps: steps, products: products)
+    }
+
+    private func selectedMain(in graph: GoPackageGraph, pattern: String) throws -> GoPackage? {
+        let candidates = graph.packages.filter(\.isMain)
+        let directory = pattern == "." ? "" : String(pattern.dropFirst(pattern.hasPrefix("./") ? 2 : 0))
+        if let selected = candidates.first(where: { $0.directory == directory }) { return selected }
+        if candidates.count <= 1 { return candidates.first }
+        throw GoPackageGraph.GraphError.ambiguousMainPackages(candidates.map(\.directory))
     }
 
     // MARK: - Vet and format
