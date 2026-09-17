@@ -62,6 +62,15 @@ struct MyProjectsView: View {
 
     var body: some View {
         List {
+            Section {
+                NavigationLink {
+                    PackageBrowserView()
+                } label: {
+                    Label("Add packages", systemImage: "shippingbox")
+                }
+                .accessibilityIdentifier(AccessibilityID.packagesEntry)
+            }
+
             if items.isEmpty {
                 ContentUnavailableView(
                     "No projects yet",

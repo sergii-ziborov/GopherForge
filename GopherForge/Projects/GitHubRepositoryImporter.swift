@@ -124,6 +124,7 @@ struct GitHubRepositoryImporter: Sendable {
             // Invalid UTF-8 means it was not text after all, whatever the name
             // said. Dropped rather than mangled.
             guard let text = String(data: body, encoding: .utf8) else { continue }
+            guard !SourceFileLimit.exceedsLimit(text) else { continue }
             files[path] = text
         }
 

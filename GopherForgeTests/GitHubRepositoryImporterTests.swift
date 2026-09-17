@@ -101,6 +101,19 @@ final class GitHubRepositoryImporterTests: XCTestCase {
 
     /// A binary named like a document is still a binary, and putting one in a
     /// text view helps nobody.
+    func testAFileOverTheLineBudgetIsDropped() throws {
+        let long = (0..<SourceFileLimit.maximumLines + 1).map { "// \($0)" }.joined(separator: "\n")
+        let data = try archive([
+            "main.go": "package main\n\nfunc main() {}\n",
+            "huge.go": long,
+        ])
+
+        let project = try importer.project(fromArchive: data, reference: reference)
+
+        XCTAssertNil(project.files["huge.go"])
+        XCTAssertNotNil(project.files["main.go"])
+    }
+
     func testBinariesAreDropped() {
         for path in ["logo.png", "demo.gif", "tool", "archive.zip"] {
             XCTAssertFalse(

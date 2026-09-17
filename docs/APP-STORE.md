@@ -4,9 +4,10 @@ Version **1.0**, build **1.0.0 (4)**, was submitted on 8 September 2026 at
 **20:57 Asia/Jerusalem**. Packaging, validation and submission evidence are in
 [the release audit](RELEASE-AUDIT-2026-09-08.md). On 9 September, Apple
 rejected the submission under Guideline 2.1, requesting more information and a
-physical-device screen recording. Build **1.0.0 (5)** prepares the
-file-navigator fix for TestFlight; its release steps and device checks are in
-[the build 5 guide](TESTFLIGHT-1.0.0-5.md).
+physical-device screen recording. Build **1.0.0 (5)** prepared the
+file-navigator fix; **1.0.0 (6)** the workspace hardening; **1.0.0 (7)** is
+the current TestFlight candidate (packages as packages, 500-line source
+ceiling, complete OSS notices). See [the build 7 guide](TESTFLIGHT-1.0.0-7.md).
 
 ---
 
@@ -38,7 +39,7 @@ change the app's own features.
 | --- | --- |
 | The compiler is **bundled**, not downloaded. Nothing executable is ever fetched. | `GopherForge/Resources/Toolchain/`, built by `scripts/build_toolchain.sh` |
 | The only things downloaded are **Go source files** — module source from `proxy.golang.org`, repository snapshots from `codeload.github.com`. Both are text. | `GoModuleProxyClient.swift`, `GitHubRepositoryImporter.swift` |
-| Downloaded source is **vendored into the open project as ordinary files**, listed in the navigator beside the user's own, and editable in the same editor. Nothing is hidden. | `GoVendorWriter.swift`; `ProjectNavigatorView.swift` lists every key of `project.files` with no filter |
+| Downloaded source is **vendored into the open project as ordinary files**, editable in the same editor. The navigator lists the user's own files and treats each dependency as a **package** (add / remove / search), not as a dump of `vendor/` internals. | `GoVendorWriter.swift`; `ProjectNavigatorView.swift` |
 | Module downloads are **verified against the Go checksum database** before anything is written. | `GoChecksumDatabase.swift`, `GoModuleHash.swift` |
 | Compiled programs run in a **WebAssembly interpreter**, not natively. They cannot call into the app, into iOS, or into any other process. | `WasiProcessRunner.swift` |
 | A user program gets **one writable directory** (`/sandbox`), a memory cap and a table cap. It has no network: `wasip1` has no outbound socket API, so `net.Dial` fails by construction. | `WasmSandboxPolicy.swift` |
@@ -66,9 +67,11 @@ change the app's own features.
 > 3. Edit the source in the editor and press Run again — the output changes,
 >    because the code is compiled on the device rather than matched against
 >    anything.
-> 4. Open **Projects → My projects** and then the file navigator to see that
->    everything the app has downloaded is source, listed beside the user's own
->    files and editable in the same editor.
+> 4. Open **Projects → Add packages**, then the file navigator. Installed
+>    modules appear as packages (add / remove / search). Their `vendor/`
+>    internals are not dumped as a file tree. Settings → Acknowledgements
+>    lists every bundled and SwiftPM dependency. Imported or newly vendored
+>    source is refused above 500 lines.
 >
 > What the app is not: it is not a store for executable content. Nothing it
 > downloads can add a feature to GopherForge, the package browser lists
@@ -131,7 +134,14 @@ recorded under the wrong licence.
 | WasmKit | MIT |
 | swift-system | Apache 2.0 with Runtime Library Exception |
 | ZIPFoundation | MIT |
+| swift-nio, swift-collections, swift-atomics, swift-log, swift-argument-parser | Apache 2.0 with Runtime Library Exception (WasmKit's SwiftPM graph) |
 | go-cmp | BSD 3-Clause |
+
+A source file the app imports or vendors as the user's own code is capped at
+**500 lines**. That is the readable-source half of the 2.5.2 exception:
+`SourceFileLimit` is enforced on GitHub/Files import and on package install.
+Vendored `vendor/` trees are not expanded in the file navigator. Bundled
+`go-cmp` is third-party source shipped with its `LICENSE` and named above.
 
 `scripts/build_toolchain.sh` **refuses to produce a toolchain artifact** unless
 Go's `LICENSE` and `PATENTS` are staged alongside it, because shipping the

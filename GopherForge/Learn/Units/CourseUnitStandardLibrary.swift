@@ -26,7 +26,7 @@ enum CourseUnitStandardLibrary {
     static let readersAndWriters = Lesson(
         id: "stdlib.io",
         title: "Two interfaces, one method each",
-        objective: "Write a function that works on a file, a socket, a string and a test buffer.",
+        objective: "Write a function that works on a file, a string and a test buffer.",
         explanation: """
         io.Reader has Read. io.Writer has Write. Files, network connections, \
         HTTP bodies, gzip streams, strings.Reader and bytes.Buffer all satisfy \

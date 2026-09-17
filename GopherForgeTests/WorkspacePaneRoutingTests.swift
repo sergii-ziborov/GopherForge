@@ -110,8 +110,14 @@ final class WorkspacePaneRoutingTests: XCTestCase {
         )
     }
 
-    /// Nothing routes to the code pane: the iPad dock cannot show it, and on
-    /// iPhone the reader was already there.
+    /// Choosing a file is the exception: the sidebar asked to read it, so the
+    /// workspace has to show the editor even if the terminal was in front.
+    func testSelectingAFileShowsTheCode() {
+        XCTAssertEqual(WorkspacePane.afterSelectingFile(), .code)
+    }
+
+    /// Nothing a *run* does routes to the code pane: the iPad dock cannot show
+    /// it, and on iPhone the reader was already there.
     func testNothingEverRoutesToTheCodePane() {
         for phase in [CompilationResult.Phase.build, .run, .test, .vet, .format] {
             for succeeded in [true, false] {

@@ -96,6 +96,85 @@ enum GoVendorWriter {
         return all.sorted().joined(separator: "\n") + "\n"
     }
 
+    /// A module the project has required or already vendored.
+    ///
+    /// The navigator shows these as packages. Expanding `vendor/` into a file
+    /// tree is how gin becomes two hundred rows nobody asked to edit.
+    struct InstalledModule: Equatable, Identifiable, Sendable {
+        let path: String
+        let version: String
+        let isIndirect: Bool
+        /// True when the module's source is under `vendor/`.
+        let isVendored: Bool
+
+        var id: String { path }
+
+        var displayName: String {
+            path.split(separator: "/").last.map(String.init) ?? path
+        }
+    }
+
+    /// Paths the file tree should not list. A vendored module is a package,
+    /// not a folder of source someone is expected to page through.
+    static func isVendoredPath(_ path: String) -> Bool {
+        path == vendorDirectory || path.hasPrefix(vendorDirectory + "/")
+    }
+
+    /// Required and vendored modules, direct ones first.
+    ///
+    /// `go.mod` is the source of truth for what the owner added. `modules.txt`
+    /// fills in a module that is on disk but missing from the require block,
+    /// so a hand-copied vendor directory still appears as a package.
+    static func installedModules(in files: [String: String]) -> [InstalledModule] {
+        let requirements = GoModParser.parse(files["go.mod"] ?? "")?.requirements ?? []
+        var listed: [InstalledModule] = requirements.map { requirement in
+            InstalledModule(
+                path: requirement.path,
+                version: requirement.version,
+                isIndirect: requirement.isIndirect,
+                isVendored: files.keys.contains {
+                    $0.hasPrefix("\(vendorDirectory)/\(requirement.path)/")
+                }
+            )
+        }
+        let listedPaths = Set(listed.map(\.path))
+        for extra in modulesListed(in: files[modulesFile] ?? "") where !listedPaths.contains(extra.path) {
+            listed.append(extra)
+        }
+        return listed.sorted {
+            if $0.isIndirect != $1.isIndirect { return !$0.isIndirect }
+            return $0.path.localizedStandardCompare($1.path) == .orderedAscending
+        }
+    }
+
+    /// Drops the module's `vendor/` tree, its `require` line and its `go.sum`
+    /// entries, then rebuilds `modules.txt` from what remains.
+    static func remove(modulePath: String, from files: [String: String]) -> [String: String] {
+        var result = files
+        let prefix = "\(vendorDirectory)/\(modulePath)/"
+        for path in result.keys where path.hasPrefix(prefix) {
+            result.removeValue(forKey: path)
+        }
+
+        result["go.mod"] = removingRequire(modulePath, from: result["go.mod"] ?? "")
+        if let sum = result["go.sum"] {
+            let trimmed = removingGoSum(modulePath, from: sum)
+            if trimmed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                result.removeValue(forKey: "go.sum")
+            } else {
+                result["go.sum"] = trimmed
+            }
+        }
+
+        let modules = modulesText(for: result)
+        if modules.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            result.removeValue(forKey: modulesFile)
+        } else {
+            result[modulesFile] = modules
+        }
+        return result
+    }
+
     /// `vendor/modules.txt` rebuilt from what is actually in `vendor/`, so it
     /// can never claim a module the directory does not have.
     static func modulesText(for files: [String: String]) -> String {
@@ -130,5 +209,75 @@ enum GoVendorWriter {
             lines.append(contentsOf: packagesByModule[module]?.sorted() ?? [])
         }
         return lines.isEmpty ? "" : lines.joined(separator: "\n") + "\n"
+    }
+
+    /// `# module version` lines, which is what `go mod vendor` writes.
+    static func modulesListed(in modulesText: String) -> [InstalledModule] {
+        var listed: [InstalledModule] = []
+        for line in modulesText.components(separatedBy: "\n") {
+            guard line.hasPrefix("# "), !line.hasPrefix("##") else { continue }
+            let fields = line.dropFirst(2).split(separator: " ").map(String.init)
+            guard let path = fields.first, !path.isEmpty else { continue }
+            listed.append(
+                InstalledModule(
+                    path: path,
+                    version: fields.dropFirst().first ?? "",
+                    isIndirect: false,
+                    isVendored: true
+                )
+            )
+        }
+        return listed
+    }
+
+    static func removingRequire(_ modulePath: String, from source: String) -> String {
+        var lines = source.components(separatedBy: "\n")
+        lines.removeAll { requireLineModulePath($0) == modulePath }
+        return collapseEmptyRequireBlocks(lines)
+    }
+
+    /// A `require (` whose last member was just deleted is leftover syntax,
+    /// not a module, and must not stay in `go.mod`.
+    static func collapseEmptyRequireBlocks(_ lines: [String]) -> String {
+        var result: [String] = []
+        var index = 0
+        while index < lines.count {
+            let trimmed = lines[index].trimmingCharacters(in: .whitespaces)
+            if trimmed == "require (" {
+                var cursor = index + 1
+                var inner: [String] = []
+                var foundClose = false
+                while cursor < lines.count {
+                    if lines[cursor].trimmingCharacters(in: .whitespaces) == ")" {
+                        foundClose = true
+                        break
+                    }
+                    inner.append(lines[cursor])
+                    cursor += 1
+                }
+                let hasRequirement = inner.contains { requireLineModulePath($0) != nil }
+                if foundClose, !hasRequirement {
+                    index = cursor + 1
+                    continue
+                }
+            }
+            result.append(lines[index])
+            index += 1
+        }
+        while result.last?.trimmingCharacters(in: .whitespaces).isEmpty == true {
+            result.removeLast()
+        }
+        return result.isEmpty ? "" : result.joined(separator: "\n") + "\n"
+    }
+
+    static func removingGoSum(_ modulePath: String, from existing: String) -> String {
+        let kept = existing
+            .components(separatedBy: "\n")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { line in
+                guard !line.isEmpty else { return false }
+                return line.split(separator: " ").first.map(String.init) != modulePath
+            }
+        return kept.isEmpty ? "" : kept.sorted().joined(separator: "\n") + "\n"
     }
 }

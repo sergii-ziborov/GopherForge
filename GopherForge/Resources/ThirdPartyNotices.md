@@ -52,6 +52,53 @@ Archive reading for project import.
 
 <https://github.com/weichsel/ZIPFoundation>
 
+## swift-nio 2.101.3
+
+Copyright © Apple Inc. and the SwiftNIO project authors.
+**Apache License 2.0 with Runtime Library Exception.**
+
+Pulled in by WasmKit. Listed here because it is linked into the app, not
+because this project talks to it directly.
+
+<https://github.com/apple/swift-nio>
+
+## swift-collections 1.6.0
+
+Copyright © Apple Inc. and the Swift Collections project authors.
+**Apache License 2.0 with Runtime Library Exception.**
+
+Pulled in by WasmKit.
+
+<https://github.com/apple/swift-collections>
+
+## swift-atomics 1.3.1
+
+Copyright © Apple Inc. and the Swift Atomics project authors.
+**Apache License 2.0 with Runtime Library Exception.**
+
+Pulled in by WasmKit.
+
+<https://github.com/apple/swift-atomics>
+
+## swift-log 1.15.0
+
+Copyright © Apple Inc. and the Swift Log project authors.
+**Apache License 2.0 with Runtime Library Exception.**
+
+Resolved with WasmKit.
+
+<https://github.com/apple/swift-log>
+
+## swift-argument-parser 1.8.2
+
+Copyright © Apple Inc. and the Swift Argument Parser project authors.
+**Apache License 2.0 with Runtime Library Exception.**
+
+Resolved with WasmKit. It is a SwiftPM dependency of that package, not an
+API this app calls.
+
+<https://github.com/apple/swift-argument-parser>
+
 ## go-cmp v0.6.0
 
 Copyright © 2017 The Go Authors. **BSD 3-Clause License.**

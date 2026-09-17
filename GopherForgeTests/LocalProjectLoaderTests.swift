@@ -41,6 +41,20 @@ final class LocalProjectLoaderTests: XCTestCase {
         XCTAssertNil(project.files["app/main.go"])
     }
 
+    func testSkipsAFileOverTheLineBudget() throws {
+        try write("go.mod", "module m\n\ngo 1.27\n")
+        try write("main.go", "package main\n\nfunc main() {}\n")
+        try write(
+            "huge.go",
+            (0..<SourceFileLimit.maximumLines + 1).map { "// \($0)" }.joined(separator: "\n")
+        )
+
+        let project = try LocalProjectLoader().load(from: root)
+
+        XCTAssertNil(project.files["huge.go"])
+        XCTAssertNotNil(project.files["main.go"])
+    }
+
     func testSkipsFilesItCannotUsefullyOpen() throws {
         try write("go.mod", "module m\n\ngo 1.27\n")
         try write("main.go", "package main\n\nfunc main() {}\n")

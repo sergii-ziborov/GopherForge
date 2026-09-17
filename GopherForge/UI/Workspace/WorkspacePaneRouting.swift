@@ -28,4 +28,9 @@ extension WorkspacePane {
 
         return .output
     }
+
+    /// Choosing a file is a request to read it. The terminal, the output and
+    /// the other panes stay put until that happens, so the sidebar has to
+    /// bring the editor back rather than opening the file behind them.
+    static func afterSelectingFile() -> WorkspacePane { .code }
 }

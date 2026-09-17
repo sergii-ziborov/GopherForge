@@ -31,6 +31,11 @@ final class NavigatorFlowUITests: XCTestCase {
         let field = app.textFields[AccessibilityIdentifier.fileSearch]
         XCTAssertTrue(field.waitForExistence(timeout: 10), "the navigator should offer a search field")
 
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.addPackage].waitForExistence(timeout: 5),
+            "the navigator should offer to add a package without listing vendor files"
+        )
+
         field.tap()
         field.typeText("go.mod")
         XCTAssertTrue(
@@ -49,6 +54,35 @@ final class NavigatorFlowUITests: XCTestCase {
             "searching a line of code should find the line"
         )
         attachScreenshot(named: "21-search")
+    }
+
+    /// A file chosen while the terminal is showing still has to open in the
+    /// editor. Leaving the pane where it was hid the file behind the console.
+    func testChoosingAFileShowsTheCodeEvenFromTheTerminal() {
+        launch()
+
+        let terminal = app.buttons["pane.terminal"]
+        if terminal.waitForExistence(timeout: 5) {
+            XCTAssertTrue(app.scrollHorizontally(to: terminal) || terminal.isHittable)
+            terminal.tap()
+        }
+
+        openNavigator()
+        let goMod = app.buttons["file.go.mod"]
+        XCTAssertTrue(goMod.waitForExistence(timeout: 5), "go.mod should be listed in the tree")
+        goMod.tap()
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 5), "choosing a file should show the editor")
+        XCTAssertTrue(
+            (editor.value as? String ?? "").contains("module "),
+            "the editor should hold the file that was chosen"
+        )
+
+        let code = app.buttons["pane.code"]
+        if code.exists {
+            XCTAssertTrue(code.isSelected, "the Code pane should become selected")
+        }
     }
 
     func testFileTreeSwitchesTheOpenFile() {

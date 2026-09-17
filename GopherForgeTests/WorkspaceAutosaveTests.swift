@@ -217,4 +217,21 @@ final class WorkspaceAutosaveTests: XCTestCase {
         workspace.select(file: "go.mod")
         XCTAssertEqual(workspace.selectedTargetPattern, ".")
     }
+
+    func testRemovingAPackageDropsItsVendoredFiles() async {
+        let workspace = await openedWorkspace()
+        var files = workspace.project?.files ?? [:]
+        files["go.mod"] = "module playground\n\ngo 1.24\n\nrequire (\n\texample.com/dep v1.0.0\n)\n"
+        files["vendor/example.com/dep/dep.go"] = "package dep\n"
+        files["vendor/modules.txt"] = "# example.com/dep v1.0.0\n## explicit\nexample.com/dep\n"
+        workspace.replaceFiles(with: files)
+
+        workspace.removePackage("example.com/dep")
+
+        XCTAssertNil(workspace.project?.files["vendor/example.com/dep/dep.go"])
+        XCTAssertEqual(
+            GoVendorWriter.installedModules(in: workspace.project?.files ?? [:]),
+            []
+        )
+    }
 }

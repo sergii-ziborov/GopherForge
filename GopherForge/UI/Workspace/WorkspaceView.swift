@@ -105,7 +105,7 @@ struct WorkspaceView: View {
                 // way it is in any desktop editor: it does not slide away, and
                 // there is no button that hides it. The phone is the only
                 // layout without room for it, and the phone gets the drawer.
-                ProjectNavigatorView()
+                ProjectNavigatorView(onOpenFile: revealCode)
                     .frame(width: 260)
                 Divider()
                 WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
@@ -141,11 +141,22 @@ struct WorkspaceView: View {
                     .accessibilityLabel("Close files")
                     .accessibilityAddTraits(.isButton)
 
-                ProjectNavigatorView { withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = false } }
+                ProjectNavigatorView(
+                    onSelect: { withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = false } },
+                    onOpenFile: revealCode
+                )
                     .frame(maxWidth: 320)
                     .shadow(radius: 12)
                     .transition(.move(edge: .leading))
             }
+        }
+    }
+
+    /// A file chosen in the tree is a request to read it. On a phone the
+    /// terminal (or any other pane) would otherwise keep hiding the editor.
+    private func revealCode() {
+        withAnimation(.easeOut(duration: 0.2)) {
+            pane = WorkspacePane.afterSelectingFile()
         }
     }
 

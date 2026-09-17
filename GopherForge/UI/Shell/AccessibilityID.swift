@@ -55,6 +55,10 @@ enum AccessibilityID {
     static let examplesEntry = "learn.examples"
     static let exampleOpen = "example.open"
     static let packagesEntry = "projects.packages"
+    static let addPackage = "package.add"
+    static let packageRemove = "package.remove"
+    static let packageTarget = "package.target"
+    static func installedPackage(_ path: String) -> String { "package.installed.\(path)" }
     static let libraryEntry = "projects.library"
     static let libraryFilter = "library.filter"
     static func libraryFolder(_ name: String) -> String { "library.folder.\(name)" }

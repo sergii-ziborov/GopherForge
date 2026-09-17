@@ -10,6 +10,7 @@ struct ResolvedModuleSection: View {
     let resolved: PackageInstallModel.Resolved
     let selectedVersion: String?
     let isBusy: Bool
+    var canInstall: Bool = true
     let onSelect: (String) -> Void
     let onInstall: () -> Void
 
@@ -37,7 +38,7 @@ struct ResolvedModuleSection: View {
                     systemImage: "arrow.down.circle"
                 )
             }
-            .disabled(isBusy || selectedVersion == nil)
+            .disabled(isBusy || selectedVersion == nil || !canInstall)
             .accessibilityIdentifier(AccessibilityID.packageInstall)
 
             if !resolved.insight.checks.isEmpty { scorecardChecks }

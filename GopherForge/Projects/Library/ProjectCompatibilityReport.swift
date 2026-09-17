@@ -41,6 +41,13 @@ struct ProjectCompatibilityReport: Equatable, Sendable {
         if !declaresMainPackage(project) {
             notes.append("No main package found; Run needs a package main with a func main.")
         }
+        let oversized = SourceFileLimit.oversizedOwnFiles(in: project.files)
+        if !oversized.isEmpty {
+            notes.append(
+                "A source file may be at most \(SourceFileLimit.maximumLines) lines. "
+                    + "Over that: \(oversized.prefix(3).joined(separator: ", "))."
+            )
+        }
 
         return ProjectCompatibilityReport(
             status: notes.isEmpty ? .ready : .inspect,

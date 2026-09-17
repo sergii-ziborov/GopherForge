@@ -355,6 +355,13 @@ final class WorkspaceModel {
         compiler.clearBuildCache()
     }
 
+    /// Drops a vendored module the way installing added it: the `vendor/`
+    /// tree, the `require` line and the checksums, in one write.
+    func removePackage(_ modulePath: String) {
+        guard let files = project?.files else { return }
+        replaceFiles(with: GoVendorWriter.remove(modulePath: modulePath, from: files))
+    }
+
     /// Replaces the whole file set, which is what installing a package does.
     ///
     /// The open file is kept if it survived the change, so vendoring a

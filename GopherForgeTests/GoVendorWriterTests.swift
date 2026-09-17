@@ -119,6 +119,96 @@ final class GoVendorWriterTests: XCTestCase {
         XCTAssertFalse(GoModuleArchive.isSafe("other@v1.0.0/uuid.go", under: prefix))
     }
 
+    /// Removing a module must take its source, its require line and its
+    /// checksums with it. Leaving any one of those behind is how a deleted
+    /// package keeps compiling.
+    func testRemovingAModuleDropsItsVendorTreeAndRequirement() {
+        let installed = install(project)
+        let result = GoVendorWriter.remove(modulePath: reference.path, from: installed)
+
+        XCTAssertNil(result["vendor/github.com/google/uuid/uuid.go"])
+        XCTAssertNil(result["vendor/modules.txt"])
+        XCTAssertNil(result["go.sum"])
+        XCTAssertEqual(
+            (result["go.mod"] ?? "").components(separatedBy: "\n").compactMap(GoVendorWriter.requireLineModulePath),
+            []
+        )
+        XCTAssertFalse((result["go.mod"] ?? "").contains("require ("))
+        XCTAssertEqual(result["main.go"], project["main.go"])
+    }
+
+    /// A neighbouring module whose path shares a prefix must survive. Deleting
+    /// gin by prefixing `vendor/github.com/gin-gonic/gin` would otherwise
+    /// swallow `gin-contrib`.
+    func testRemovingAModuleLeavesANeighbourWithASharedPrefix() {
+        var files = install(project)
+        files["vendor/github.com/google/uuid-extra/extra.go"] = "package extra\n"
+        files["go.mod"] = """
+        module playground
+
+        go 1.24
+
+        require (
+        \tgithub.com/google/uuid v1.6.0
+        \tgithub.com/google/uuid-extra v1.0.0
+        )
+
+        """
+
+        let result = GoVendorWriter.remove(modulePath: "github.com/google/uuid", from: files)
+
+        XCTAssertNil(result["vendor/github.com/google/uuid/uuid.go"])
+        XCTAssertEqual(result["vendor/github.com/google/uuid-extra/extra.go"], "package extra\n")
+        XCTAssertEqual(
+            (result["go.mod"] ?? "").components(separatedBy: "\n").compactMap(GoVendorWriter.requireLineModulePath),
+            ["github.com/google/uuid-extra"]
+        )
+    }
+
+    func testInstalledModulesListsTheRequiredPackageNotItsFiles() {
+        let installed = install(project, vendored: [
+            "uuid.go": "package uuid\n",
+            "internal/x/x.go": "package x\n",
+        ])
+        let modules = GoVendorWriter.installedModules(in: installed)
+
+        XCTAssertEqual(modules.map(\.path), [reference.path])
+        XCTAssertEqual(modules.first?.version, "v1.6.0")
+        XCTAssertEqual(modules.first?.displayName, "uuid")
+        XCTAssertTrue(modules.first?.isVendored == true)
+    }
+
+    @MainActor
+    func testInstallErrorNamesAFileThatIsTooLong() {
+        let message = PackageInstallModel.describe(
+            GoPackageInstaller.InstallError.fileTooLong("gin.go"),
+            path: "github.com/gin-gonic/gin"
+        )
+        XCTAssertTrue(message.contains("gin.go"))
+        XCTAssertTrue(message.contains("\(SourceFileLimit.maximumLines)"))
+    }
+
+    func testFiveHundredLinesIsTheReviewableCeiling() {
+        let allowed = (0..<SourceFileLimit.maximumLines).map { "// \($0)" }.joined(separator: "\n")
+        let refused = allowed + "\n// one more"
+
+        XCTAssertEqual(SourceFileLimit.lineCount(of: allowed), SourceFileLimit.maximumLines)
+        XCTAssertFalse(SourceFileLimit.exceedsLimit(allowed))
+        XCTAssertTrue(SourceFileLimit.exceedsLimit(refused))
+        XCTAssertEqual(SourceFileLimit.oversizedOwnFiles(in: [
+            "main.go": allowed,
+            "vendor/example.com/dep/dep.go": refused,
+        ]), [])
+        XCTAssertEqual(SourceFileLimit.oversizedOwnFiles(in: ["big.go": refused]), ["big.go"])
+    }
+
+    func testAVendoredPathIsRecognised() {
+        XCTAssertTrue(GoVendorWriter.isVendoredPath("vendor/modules.txt"))
+        XCTAssertTrue(GoVendorWriter.isVendoredPath("vendor/github.com/gin-gonic/gin/gin.go"))
+        XCTAssertFalse(GoVendorWriter.isVendoredPath("main.go"))
+        XCTAssertFalse(GoVendorWriter.isVendoredPath("internal/vendor.go"))
+    }
+
     func testPackagesAreNamedFromTheModuleRoot() {
         XCTAssertEqual(
             GoPackageInstaller.packages(

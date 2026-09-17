@@ -109,6 +109,33 @@ final class ProjectFileSearchTests: XCTestCase {
         XCTAssertTrue(ProjectFileSearch.ranges(of: "", in: "package main").isEmpty)
         XCTAssertTrue(ProjectFileSearch.ranges(of: "  ", in: "package main").isEmpty)
     }
+
+    /// Vendored source is a package, not a file someone is searching. A query
+    /// that matches inside gin would otherwise bury the project's own hits.
+    func testVendoredFilesAreNotSearched() {
+        let files = [
+            "main.go": "package main\n",
+            "vendor/github.com/gin-gonic/gin/gin.go": "package gin\nfunc Default() {}\n",
+        ]
+
+        XCTAssertTrue(ProjectFileSearch.results(query: "Default", in: files).isEmpty)
+        XCTAssertEqual(ProjectFileSearch.results(query: "main", in: files).map(\.path), ["main.go"])
+    }
+}
+
+final class ProjectNavigatorListingTests: XCTestCase {
+    func testVendorFilesAreNotGroupedInTheTree() {
+        let groups = ProjectNavigatorListing.fileGroups(in: [
+            "main.go": "package main\n",
+            "go.mod": "module playground\n",
+            "vendor/modules.txt": "# github.com/gin-gonic/gin v1.10.0\n",
+            "vendor/github.com/gin-gonic/gin/gin.go": "package gin\n",
+            "vendor/github.com/gin-gonic/gin/context.go": "package gin\n",
+        ])
+
+        XCTAssertEqual(Set(groups.flatMap(\.paths)), ["main.go", "go.mod"])
+        XCTAssertFalse(groups.contains { $0.directory.contains("vendor") })
+    }
 }
 
 final class ProjectArchiveNamingTests: XCTestCase {

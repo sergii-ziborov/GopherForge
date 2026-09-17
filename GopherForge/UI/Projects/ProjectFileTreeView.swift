@@ -50,19 +50,6 @@ struct ProjectFileTreeView: View {
     }
 
     private var groups: [(directory: String, title: String, paths: [String])] {
-        let files = workspace.project?.files.keys.sorted() ?? []
-        let grouped = Dictionary(grouping: files) { path -> String in
-            let components = path.split(separator: "/").dropLast()
-            return components.isEmpty ? "." : components.joined(separator: "/")
-        }
-        return grouped
-            .sorted { $0.key < $1.key }
-            .map { directory, paths in
-                (
-                    directory: directory,
-                    title: directory == "." ? "module root" : directory,
-                    paths: paths.sorted()
-                )
-            }
+        ProjectNavigatorListing.fileGroups(in: workspace.project?.files ?? [:])
     }
 }

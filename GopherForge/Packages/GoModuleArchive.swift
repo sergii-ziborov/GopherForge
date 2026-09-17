@@ -14,6 +14,7 @@ struct GoModuleArchive {
         case entryOutsideModule(String)
         case tooManyFiles(Int)
         case tooLarge(Int)
+        case fileTooLong(String)
         case emptyModule
     }
 
@@ -69,12 +70,18 @@ struct GoModuleArchive {
     /// Tests, testdata and hidden files are dropped: a vendored dependency is
     /// compiled, not tested, and `go mod vendor` drops them for the same
     /// reason. On a phone the difference is most of the download.
-    func vendoredFiles() -> [String: String] {
+    func vendoredFiles() throws -> [String: String] {
         var files: [String: String] = [:]
         for (name, data) in entries {
             let relative = String(name.dropFirst(reference.archivePrefix.count))
             guard Self.isVendored(relative) else { continue }
             guard let text = String(data: data, encoding: .utf8) else { continue }
+            // Teaching-sized source is the 2.5.2 story: a file a reviewer
+            // cannot read in one sitting is a dump, not a lesson. Licences
+            // stay as the author wrote them.
+            if relative.hasSuffix(".go"), SourceFileLimit.exceedsLimit(text) {
+                throw ArchiveError.fileTooLong(relative)
+            }
             files[relative] = text
         }
         return files
@@ -96,5 +103,36 @@ struct GoModuleArchive {
         guard name.hasPrefix(prefix), !name.hasSuffix("/") else { return false }
         let components = name.split(separator: "/", omittingEmptySubsequences: false)
         return components.allSatisfy { !$0.isEmpty && $0 != "." && $0 != ".." }
+    }
+}
+
+/// The size a source file may be and still be something a person — or a
+/// reviewer — can read.
+///
+/// Guideline 2.5.2's teaching exception is that downloaded code is viewable
+/// and editable. A thousand-line dump fails that in practice even when the
+/// editor will open it. Five hundred lines is the ceiling this app will
+/// import, vendor or keep as the user's own file.
+enum SourceFileLimit {
+    static let maximumLines = 500
+
+    static func lineCount(of text: String) -> Int {
+        if text.isEmpty { return 0 }
+        return text.reduce(1) { count, character in
+            character == "\n" ? count + 1 : count
+        }
+    }
+
+    static func exceedsLimit(_ text: String) -> Bool {
+        lineCount(of: text) > maximumLines
+    }
+
+    /// Own project files only. Vendored modules are packages in the sidebar,
+    /// not pages a reviewer is asked to read.
+    static func oversizedOwnFiles(in files: [String: String]) -> [String] {
+        files.keys.sorted().filter { path in
+            guard !GoVendorWriter.isVendoredPath(path) else { return false }
+            return exceedsLimit(files[path] ?? "")
+        }
     }
 }

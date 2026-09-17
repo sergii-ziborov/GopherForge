@@ -38,6 +38,10 @@ final class WorkspaceFlowUITests: XCTestCase {
             app.buttons[AccessibilityIdentifier.newProject].waitForExistence(timeout: 5),
             "the landing screen should offer a way to start something"
         )
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.packagesEntry].waitForExistence(timeout: 5),
+            "Add packages belongs on the projects list, not only inside a project"
+        )
         attachScreenshot(named: "01-projects")
     }
 
@@ -407,6 +411,8 @@ final class WorkspaceFlowUITests: XCTestCase {
 enum AccessibilityIdentifier {
     static let welcomeCard = "projects.welcome"
     static let newProject = "projects.new"
+    static let packagesEntry = "projects.packages"
+    static let addPackage = "package.add"
     static let githubImportEntry = "projects.github"
     static let editor = "workspace.editor"
     static let dockPicker = "workspace.dockPicker"

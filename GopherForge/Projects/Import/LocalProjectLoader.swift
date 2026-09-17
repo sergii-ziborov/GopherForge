@@ -119,8 +119,10 @@ struct LocalProjectLoader {
             }
 
             guard let data = try? Data(contentsOf: url) else { continue }
+            let text = String(decoding: data, as: UTF8.self)
+            guard !SourceFileLimit.exceedsLimit(text) else { continue }
             let relativePath = relative(url, to: root)
-            files[relativePath] = String(decoding: data, as: UTF8.self)
+            files[relativePath] = text
         }
 
         return files

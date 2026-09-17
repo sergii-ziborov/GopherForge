@@ -77,18 +77,20 @@ struct ProjectsHomeView: View {
                     }
                     .accessibilityIdentifier(AccessibilityID.libraryEntry)
                 }
-            }
 
-            Section {
                 NavigationLink {
                     PackageBrowserView()
                 } label: {
-                    Label("Add a package", systemImage: "shippingbox")
+                    Label("Add packages", systemImage: "shippingbox")
                 }
-                .disabled(workspace.project == nil)
                 .accessibilityIdentifier(AccessibilityID.packagesEntry)
+            } footer: {
+                Text("Search the Go ecosystem and vendor a module into any project. "
+                    + "Builds stay offline afterwards.")
+            }
 
-                if let project = workspace.project {
+            if let project = workspace.project {
+                Section {
                     ShareLink(
                         item: ProjectExport(project: project),
                         preview: SharePreview(project.name)
@@ -97,11 +99,6 @@ struct ProjectsHomeView: View {
                     }
                     .accessibilityIdentifier(AccessibilityID.exportProject)
                 }
-            } footer: {
-                Text(workspace.project == nil
-                    ? "Open a project first; a package is installed into one."
-                    : "Downloads are checked against the Go checksum database and vendored "
-                        + "into the project, so builds stay offline afterwards.")
             }
 
             if !recents.isEmpty {
@@ -142,7 +139,7 @@ struct ProjectsHomeView: View {
             await reload()
             // Automation opens the package browser directly; the section it
             // belongs to is this one, so the destination lives here.
-            if LaunchOptions.initialScreen == .packages, workspace.project != nil {
+            if LaunchOptions.initialScreen == .packages {
                 isShowingPackages = true
             }
         }
