@@ -37,7 +37,7 @@ struct WorkspacePaneContent: View {
         case .problems:
             DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [], onReveal: onRevealCode)
         case .output:
-            OutputStreamView(result: workspace.lastResult)
+            OutputStreamView(result: workspace.lastResult, progress: workspace.runningStep)
         case .tests:
             TestResultListView(tests: workspace.lastResult?.tests ?? [])
         case .idioms:

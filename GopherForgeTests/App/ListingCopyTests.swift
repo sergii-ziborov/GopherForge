@@ -18,8 +18,7 @@ final class ListingCopyTests: XCTestCase {
     private func releaseDocument() throws -> String {
         // The tests run from the app bundle, so the document is read from the
         // source tree by walking up from this file.
-        let here = URL(fileURLWithPath: #filePath)
-        let root = here.deletingLastPathComponent().deletingLastPathComponent()
+        let root = try TestRepoRoot.url()
         let url = root.appending(path: "docs/APP-STORE.md")
         return try String(contentsOf: url, encoding: .utf8)
     }
@@ -80,8 +79,7 @@ final class ListingCopyTests: XCTestCase {
     }
 
     private func readme() throws -> String {
-        let here = URL(fileURLWithPath: #filePath)
-        let root = here.deletingLastPathComponent().deletingLastPathComponent()
+        let root = try TestRepoRoot.url()
         return try String(contentsOf: root.appending(path: "README.md"), encoding: .utf8)
     }
 

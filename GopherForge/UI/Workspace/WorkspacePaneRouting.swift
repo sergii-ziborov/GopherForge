@@ -33,4 +33,14 @@ extension WorkspacePane {
     /// the other panes stay put until that happens, so the sidebar has to
     /// bring the editor back rather than opening the file behind them.
     static func afterSelectingFile() -> WorkspacePane { .code }
+
+    /// Where to look while a phase is still running. Compile progress lives
+    /// in Output, not in a banner above the editor.
+    static func afterStarting(_ phase: CompilationResult.Phase) -> WorkspacePane? {
+        switch phase {
+        case .run, .build, .vet, .setup: .output
+        case .test: .tests
+        case .format: nil
+        }
+    }
 }

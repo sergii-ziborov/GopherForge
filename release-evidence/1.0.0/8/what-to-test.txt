@@ -1,0 +1,20 @@
+Build 8 — in-app zip, current chrome, accurate OSS notices
+
+The workspace bar is Run, Beautify and Tests. Compile-check, Add packages,
+rename and export .tar.gz are under ⋯. Packages are not on All Projects or
+Settings.
+
+Open a project and add github.com/google/uuid from ⋯ or the Files sidebar.
+The navigator should show a Packages row, not a dump of vendor/ files. A
+GitHub or Files import of your own project skips a .go file longer than 500
+lines; installing a published module vendors it as published, even when a
+file is longer than that.
+
+On iPhone, swipe from the left edge (or tap Files) to open the tree.
+
+Settings → Third-Party Library must name Go, WasmKit, swift-system, and
+WasmKit’s SwiftPM graph (swift-nio, collections, atomics, log,
+argument-parser) plus go-cmp. It must not name ZIPFoundation.
+
+Known limitation: Stop does not halt a tight CPU loop. Do not test runaway
+code.

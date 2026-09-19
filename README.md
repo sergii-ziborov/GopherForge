@@ -11,16 +11,14 @@ than screens.
 
 > Forge real Go, anywhere.
 
-> **Release status — 14 September 2026:** Apple rejected version **1.0**,
+> **Release status — 19 September 2026:** Apple rejected version **1.0**,
 > build **1.0.0 (4)** under Guideline 2.1, requesting a recording of the app on
-> a physical device and additional review information. Build **1.0.0 (5)**
-> contains the file-navigator fix and is available to the **Internal QA**
-> TestFlight group. Build **1.0.0 (6)** is prepared on `main` for internal
-> TestFlight verification of project recovery and Go command selection; its
-> delivery status is in the [build 6 guide](docs/TESTFLIGHT-1.0.0-6.md). See the
-> [release audit](docs/RELEASE-AUDIT-2026-09-08.md) and
-> [build 5 test guide](docs/TESTFLIGHT-1.0.0-5.md). Physical-device Gate B
-> remains unverified.
+> a physical device and additional review information. Builds **5–7** went to
+> the **Internal QA** TestFlight group. **1.0.0 (8)** is the current candidate:
+> zip is read in-app (no ZIPFoundation), the listing screenshots match the
+> Run / Beautify / Tests chrome, and Third-Party Library names only what still
+> ships. See [the build 8 guide](docs/TESTFLIGHT-1.0.0-8.md). Physical-device
+> Gate B remains unverified.
 
 The 14 September core-hardening work is tracked in
 [its requirement and test evidence](docs/HARDEN-GOPHERFORGE-CORE.md).
@@ -256,9 +254,12 @@ and extracted locally into Caches before compilation, with a SHA-256 check. The 
 GopherForge is commercial proprietary software, not an open-source MIT project.
 Copyright © 2026 Serhii Ziborov. All rights reserved. See [LICENSE](LICENSE).
 
-Bundled third-party components keep their original licenses, including the Go
-toolchain and standard library under the BSD 3-Clause license of the Go
-project. Attributions are maintained in
+Bundled third-party components keep their original licenses. Settings →
+Third-Party Library groups them by family: **BSD 3-Clause** (Go toolchain wasm + go-cmp), **MIT**
+(WasmKit only — zip is this app's own reader), **Apache 2.0 with Runtime Library Exception**
+(swift-system and WasmKit's SwiftPM graph), and **unknown / their own terms**
+for modules you vendor later. The `.wasm` tools are unmodified upstream Go,
+not foreign native iOS binaries. The full list is
 [GopherForge/Resources/ThirdPartyNotices.md](GopherForge/Resources/ThirdPartyNotices.md).
 
 The Go gopher was designed by Renée French and is not used here. The app's

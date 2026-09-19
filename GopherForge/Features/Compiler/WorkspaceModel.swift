@@ -314,7 +314,8 @@ final class WorkspaceModel {
         }
 
         let snapshot = project.snapshot(
-            packagePattern: phase == .run || phase == .build ? selectedTargetPattern : "./..."
+            packagePattern: phase == .run || phase == .build ? selectedTargetPattern : "./...",
+            workspaceReuseKey: projectID.uuidString
         )
         let result = await execute(phase: phase, snapshot: snapshot, projectID: projectID)
         if self.projectID == projectID, sourceRevision == revision {

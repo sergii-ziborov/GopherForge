@@ -152,9 +152,6 @@ final class PackageInstallModel {
             "The download did not match the official checksum database. Nothing was installed."
         case GoPackageInstaller.InstallError.noGoPackages:
             "\(path) has no Go packages to vendor."
-        case let GoPackageInstaller.InstallError.fileTooLong(file):
-            "\(file) is longer than \(SourceFileLimit.maximumLines) lines. "
-                + "This app only vendors source a reviewer can read."
         case GoPackageInstaller.InstallError.invalidModulePath:
             "\(path) is not a module path the proxy can resolve."
         case GoModuleProxyClient.ProxyError.notFound:

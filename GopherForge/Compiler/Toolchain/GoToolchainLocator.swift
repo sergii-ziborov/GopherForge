@@ -1,6 +1,5 @@
 import Foundation
 import CryptoKit
-import ZIPFoundation
 
 /// Resolves the bundled toolchain layout and reports what is actually present.
 ///
@@ -182,7 +181,7 @@ enum BundledGoLibrary {
         try fm.createDirectory(at: parent, withIntermediateDirectories: true)
         let staging = parent.appendingPathComponent(".stage-" + UUID().uuidString)
         defer { try? fm.removeItem(at: staging) }
-        try fm.unzipItem(at: archive, to: staging)
+        try ZipArchive.unzip(file: archive, to: staging, limit: 256 * 1024 * 1024)
         for file in ["goroot/VERSION", "goroot/LICENSE", "goroot/pkg/wasip1_wasm/runtime.a"] {
             guard fm.fileExists(atPath: staging.appendingPathComponent(file).path)
             else { throw CocoaError(.fileReadCorruptFile) }

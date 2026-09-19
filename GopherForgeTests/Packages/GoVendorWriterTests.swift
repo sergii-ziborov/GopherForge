@@ -178,14 +178,16 @@ final class GoVendorWriterTests: XCTestCase {
         XCTAssertTrue(modules.first?.isVendored == true)
     }
 
-    @MainActor
-    func testInstallErrorNamesAFileThatIsTooLong() {
-        let message = PackageInstallModel.describe(
-            GoPackageInstaller.InstallError.fileTooLong("gin.go"),
-            path: "github.com/gin-gonic/gin"
+    func testALongVendoredFileIsKept() {
+        let long = (0..<SourceFileLimit.maximumLines + 200).map { "// \($0)" }.joined(separator: "\n")
+        let result = install(project, vendored: ["uuid.go": long])
+
+        XCTAssertEqual(result["vendor/github.com/google/uuid/uuid.go"], long)
+        XCTAssertEqual(
+            SourceFileLimit.oversizedOwnFiles(in: result),
+            [],
+            "a long package file is not the user's own source"
         )
-        XCTAssertTrue(message.contains("gin.go"))
-        XCTAssertTrue(message.contains("\(SourceFileLimit.maximumLines)"))
     }
 
     func testFiveHundredLinesIsTheReviewableCeiling() {

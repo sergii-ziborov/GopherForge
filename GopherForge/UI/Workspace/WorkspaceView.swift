@@ -22,6 +22,9 @@ struct WorkspaceView: View {
     @State private var dockDragStart: Double?
     private let dockHeightRange: ClosedRange<Double> = 120...640
     @State private var isDrawerOpen = false
+    @State private var isShowingPackages = false
+    @State private var libraryFolders: [String] = []
+    @State private var filingItem: ProjectLibraryItem?
 
     /// The file tree belongs to the iPad workspace even when an iPad window
     /// becomes narrow. Size class alone can switch that window to the phone
@@ -32,7 +35,7 @@ struct WorkspaceView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            WorkspaceStatusStrip(status: workspace.toolchain, progress: workspace.runningStep)
+            WorkspaceStatusStrip(status: workspace.toolchain)
             if workspace.hasUnsavedChanges || workspace.saveError != nil {
                 HStack(spacing: 8) {
                     Label(
@@ -72,6 +75,23 @@ struct WorkspaceView: View {
         .navigationTitle(workspace.project?.name ?? "Workspace")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
+        .sheet(isPresented: $isShowingPackages) {
+            NavigationStack {
+                PackageBrowserView(allowsProjectChoice: false) {
+                    isShowingPackages = false
+                }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { isShowingPackages = false }
+                    }
+                }
+            }
+        }
+        .sheet(item: $filingItem) { item in
+            ProjectOrganizerSheet(item: item, existingFolders: libraryFolders) { draft in
+                Task { await applyFiling(draft) }
+            }
+        }
         .task {
             if terminal == nil { terminal = ProjectTerminalSession(workspace: workspace) }
         }
@@ -88,6 +108,20 @@ struct WorkspaceView: View {
                 if hasPersistentNavigator {
                     // The iPad keeps the editor on screen, so only the dock
                     // moves and the code the person was reading stays put.
+                    dockPane = destination
+                } else {
+                    pane = destination
+                }
+            }
+        }
+        .onChange(of: workspace.runningPhase) {
+            guard let phase = workspace.runningPhase,
+                  let destination = WorkspacePane.afterStarting(phase)
+            else {
+                return
+            }
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if hasPersistentNavigator {
                     dockPane = destination
                 } else {
                     pane = destination
@@ -132,7 +166,13 @@ struct WorkspaceView: View {
     /// phone does.
     private func compactLayout(terminal: ProjectTerminalSession) -> some View {
         ZStack(alignment: .leading) {
+            LeadingEdgeOpenGesture {
+                withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = true }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
             paneStack(terminal: terminal)
+                .simultaneousGesture(filesOpenSwipe)
 
             if isDrawerOpen {
                 Color.black.opacity(0.35)
@@ -148,8 +188,30 @@ struct WorkspaceView: View {
                     .frame(maxWidth: 320)
                     .shadow(radius: 12)
                     .transition(.move(edge: .leading))
+                    .gesture(
+                        DragGesture(minimumDistance: 12)
+                            .onEnded { value in
+                                if FilesDrawerGesture.shouldClose(translation: value.translation) {
+                                    withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = false }
+                                }
+                            }
+                    )
             }
         }
+    }
+
+    /// A left-to-right flick that starts on the leading side, not only the
+    /// Files button. Vertical editor scrolls are ignored.
+    private var filesOpenSwipe: some Gesture {
+        DragGesture(minimumDistance: 24, coordinateSpace: .local)
+            .onEnded { value in
+                if FilesDrawerGesture.shouldOpen(
+                    startX: value.startLocation.x,
+                    translation: value.translation
+                ) {
+                    withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen = true }
+                }
+            }
     }
 
     /// A file chosen in the tree is a request to read it. On a phone the
@@ -240,9 +302,74 @@ struct WorkspaceView: View {
         }
 
         ToolbarItemGroup(placement: .topBarTrailing) {
-            ForEach(PhaseButton.primaryPhases, id: \.self) { phase in
+            ForEach(WorkspaceToolbarActions.primaryPhases, id: \.self) { phase in
                 PhaseButton(phase: phase)
             }
+            Menu {
+                Button {
+                    Task { await openOrganizer() }
+                } label: {
+                    Label("Rename and file…", systemImage: "folder")
+                }
+                .accessibilityIdentifier(AccessibilityID.projectOrganize)
+                if let project = workspace.project {
+                    ShareLink(
+                        item: ProjectExport(project: project),
+                        preview: SharePreview(project.name)
+                    ) {
+                        Label("Export as .tar.gz", systemImage: "square.and.arrow.up")
+                    }
+                    .accessibilityIdentifier(AccessibilityID.exportProject)
+                }
+                Button {
+                    isShowingPackages = true
+                } label: {
+                    Label("Add packages", systemImage: "shippingbox")
+                }
+                .accessibilityIdentifier(AccessibilityID.packagesEntry)
+                Divider()
+                Button {
+                    Task { await workspace.run(.build) }
+                } label: {
+                    Label("Compile check", systemImage: "hammer")
+                }
+                .disabled(!workspace.canRun)
+                .accessibilityIdentifier(AccessibilityID.phase(.build))
+            } label: {
+                Label("Project", systemImage: "ellipsis.circle")
+            }
+            .accessibilityIdentifier(AccessibilityID.projectMenu)
+        }
+    }
+
+    private func openOrganizer() async {
+        guard let id = workspace.projectID else { return }
+        libraryFolders = (try? await ProjectLibrary.shared.folders()) ?? []
+        if let item = try? await ProjectLibrary.shared.project(id: id) {
+            filingItem = item
+            return
+        }
+        if let project = workspace.project {
+            filingItem = ProjectLibraryItem(
+                id: id,
+                project: project,
+                lastOpenedAt: Date()
+            )
+        }
+    }
+
+    private func applyFiling(_ draft: ProjectFilingDraft) async {
+        guard let id = workspace.projectID else { return }
+        _ = try? await ProjectLibrary.shared.update(
+            id: id,
+            name: draft.trimmedName,
+            folder: draft.folder,
+            tags: draft.tags,
+            isFavorite: draft.isFavorite,
+            summary: draft.summary
+        )
+        if let refreshed = try? await ProjectLibrary.shared.project(id: id) {
+            workspace.refreshMetadata(from: refreshed)
         }
     }
 }
@@ -259,7 +386,7 @@ private struct PhaseButton: View {
     // gofmt itself is bundled and was wired to a phase from the start; until
     // now nothing on screen could invoke it — a working formatter with no
     // button.
-    static let primaryPhases: [CompilationResult.Phase] = [.build, .test, .run, .format]
+    static let primaryPhases: [CompilationResult.Phase] = WorkspaceToolbarActions.primaryPhases
 
     @Environment(WorkspaceModel.self) private var workspace
     let phase: CompilationResult.Phase
@@ -292,16 +419,12 @@ private struct PhaseButton: View {
 /// between working and stuck.
 private struct WorkspaceStatusStrip: View {
     let status: ToolchainStatus
-    let progress: GoBuildProgress?
 
     var body: some View {
-        if !status.isReady || progress != nil {
-            VStack(spacing: 0) {
-                if !status.isReady { MissingToolchainRow(status: status) }
-                if let progress { BuildProgressRow(progress: progress) }
-            }
-            .background(.bar)
-            .accessibilityIdentifier(AccessibilityID.toolchainBanner)
+        if !status.isReady {
+            MissingToolchainRow(status: status)
+                .background(.bar)
+                .accessibilityIdentifier(AccessibilityID.toolchainBanner)
         }
     }
 }
@@ -322,30 +445,5 @@ private struct MissingToolchainRow: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-    }
-}
-
-/// One line naming the step, and a bar showing how much of the plan is left.
-private struct BuildProgressRow: View {
-    let progress: GoBuildProgress
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack(spacing: 6) {
-                ProgressView().controlSize(.mini)
-                Text(progress.summary)
-                    .font(.caption2.monospaced())
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                Spacer()
-            }
-            ProgressView(value: progress.fraction)
-                .progressViewStyle(.linear)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .accessibilityIdentifier(AccessibilityID.buildProgress)
-        .accessibilityLabel("Building: \(progress.summary)")
-        .transition(.opacity)
     }
 }

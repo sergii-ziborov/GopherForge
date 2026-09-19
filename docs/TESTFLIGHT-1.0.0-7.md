@@ -2,9 +2,11 @@
 
 Build 7 is the package-navigator work plus the App Review packaging for
 packages and binaries. Dependencies show as packages (add / remove / search),
-not as a `vendor/` file dump. Source the app imports or vendors as the user's
-own code is capped at **500 lines**. Every SwiftPM pin, including WasmKit's
-graph, is named in Settings → Acknowledgements.
+not as a `vendor/` file dump. A GitHub or Files import skips a source file
+longer than **500 lines**; installed packages are vendored as published.
+Every SwiftPM pin, including WasmKit's
+graph, is named in Settings → Third-Party Library, grouped by MIT / Apache /
+BSD / unknown.
 
 ## Build and delivery
 

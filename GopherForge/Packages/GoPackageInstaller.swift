@@ -14,7 +14,6 @@ struct GoPackageInstaller: Sendable {
         case invalidModulePath(String)
         case checksumMismatch(expected: String, actual: String)
         case noGoPackages(String)
-        case fileTooLong(String)
     }
 
     struct Result: Equatable, Sendable {
@@ -66,12 +65,7 @@ struct GoPackageInstaller: Sendable {
             throw InstallError.checksumMismatch(expected: record.moduleHash, actual: actual)
         }
 
-        let vendored: [String: String]
-        do {
-            vendored = try archive.vendoredFiles()
-        } catch let GoModuleArchive.ArchiveError.fileTooLong(path) {
-            throw InstallError.fileTooLong(path)
-        }
+        let vendored = archive.vendoredFiles()
         let packages = Self.packages(in: vendored, modulePath: reference.path)
         guard !packages.isEmpty else { throw InstallError.noGoPackages(reference.id) }
 

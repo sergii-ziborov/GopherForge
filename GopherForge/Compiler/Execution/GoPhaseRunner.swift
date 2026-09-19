@@ -28,7 +28,8 @@ struct GoPhaseRunner {
     ) -> CompilationResult {
         let job: GoWorkspaceStager.Layout
         do {
-            job = try stager.createLayout(named: UUID().uuidString)
+            let persistent = project.workspaceReuseKey.map(GoWorkspaceStager.persistentRootURL(for:))
+            job = try stager.createLayout(named: UUID().uuidString, persistentRoot: persistent)
             try stager.stage(files: project.files, into: job.work)
         } catch {
             return stagingFailure(error, started: started)

@@ -211,7 +211,12 @@ struct GoToolSession {
             at: url.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
-        try data.write(to: url, options: .atomic)
+        // Persistent /tmp already has this archive after the first hit.
+        // Rewriting the same bytes is the cost of a "cached" rebuild.
+        let existingSize = try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize
+        if existingSize != data.count {
+            try data.write(to: url)
+        }
         reusedStepLabels.append(step.label)
         return true
     }
@@ -237,7 +242,7 @@ struct GoToolSession {
                 at: url.deletingLastPathComponent(),
                 withIntermediateDirectories: true
             )
-            try Data(contents.utf8).write(to: url, options: .atomic)
+            try Data(contents.utf8).write(to: url)
         }
     }
 

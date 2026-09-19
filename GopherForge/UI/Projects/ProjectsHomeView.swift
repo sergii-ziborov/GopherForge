@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// The landing screen: what this app is, how to start, and what was open last.
 ///
@@ -6,8 +7,8 @@ import SwiftUI
 /// product on its own rather than showing an empty list.
 struct ProjectsHomeView: View {
     @Environment(WorkspaceModel.self) private var workspace
-    @State private var isShowingPackages = false
     @Environment(AppNavigation.self) private var navigation
+    @State private var filePick: FilePick?
     @State private var recents: [ProjectLibraryItem] = []
     @State private var pendingImports: [PendingImportDrain.Pending] = []
     /// The pending import currently downloading, so its row can show it.
@@ -78,15 +79,40 @@ struct ProjectsHomeView: View {
                     .accessibilityIdentifier(AccessibilityID.libraryEntry)
                 }
 
-                NavigationLink {
-                    PackageBrowserView()
+                Button {
+                    filePick = .openProject
                 } label: {
-                    Label("Add packages", systemImage: "shippingbox")
+                    Label("Open from iCloud or Files", systemImage: "icloud.and.arrow.down")
                 }
-                .accessibilityIdentifier(AccessibilityID.packagesEntry)
+                .accessibilityIdentifier(AccessibilityID.openFromCloud)
+
+                Button {
+                    filePick = .libraryFolder
+                } label: {
+                    Label(
+                        "Keep library in iCloud…",
+                        systemImage: "externaldrive.badge.icloud"
+                    )
+                }
+                .accessibilityIdentifier(AccessibilityID.keepLibraryInCloud)
+
+                if ProjectLibraryLocation.usesChosenFolder {
+                    Button {
+                        Task {
+                            do {
+                                recents = try await library.useOnDeviceLibrary()
+                            } catch {
+                                importFailure = error.localizedDescription
+                            }
+                        }
+                    } label: {
+                        Label("Keep library on this device", systemImage: "internaldrive")
+                    }
+                }
             } footer: {
-                Text("Search the Go ecosystem and vendor a module into any project. "
-                    + "Builds stay offline afterwards.")
+                Text("Projects stay on this device unless you pick an iCloud Drive "
+                    + "or Files folder for the library. Open a `.tar.gz` from there "
+                    + "any time.")
             }
 
             if let project = workspace.project {
@@ -134,14 +160,49 @@ struct ProjectsHomeView: View {
             }
         }
         .navigationTitle("Projects")
-        .navigationDestination(isPresented: $isShowingPackages) { PackageBrowserView() }
+        .fileImporter(
+            isPresented: Binding(
+                get: { filePick != nil },
+                set: { if !$0 { filePick = nil } }
+            ),
+            allowedContentTypes: filePick?.contentTypes ?? [.folder],
+            allowsMultipleSelection: false
+        ) { result in
+            handleFilePick(result)
+        }
         .task {
             await reload()
-            // Automation opens the package browser directly; the section it
-            // belongs to is this one, so the destination lives here.
-            if LaunchOptions.initialScreen == .packages {
-                isShowingPackages = true
+            if LaunchOptions.initialScreen == .packages, let first = recents.first {
+                open(first)
             }
+        }
+    }
+
+    private func handleFilePick(_ result: Result<[URL], any Error>) {
+        let pick = filePick
+        filePick = nil
+        importFailure = nil
+        switch result {
+        case let .success(urls):
+            guard let url = urls.first else { return }
+            switch pick {
+            case .libraryFolder:
+                Task {
+                    do {
+                        recents = try await library.adoptFolder(url)
+                    } catch {
+                        importFailure = error.localizedDescription
+                    }
+                }
+            case .openProject, .none:
+                do {
+                    open(try LocalProjectImporter.loadPicked(at: url))
+                } catch {
+                    importFailure = error.localizedDescription
+                }
+            }
+        case let .failure(error):
+            importFailure = error.localizedDescription
         }
     }
 
@@ -255,6 +316,20 @@ private struct WelcomeCard: View {
 
 /// The single way in to starting something, on a screen whose job is otherwise
 /// to show what you were already working on.
+private enum FilePick {
+    case openProject
+    case libraryFolder
+
+    var contentTypes: [UTType] {
+        switch self {
+        case .openProject:
+            [.folder, GopherForgeProjectDocument.contentType, .gzip]
+        case .libraryFolder:
+            [.folder]
+        }
+    }
+}
+
 private struct NewProjectRow: View {
     var body: some View {
         HStack(spacing: 12) {

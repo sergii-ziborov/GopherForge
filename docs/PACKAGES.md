@@ -3,6 +3,10 @@
 GopherForge compiles offline. Installing a package is the one moment it uses a
 network, and this is what happens in that moment and why.
 
+Add packages from inside an open project (Files sidebar or the workspace **⋯**
+menu). The all-projects list and Settings do not install into a project they
+do not have open.
+
 ## Why not just `go get`
 
 `go get` is `cmd/go`, and `cmd/go` cannot run here — it builds by spawning the

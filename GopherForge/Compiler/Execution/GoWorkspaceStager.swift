@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// Materialises an in-memory project into the job's working directory.
@@ -46,15 +47,25 @@ struct GoWorkspaceStager {
         self.fileManager = fileManager
     }
 
-    func createLayout(named jobName: String) throws -> Layout {
+    /// `persistentRoot` keeps `/work`, `/tmp` and `/cache` across jobs for the
+    /// same project. The expensive part of a second Run was never compile.wasm
+    /// alone — it was rewriting every vendored file and every cached `.a`
+    /// into a fresh directory first.
+    func createLayout(named jobName: String, persistentRoot: URL? = nil) throws -> Layout {
         let jobRoot = fileManager.temporaryDirectory
             .appendingPathComponent("GopherForgeCompiler", isDirectory: true)
             .appendingPathComponent(jobName, isDirectory: true)
+        let work = persistentRoot?.appendingPathComponent("work", isDirectory: true)
+            ?? jobRoot.appendingPathComponent("work", isDirectory: true)
+        let temp = persistentRoot?.appendingPathComponent("tmp", isDirectory: true)
+            ?? jobRoot.appendingPathComponent("tmp", isDirectory: true)
+        let cache = persistentRoot?.appendingPathComponent("cache", isDirectory: true)
+            ?? jobRoot.appendingPathComponent("cache", isDirectory: true)
         let layout = Layout(
             jobRoot: jobRoot,
-            work: jobRoot.appendingPathComponent("work", isDirectory: true),
-            temp: jobRoot.appendingPathComponent("tmp", isDirectory: true),
-            cache: jobRoot.appendingPathComponent("cache", isDirectory: true),
+            work: work,
+            temp: temp,
+            cache: cache,
             sandbox: jobRoot.appendingPathComponent("sandbox", isDirectory: true)
         )
         for directory in [layout.work, layout.temp, layout.cache, layout.sandbox] {
@@ -63,21 +74,82 @@ struct GoWorkspaceStager {
         return layout
     }
 
+    /// Writes only files whose contents hash changed, and drops leftovers.
+    ///
+    /// Comparing hashes against a sidecar avoids reading every vendored file
+    /// back off disk on each keystroke. A fresh job directory used to rewrite
+    /// the whole tree on every Run; after a real module is installed that is
+    /// most of the I/O, and none of it is new.
     func stage(files: [String: String], into work: URL) throws {
+        let manifestURL = work.appendingPathComponent(Self.manifestName)
+        let previous = Self.readManifest(at: manifestURL)
+        var next: [String: String] = [:]
+        var expected: Set<String> = []
         for (relativePath, contents) in files.sorted(by: { $0.key < $1.key }) {
             guard let fileURL = Self.resolve(relativePath: relativePath, under: work) else {
                 throw StagingError.invalidPath(relativePath)
             }
+            expected.insert(relativePath)
+            let digest = Self.digest(contents)
+            next[relativePath] = digest
             try fileManager.createDirectory(
                 at: fileURL.deletingLastPathComponent(),
                 withIntermediateDirectories: true
             )
-            try Data(contents.utf8).write(to: fileURL, options: .atomic)
+            if previous[relativePath] == digest,
+               fileManager.fileExists(atPath: fileURL.path) {
+                continue
+            }
+            try Data(contents.utf8).write(to: fileURL)
         }
+        try prune(work: work, keeping: expected)
+        try Self.writeManifest(next, to: manifestURL)
     }
 
     func remove(_ layout: Layout) {
+        let jobPath = layout.jobRoot.standardizedFileURL.path
+        func isInsideJob(_ url: URL) -> Bool {
+            let path = url.standardizedFileURL.path
+            return path == jobPath || path.hasPrefix(jobPath + "/")
+        }
+        if isInsideJob(layout.work), isInsideJob(layout.temp), isInsideJob(layout.cache) {
+            try? fileManager.removeItem(at: layout.jobRoot)
+            return
+        }
+        if isInsideJob(layout.sandbox) {
+            try? fileManager.removeItem(at: layout.sandbox)
+        }
         try? fileManager.removeItem(at: layout.jobRoot)
+    }
+
+    static func persistentRootURL(for reuseKey: String) -> URL {
+        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return caches
+            .appendingPathComponent("GopherForgeWork", isDirectory: true)
+            .appendingPathComponent(reuseKey, isDirectory: true)
+    }
+
+    private func prune(work: URL, keeping expected: Set<String>) throws {
+        guard let enumerator = fileManager.enumerator(
+            at: work,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            return
+        }
+        let root = work.standardizedFileURL.path
+        for case let url as URL in enumerator {
+            let values = try? url.resourceValues(forKeys: [.isRegularFileKey])
+            guard values?.isRegularFile == true else { continue }
+            let path = url.standardizedFileURL.path
+            guard path.hasPrefix(root + "/") else { continue }
+            let relative = String(path.dropFirst(root.count + 1))
+            if relative == Self.manifestName { continue }
+            if !expected.contains(relative) {
+                try? fileManager.removeItem(at: url)
+            }
+        }
     }
 
     static func resolve(relativePath: String, under root: URL) -> URL? {
@@ -91,5 +163,28 @@ struct GoWorkspaceStager {
         return components.reduce(root) { partial, component in
             partial.appendingPathComponent(String(component))
         }
+    }
+
+    static func digest(_ contents: String) -> String {
+        SHA256.hash(data: Data(contents.utf8))
+            .prefix(16)
+            .map { String(format: "%02x", $0) }
+            .joined()
+    }
+
+    private static let manifestName = ".gopherforge-stage"
+
+    private static func readManifest(at url: URL) -> [String: String] {
+        guard let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([String: String].self, from: data)
+        else {
+            return [:]
+        }
+        return decoded
+    }
+
+    private static func writeManifest(_ hashes: [String: String], to url: URL) throws {
+        let data = try JSONEncoder().encode(hashes)
+        try data.write(to: url)
     }
 }

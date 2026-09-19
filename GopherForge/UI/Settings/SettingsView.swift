@@ -10,6 +10,7 @@ struct SettingsView: View {
     /// a directory, and Settings redraws for every stepper tick.
     @State private var cacheByteCount: Int64 = 0
     @State private var isConfirmingReset = false
+    @State private var libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder
     private let progress = LearningProgressStore.shared
 
     var body: some View {
@@ -22,6 +23,27 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier(AccessibilityID.settingsAppearance)
+            }
+
+            Section("Projects") {
+                LabeledContent(
+                    "Library",
+                    value: libraryUsesChosenFolder
+                        ? "iCloud / Files folder"
+                        : "On this device"
+                )
+                if libraryUsesChosenFolder {
+                    Button("Keep library on this device") {
+                        Task {
+                            _ = try? await ProjectLibrary.shared.useOnDeviceLibrary()
+                            libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder
+                        }
+                    }
+                }
+                Text("Open a `.tar.gz` or folder from iCloud Drive on Projects, "
+                    + "or pick a folder there to keep the whole library.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section("Editor") {
@@ -74,7 +96,7 @@ struct SettingsView: View {
                 NavigationLink {
                     AcknowledgementsView()
                 } label: {
-                    Label("Acknowledgements", systemImage: "text.book.closed")
+                    Label("Third-Party Library", systemImage: "text.book.closed")
                 }
                 .accessibilityIdentifier(AccessibilityID.settingsAcknowledgements)
                 // Required in the app, not only in App Store Connect: guideline
@@ -99,6 +121,7 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .onAppear { libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder }
         .task { cacheByteCount = workspace.buildCacheByteCount }
         // Confirmed rather than immediate: this is the one action here that
         // destroys something a person spent time on.

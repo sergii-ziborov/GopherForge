@@ -21,7 +21,7 @@ final class ThirdPartyNoticesTests: XCTestCase {
 
     func testEveryBundledDependencyIsNamed() {
         for component in [
-            "Go", "WasmKit", "swift-system", "ZIPFoundation", "go-cmp",
+            "Go", "WasmKit", "swift-system", "go-cmp",
             "swift-nio", "swift-collections", "swift-atomics", "swift-log",
             "swift-argument-parser",
         ] {
@@ -30,6 +30,10 @@ final class ThirdPartyNoticesTests: XCTestCase {
                 "\(component) ships in the app but is not in the notices"
             )
         }
+        XCTAssertFalse(
+            source.contains("ZIPFoundation"),
+            "zip is read in-app; a dropped library must not stay in the notices"
+        )
     }
 
     /// Getting a licence wrong is worse than omitting it: it is a claim about
@@ -38,7 +42,6 @@ final class ThirdPartyNoticesTests: XCTestCase {
     func testEachLicenceIsNamedCorrectly() {
         for (component, licence) in [
             ("WasmKit", "MIT License"),
-            ("ZIPFoundation", "MIT License"),
             ("swift-system", "Apache License 2.0"),
             ("swift-nio", "Apache License 2.0"),
             ("swift-collections", "Apache License 2.0"),
@@ -53,6 +56,21 @@ final class ThirdPartyNoticesTests: XCTestCase {
                 "\(component) should be recorded as \(licence), got: \(section)"
             )
         }
+    }
+
+    func testLicencesAreGroupedSoAReviewerCanMatchBinaries() {
+        for heading in [
+            "BSD 3-Clause",
+            "MIT License",
+            "Apache License 2.0",
+            "Unknown or their own terms",
+        ] {
+            XCTAssertTrue(source.contains(heading), "missing licence family \(heading)")
+        }
+        XCTAssertTrue(
+            source.contains("not third-party native iOS libraries"),
+            "the notices should say the wasm tools are upstream Go, not foreign iOS binaries"
+        )
     }
 
     func testTheGoToolchainIsRecordedAsARedistribution() {
@@ -86,8 +104,7 @@ final class ThirdPartyNoticesTests: XCTestCase {
     /// reviewer can read. Third-party `VendoredModules` are excluded: they
     /// ship with their own licence and are named in the notices.
     func testAppAndTeachingSourcesStayWithinTheLineBudget() throws {
-        let testsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-        let appRoot = testsDirectory.deletingLastPathComponent().appending(path: "GopherForge")
+        let appRoot = try TestRepoRoot.url().appending(path: "GopherForge")
         var offenders: [String] = []
 
         let enumerator = FileManager.default.enumerator(
@@ -146,8 +163,33 @@ final class ThirdPartyNoticesTests: XCTestCase {
         return items
     }
 
+    func testFamiliesSplitMITApacheBSDAndUnknown() {
+        let families = ThirdPartyLibrary.families(in: source)
+        XCTAssertEqual(
+            families.map(\.heading),
+            [
+                "BSD 3-Clause",
+                "MIT License",
+                "Apache License 2.0 with Runtime Library Exception",
+                "Unknown or their own terms",
+            ]
+        )
+        XCTAssertTrue(families.contains { $0.heading == "MIT License"
+            && $0.components.contains { $0.name.hasPrefix("WasmKit") && $0.licence.contains("MIT") }
+        })
+        XCTAssertTrue(families.contains { $0.heading.hasPrefix("Apache")
+            && $0.components.contains { $0.name.hasPrefix("swift-system") && $0.licence.contains("Apache") }
+        })
+        XCTAssertTrue(families.contains { $0.heading.hasPrefix("Unknown")
+            && $0.components.contains { $0.name.contains("Packages you install") }
+        })
+    }
+
     private static func section(named name: String, in text: String) -> String {
-        let parts = text.components(separatedBy: "\n## ")
-        return parts.first { $0.hasPrefix(name) } ?? ""
+        let byComponent = text.components(separatedBy: "\n### ")
+        if let match = byComponent.first(where: { $0.hasPrefix(name) }) {
+            return match
+        }
+        return text.components(separatedBy: "\n## ").first { $0.hasPrefix(name) } ?? ""
     }
 }

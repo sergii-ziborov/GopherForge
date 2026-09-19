@@ -46,13 +46,34 @@ extension XCUIApplication {
         for _ in 0..<attempts {
             if isOnScreen(element) { return true }
             let isPastTheRightEdge = element.frame.midX > window.maxX
+            // Start past the phone Files-drawer edge (72 pt). A drag that
+            // begins at 15% of a 440-pt phone is a leading-edge flick and
+            // opens the tree over the chip this is trying to reach.
+            let leading = max(window.width * 0.15, 80)
+            let trailing = window.width * 0.85
             drag(
-                fromX: window.width * (isPastTheRightEdge ? 0.85 : 0.15),
-                toX: window.width * (isPastTheRightEdge ? 0.15 : 0.85),
+                fromX: isPastTheRightEdge ? trailing : leading,
+                toX: isPastTheRightEdge ? leading : trailing,
                 atY: rowMidY
             )
         }
         return isOnScreen(element)
+    }
+
+    /// Taps a chip that may sit in a horizontal scroller.
+    ///
+    /// XCUITest will refuse `tap()` on a control that exists, has a real frame,
+    /// and is still not hittable — a SwiftUI `ScrollView` row does this on some
+    /// simulator sizes. Hitting the centre of that frame is what a finger does.
+    @discardableResult
+    func tapReachable(_ element: XCUIElement) -> Bool {
+        guard scrollHorizontally(to: element) || element.exists else { return false }
+        if element.isHittable {
+            element.tap()
+            return true
+        }
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        return true
     }
 
     /// The whole frame inside the window, not just its centre: a chip half over

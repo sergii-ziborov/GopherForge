@@ -1,5 +1,4 @@
 import Foundation
-import ZIPFoundation
 
 /// Reads a module zip into memory, safely.
 ///
@@ -14,7 +13,6 @@ struct GoModuleArchive {
         case entryOutsideModule(String)
         case tooManyFiles(Int)
         case tooLarge(Int)
-        case fileTooLong(String)
         case emptyModule
     }
 
@@ -27,29 +25,22 @@ struct GoModuleArchive {
     let reference: GoModuleReference
 
     init(data: Data, reference: GoModuleReference) throws {
-        guard let archive = try? Archive(data: data, accessMode: .read, pathEncoding: nil) else {
+        let unpacked: [String: Data]
+        do {
+            unpacked = try ZipArchive.files(from: data, limit: Self.maximumUncompressedBytes)
+        } catch ZipArchive.ZipError.tooLarge(let bytes) {
+            throw ArchiveError.tooLarge(bytes)
+        } catch {
             throw ArchiveError.unreadable
         }
 
         var entries: [String: Data] = [:]
-        var total = 0
-
-        for entry in archive where entry.type == .file {
-            let name = entry.path
+        for (name, bytes) in unpacked {
             guard Self.isSafe(name, under: reference.archivePrefix) else {
                 throw ArchiveError.entryOutsideModule(name)
             }
             guard entries.count < Self.maximumFiles else {
                 throw ArchiveError.tooManyFiles(entries.count)
-            }
-
-            var bytes = Data()
-            _ = try? archive.extract(entry, bufferSize: 64 * 1024, skipCRC32: false) { chunk in
-                bytes.append(chunk)
-            }
-            total += bytes.count
-            guard total <= Self.maximumUncompressedBytes else {
-                throw ArchiveError.tooLarge(total)
             }
             entries[name] = bytes
         }
@@ -70,18 +61,12 @@ struct GoModuleArchive {
     /// Tests, testdata and hidden files are dropped: a vendored dependency is
     /// compiled, not tested, and `go mod vendor` drops them for the same
     /// reason. On a phone the difference is most of the download.
-    func vendoredFiles() throws -> [String: String] {
+    func vendoredFiles() -> [String: String] {
         var files: [String: String] = [:]
         for (name, data) in entries {
             let relative = String(name.dropFirst(reference.archivePrefix.count))
             guard Self.isVendored(relative) else { continue }
             guard let text = String(data: data, encoding: .utf8) else { continue }
-            // Teaching-sized source is the 2.5.2 story: a file a reviewer
-            // cannot read in one sitting is a dump, not a lesson. Licences
-            // stay as the author wrote them.
-            if relative.hasSuffix(".go"), SourceFileLimit.exceedsLimit(text) {
-                throw ArchiveError.fileTooLong(relative)
-            }
             files[relative] = text
         }
         return files
@@ -109,10 +94,11 @@ struct GoModuleArchive {
 /// The size a source file may be and still be something a person — or a
 /// reviewer — can read.
 ///
-/// Guideline 2.5.2's teaching exception is that downloaded code is viewable
-/// and editable. A thousand-line dump fails that in practice even when the
-/// editor will open it. Five hundred lines is the ceiling this app will
-/// import, vendor or keep as the user's own file.
+/// Guideline 2.5.2's teaching exception is that the user's own imported
+/// source is viewable. Five hundred lines is the ceiling for a file this
+/// app imports as the project itself. Installed packages are vendored as
+/// published — a real module is often longer than that, and refusing it
+/// would make Add packages refuse most of the ecosystem.
 enum SourceFileLimit {
     static let maximumLines = 500
 

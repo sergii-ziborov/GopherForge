@@ -16,7 +16,7 @@ final class WasmGoCompiler: @unchecked Sendable {
     private let locator: GoToolchainLocator
     private let queue = DispatchQueue(
         label: "com.sergiiziborov.GopherForge.compiler",
-        qos: .utility,
+        qos: .userInitiated,
         autoreleaseFrequency: .workItem
     )
     private let clock = ContinuousClock()

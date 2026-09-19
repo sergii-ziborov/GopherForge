@@ -56,6 +56,15 @@ enum GzipStream {
         return out
     }
 
+    /// Raw DEFLATE, the payload both gzip and zip carry. Empty in, empty out.
+    static func inflateRaw(_ data: Data, limit: Int) throws -> Data {
+        try codec(data, operation: COMPRESSION_STREAM_DECODE, limit: limit)
+    }
+
+    static func deflateRaw(_ data: Data) throws -> Data {
+        try codec(data, operation: COMPRESSION_STREAM_ENCODE, limit: .max)
+    }
+
     // MARK: - Deflate
 
     private static func codec(

@@ -5,9 +5,11 @@ Version **1.0**, build **1.0.0 (4)**, was submitted on 8 September 2026 at
 [the release audit](RELEASE-AUDIT-2026-09-08.md). On 9 September, Apple
 rejected the submission under Guideline 2.1, requesting more information and a
 physical-device screen recording. Build **1.0.0 (5)** prepared the
-file-navigator fix; **1.0.0 (6)** the workspace hardening; **1.0.0 (7)** is
-the current TestFlight candidate (packages as packages, 500-line source
-ceiling, complete OSS notices). See [the build 7 guide](TESTFLIGHT-1.0.0-7.md).
+file-navigator fix; **1.0.0 (6)** the workspace hardening; **1.0.0 (7)** the
+package-navigator notices. **1.0.0 (8)** is the current TestFlight candidate:
+ZIPFoundation is gone (zip is read in-app), screenshots match Run / Beautify /
+Tests, and the review notes name only the binaries that still ship. See
+[the build 8 guide](TESTFLIGHT-1.0.0-8.md).
 
 ---
 
@@ -63,15 +65,17 @@ change the app's own features.
 > 1. Open the app — no account, no sign-in, no purchase; every feature is
 >    available immediately.
 > 2. Tap **Build** and press **Run** on the sample project. It compiles and
->    runs with no network; airplane mode is a fair test.
+>    runs with no network; airplane mode is a fair test. Compile progress
+>    lives in **Output**. The bar is Run, Beautify and Tests; **⋯** holds
+>    rename, export `.tar.gz`, packages and compile-check.
 > 3. Edit the source in the editor and press Run again — the output changes,
 >    because the code is compiled on the device rather than matched against
 >    anything.
-> 4. Open **Projects → Add packages**, then the file navigator. Installed
->    modules appear as packages (add / remove / search). Their `vendor/`
->    internals are not dumped as a file tree. Settings → Acknowledgements
->    lists every bundled and SwiftPM dependency. Imported or newly vendored
->    source is refused above 500 lines.
+> 4. On iPhone, swipe from the left edge (or tap Files) to open the tree.
+>    **⋯ → Add packages** installs into the open project. Settings →
+>    Third-Party Library groups MIT, Apache-2.0, BSD and unknown/user-vendored
+>    terms. A GitHub or Files import skips a source file longer than 500
+>    lines; installed packages are vendored as published.
 >
 > What the app is not: it is not a store for executable content. Nothing it
 > downloads can add a feature to GopherForge, the package browser lists
@@ -124,7 +128,7 @@ There is no proprietary or non-standard cryptography anywhere in the app.
 ## 5. Third-party software
 
 Everything bundled is listed in `GopherForge/Resources/ThirdPartyNotices.md`,
-which ships inside the app and is shown under **Settings → Acknowledgements**.
+which ships inside the app and is shown under **Settings → Third-Party Library**.
 `ThirdPartyNoticesTests` fails the build if a dependency is missing from it or
 recorded under the wrong licence.
 
@@ -133,15 +137,26 @@ recorded under the wrong licence.
 | The Go toolchain and standard library | BSD 3-Clause (`LICENSE` and `PATENTS` ship in `goroot/`) |
 | WasmKit | MIT |
 | swift-system | Apache 2.0 with Runtime Library Exception |
-| ZIPFoundation | MIT |
 | swift-nio, swift-collections, swift-atomics, swift-log, swift-argument-parser | Apache 2.0 with Runtime Library Exception (WasmKit's SwiftPM graph) |
 | go-cmp | BSD 3-Clause |
 
-A source file the app imports or vendors as the user's own code is capped at
-**500 lines**. That is the readable-source half of the 2.5.2 exception:
-`SourceFileLimit` is enforced on GitHub/Files import and on package install.
-Vendored `vendor/` trees are not expanded in the file navigator. Bundled
-`go-cmp` is third-party source shipped with its `LICENSE` and named above.
+Zip reading is this app's own code (`ZipArchive`). There is no ZIPFoundation
+— or any other third-party archive library — in the binary. The four `.wasm`
+tools and `goroot.zip` remain **unmodified upstream Go**. WasmKit and its
+SwiftPM graph are Swift source compiled into the app, not dropped-in native
+binaries.
+
+A source file the app imports as the user's own project is capped at
+**500 lines**. Installed packages are vendored as the module published them —
+a typical dependency is longer than that, and refusing it would block most
+of the catalog. Vendored `vendor/` trees are not expanded in the file
+navigator. Bundled `go-cmp` is third-party source shipped with its `LICENSE`
+and named above.
+
+The four `.wasm` tools and `goroot.zip` are **unmodified upstream Go**, not
+unidentified native binaries. Third-Party Library splits them by licence family
+(BSD, MIT, Apache-2.0 with the runtime exception, and unknown terms for
+modules the user vendors later).
 
 `scripts/build_toolchain.sh` **refuses to produce a toolchain artifact** unless
 Go's `LICENSE` and `PATENTS` are staged alongside it, because shipping the
@@ -356,7 +371,7 @@ the first screen a reviewer opens.
 >
 > WHAT IT DOES
 >
-> • Build, Run, Test, Vet and Format real Go — the toolchain is bundled, not a
+> • Run, Beautify and Test real Go — the toolchain is bundled, not a
 >   server somewhere.
 > • Read Go's own diagnostics, parsed to the line and column, marked in the
 >   editor where they happened.

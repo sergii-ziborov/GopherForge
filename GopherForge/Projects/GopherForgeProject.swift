@@ -82,7 +82,12 @@ struct GopherForgeProject: Codable, Equatable, Sendable {
         return directories.sorted()
     }
 
-    func snapshot(packagePattern: String = "./...") -> GoSourceSnapshot {
-        GoSourceSnapshot(files: files, packagePattern: packagePattern, entryFile: entryFile)
+    func snapshot(packagePattern: String = "./...", workspaceReuseKey: String? = nil) -> GoSourceSnapshot {
+        GoSourceSnapshot(
+            files: files,
+            packagePattern: packagePattern,
+            entryFile: entryFile,
+            workspaceReuseKey: workspaceReuseKey
+        )
     }
 }

@@ -60,7 +60,7 @@ enum GopherForgeTheme {
     /// Phase labels shown on buttons and in the build dock.
     static func label(for phase: CompilationResult.Phase) -> String {
         switch phase {
-        case .format: "Format"
+        case .format: "Beautify"
         case .vet: "Vet"
         case .build: "Build"
         case .run: "Run"

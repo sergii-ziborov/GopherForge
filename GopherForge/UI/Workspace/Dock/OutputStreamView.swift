@@ -6,44 +6,66 @@ import SwiftUI
 /// which line the runtime did.
 struct OutputStreamView: View {
     let result: CompilationResult?
+    var progress: GoBuildProgress?
 
     var body: some View {
-        guard let result else {
-            return AnyView(
-                EmptyDockMessage(
-                    systemImage: "terminal",
-                    title: "Nothing has run yet",
-                    message: "Run the program to see its output here."
-                ,
+        if let progress {
+            progressPanel(progress)
+        } else if let result {
+            resultPanel(result)
+        } else {
+            EmptyDockMessage(
+                systemImage: "terminal",
+                title: "Nothing has run yet",
+                message: "Run the program to see its output here.",
                 tint: WorkspacePane.output.tint
             )
-            )
         }
+    }
 
-        return AnyView(
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    ResultSummaryRow(result: result)
-
-                    if !result.artifacts.isEmpty {
-                        DrawnImagesSection(images: result.artifacts.images)
-                    }
-                    if !result.stdout.isEmpty {
-                        StreamSection(title: "stdout", text: result.stdout, tint: .primary)
-                    }
-                    if !result.stderr.isEmpty {
-                        StreamSection(title: "stderr", text: result.stderr, tint: .red)
-                    }
-                    if result.stdout.isEmpty, result.stderr.isEmpty, result.artifacts.isEmpty {
-                        Text("The program produced no output.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
+    private func progressPanel(_ progress: GoBuildProgress) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.regular)
+                Text(progress.summary)
+                    .font(.callout.monospaced())
+                    .textSelection(.enabled)
             }
-        )
+            ProgressView(value: progress.fraction)
+                .progressViewStyle(.linear)
+            Text("Compile steps show up here, not above the editor.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(12)
+        .accessibilityIdentifier(AccessibilityID.buildProgress)
+        .accessibilityLabel("Building: \(progress.summary)")
+    }
+
+    private func resultPanel(_ result: CompilationResult) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                ResultSummaryRow(result: result)
+
+                if !result.artifacts.isEmpty {
+                    DrawnImagesSection(images: result.artifacts.images)
+                }
+                if !result.stdout.isEmpty {
+                    StreamSection(title: "stdout", text: result.stdout, tint: .primary)
+                }
+                if !result.stderr.isEmpty {
+                    StreamSection(title: "stderr", text: result.stderr, tint: .red)
+                }
+                if result.stdout.isEmpty, result.stderr.isEmpty, result.artifacts.isEmpty {
+                    Text("The program produced no output.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+        }
     }
 }
 

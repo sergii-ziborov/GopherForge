@@ -10,8 +10,7 @@ import XCTest
 /// has to be resolved in both places at once, and nobody remembers to.
 final class GameCenterAvailabilityTests: XCTestCase {
     private func entitlements() throws -> String {
-        let here = URL(fileURLWithPath: #filePath)
-        let root = here.deletingLastPathComponent().deletingLastPathComponent()
+        let root = try TestRepoRoot.url()
         let url = root.appending(path: "GopherForge/GopherForge.entitlements")
         return try String(contentsOf: url, encoding: .utf8)
     }

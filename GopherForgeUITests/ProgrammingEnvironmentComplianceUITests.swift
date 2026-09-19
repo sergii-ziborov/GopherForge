@@ -56,18 +56,27 @@ final class ProgrammingEnvironmentComplianceUITests: XCTestCase {
     }
 
     /// The other half of the same clause: it has to be obvious that this is a
-    /// programming environment, which the app says by keeping the project and
-    /// its build actions on screen beside the code rather than behind a menu.
+    /// programming environment. Run, Beautify and Tests stay on the bar;
+    /// compile-check lives in the project menu so it does not crowd the chrome.
     func testThePageSaysItIsAProgrammingEnvironment() {
         XCTAssertTrue(
-            app.buttons["phase.build"].waitForExistence(timeout: 30),
-            "the build action should be visible alongside the editor"
+            app.buttons["phase.run"].waitForExistence(timeout: 30),
+            "Run should be visible alongside the editor"
         )
-        for phase in ["build", "test", "run"] {
+        for phase in ["run", "format", "test"] {
             XCTAssertTrue(
                 app.buttons["phase.\(phase)"].exists,
-                "\(phase) should be on screen, not hidden behind a menu"
+                "\(phase) should be on the bar"
             )
         }
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.projectMenu].exists,
+            "the project menu should be on the bar"
+        )
+        app.buttons[AccessibilityIdentifier.projectMenu].tap()
+        XCTAssertTrue(
+            app.buttons["phase.build"].waitForExistence(timeout: 3),
+            "compile-check should be in the project menu"
+        )
     }
 }

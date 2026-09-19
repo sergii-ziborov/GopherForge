@@ -17,7 +17,7 @@ actor ProjectLibrary {
         var items: [ProjectLibraryItem]
     }
 
-    private let storageURL: URL
+    private var storageURL: URL
     private var cachedState: State?
 
     /// The library the app uses.
@@ -43,17 +43,29 @@ actor ProjectLibrary {
     }
 
     init(storageURL: URL? = nil) {
-        if let storageURL {
-            self.storageURL = storageURL
-        } else {
-            let applicationSupport = FileManager.default.urls(
-                for: .applicationSupportDirectory,
-                in: .userDomainMask
-            ).first ?? FileManager.default.temporaryDirectory
-            self.storageURL = applicationSupport
-                .appending(path: "GopherForge", directoryHint: .isDirectory)
-                .appending(path: "recent-projects.json")
-        }
+        self.storageURL = storageURL ?? ProjectLibraryLocation.fileURL()
+    }
+
+    /// Moves the library JSON into a folder the owner picked (Files or
+    /// iCloud Drive) and remembers that folder for the next launch.
+    func adoptFolder(_ folder: URL) throws -> [ProjectLibraryItem] {
+        let current = try state()
+        try ProjectLibraryLocation.remember(folder: folder)
+        storageURL = ProjectLibraryLocation.fileURL()
+        try persist(current)
+        return try items()
+    }
+
+    func useOnDeviceLibrary() throws -> [ProjectLibraryItem] {
+        let current = try state()
+        ProjectLibraryLocation.forgetChosenFolder()
+        storageURL = ProjectLibraryLocation.defaultFileURL()
+        try persist(current)
+        return try items()
+    }
+
+    var storesInChosenFolder: Bool {
+        ProjectLibraryLocation.usesChosenFolder
     }
 
     func items() throws -> [ProjectLibraryItem] {

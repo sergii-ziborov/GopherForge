@@ -115,11 +115,10 @@ final class AppStoreScreenshotUITests: XCTestCase {
 
         // iPhone shows the panes as full-height tabs, so the test run that was
         // just photographed is still covering the editor and there is nothing
-        // to type into. iPad keeps the editor beside the dock and offers no
-        // Code chip at all, so this asks rather than assumes.
+        // to type into. iPad keeps the editor beside the dock, so this asks
+        // rather than assumes.
         if !editor.waitForExistence(timeout: 5) {
-            let code = app.buttons["pane.code"]
-            if app.scrollHorizontally(to: code) { code.tap() }
+            revealPhoneEditor()
         }
 
         XCTAssertTrue(editor.waitForExistence(timeout: 30), "the workspace should still hold the file")
@@ -136,8 +135,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         runPhase("build")
 
         let problems = app.buttons["pane.problems"]
-        XCTAssertTrue(app.scrollHorizontally(to: problems), "the Problems pane should be reachable")
-        problems.tap()
+        XCTAssertTrue(app.tapReachable(problems), "the Problems pane should be reachable")
         XCTAssertTrue(app.waitForSelection(of: problems), "Problems should become the selected pane")
         XCTAssertTrue(
             app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'unusedTotal'"))
@@ -164,7 +162,13 @@ final class AppStoreScreenshotUITests: XCTestCase {
     /// tapped — a screenshot taken a second after the tap is a screenshot of a
     /// spinner, and it would go into the listing looking deliberate.
     private func runPhase(_ phase: String) {
-        let action = app.buttons["phase.\(phase)"]
+        var action = app.buttons["phase.\(phase)"]
+        if !action.waitForExistence(timeout: 3) {
+            let menu = app.buttons[AccessibilityIdentifier.projectMenu]
+            XCTAssertTrue(menu.waitForExistence(timeout: 10), "compile-check lives in the project menu")
+            menu.tap()
+            action = app.buttons["phase.\(phase)"]
+        }
         XCTAssertTrue(action.waitForExistence(timeout: 30), "the workspace should offer \(phase)")
         XCTAssertTrue(
             action.isEnabled,
@@ -173,20 +177,44 @@ final class AppStoreScreenshotUITests: XCTestCase {
         )
         action.tap()
 
-        // Polled on the action itself rather than on the progress strip. The
-        // button is disabled for exactly as long as its phase is running, and
-        // it is already bound here — re-querying the app inside the loop is
-        // what a screenshot run does not need to do six hundred times.
+        // Compile-check lives in the project menu. Tapping it dismisses the
+        // menu, so the button this bound is gone and `isEnabled` throws.
+        // Run stays on the bar and is disabled for every phase.
+        let bar = app.buttons["phase.run"]
+        let warming = Date().addingTimeInterval(3)
+        while Date() < warming {
+            if bar.exists && !bar.isEnabled { break }
+            _ = bar.waitForExistence(timeout: 0.2)
+        }
         let deadline = Date().addingTimeInterval(buildTimeout)
         var finished = false
         while Date() < deadline {
-            if action.isEnabled {
+            if bar.exists && bar.isEnabled {
                 finished = true
                 break
             }
-            _ = action.waitForExistence(timeout: 1)
+            _ = bar.waitForExistence(timeout: 1)
         }
         XCTAssertTrue(finished, "\(phase) did not finish within \(Int(buildTimeout))s")
+    }
+
+    /// Opens the source file from the phone tree.
+    ///
+    /// Dragging the chip row is the wrong way here: a left-to-right flick on
+    /// that row is the Files-drawer gesture, and the dim overlay then sits on
+    /// top of Code. Choosing the file is what a person does, and it always
+    /// lands on the editor.
+    private func revealPhoneEditor() {
+        let closeFiles = app.buttons["Close files"]
+        if closeFiles.exists { closeFiles.tap() }
+
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        XCTAssertTrue(files.waitForExistence(timeout: 10), "the phone workspace should offer Files")
+        files.tap()
+
+        let source = app.buttons["file.main.go"]
+        XCTAssertTrue(source.waitForExistence(timeout: 10), "the tree should list the open file")
+        source.tap()
     }
 
     /// Asserts the editor arrived and has the template's source in it.

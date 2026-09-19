@@ -38,11 +38,40 @@ final class WorkspaceFlowUITests: XCTestCase {
             app.buttons[AccessibilityIdentifier.newProject].waitForExistence(timeout: 5),
             "the landing screen should offer a way to start something"
         )
+        XCTAssertFalse(
+            app.buttons[AccessibilityIdentifier.packagesEntry].exists,
+            "Add packages belongs inside a project, not on the all-projects list"
+        )
         XCTAssertTrue(
-            app.buttons[AccessibilityIdentifier.packagesEntry].waitForExistence(timeout: 5),
-            "Add packages belongs on the projects list, not only inside a project"
+            app.buttons[AccessibilityIdentifier.openFromCloud].waitForExistence(timeout: 5),
+            "the landing screen should open a project from iCloud or Files"
+        )
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.keepLibraryInCloud].exists,
+            "the landing screen should offer to keep the library in iCloud"
         )
         attachScreenshot(named: "01-projects")
+    }
+
+    /// The Files tree on a phone is a drawer. A left-to-right swipe from the
+    /// leading edge has to open it — the toolbar button is not the only way in.
+    func testALeadingSwipeOpensFilesOnThePhone() throws {
+        launch(section: .build)
+        let search = app.textFields[AccessibilityIdentifier.fileSearch]
+        if search.waitForExistence(timeout: 3) {
+            throw XCTSkip("iPad shows the tree; the swipe is a phone gesture")
+        }
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10), "the workspace should show the editor")
+
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.45))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.55, dy: 0.45))
+        start.press(forDuration: 0.05, thenDragTo: end)
+
+        XCTAssertTrue(
+            search.waitForExistence(timeout: 4),
+            "a left-to-right swipe should open the Files drawer"
+        )
     }
 
     /// Starting a project is one decision, so the landing screen asks it once
@@ -217,9 +246,9 @@ final class WorkspaceFlowUITests: XCTestCase {
 
         let editor = app.textViews[AccessibilityIdentifier.editor]
         XCTAssertTrue(editor.waitForExistence(timeout: 10))
-        let build = app.buttons["phase.build"]
-        XCTAssertTrue(build.waitForExistence(timeout: 10))
-        guard build.isEnabled else {
+        let run = app.buttons["phase.run"]
+        XCTAssertTrue(run.waitForExistence(timeout: 10))
+        guard run.isEnabled else {
             throw XCTSkip("no toolchain staged; the diagnostic needs a real build")
         }
 
@@ -229,10 +258,10 @@ final class WorkspaceFlowUITests: XCTestCase {
         let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
         if hide.waitForExistence(timeout: 5) { hide.tap() }
 
-        build.tap()
+        tapCompileCheck()
         let deadline = Date().addingTimeInterval(600)
-        while Date() < deadline, !build.isEnabled { _ = build.waitForExistence(timeout: 1) }
-        XCTAssertTrue(build.isEnabled, "the build did not finish")
+        while Date() < deadline, !run.isEnabled { _ = run.waitForExistence(timeout: 1) }
+        XCTAssertTrue(run.isEnabled, "the build did not finish")
 
         // The failure opened Problems on its own; the row is the link.
         let row = app.buttons.matching(
@@ -319,11 +348,11 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testBuildActionsAreOfferedExactlyWhenTheToolchainIsThere() {
         launch(section: .build)
 
-        let build = app.buttons["phase.build"]
-        XCTAssertTrue(build.waitForExistence(timeout: 10), "the build action should always be present")
+        let run = app.buttons["phase.run"]
+        XCTAssertTrue(run.waitForExistence(timeout: 10), "Run should always be on the bar")
         let isMissing = app.staticTexts["Toolchain missing"].exists
 
-        for phase in ["format", "build", "test", "run"] {
+        for phase in ["format", "test", "run"] {
             let button = app.buttons["phase.\(phase)"]
             XCTAssertTrue(button.exists, "the \(phase) button should be present either way")
             XCTAssertEqual(
@@ -331,6 +360,14 @@ final class WorkspaceFlowUITests: XCTestCase {
                 "the \(phase) button should be enabled exactly when a toolchain is staged"
             )
         }
+        XCTAssertTrue(
+            app.buttons[AccessibilityIdentifier.projectMenu].exists,
+            "compile-check lives in the project menu"
+        )
+        app.buttons[AccessibilityIdentifier.projectMenu].tap()
+        let build = app.buttons["phase.build"]
+        XCTAssertTrue(build.waitForExistence(timeout: 3), "compile-check should be in the project menu")
+        XCTAssertEqual(build.isEnabled, !isMissing)
 
         // A working compiler is not news, and a phone has no line to spare for
         // it: the strip above the editor exists only when something is wrong or
@@ -365,6 +402,16 @@ final class WorkspaceFlowUITests: XCTestCase {
     private func launch(section: Section) {
         app.launchArguments = ["-GopherForgeSection", section.rawValue]
         app.launch()
+    }
+
+    /// Compile-check is in the project ⋯ menu, not on the bar.
+    private func tapCompileCheck() {
+        let menu = app.buttons[AccessibilityIdentifier.projectMenu]
+        XCTAssertTrue(menu.waitForExistence(timeout: 5), "the project menu should be on the bar")
+        menu.tap()
+        let build = app.buttons["phase.build"]
+        XCTAssertTrue(build.waitForExistence(timeout: 3), "compile-check should be in the project menu")
+        build.tap()
     }
 
     /// iPad shows the navigator beside the editor; iPhone keeps it behind the
@@ -412,6 +459,7 @@ enum AccessibilityIdentifier {
     static let welcomeCard = "projects.welcome"
     static let newProject = "projects.new"
     static let packagesEntry = "projects.packages"
+    static let openFromCloud = "projects.openCloud"
     static let addPackage = "package.add"
     static let githubImportEntry = "projects.github"
     static let editor = "workspace.editor"
@@ -429,6 +477,8 @@ enum AccessibilityIdentifier {
     static let settingsAppearance = "settings.appearance"
     static let fileSearch = "files.search"
     static let filesToggle = "workspace.filesToggle"
+    static let projectMenu = "workspace.projectMenu"
+    static let keepLibraryInCloud = "projects.keepInCloud"
     static let drillBoard = "drill.board"
     static let exampleOpen = "example.open"
     static let quizEntry = "unit.quiz"

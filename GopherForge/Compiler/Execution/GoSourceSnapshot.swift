@@ -15,11 +15,20 @@ struct GoSourceSnapshot: Sendable, Equatable {
     /// The file the editor considers active, used to attribute diagnostics
     /// that arrive without a usable path.
     let entryFile: String
+    /// Stable identity for the on-disk work tree. The same project can skip
+    /// rewriting files that have not changed between runs.
+    let workspaceReuseKey: String?
 
-    init(files: [String: String], packagePattern: String = "./...", entryFile: String = "main.go") {
+    init(
+        files: [String: String],
+        packagePattern: String = "./...",
+        entryFile: String = "main.go",
+        workspaceReuseKey: String? = nil
+    ) {
         self.files = files
         self.packagePattern = packagePattern
         self.entryFile = entryFile
+        self.workspaceReuseKey = workspaceReuseKey
     }
 
     /// A single-file program wrapped in the smallest module that builds.

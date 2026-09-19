@@ -62,15 +62,6 @@ struct MyProjectsView: View {
 
     var body: some View {
         List {
-            Section {
-                NavigationLink {
-                    PackageBrowserView()
-                } label: {
-                    Label("Add packages", systemImage: "shippingbox")
-                }
-                .accessibilityIdentifier(AccessibilityID.packagesEntry)
-            }
-
             if items.isEmpty {
                 ContentUnavailableView(
                     "No projects yet",
@@ -208,6 +199,13 @@ struct MyProjectsView: View {
                 Label("Organize", systemImage: "folder")
             }
             .tint(GopherForgeTheme.accentSolid)
+            ShareLink(
+                item: ProjectExport(project: item.project),
+                preview: SharePreview(item.project.name)
+            ) {
+                Label("Export", systemImage: "square.and.arrow.up")
+            }
+            .tint(.indigo)
         }
         .swipeActions(edge: .leading) {
             Button {
@@ -227,6 +225,12 @@ struct MyProjectsView: View {
                 Label("Rename and file…", systemImage: "folder")
             }
             .accessibilityIdentifier(AccessibilityID.projectOrganize)
+            ShareLink(
+                item: ProjectExport(project: item.project),
+                preview: SharePreview(item.project.name)
+            ) {
+                Label("Export as .tar.gz", systemImage: "square.and.arrow.up")
+            }
             Button {
                 onToggleFavorite(item)
             } label: {
