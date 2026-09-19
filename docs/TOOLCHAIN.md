@@ -18,8 +18,7 @@ read your `go.mod`, and then it has nowhere to go.
 
 Every workaround for that is a fork of Go: rewire the build driver to call the
 compiler in-process, keep the fork rebased across releases, and own the result
-forever. Item 7 of Gate A (`docs/DEVICE-GATE.md`) exists precisely to ask
-whether that fork would be small enough to live with.
+forever. The question is whether that fork would be small enough to live with.
 
 ## What works instead
 
@@ -175,5 +174,5 @@ Gate A is closed. From a clean checkout on a Mac:
 6. an unchanged second run is faster — through the artifact cache, **yes**;
 7. the patch set rebases on a Go release — **there is no patch set**.
 
-Gate B still needs a physical device, and nothing here substitutes for it. See
-`docs/DEVICE-GATE.md`.
+A physical device is still required to claim offline, thermal, and stop
+behaviour. Simulator numbers do not stand in for that.

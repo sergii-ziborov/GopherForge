@@ -3,7 +3,7 @@ import Foundation
 /// Whether this build may show anything about Game Center.
 ///
 /// The entitlement is deliberately not claimed — see the note in
-/// `GopherForge.entitlements` and `docs/GAME-CENTER.md` — so authentication
+/// `GopherForge.entitlements` — so authentication
 /// cannot succeed in a signed build. The screen offered "Connect Game Center"
 /// anyway, which is a button that cannot do what it says: a broken feature to
 /// anyone who taps it, and a contradiction to a reviewer reading a privacy

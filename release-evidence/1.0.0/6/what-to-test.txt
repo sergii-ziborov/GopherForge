@@ -1,7 +1,0 @@
-Build 6 — project recovery and Go commands
-
-Edit the Playground, leave Build, return and relaunch: your code should remain. Create two projects with the same name and confirm their code stays separate after renaming one. Edit while Build is running; the newer text must remain after the old build finishes. Format should work even with an unresolved import. A bad import only in _test.go should not block Run, but Test should report it. Select a different command's main.go and check Run uses it.
-
-On iPhone, Build → Code fills the width; Files opens one drawer that closes when a file is selected. On iPad, one file tree stays beside the editor, including in a narrow window.
-
-Known limitations: Stop does not yet guarantee termination of a CPU loop or blocked guest within one second; guest file writes do not yet have a pre-write quota. Do not test runaway code. If a save fails, keep the app open and use Retry or Export.

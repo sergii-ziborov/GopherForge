@@ -126,6 +126,5 @@ cat <<'NEXT'
 
 Next, in App Store Connect:
   1. Upload the .ipa with Transporter, or Xcode's Organizer.
-  2. Paste the listing text from docs/APP-STORE.md section 8.
-  3. Work through the checklist in section 10 — privacy, DSA, price, rating.
+  2. Fill listing, privacy, DSA, price and rating from the live app, not from a repo guide.
 NEXT

@@ -17,3 +17,13 @@ GopherForge/Resources/Toolchain/*.staging.*/
 *.xcresult
 xcuserdata/
 build/
+
+# Internal release notes stay off the public remote
+/docs/TESTFLIGHT-*.md
+/docs/APP-STORE.md
+/docs/DEVICE-GATE.md
+/docs/HARDEN-*.md
+/docs/RELEASE-AUDIT-*.md
+/docs/GAME-CENTER.md
+/docs/app-store/*.json
+/release-evidence/

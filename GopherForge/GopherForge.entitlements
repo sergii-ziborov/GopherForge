@@ -9,8 +9,7 @@
          source tree can do. The code is written and tested; enabling it is one
          checkbox in Xcode's Signing & Capabilities plus the achievement
          identifiers in App Store Connect. Until then the app reports Game
-         Center as unavailable rather than failing to build. See
-         docs/GAME-CENTER.md. -->
+         Center as unavailable rather than failing to build. -->
     <key>com.apple.security.application-groups</key>
     <array>
         <string>group.com.sergiiziborov.GopherForge</string>

@@ -11,22 +11,6 @@ than screens.
 
 > Forge real Go, anywhere.
 
-> **Release status — 19 September 2026:** Apple rejected version **1.0**,
-> build **1.0.0 (4)** under Guideline 2.1, requesting a recording of the app on
-> a physical device and additional review information. Builds **5–7** went to
-> the **Internal QA** TestFlight group. **1.0.0 (8)** is the current candidate:
-> zip is read in-app (no ZIPFoundation), the listing screenshots match the
-> Run / Beautify / Tests chrome, and Third-Party Library names only what still
-> ships. See [the build 8 guide](docs/TESTFLIGHT-1.0.0-8.md). Physical-device
-> Gate B remains unverified.
-
-The 14 September core-hardening work is tracked in
-[its requirement and test evidence](docs/HARDEN-GOPHERFORGE-CORE.md).
-Source recovery and command selection passed simulator regression tests; the new
-one-second Stop and pre-write file quota requirements are still blocked by
-the pinned WasmKit/WASI integration. The new build is not claimed delivered
-until App Store Connect confirms its processing and Internal QA assignment.
-
 [**Product website**](https://gopherforge.app) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·
@@ -79,9 +63,8 @@ tools directly. A new Go release is a fifteen-second rebuild, not a rebase —
 see [docs/TOOLCHAIN.md](docs/TOOLCHAIN.md).
 
 What is still unproven is everything only real hardware can answer: the offline
-claim, the thermal and memory envelope, and stopping a runaway program. That is
-Gate B, in [docs/DEVICE-GATE.md](docs/DEVICE-GATE.md), and a Simulator run must
-never be presented as if it had settled it.
+claim, the thermal and memory envelope, and stopping a runaway program. A
+Simulator run must never be presented as if it had settled those.
 
 Concretely, the app currently contains:
 
@@ -241,8 +224,7 @@ and extracted locally into Caches before compilation, with a SHA-256 check. The 
   spins until the app is closed. A genuine Stop needs an interrupt check inside
   the interpreter's instruction handlers, which means forking a
   performance-critical dependency; that is deferred deliberately rather than
-  overlooked. Full reasoning in
-  [docs/APP-STORE.md](docs/APP-STORE.md#6a-what-bounds-a-running-program-and-what-does-not).
+  overlooked.
 - **Transitive dependencies are not resolved for you.** Adding a module vendors
   that module. If it imports another one, that one has to be added too — the
   compatibility report names what is missing rather than failing partway
@@ -275,13 +257,10 @@ from the notices or recorded under the wrong licence, and
 Go's own `LICENSE` and `PATENTS` are staged beside it — shipping the compiled
 tools without them would not satisfy the BSD 3-Clause redistribution terms.
 
-## Shipping
+## Privacy and support
 
-What a submission to Apple needs, what has already been settled, and the
-findings from the pre-submission review are in
-[docs/APP-STORE.md](docs/APP-STORE.md). The privacy policy — the app collects
-nothing — is [PRIVACY.md](PRIVACY.md), and must be published at a public URL
-before submitting.
+The app collects nothing. The policy is [PRIVACY.md](PRIVACY.md). Support is
+[SUPPORT.md](SUPPORT.md).
 
 ## Build
 
@@ -341,9 +320,8 @@ where a Release one takes nineteen seconds. On a phone that difference reads as
 a Build button that does nothing at all. Pass `debug` only when you need a
 debugger attached and know what you are trading for it.
 
-Everything the compiler gate can only prove on real hardware — airplane mode,
-the thermal envelope, stopping a runaway program — is listed in
-[docs/DEVICE-GATE.md](docs/DEVICE-GATE.md).
+Airplane mode, the thermal envelope, and stopping a runaway program have to be
+checked on a device. Simulator numbers do not stand in for that.
 
 ## Verification
 
@@ -420,24 +398,5 @@ work inside the same interpreter. Still the same shape: the second build of an
 unchanged program is cache-warm, and editing one file does not rebuild the
 module.
 
-These are Simulator numbers on a Mac and nothing more. What a phone does is
-Gate B, and no number here anticipates it.
-
-## Success criteria
-
-The compiler gate passes only when all of these are demonstrated on a physical
-iPhone or iPad:
-
-1. airplane mode is enabled before launch;
-2. the app reports the bundled `compile.wasm` and `link.wasm` and their Go
-   version;
-3. **Build** produces a real `declared and not used` diagnostic at the right
-   line and column;
-4. the repaired program compiles and **Run** prints its output;
-5. **Test** runs a table-driven `_test.go` and reports per-case results;
-6. a multi-package module inside one `go.mod` builds and runs;
-7. repeated builds stay within an acceptable memory and thermal envelope;
-8. a non-terminating program can be stopped without leaving runaway work.
-
-Items 1, 7 and 8 cannot be claimed from a Simulator run. See
-[docs/DEVICE-GATE.md](docs/DEVICE-GATE.md).
+These are Simulator numbers on a Mac and nothing more. They do not stand in
+for a phone.
