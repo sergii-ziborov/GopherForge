@@ -65,6 +65,20 @@ final class LocalProjectLoaderTests: XCTestCase {
         XCTAssertNil(project.files["logo.png"])
     }
 
+    func testReadsTheWebFilesAGinSiteNeeds() throws {
+        try write("go.mod", "module m\n\ngo 1.24\n")
+        try write("main.go", "package main\n\nfunc main() {}\n")
+        try write("web/index.html", "<h1>hi</h1>\n")
+        try write("web/app.js", "console.log(1)\n")
+        try write("web/styles.css", "body{}\n")
+
+        let project = try LocalProjectLoader().load(from: root)
+
+        XCTAssertEqual(project.files["web/index.html"], "<h1>hi</h1>\n")
+        XCTAssertEqual(project.files["web/app.js"], "console.log(1)\n")
+        XCTAssertEqual(project.files["web/styles.css"], "body{}\n")
+    }
+
     func testAFolderWithNoGoFilesIsRejected() throws {
         try write("README.md", "# nothing to build\n")
         XCTAssertThrowsError(try LocalProjectLoader().load(from: root)) { error in

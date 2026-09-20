@@ -61,6 +61,21 @@ enum QuizCatalogAdvanced {
                     + "interface as small as the use, and implementers need not import anything.",
                 conceptTag: GoConcept.smallInterface
             ),
+            QuizQuestion(
+                id: "iface.q.stringer",
+                prompt: "How does fmt print a type as a dotted IP?",
+                code: "type IPAddr [4]byte",
+                options: [
+                    "A String() keyword on the type",
+                    "Registering it with fmt",
+                    "Implementing encoding.TextMarshaler only",
+                    "A String() method; fmt looks for it",
+                ],
+                correctIndex: 3,
+                explanation: "The Tour's Stringers page: fmt.Stringer is String() string. "
+                    + "Nothing registers. Do not Sprint the value from its own String.",
+                conceptTag: GoConcept.stringer
+            ),
         ]
     )
 
@@ -127,6 +142,21 @@ enum QuizCatalogAdvanced {
                 explanation: "On failure Atoi returns 0 and an error. Discarding the error turns "
                     + "bad input into a plausible-looking zero, which is the hardest bug to find.",
                 conceptTag: GoConcept.explicitErrorCheck
+            ),
+            QuizQuestion(
+                id: "err.q.recover",
+                prompt: "Where does recover actually work?",
+                code: "",
+                options: [
+                    "Inside a deferred function",
+                    "On the next line after panic",
+                    "In main, always",
+                    "Anywhere in the same goroutine",
+                ],
+                correctIndex: 0,
+                explanation: "recover is nil unless it is called from a function deferred on "
+                    + "the panicking goroutine. A named result is how the error gets out.",
+                conceptTag: GoConcept.panicIsNotAnError
             ),
         ]
     )

@@ -15,6 +15,8 @@ enum CourseUnitCollections {
             lengthAndCapacity, appendAliasing, mapZeroValue, runesNotBytes,
             iterators,
             boundsVersusCapacity, mapsAreUnordered, buildingStrings,
+            makeAndNew, arraysVersusSlices, mapCommaOK, nilSlices,
+            functionValues,
         ]
     )
 

@@ -1,8 +1,9 @@
 # GopherForge — native Go workspace for iPhone and iPad
 
 GopherForge is a **native SwiftUI application** for learning,
-editing, checking, testing and running Go locally on iPhone and iPad. There is
-no WebView, localhost server, JavaScript runtime, or cloud compiler in the app.
+editing, checking, testing and running Go locally on iPhone and iPad. The Go
+compiler runs offline. Website examples use an on-device localhost server and
+WebKit for HTML, CSS and JavaScript previews.
 
 It is the Go sibling of [Crabrix](https://github.com/sergii-ziborov/crabrix),
 not a rebadge of it: the compiler contract, the diagnostics, the course and the
@@ -32,12 +33,12 @@ goroutine trace are what the app actually produced, not mock-ups.
 
 | | |
 | --- | --- |
-| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card reading 0 of 31 lessons over nine units, cards for Review, Practice, the Concurrency Lab, Examples and Achievements, and the units themselves on a rail, each with its own icon and a lessons-done badge"> | <img src="docs/screenshots/unit-path.png" alt="The Concurrency unit opened: its header reading 0 of 4 lessons, a note for people who already program, and its four lessons on a winding trail, each with its own icon and marked COMPILE"> |
+| <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card over nine units, cards for Review, Practice and Achievements, and the units themselves on a rail, each with its own icon and a lessons-done badge"> | <img src="docs/screenshots/unit-path.png" alt="The Concurrency unit opened: a note for people who already program, and its lessons on a winding trail, each with its own icon and marked COMPILE"> |
 | **The course is a journey.** Nine units on a rail, then the lessons inside one on a winding path. A node says whether it was ticked by hand or sealed by a compiler pass — and nothing is locked, because a course for people who already program is one they enter at goroutines. | **Inside a unit.** Every lesson is marked `READ` or `COMPILE` before it is opened, so it is clear which ones the toolchain will judge. |
 | <img src="docs/screenshots/run-output.png" alt="The iPad workspace: a worker-pool program in the editor and an Output pane reporting it compiled and executed locally, printing 1 4 9 16 25"> | <img src="docs/screenshots/problems.png" alt="The Problems pane, badged 1, reading declared and not used: unusedTotal at main.go:10:5, with line 10 highlighted red in the editor and marked in the gutter"> |
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
 | <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane reading 4 passed, 0 failed with per-case rows for TestReverse and its subtests"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab: nine runnable scenarios on a shelf, grouped into channels, coordination and ways it goes wrong"> |
-| **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Concurrency Lab.** Nine scenarios that print structured events from ordinary instrumentation; each one draws a lane per goroutine and names what blocked. |
+| **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Review is matching now.** Five terms on the left, five meanings on the right, up to five boards from lessons already finished. Achievements stay on Learn. |
 | <img src="docs/screenshots/my-projects.png" alt="My projects: a search field for name, folder, tag or file, and three projects under Unfiled — Playground, Package with tests with a Build failed chip, and Worker pool with a Run ok chip"> | <img src="docs/screenshots/navigator-iphone-code.png" width="300" alt="The iPhone Build workspace with the file drawer closed: the code editor spans the available width, with no file column behind it"> |
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone editor.** Code uses the available width; Files opens one drawer only when tapped. |
 | <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
@@ -89,9 +90,15 @@ Concretely, the app currently contains:
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
-- a course of 31 lessons across nine units. Another
-  20 question-and-answer challenges are gathered into Practice rather than
-  counted as course steps. Every code lesson ships a complete answer that a
+- a course of 47 lessons across nine units. Another
+  22 question-and-answer challenges are gathered into Practice rather than
+  counted as course steps. The extra steps come from A Tour of Go
+  and Effective Go — named results, make versus new, arrays, Stringer, any,
+  function values, buffered channels, range-and-close, select default,
+  directional channels, sync.Once, recover, http.Handler, strconv, image.Image —
+  written for people who already program. Compile lessons finish when Check
+  passes; Next skips without a tick; a hint can Realize the verified answer.
+  Every code lesson ships a complete answer that a
   gate compiles against that lesson's own hidden test — so a lesson nobody can
   solve fails the build rather than a learner;
 - two of those units close gaps the course had no business having. **Types you
@@ -112,9 +119,8 @@ Concretely, the app currently contains:
   and bounded, which is inside a unit;
 - a lesson that says where it sits and where it goes: the unit, which lesson of
   how many, whether the toolchain judges this one, and the next lesson by name
-  at the end. Finishing is two named things rather than one vague tick — Check
-  hands the code to the lesson's hidden test, and the learner's own word is
-  recorded as exactly that;
+  at the end. Check runs the hidden test and records a passing compile lesson;
+  Next moves on without a tick. Reading lessons can be marked done;
 - a quiz closing each unit: one question at a time, four options, and the
   explanation the moment an answer is committed rather than at the end;
 - a matching drill — terms on the left, meanings on the right, tiles of one
@@ -123,15 +129,18 @@ Concretely, the app currently contains:
 - achievements earned by compiling, running, testing and fixing — eleven badges
   of four ranks each, where the bar measures the rung being climbed rather than
   the whole badge, so passing silver does not read as almost-gold;
-- an example library: single-idea programs, five multi-package projects, a
-  graphics section that computes pixels and writes PNGs the app displays — the
+- an example library under the five recent projects: single-idea programs,
+  multi-package projects, three small sites with an offline Gin-compatible
+  route subset, and graphics programs that write PNGs the app displays — the
   Mandelbrot set, a hand-written colour wheel, plotted waves, Sierpinski by
   chaos game, and Life drawn as a filmstrip — and one project with `go-cmp`
-  already vendored so it builds offline against a real dependency. A gate
-  compiles, runs and checks the exact output of every one of them;
+  already vendored so it builds offline against a real dependency. The Go
+  sandbox checks the sites' routes with `httptest`; the app serves their HTML,
+  CSS, JavaScript and JSON files on localhost for a live preview. A gate
+  compiles, runs and checks the exact output of every example;
 - package installation: resolve a module, see its popularity, licence and
   OpenSSF Scorecard, and vendor a checksum-verified copy into the project;
-- a `UITextView` editor with Go and `go.mod` syntax highlighting, marked
+- a `UITextView` editor with Go, `go.mod`, HTML, CSS, JavaScript and JSON syntax highlighting, marked
   diagnostic lines, and an accessory row with three fixed regions: suggestions,
   a scrolling set of the symbols Go needs, and a control that puts the keyboard
   away. Long lines scroll sideways rather than wrapping, and the gutter numbers
@@ -150,13 +159,12 @@ Concretely, the app currently contains:
   a context that is not the first parameter, discarded errors, upper-case error
   strings and a close in the receiving goroutine — each explaining itself, and
   repairing only the exact line it pointed at;
-- **Concurrency Lab**: nine runnable scenarios on a shelf grouped by what they
-  are about, each with its own page — the question, your prediction, the
-  program, then a lane per goroutine showing what it did and how long it spent
-  blocked. A goroutine that blocked and never came back gets a bar that runs off
-  the end of the chart, which is what a leak looks like. The events come from
-  ordinary instrumentation printed by the program itself, not from a hook into
-  the runtime;
+- **Review**: five-by-five matching boards, up to five in a session, dealt only
+  from lessons already finished, so the board never asks for something the
+  course has not taught yet;
+- **Concurrency Lab**: nine runnable scenarios grouped by channels,
+  coordination and ways it goes wrong. Their programs print structured events
+  that the app draws as goroutine lanes, including blocked work;
 - interview preparation: fourteen questions a Go interview asks, each with what
   a strong answer covers and the plausible answer that is wrong. No multiple
   choice — an interview is answered out loud, and four options train

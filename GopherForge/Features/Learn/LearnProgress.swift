@@ -37,9 +37,10 @@ final class LearnProgress {
 
     func isCompilerVerified(_ lessonID: String) -> Bool { compilerVerified.contains(lessonID) }
 
-    /// The learner says they have done it.
+    /// The learner says they have done it. Compile lessons refuse: Check is
+    /// the only pass, and Next is the skip.
     func markCompleted(_ lesson: Lesson) async {
-        guard !completed.contains(lesson.id) else { return }
+        guard lesson.canSelfReport, !completed.contains(lesson.id) else { return }
         try? await store.record(
             LessonAttempt(
                 lessonID: lesson.id,

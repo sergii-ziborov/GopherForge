@@ -72,6 +72,11 @@ enum GoPackageCatalog {
             category: "HTTP"
         ),
         Entry(
+            path: "github.com/gin-gonic/gin",
+            blurb: "An HTTP router with a small, familiar API",
+            category: "HTTP"
+        ),
+        Entry(
             path: "golang.org/x/sync",
             blurb: "errgroup, semaphore and friends",
             category: "Concurrency"

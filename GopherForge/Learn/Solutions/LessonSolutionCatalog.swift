@@ -12,7 +12,11 @@ import Foundation
 /// answer used — context first. Nothing could have passed it.
 enum LessonSolutionCatalog {
     static func solution(for lessonID: String) -> String? {
-        core[lessonID] ?? collections[lessonID] ?? typesAndGenerics[lessonID] ?? rest[lessonID]
+        core[lessonID]
+            ?? collections[lessonID]
+            ?? typesAndGenerics[lessonID]
+            ?? rest[lessonID]
+            ?? tour[lessonID]
     }
 
     /// Lesson identifiers this catalog answers.
@@ -21,6 +25,7 @@ enum LessonSolutionCatalog {
             .union(collections.keys)
             .union(typesAndGenerics.keys)
             .union(rest.keys)
+            .union(tour.keys)
     }
 
     // MARK: - Core

@@ -35,6 +35,7 @@ struct LocalProjectLoader {
     /// rather than loaded as garbage text.
     private static let readableExtensions: Set<String> = [
         "go", "mod", "sum", "md", "txt", "json", "yaml", "yml", "toml", "work",
+        "html", "htm", "js", "mjs", "css",
     ]
 
     private let fileManager: FileManager

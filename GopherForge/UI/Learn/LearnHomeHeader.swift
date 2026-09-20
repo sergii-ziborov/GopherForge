@@ -89,8 +89,8 @@ private struct HeroMetric: View {
     }
 }
 
-/// Everything that hangs off the course: the queue of what you got wrong, the
-/// drills, the lab, the examples and the badges.
+/// Review, Practice and Achievements. The matching boards live in Review;
+/// badges stay here so a finished run still has somewhere to land.
 struct LearnToolRow: View {
     let practiceUnlocked: Int
     let practiceTotal: Int
@@ -111,7 +111,7 @@ struct LearnToolRow: View {
                 ToolCard(
                     symbol: "arrow.trianglehead.counterclockwise",
                     title: "Review",
-                    detail: "Your mistakes",
+                    detail: "Match what you know",
                     tint: GopherForgeTheme.berry
                 )
             }
@@ -134,32 +134,6 @@ struct LearnToolRow: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier(AccessibilityID.practiceEntry)
-
-            NavigationLink {
-                ConcurrencyLabView()
-            } label: {
-                ToolCard(
-                    symbol: "arrow.triangle.branch",
-                    title: "Concurrency Lab",
-                    detail: "Goroutines, live",
-                    tint: GopherForgeTheme.sky
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier(AccessibilityID.labEntry)
-
-            NavigationLink {
-                ExampleLibraryView()
-            } label: {
-                ToolCard(
-                    symbol: "books.vertical",
-                    title: "Examples",
-                    detail: "Programs that run",
-                    tint: Color(hex: 0x4E8F3E)
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier(AccessibilityID.examplesEntry)
 
             NavigationLink {
                 AchievementsView(stats: stats)

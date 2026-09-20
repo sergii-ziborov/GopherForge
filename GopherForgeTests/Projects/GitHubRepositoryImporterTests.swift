@@ -91,7 +91,10 @@ final class GitHubRepositoryImporterTests: XCTestCase {
     }
 
     func testSourceAndItsPaperworkAreKept() {
-        for path in ["main.go", "go.mod", "go.sum", "README.md", "LICENSE", "Makefile"] {
+        for path in [
+            "main.go", "go.mod", "go.sum", "README.md", "LICENSE", "Makefile",
+            "web/index.html", "web/app.js", "web/styles.css",
+        ] {
             XCTAssertTrue(
                 GitHubRepositoryImporter.isWorthKeeping(path: path),
                 "\(path) should be imported"

@@ -187,7 +187,7 @@ struct LearnHomeView: View {
 }
 
 /// The five concepts the learner is weakest at, kept where the course is
-/// rather than behind another tap: it is the reason Review has anything in it.
+/// rather than behind another tap.
 private struct WeakestConceptsCard: View {
     let concepts: [ConceptMastery]
 

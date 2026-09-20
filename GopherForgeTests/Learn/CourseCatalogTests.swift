@@ -62,4 +62,49 @@ final class CourseCatalogTests: XCTestCase {
         let untaught = labTags.subtracting(GoCourseCatalog.taughtConcepts)
         XCTAssertTrue(untaught.isEmpty, "lab concepts with no lesson: \(untaught.sorted())")
     }
+
+    /// Official Tour / Effective Go pages this course now teaches. A missing
+    /// id here means the expansion was reverted while the README still claims
+    /// it.
+    func testCompileLessonsCannotBeSelfReportedAndOthersCan() {
+        let compile = GoCourseCatalog.lessons.filter(\.requiresCompiler)
+        let rest = GoCourseCatalog.lessons.filter { !$0.requiresCompiler }
+        XCTAssertFalse(compile.isEmpty)
+        XCTAssertFalse(rest.isEmpty)
+        XCTAssertTrue(compile.allSatisfy { !$0.canSelfReport })
+        XCTAssertTrue(rest.allSatisfy(\.canSelfReport))
+    }
+
+    func testEveryCompileLessonSharesAReuseKeyShape() {
+        for lesson in GoCourseCatalog.lessons where lesson.requiresCompiler {
+            let snapshot = lesson.checkSnapshot(source: "package main\nfunc main() {}\n")
+            XCTAssertEqual(snapshot?.workspaceReuseKey, "lesson.\(lesson.id)", lesson.id)
+        }
+    }
+
+    func testTheCourseCoversTheTourPagesItAdvertises() {
+        let fromTheTour = [
+            "core.named-results",
+            "core.defer-stack",
+            "collections.make-and-new",
+            "collections.arrays",
+            "collections.map-ok",
+            "collections.nil-slice",
+            "interfaces.stringer",
+            "interfaces.empty",
+            "concurrency.buffered",
+            "concurrency.range-and-close",
+            "concurrency.select-default",
+            "concurrency.direction",
+            "stdlib.http",
+            "stdlib.strconv",
+            "stdlib.image",
+            "errors.recover",
+            "concurrency.once",
+            "collections.function-values",
+        ]
+        for id in fromTheTour {
+            XCTAssertNotNil(GoCourseCatalog.lesson(id: id), "missing Tour lesson \(id)")
+        }
+    }
 }

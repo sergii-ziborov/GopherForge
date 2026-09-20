@@ -38,13 +38,23 @@ struct GoExample: Identifiable, Equatable, Sendable {
 
     var files: [String: String] {
         var all = extraFiles
-        all["go.mod"] = GoLanguage.module(modulePath)
+        if all["go.mod"] == nil {
+            all["go.mod"] = GoLanguage.module(modulePath)
+        }
         all["main.go"] = source
         guard let vendoredModule else { return all }
         return VendoredModuleLoader().vendoring(vendoredModule, into: all)
     }
 
     var isProject: Bool { !extraFiles.isEmpty }
+
+    /// True when the project carries a page the app can serve on this device.
+    var servesSite: Bool {
+        extraFiles.keys.contains {
+            let name = $0.lowercased()
+            return name.hasSuffix(".html") || name.hasSuffix(".htm")
+        }
+    }
 
     /// Ready to open in the workspace and run.
     func project() -> GopherForgeProject {

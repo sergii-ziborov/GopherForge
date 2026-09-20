@@ -7,6 +7,10 @@ enum SourceFileKind: String, Sendable, CaseIterable {
     case goMod
     case goSum
     case markdown
+    case html
+    case javascript
+    case css
+    case json
     case plain
 
     static func of(path: String) -> SourceFileKind {
@@ -15,6 +19,10 @@ enum SourceFileKind: String, Sendable, CaseIterable {
         if name == "go.sum" { return .goSum }
         if name.hasSuffix(".go") { return .go }
         if name.hasSuffix(".md") { return .markdown }
+        if name.hasSuffix(".html") || name.hasSuffix(".htm") { return .html }
+        if name.hasSuffix(".js") || name.hasSuffix(".mjs") { return .javascript }
+        if name.hasSuffix(".css") { return .css }
+        if name.hasSuffix(".json") { return .json }
         return .plain
     }
 
@@ -24,6 +32,10 @@ enum SourceFileKind: String, Sendable, CaseIterable {
         case .goMod: "shippingbox"
         case .goSum: "lock.doc"
         case .markdown: "doc.text"
+        case .html: "globe"
+        case .javascript: "curlybraces"
+        case .css: "paintbrush"
+        case .json: "ellipsis.curlybraces"
         case .plain: "doc"
         }
     }
@@ -34,6 +46,10 @@ enum SourceFileKind: String, Sendable, CaseIterable {
         switch self {
         case .go: GoSyntaxHighlighter().tokens(in: source)
         case .goMod: GoModSyntaxHighlighter().tokens(in: source)
+        case .html: HTMLSyntaxHighlighter().tokens(in: source)
+        case .javascript: JavaScriptSyntaxHighlighter().tokens(in: source)
+        case .css: CSSSyntaxHighlighter().tokens(in: source)
+        case .json: JSONSyntaxHighlighter().tokens(in: source)
         case .goSum, .markdown, .plain: []
         }
     }

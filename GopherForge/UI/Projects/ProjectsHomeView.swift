@@ -16,6 +16,11 @@ struct ProjectsHomeView: View {
     @State private var importFailure: String?
     private let library = ProjectLibrary.shared
 
+    private var libraryFolders: [String] {
+        Array(Set(recents.map(\.folderLabel)))
+            .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    }
+
     var body: some View {
         List {
             if recents.isEmpty {
@@ -52,7 +57,7 @@ struct ProjectsHomeView: View {
 
             Section {
                 NavigationLink {
-                    NewProjectView { open($0) }
+                    NewProjectView(existingFolders: libraryFolders) { create($0) }
                 } label: {
                     NewProjectRow()
                 }
@@ -111,20 +116,8 @@ struct ProjectsHomeView: View {
                 }
             } footer: {
                 Text("Projects stay on this device unless you pick an iCloud Drive "
-                    + "or Files folder for the library. Open a `.tar.gz` from there "
-                    + "any time.")
-            }
-
-            if let project = workspace.project {
-                Section {
-                    ShareLink(
-                        item: ProjectExport(project: project),
-                        preview: SharePreview(project.name)
-                    ) {
-                        Label("Export \(project.name) as .tar.gz", systemImage: "square.and.arrow.up")
-                    }
-                    .accessibilityIdentifier(AccessibilityID.exportProject)
-                }
+                    + "or Files folder for the library. Export a project from its "
+                    + "file menu — in My projects, or the ⋯ menu in the editor.")
             }
 
             if !recents.isEmpty {
@@ -132,7 +125,7 @@ struct ProjectsHomeView: View {
                     // A strip, not the library: five is what fits without the
                     // first screen becoming a wall, and everything else is one
                     // tap away in My projects.
-                    ForEach(recents.prefix(5)) { item in
+                    ForEach(recents.prefix(ProjectHomeLimits.recentCount)) { item in
                         Button {
                             open(item)
                         } label: {
@@ -145,10 +138,14 @@ struct ProjectsHomeView: View {
                 } header: {
                     Text("Recent")
                 } footer: {
-                    if recents.count > 5 {
-                        Text("\(recents.count - 5) more in My projects.")
+                    if recents.count > ProjectHomeLimits.recentCount {
+                        Text("\(recents.count - ProjectHomeLimits.recentCount) more in My projects.")
                     }
                 }
+            }
+
+            ProjectsExamplesSections { example in
+                open(example.project())
             }
 
             if let importFailure {
@@ -206,6 +203,34 @@ struct ProjectsHomeView: View {
         }
     }
 
+    private func create(_ draft: NewProjectDraft) {
+        let ready = draft.annotatingStarterPackages()
+        guard workspace.open(ready.project) else { return }
+        finishOpening()
+        let summary = ready.wantedPackages.isEmpty
+            ? nil
+            : "Starter packages: " + ready.wantedPackages.joined(separator: ", ")
+        Task {
+            await workspace.libraryUpdated()
+            guard let id = workspace.projectID else { return }
+            do {
+                _ = try await library.update(
+                    id: id,
+                    name: ready.project.name,
+                    folder: ready.folder,
+                    tags: ready.tags,
+                    summary: summary
+                )
+                if let refreshed = try await library.project(id: id) {
+                    workspace.refreshMetadata(from: refreshed)
+                }
+            } catch {
+                importFailure = error.localizedDescription
+            }
+            await reload()
+        }
+    }
+
     private func open(_ project: GopherForgeProject) {
         if workspace.open(project) { finishOpening() }
     }
@@ -225,7 +250,7 @@ struct ProjectsHomeView: View {
     }
 
     private func remove(at offsets: IndexSet) {
-        let shown = Array(recents.prefix(5))
+        let shown = Array(recents.prefix(ProjectHomeLimits.recentCount))
         let ids = offsets.compactMap { shown.indices.contains($0) ? shown[$0].id : nil }
         Task {
             for id in ids { _ = try? await library.remove(id: id) }
@@ -295,6 +320,11 @@ struct ProjectsHomeView: View {
     }
 }
 
+/// How many recent projects the first screen keeps visible.
+enum ProjectHomeLimits {
+    static let recentCount = 5
+}
+
 /// Shown only on a first run, where an empty list would say nothing.
 private struct WelcomeCard: View {
     var body: some View {
@@ -302,9 +332,8 @@ private struct WelcomeCard: View {
             Text("Forge real Go, anywhere.")
                 .font(.title3.weight(.semibold))
             Text("""
-            A real Go toolchain, a course written for people who already \
-            program, and a lab that shows what your goroutines actually did — \
-            all on this device, with no network.
+            A real Go toolchain and a course written for people who already \
+            program — all on this device, with no network.
             """)
             .font(.callout)
             .foregroundStyle(.secondary)

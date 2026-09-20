@@ -38,7 +38,12 @@ final class WorkspaceModel {
     /// A line the editor should scroll to and highlight, set when a search
     /// result is chosen and cleared once the editor has done it. Nil the rest
     /// of the time, so nothing scrolls on an ordinary redraw.
-    private(set) var revealLine: Int?
+    var revealLine: Int?
+    /// The diagnostic the owner just opened. Marked in the editor until they
+    /// start editing that line; a compile mark that stays after the first
+    /// keystroke is arguing with the text they are writing.
+    var focusedErrorFile: String?
+    var focusedErrorLine: Int?
     /// Bumped every time a run finishes, so the view can react to "a result
     /// arrived" rather than to "the result changed" — two identical runs
     /// produce equal values and the second would otherwise go unnoticed.
@@ -48,6 +53,11 @@ final class WorkspaceModel {
     /// the same occurrences the sidebar showed. Cleared when the file is opened
     /// any other way, so ordinary navigation never leaves stale marks behind.
     var highlightQuery: String = ""
+    /// Loopback URL for a project that has pages. Nil for everything else.
+    var sitePreviewURL: URL?
+    /// Bumped when the served files change so the preview reloads.
+    var siteGeneration = 0
+    let siteServer = LocalSiteServer()
 
     private let compiler: WasmGoCompiler
     private let analyzer: IdiomAnalyzer
@@ -71,17 +81,6 @@ final class WorkspaceModel {
 
     var fileKind: SourceFileKind {
         SourceFileKind.of(path: selectedFile)
-    }
-
-    /// Lines the last result pointed at, in the file currently shown.
-    var markedLines: Set<Int> {
-        guard let lastResult else { return [] }
-        return Set(
-            lastResult.diagnostics
-                .compactMap(\.span)
-                .filter { $0.fileName == selectedFile }
-                .map(\.line)
-        )
     }
 
     var canRun: Bool {
@@ -152,6 +151,7 @@ final class WorkspaceModel {
         selectedFile = project.entryFile
         editorText = project.files[project.entryFile] ?? ""
         lastResult = nil
+        clearFocusedError()
         compileAttempts = 0
         refreshIdioms()
         // A project is yours from the moment you make it. The library used to
@@ -166,6 +166,7 @@ final class WorkspaceModel {
             await previousSave?.value
             if isNew { await save(project, id: id, revision: revision) }
         }
+        refreshSitePreview()
         return true
     }
 
@@ -174,42 +175,9 @@ final class WorkspaceModel {
         await remembering?.value
     }
 
-    /// Opens a file and, when a line is given, asks the editor to reveal it.
-    func select(file: String, revealingLine line: Int?) {
-        select(file: file)
-        revealLine = line
-    }
-
-    /// Called by the editor once it has scrolled, so a later redraw does not
-    /// yank the view back.
-    func clearReveal() {
-        revealLine = nil
-    }
-
-    func select(file: String) {
-        commitEditorText()
-        selectedFile = file
-        editorText = project?.files[file] ?? ""
-        highlightQuery = ""
-    }
-
-    /// The one way the editor changes text.
-    ///
-    /// It folds the buffer into the project immediately and schedules the disk
-    /// write. Both halves matter: the in-memory project is what Export, the
-    /// package installer and every phase read, and the library is what
-    /// survives the app being closed.
-    ///
-    /// The editor used to write `editorText` and nothing else, and the project
-    /// caught up only when something asked for it — a build, or opening
-    /// another file. So anything typed and not built lived in a buffer nobody
-    /// persisted: leaving the tab and vendoring a package overwrote it from a
-    /// stale project, and quitting lost it outright. Losing what someone typed
-    /// is worse than any missing language feature.
-    func updateEditorText(_ text: String) {
-        guard text != editorText else { return }
+    /// The focus extension writes the buffer; this is the only setter it has.
+    func replaceEditorText(_ text: String) {
         editorText = text
-        commitEditorText()
     }
 
     /// Folds the editor buffer back into the project. Called before anything
@@ -230,6 +198,7 @@ final class WorkspaceModel {
         hasUnsavedChanges = true
         refreshIdioms()
         scheduleAutosave()
+        syncSiteFiles()
     }
 
     /// Waits out a pause in typing before writing.
@@ -321,6 +290,8 @@ final class WorkspaceModel {
         if self.projectID == projectID, sourceRevision == revision {
             lastResult = result
             resultGeneration += 1
+            clearFocusedError()
+            refreshSitePreview()
         }
         compileAttempts += 1
 
@@ -384,6 +355,7 @@ final class WorkspaceModel {
         editorText = files[selectedFile] ?? ""
         refreshIdioms()
         scheduleAutosave()
+        refreshSitePreview()
     }
 
     /// Filing edits the library item while the editor may have newer unsaved

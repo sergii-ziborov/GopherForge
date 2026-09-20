@@ -7,11 +7,13 @@ import SwiftUI
 struct OutputStreamView: View {
     let result: CompilationResult?
     var progress: GoBuildProgress?
+    var siteURL: URL?
+    var siteGeneration: Int = 0
 
     var body: some View {
         if let progress {
             progressPanel(progress)
-        } else if let result {
+        } else if result != nil || siteURL != nil {
             resultPanel(result)
         } else {
             EmptyDockMessage(
@@ -43,21 +45,26 @@ struct OutputStreamView: View {
         .accessibilityLabel("Building: \(progress.summary)")
     }
 
-    private func resultPanel(_ result: CompilationResult) -> some View {
+    private func resultPanel(_ result: CompilationResult?) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                ResultSummaryRow(result: result)
-
-                if !result.artifacts.isEmpty {
-                    DrawnImagesSection(images: result.artifacts.images)
+                if let result {
+                    ResultSummaryRow(result: result)
+                    if !result.artifacts.isEmpty {
+                        DrawnImagesSection(images: result.artifacts.images)
+                    }
                 }
-                if !result.stdout.isEmpty {
+                if let siteURL {
+                    SitePreviewSection(url: siteURL, generation: siteGeneration)
+                }
+                if let result, !result.stdout.isEmpty {
                     StreamSection(title: "stdout", text: result.stdout, tint: .primary)
                 }
-                if !result.stderr.isEmpty {
+                if let result, !result.stderr.isEmpty {
                     StreamSection(title: "stderr", text: result.stderr, tint: .red)
                 }
-                if result.stdout.isEmpty, result.stderr.isEmpty, result.artifacts.isEmpty {
+                if let result, result.stdout.isEmpty, result.stderr.isEmpty,
+                   result.artifacts.isEmpty, siteURL == nil {
                     Text("The program produced no output.")
                         .font(.caption)
                         .foregroundStyle(.secondary)

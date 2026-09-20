@@ -20,6 +20,7 @@ enum CourseUnitStandardLibrary {
         lessons: [
             readersAndWriters, jsonTags,
             timeAndDuration, sorting, contextInPractice,
+            httpHandler, strconvAtoi, imageInterface,
         ]
     )
 

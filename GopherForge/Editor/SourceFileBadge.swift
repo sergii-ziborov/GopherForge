@@ -13,6 +13,9 @@ enum SourceFileBadge: String, Sendable, CaseIterable {
     case module
     case checksums
     case documentation
+    case markup
+    case script
+    case stylesheet
     case other
 
     static func of(path: String) -> SourceFileBadge {
@@ -27,7 +30,12 @@ enum SourceFileBadge: String, Sendable, CaseIterable {
         // by name. The name is the honest approximation for a list icon.
         if name == "main.go" { return .entryPoint }
         if name.hasSuffix(".go") { return .source }
-        if name.hasSuffix(".md") || name.hasSuffix(".txt") { return .documentation }
+        if name.hasSuffix(".html") || name.hasSuffix(".htm") { return .markup }
+        if name.hasSuffix(".js") || name.hasSuffix(".mjs") { return .script }
+        if name.hasSuffix(".css") { return .stylesheet }
+        if name.hasSuffix(".md") || name.hasSuffix(".txt") || name.hasSuffix(".json") {
+            return .documentation
+        }
         return .other
     }
 
@@ -39,6 +47,9 @@ enum SourceFileBadge: String, Sendable, CaseIterable {
         case .module: "shippingbox.fill"
         case .checksums: "lock.doc.fill"
         case .documentation: "doc.text"
+        case .markup: "globe"
+        case .script: "curlybraces"
+        case .stylesheet: "paintbrush"
         case .other: "doc"
         }
     }
@@ -51,6 +62,9 @@ enum SourceFileBadge: String, Sendable, CaseIterable {
         case .module: .purple
         case .checksums: .secondary
         case .documentation: .teal
+        case .markup: .orange
+        case .script: .yellow
+        case .stylesheet: .pink
         case .other: .secondary
         }
     }
@@ -65,6 +79,9 @@ enum SourceFileBadge: String, Sendable, CaseIterable {
         case .module: "module definition"
         case .checksums: "module checksums"
         case .documentation: "documentation"
+        case .markup: "HTML page"
+        case .script: "JavaScript"
+        case .stylesheet: "stylesheet"
         case .other: "file"
         }
     }

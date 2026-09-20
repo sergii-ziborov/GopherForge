@@ -192,4 +192,205 @@ extension CourseUnitStandardLibrary {
         }
         """
     )
+
+    static let httpHandler = Lesson(
+        id: "stdlib.http",
+        title: "http.Handler is one method, like Reader",
+        objective: "Serve /hello from an in-memory request, with no listen.",
+        explanation: """
+        Go's own "Writing Web Applications" tutorial and the Tour's "where \
+        to go next" both land on `http.Handler`. It is one method:
+
+            ServeHTTP(http.ResponseWriter, *http.Request)
+
+        `http.HandlerFunc` turns a function into that type. `http.ServeMux` \
+        is a Handler that dispatches to others. The sandbox has no network, \
+        so this lesson uses `httptest`: the types are real, the listen is \
+        not. A function that accepts `http.Handler` can be tested the same \
+        way in any Go module.
+        """,
+        conceptTags: [GoConcept.stdlibHTTP, GoConcept.smallInterface],
+        task: .compile(
+            starter: """
+            package main
+
+            import "net/http"
+
+            // Hello answers GET /hello with "hi" and 404 for anything else.
+            func Hello() http.Handler {
+            \treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+            }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import (
+            \t"io"
+            \t"net/http"
+            \t"net/http/httptest"
+            \t"testing"
+            )
+
+            func TestHello(t *testing.T) {
+            \th := Hello()
+            \treq := httptest.NewRequest(http.MethodGet, "/hello", nil)
+            \trec := httptest.NewRecorder()
+            \th.ServeHTTP(rec, req)
+            \tif rec.Code != 200 {
+            \t\tt.Fatalf("status %d, want 200", rec.Code)
+            \t}
+            \tbody, _ := io.ReadAll(rec.Result().Body)
+            \tif string(body) != "hi" {
+            \t\tt.Fatalf("body %q, want hi", body)
+            \t}
+
+            \tmiss := httptest.NewRecorder()
+            \th.ServeHTTP(miss, httptest.NewRequest(http.MethodGet, "/nope", nil))
+            \tif miss.Code != 404 {
+            \t\tt.Fatalf("missing path status %d, want 404", miss.Code)
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func Hello() http.Handler {
+        \treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        \t\tif r.URL.Path != "/hello" {
+        \t\t\thttp.NotFound(w, r)
+        \t\t\treturn
+        \t\t}
+        \t\tio.WriteString(w, "hi")
+        \t})
+        }
+        """
+    )
+
+    static let strconvAtoi = Lesson(
+        id: "stdlib.strconv",
+        title: "strconv is how text becomes a number",
+        objective: "Parse a port with Atoi and reject anything outside 1…65535.",
+        explanation: """
+        The Tour's Errors page uses `strconv.Atoi` as the example of a \
+        function that returns `(int, error)`. That is the package: no \
+        `ParseInt` surprises in everyday code, no `fmt.Sscan` for a single \
+        number. `Atoi` is `ParseInt(s, 10, 0)` with a shorter name.
+
+        Failure is an error, not a panic and not a zero you are meant to \
+        guess at. Discarding that error is how `"x"` becomes port 0.
+        """,
+        conceptTags: [GoConcept.stdlibStrconv, GoConcept.explicitErrorCheck],
+        task: .compile(
+            starter: """
+            package main
+
+            // ParsePort accepts 1 through 65535. Anything else is an error,
+            // including text that is not a number.
+            func ParsePort(raw string) (int, error) {
+            \treturn 0, nil
+            }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import "testing"
+
+            func TestParsePort(t *testing.T) {
+            \tn, err := ParsePort("8080")
+            \tif err != nil || n != 8080 {
+            \t\tt.Fatalf("8080 -> %d, %v", n, err)
+            \t}
+            \tif _, err := ParsePort("nope"); err == nil {
+            \t\tt.Fatal("text must be an error")
+            \t}
+            \tif _, err := ParsePort("0"); err == nil {
+            \t\tt.Fatal("0 is not a port")
+            \t}
+            \tif _, err := ParsePort("70000"); err == nil {
+            \t\tt.Fatal("70000 is out of range")
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func ParsePort(raw string) (int, error) {
+        \tn, err := strconv.Atoi(raw)
+        \tif err != nil {
+        \t\treturn 0, err
+        \t}
+        \tif n < 1 || n > 65535 {
+        \t\treturn 0, fmt.Errorf("port %d out of range", n)
+        \t}
+        \treturn n, nil
+        }
+        """
+    )
+
+    static let imageInterface = Lesson(
+        id: "stdlib.image",
+        title: "image.Image is three methods, not a file",
+        objective: "Implement a solid-colour image the standard library will accept.",
+        explanation: """
+        The Tour's "Images" page: `image.Image` is ColorModel, Bounds and \
+        At. A PNG file implements it. So does a type you write in ten \
+        lines. `image/draw` and `image/png` talk to the interface, not to \
+        a concrete bitmap.
+
+        This lesson is a solid rectangle: every pixel the same colour, \
+        bounds you choose. The Tour exercise asks for a generated picture; \
+        the interface is the same.
+        """,
+        conceptTags: [GoConcept.stdlibImage],
+        task: .compile(
+            starter: """
+            package main
+
+            import (
+            \t"image"
+            \t"image/color"
+            )
+
+            type Solid struct {
+            \tW, H int
+            \tC    color.RGBA
+            }
+
+            func (s Solid) ColorModel() color.Model { return color.RGBAModel }
+            func (s Solid) Bounds() image.Rectangle { return image.Rectangle{} }
+            func (s Solid) At(x, y int) color.Color { return color.RGBA{} }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import (
+            \t"image"
+            \t"image/color"
+            \t"testing"
+            )
+
+            func TestSolidIsAnImage(t *testing.T) {
+            \tvar img image.Image = Solid{W: 4, H: 3, C: color.RGBA{1, 2, 3, 255}}
+            \tb := img.Bounds()
+            \tif b.Dx() != 4 || b.Dy() != 3 {
+            \t\tt.Fatalf("bounds %v, want 4x3", b)
+            \t}
+            \tgot, ok := img.At(1, 1).(color.RGBA)
+            \tif !ok || got != (color.RGBA{1, 2, 3, 255}) {
+            \t\tt.Fatalf("At = %v", img.At(1, 1))
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func (s Solid) Bounds() image.Rectangle {
+        \treturn image.Rect(0, 0, s.W, s.H)
+        }
+        func (s Solid) At(x, y int) color.Color { return s.C }
+        """
+    )
 }

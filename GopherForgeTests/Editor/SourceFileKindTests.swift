@@ -10,6 +10,10 @@ final class SourceFileKindTests: XCTestCase {
         XCTAssertEqual(SourceFileKind.of(path: "go.sum"), .goSum)
         XCTAssertEqual(SourceFileKind.of(path: "README.md"), .markdown)
         XCTAssertEqual(SourceFileKind.of(path: "notes.txt"), .plain)
+        XCTAssertEqual(SourceFileKind.of(path: "web/index.html"), .html)
+        XCTAssertEqual(SourceFileKind.of(path: "web/app.js"), .javascript)
+        XCTAssertEqual(SourceFileKind.of(path: "web/styles.css"), .css)
+        XCTAssertEqual(SourceFileKind.of(path: "web/api/catalog.json"), .json)
     }
 
     func testGoAndGoModProduceTokensAndTheRestDoNot() {
@@ -18,6 +22,7 @@ final class SourceFileKindTests: XCTestCase {
         XCTAssertTrue(SourceFileKind.goSum.tokens(in: "x").isEmpty)
         XCTAssertTrue(SourceFileKind.markdown.tokens(in: "# hi").isEmpty)
         XCTAssertTrue(SourceFileKind.plain.tokens(in: "plain").isEmpty)
+        XCTAssertFalse(SourceFileKind.html.tokens(in: "<p id=\"x\"></p>").isEmpty)
     }
 
     func testEveryKindHasAnIcon() {

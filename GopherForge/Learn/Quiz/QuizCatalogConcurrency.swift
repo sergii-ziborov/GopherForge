@@ -96,6 +96,36 @@ enum QuizCatalogConcurrency {
                     + "it belonged to, and cancelling it then means nothing.",
                 conceptTag: GoConcept.contextFirstParameter
             ),
+            QuizQuestion(
+                id: "conc.q.buffer",
+                prompt: "When does a send on make(chan int, 1) block?",
+                code: "",
+                options: [
+                    "When the one slot is already full",
+                    "Always — a buffer is only a hint",
+                    "Never — buffered sends never wait",
+                    "Only from the main goroutine",
+                ],
+                correctIndex: 0,
+                explanation: "The Tour: sends block when the buffer is full, receives when it "
+                    + "is empty. A buffer of 1 is a mailbox of one, not a queue without a lid.",
+                conceptTag: GoConcept.bufferedChannel
+            ),
+            QuizQuestion(
+                id: "conc.q.once",
+                prompt: "What does once.Do(f) do on the second call?",
+                code: "",
+                options: [
+                    "Runs f again",
+                    "Runs a new function if you pass one",
+                    "Panics",
+                    "Nothing — f already ran",
+                ],
+                correctIndex: 3,
+                explanation: "Do runs f once for that Once, even across goroutines. A different "
+                    + "f on the second call is ignored. Do not copy the Once after first use.",
+                conceptTag: GoConcept.syncOnce
+            ),
         ]
     )
 
@@ -224,6 +254,36 @@ enum QuizCatalogConcurrency {
                 explanation: "Scan returns false for both EOF and failure. Err() afterwards is "
                     + "the only thing that tells them apart.",
                 conceptTag: GoConcept.stdlibIO
+            ),
+            QuizQuestion(
+                id: "std.q.handler",
+                prompt: "How many methods does http.Handler have?",
+                code: "",
+                options: [
+                    "Three — Get, Post, Serve",
+                    "Two — ServeHTTP and Listen",
+                    "It depends on ServeMux",
+                    "One — ServeHTTP",
+                ],
+                correctIndex: 3,
+                explanation: "ServeHTTP(ResponseWriter, *Request). HandlerFunc turns a "
+                    + "function into that type. httptest exercises it without a listen.",
+                conceptTag: GoConcept.stdlibHTTP
+            ),
+            QuizQuestion(
+                id: "std.q.atoi",
+                prompt: "What does strconv.Atoi(\"x\") return?",
+                code: "",
+                options: [
+                    "A panic",
+                    "0 and no error",
+                    "0 and an error",
+                    "nil",
+                ],
+                correctIndex: 2,
+                explanation: "The Tour's Errors page uses Atoi for this: failure is a value. "
+                    + "Ignoring the error turns \"x\" into a plausible zero.",
+                conceptTag: GoConcept.stdlibStrconv
             ),
         ]
     )

@@ -19,6 +19,7 @@ enum GoExampleProjectDiff {
 
         import (
         \t"fmt"
+        \t"strings"
 
         \t"github.com/google/go-cmp/cmp"
 
@@ -31,7 +32,8 @@ enum GoExampleProjectDiff {
 
         \t// A bool would tell you they differ. This tells you how.
         \t// Diff already ends in a newline, so Print rather than Println.
-        \tfmt.Print(cmp.Diff(want, got))
+        \t// go-cmp may use nonbreaking spaces for alignment; normalize them.
+        \tfmt.Print(strings.ReplaceAll(cmp.Diff(want, got), "\\u00a0", " "))
         }
         """,
         expectedOutput: """

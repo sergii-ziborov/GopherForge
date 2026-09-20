@@ -46,6 +46,7 @@ struct GitHubRepositoryImporter: Sendable {
     /// of replacement characters.
     static let textExtensions: Set<String> = [
         "go", "mod", "sum", "md", "txt", "json", "yaml", "yml", "toml", "gitignore",
+        "html", "htm", "js", "mjs", "css",
     ]
     /// Files with no extension that are still worth reading.
     static let textFilenames: Set<String> = ["LICENSE", "NOTICE", "AUTHORS", "Makefile"]

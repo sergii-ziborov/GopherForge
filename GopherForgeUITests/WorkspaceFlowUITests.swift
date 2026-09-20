@@ -53,6 +53,33 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "01-projects")
     }
 
+    func testSiteExampleOpensAnInteractiveLocalPreview() {
+        app.launchArguments = [
+            "-GopherForgeSection", Section.projects.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
+        app.launch()
+
+        let cafe = app.buttons["example.site.cafe"]
+        for _ in 0..<6 where !cafe.isHittable { app.swipeUp() }
+        XCTAssertTrue(cafe.waitForExistence(timeout: 10))
+        cafe.tap()
+
+        let open = app.buttons[AccessibilityIdentifier.exampleOpen]
+        XCTAssertTrue(open.waitForExistence(timeout: 5))
+        open.tap()
+
+        let output = app.buttons["pane.output"]
+        XCTAssertTrue(output.waitForExistence(timeout: 10))
+        output.tap()
+        XCTAssertTrue(
+            app.staticTexts[AccessibilityIdentifier.outputSite].waitForExistence(timeout: 10),
+            "a site should publish its localhost URL as soon as the project opens: "
+                + app.debugDescription
+        )
+        XCTAssertTrue(app.buttons["Open full screen"].exists)
+    }
+
     /// The Files tree on a phone is a drawer. A left-to-right swipe from the
     /// leading edge has to open it — the toolbar button is not the only way in.
     func testALeadingSwipeOpensFilesOnThePhone() throws {
@@ -104,6 +131,13 @@ final class WorkspaceFlowUITests: XCTestCase {
         let template = app.buttons["template.worker-pool"]
         XCTAssertTrue(template.waitForExistence(timeout: 10))
         template.tap()
+
+        let create = app.buttons[AccessibilityIdentifier.newProjectCreate]
+        XCTAssertTrue(
+            create.waitForExistence(timeout: 5),
+            "a template should open the name screen, not create immediately"
+        )
+        create.tap()
 
         let editor = app.textViews[AccessibilityIdentifier.editor]
         XCTAssertTrue(editor.waitForExistence(timeout: 10), "opening a template should show the editor")
@@ -458,6 +492,9 @@ final class WorkspaceFlowUITests: XCTestCase {
 enum AccessibilityIdentifier {
     static let welcomeCard = "projects.welcome"
     static let newProject = "projects.new"
+    static let newProjectCreate = "projects.new.create"
+    static let exampleOpen = "example.open"
+    static let outputSite = "output.site"
     static let packagesEntry = "projects.packages"
     static let openFromCloud = "projects.openCloud"
     static let addPackage = "package.add"
@@ -480,7 +517,6 @@ enum AccessibilityIdentifier {
     static let projectMenu = "workspace.projectMenu"
     static let keepLibraryInCloud = "projects.keepInCloud"
     static let drillBoard = "drill.board"
-    static let exampleOpen = "example.open"
     static let quizEntry = "unit.quiz"
     static let quizContinue = "quiz.continue"
     static let quizSummary = "quiz.summary"

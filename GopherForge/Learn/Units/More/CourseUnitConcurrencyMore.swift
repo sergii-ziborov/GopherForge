@@ -182,4 +182,58 @@ extension CourseUnitConcurrency {
         }
         """
     )
+
+    static let syncOnce = Lesson(
+        id: "concurrency.once",
+        title: "sync.Once runs a function one time, for everyone",
+        objective: "Initialise shared state without a lock you have to remember.",
+        explanation: """
+        Effective Go and the sync docs: `Once.Do(f)` runs f once, even when \
+        many goroutines call Do at the same time. After that, Do is a no-op. \
+        It is the right shape for a lazy setup that must not run twice — \
+        registering a driver, reading a config, seeding a generator.
+
+        Do not copy an Once after it has been used. Do not call Do with a \
+        different f and expect that second f to run. The once is on the Once, \
+        not on the function value.
+        """,
+        conceptTags: [GoConcept.syncOnce, GoConcept.mutex],
+        task: .compile(
+            starter: """
+            package main
+
+            import "sync"
+
+            // Call runs fn through once. Two calls must run fn once.
+            func Call(once *sync.Once, fn func()) {
+            \tfn()
+            }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import (
+            \t"sync"
+            \t"testing"
+            )
+
+            func TestCallRunsOnce(t *testing.T) {
+            \tvar once sync.Once
+            \tn := 0
+            \tCall(&once, func() { n++ })
+            \tCall(&once, func() { n++ })
+            \tif n != 1 {
+            \t\tt.Fatalf("n = %d, want 1", n)
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func Call(once *sync.Once, fn func()) {
+        \tonce.Do(fn)
+        }
+        """
+    )
 }

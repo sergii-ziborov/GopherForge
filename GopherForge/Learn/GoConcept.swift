@@ -68,6 +68,17 @@ enum GoConcept {
     static let genericsOveruse = "generics.overuse"
     static let channelDirection = "concurrency.channel-direction"
     static let stdlibStrconv = "stdlib.strconv"
+    static let namedResults = "functions.named-results"
+    static let makeVsNew = "builtin.make-new"
+    static let arrays = "types.array"
+    static let mapCommaOK = "maps.comma-ok"
+    static let stringer = "fmt.stringer"
+    static let emptyInterface = "interfaces.empty"
+    static let bufferedChannel = "concurrency.buffered"
+    static let rangeOverChannel = "concurrency.range-channel"
+    static let selectDefault = "concurrency.select-default"
+    static let syncOnce = "concurrency.once"
+    static let functionValue = "functions.value"
 
     /// Every tag the product knows, used to validate course content and to
     /// keep the review scheduler from inventing categories at runtime.
@@ -85,5 +96,8 @@ enum GoConcept {
         typeParameter, constraint, genericsOveruse,
         channelDirection, stdlibStrconv,
         rangeOverFunc, genericMethod,
+        namedResults, makeVsNew, arrays, mapCommaOK, stringer, emptyInterface,
+        bufferedChannel, rangeOverChannel, selectDefault,
+        syncOnce, functionValue,
     ]
 }

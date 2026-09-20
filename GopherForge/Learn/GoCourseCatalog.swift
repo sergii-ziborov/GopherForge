@@ -33,7 +33,7 @@ enum GoCourseCatalog {
     ///
     /// Separate from `lessons` because challenges are lessons too and live in
     /// Practice instead. Describing the course by `lessons.count` quotes a
-    /// number nobody can see: the app says 29 while that total says 49.
+    /// number nobody can see: the app says 44 while that total includes Practice.
     static var teachingLessons: [Lesson] {
         units.flatMap(\.teachingLessons)
     }

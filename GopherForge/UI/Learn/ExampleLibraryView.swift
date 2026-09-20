@@ -45,12 +45,53 @@ struct ExampleLibraryView: View {
     }
 }
 
-private struct ExampleRow: View {
+/// The expanded library under Recent on the Projects home screen.
+struct ProjectsExamplesSections: View {
+    let onOpen: (GoExample) -> Void
+
+    var body: some View {
+        ForEach(Array(GoExampleLibrary.sections.enumerated()), id: \.element.title) { index, section in
+            Section {
+                ForEach(section.examples) { example in
+                    NavigationLink {
+                        ExampleDetailView(example: example, onOpen: onOpen)
+                    } label: {
+                        ExampleRow(example: example)
+                    }
+                    .accessibilityIdentifier("example.\(example.id)")
+                }
+            } header: {
+                Text(index == 0 ? "Examples · \(section.title)" : section.title)
+                    .accessibilityIdentifier(
+                        index == 0 ? AccessibilityID.projectsExamples : "examples.\(section.title)"
+                    )
+            } footer: {
+                if index == 0 {
+                    Text("Recent stays at \(ProjectHomeLimits.recentCount). "
+                        + "These compile and run here: pictures, tools, and tiny websites.")
+                }
+            }
+        }
+    }
+}
+
+struct ExampleRow: View {
     let example: GoExample
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(example.title).font(.callout.weight(.medium))
+            HStack(spacing: 6) {
+                Text(example.title).font(.callout.weight(.medium))
+                if example.servesSite {
+                    Text("SITE")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.orange)
+                } else if example.producesImage {
+                    Text("PIC")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.teal)
+                }
+            }
             Text(example.summary)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -61,7 +102,7 @@ private struct ExampleRow: View {
 }
 
 /// One example: what it shows, the code, and what it prints.
-private struct ExampleDetailView: View {
+struct ExampleDetailView: View {
     let example: GoExample
     let onOpen: (GoExample) -> Void
 
@@ -79,9 +120,6 @@ private struct ExampleDetailView: View {
                         in: RoundedRectangle(cornerRadius: 10)
                     )
 
-                SourceBlock(title: "main.go", text: example.source)
-                SourceBlock(title: "Output", text: example.expectedOutput)
-
                 Button {
                     onOpen(example)
                 } label: {
@@ -90,11 +128,28 @@ private struct ExampleDetailView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier(AccessibilityID.exampleOpen)
+
+                SourceBlock(title: "main.go", text: example.source)
+                ForEach(pageFiles, id: \.path) { file in
+                    SourceBlock(title: file.path, text: file.text)
+                }
+                SourceBlock(title: "Output", text: example.expectedOutput)
+
             }
             .padding(16)
         }
         .navigationTitle(example.title)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var pageFiles: [(path: String, text: String)] {
+        example.extraFiles
+            .filter { path, _ in
+                let kind = SourceFileKind.of(path: path)
+                return kind == .html || kind == .javascript || kind == .css || kind == .json
+            }
+            .map { (path: $0.key, text: $0.value) }
+            .sorted { $0.path < $1.path }
     }
 }
 

@@ -91,7 +91,7 @@ final class MatchingDrillTests: XCTestCase {
     /// of a row. Both promises are content constraints, so they are checked
     /// against the content rather than hoped for.
     func testEveryAuthoredTileFitsItsBudget() {
-        for drill in MatchingDrillCatalog.drills {
+        for drill in MatchingDrillCatalog.drills + ReviewMatchCatalog.rounds {
             XCTAssertLessThanOrEqual(
                 drill.pairs.count, MatchingDrill.maximumPairs,
                 "\(drill.id) has more pairs than a board shows without scrolling"
@@ -110,17 +110,18 @@ final class MatchingDrillTests: XCTestCase {
     }
 
     func testDrillIdentifiersAndPairsAreUnique() {
-        let drillIDs = MatchingDrillCatalog.drills.map(\.id)
+        let drills = MatchingDrillCatalog.drills + ReviewMatchCatalog.rounds
+        let drillIDs = drills.map(\.id)
         XCTAssertEqual(Set(drillIDs).count, drillIDs.count)
 
-        let pairIDs = MatchingDrillCatalog.drills.flatMap { $0.pairs.map(\.id) }
+        let pairIDs = drills.flatMap { $0.pairs.map(\.id) }
         XCTAssertEqual(Set(pairIDs).count, pairIDs.count, "pair ids must be unique across drills")
     }
 
     /// A drill's answers have to be distinct, or two tiles are both correct for
     /// one prompt and the board calls one of them wrong.
     func testNoDrillRepeatsAnAnswer() {
-        for drill in MatchingDrillCatalog.drills {
+        for drill in MatchingDrillCatalog.drills + ReviewMatchCatalog.rounds {
             let answers = drill.pairs.map(\.answer)
             XCTAssertEqual(Set(answers).count, answers.count, "\(drill.id) repeats an answer")
         }
@@ -132,13 +133,85 @@ final class MatchingDrillTests: XCTestCase {
     /// app cannot offer.
     func testEveryDrillConceptIsOneTheCourseKnows() {
         let known = Set(GoCourseCatalog.lessons.flatMap(\.conceptTags))
-        for drill in MatchingDrillCatalog.drills {
+        for drill in MatchingDrillCatalog.drills + ReviewMatchCatalog.rounds {
             for pair in drill.pairs {
                 XCTAssertTrue(
                     known.contains(pair.conceptTag),
                     "\(pair.id) tags \(pair.conceptTag), which no lesson teaches"
                 )
             }
+        }
+    }
+
+    func testReviewBoardsAreFivePairsTiedToRealLessons() throws {
+        XCTAssertGreaterThanOrEqual(
+            ReviewMatchCatalog.rounds.count, ReviewMatchCatalog.maximumRounds
+        )
+        for drill in ReviewMatchCatalog.rounds {
+            XCTAssertEqual(drill.pairs.count, ReviewMatchCatalog.pairsPerRound, drill.id)
+            for pair in drill.pairs {
+                let lessonID = try XCTUnwrap(pair.requiredLessonID, "\(pair.id) has no lesson")
+                XCTAssertNotNil(
+                    GoCourseCatalog.lesson(id: lessonID),
+                    "\(pair.id) requires \(lessonID), which is not a lesson"
+                )
+            }
+        }
+    }
+
+    func testReviewDealsNothingBeforeAnyLessonIsDone() {
+        XCTAssertTrue(ReviewMatchCatalog.unlocked(completed: []).isEmpty)
+    }
+
+    func testReviewDealsABoardOnlyAfterItsFiveLessonsAreDone() {
+        let coreLessons = Set(ReviewMatchCatalog.core.pairs.compactMap(\.requiredLessonID))
+        XCTAssertEqual(coreLessons.count, 5)
+        XCTAssertTrue(ReviewMatchCatalog.unlocked(completed: []).isEmpty)
+        let four = Set(coreLessons.dropLast())
+        XCTAssertTrue(ReviewMatchCatalog.unlocked(completed: four).isEmpty)
+        let boards = ReviewMatchCatalog.unlocked(completed: coreLessons)
+        XCTAssertEqual(boards.map(\.id), ["review.core"])
+    }
+
+    func testReviewNeverDealsAPairFromAnUnfinishedLesson() throws {
+        let completed = Set(ReviewMatchCatalog.rounds.flatMap(\.pairs).compactMap(\.requiredLessonID))
+        let boards = ReviewMatchCatalog.unlocked(completed: completed)
+        XCTAssertEqual(boards.count, 5)
+        for board in boards {
+            for pair in board.pairs {
+                let lessonID = try XCTUnwrap(pair.requiredLessonID)
+                XCTAssertTrue(completed.contains(lessonID), pair.id)
+            }
+        }
+    }
+
+    func testReviewCapsAtFiveBoardsEvenWhenMoreAreReady() {
+        let completed = Set(ReviewMatchCatalog.rounds.flatMap(\.pairs).compactMap(\.requiredLessonID))
+        XCTAssertGreaterThan(ReviewMatchCatalog.rounds.count, ReviewMatchCatalog.maximumRounds)
+        XCTAssertEqual(
+            ReviewMatchCatalog.unlocked(completed: completed).count,
+            ReviewMatchCatalog.maximumRounds
+        )
+    }
+
+    func testReviewMixedBoardUsesOnlyUnlockedLeftovers() {
+        let core = Set(ReviewMatchCatalog.core.pairs.compactMap(\.requiredLessonID))
+        let collections = Set(ReviewMatchCatalog.collections.pairs.compactMap(\.requiredLessonID))
+        let fourCore = Set(core.dropLast())
+        let ready = fourCore.union(collections)
+        let boards = ReviewMatchCatalog.unlocked(completed: ready)
+        XCTAssertEqual(boards.map(\.id), ["review.collections"])
+        for pair in boards.flatMap(\.pairs) {
+            XCTAssertNotEqual(pair.requiredLessonID, core.subtracting(fourCore).first)
+        }
+    }
+
+    func testEveryReviewLessonIsATeachingOrChallengeLesson() {
+        for pair in ReviewMatchCatalog.rounds.flatMap(\.pairs) {
+            guard let id = pair.requiredLessonID else {
+                return XCTFail(pair.id)
+            }
+            XCTAssertNotNil(GoCourseCatalog.lesson(id: id), id)
         }
     }
 }

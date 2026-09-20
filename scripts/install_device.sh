@@ -59,7 +59,7 @@ MESSAGE
   exit 1
 fi
 
-echo "Building $CONFIGURATION for device $DEVICE_ID…"
+echo "Building $CONFIGURATION for device ${DEVICE_ID}…"
 # SWIFT_SUPPRESS_WARNINGS=NO, for the same reason the release archive needs it.
 # Xcode suppresses warnings in package dependencies when it builds for a device
 # or archives, WasmKit's Package.swift asks for warnings to be treated as
@@ -76,7 +76,7 @@ xcodebuild -project "$PROJECT_ROOT/GopherForge.xcodeproj" \
   build
 
 APP="$PROJECT_ROOT/DerivedDataDeviceSigned/Build/Products/$CONFIGURATION-iphoneos/GopherForge.app"
-echo "Installing $APP…"
+echo "Installing ${APP}…"
 xcrun devicectl device install app --timeout 900 --device "$DEVICE_ID" "$APP"
 
 echo "Launching…"

@@ -36,4 +36,16 @@ final class GoConceptCatalogTests: XCTestCase {
         XCTAssertNil(GoConceptTagger.tag(for: "something the tagger has never seen"))
         XCTAssertEqual(GoConceptTagger.tag(for: "Undefined: X"), GoConcept.undefinedSymbol)
     }
+
+    func testTheNewTourConceptsAreInTheSharedVocabulary() {
+        for tag in [
+            GoConcept.namedResults, GoConcept.makeVsNew, GoConcept.arrays,
+            GoConcept.mapCommaOK, GoConcept.stringer, GoConcept.emptyInterface,
+            GoConcept.bufferedChannel, GoConcept.rangeOverChannel, GoConcept.selectDefault,
+            GoConcept.syncOnce, GoConcept.functionValue,
+        ] {
+            XCTAssertTrue(GoConcept.all.contains(tag), tag)
+            XCTAssertNotNil(LessonSymbol.byConcept[tag], tag)
+        }
+    }
 }

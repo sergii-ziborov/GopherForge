@@ -129,4 +129,62 @@ extension CourseUnitErrors {
         ),
         idiomaticSolution: nil
     )
+
+    static let recoverAtBoundary = Lesson(
+        id: "errors.recover",
+        title: "recover belongs at the boundary",
+        objective: "Turn a panic into an error without swallowing the rest of the program.",
+        explanation: """
+        The Tour shows panic as a value and Effective Go keeps recover for a \
+        server boundary: one request, one goroutine, then an ordinary error \
+        back to the caller. `recover` only works inside a deferred function. \
+        A named result is how that error gets out — a `return nil` after \
+        `work()` would overwrite it.
+
+        A library that recovers in the middle of a calculation is hiding a \
+        bug. A process that recovers at main is pretending the program is \
+        still sound. The honest width is one unit of work you can abandon.
+        """,
+        conceptTags: [GoConcept.panicIsNotAnError, GoConcept.namedResults],
+        task: .compile(
+            starter: """
+            package main
+
+            // Guard runs work and returns an error if it panics. A clean
+            // run returns nil. Use recover in a defer.
+            func Guard(work func()) error {
+            \twork()
+            \treturn nil
+            }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import "testing"
+
+            func TestGuard(t *testing.T) {
+            \tif err := Guard(func() {}); err != nil {
+            \t\tt.Fatalf("clean work should be nil, got %v", err)
+            \t}
+            \terr := Guard(func() { panic("boom") })
+            \tif err == nil {
+            \t\tt.Fatal("a panic should become an error")
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func Guard(work func()) (err error) {
+        \tdefer func() {
+        \t\tif r := recover(); r != nil {
+        \t\t\terr = fmt.Errorf("panic: %v", r)
+        \t\t}
+        \t}()
+        \twork()
+        \treturn nil
+        }
+        """
+    )
 }

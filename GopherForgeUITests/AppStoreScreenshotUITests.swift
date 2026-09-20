@@ -235,6 +235,10 @@ final class AppStoreScreenshotUITests: XCTestCase {
         let template = app.buttons["template.\(id)"]
         XCTAssertTrue(template.waitForExistence(timeout: 30), "template \(id) should be offered")
         template.tap()
+
+        let confirm = app.buttons[AccessibilityIdentifier.newProjectCreate]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 10), "the name screen should offer Create")
+        confirm.tap()
     }
 
     /// Named with a leading number so the files sort into listing order once

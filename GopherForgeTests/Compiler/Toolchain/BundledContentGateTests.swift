@@ -56,6 +56,22 @@ final class BundledContentGateTests: XCTestCase {
         XCTAssertEqual(Set(ids).count, ids.count, "duplicate example ids in \(ids)")
     }
 
+    /// A graphic example must deliver the PNG it claims to draw, not merely
+    /// print a success line while leaving the Output pane empty.
+    func testEveryGraphicExampleProducesAPNG() async {
+        for example in GoExampleLibraryGraphics.all + GoExampleLibraryGraphicsMore.all {
+            let result = await compiler.run(project: example.snapshot())
+            XCTAssertTrue(result.succeeded, "\(example.id): \(report(result))")
+            XCTAssertFalse(result.artifacts.images.isEmpty, "\(example.id): no image captured")
+            for image in result.artifacts.images {
+                XCTAssertTrue(
+                    image.data.starts(with: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+                    "\(example.id): \(image.name) is not a PNG"
+                )
+            }
+        }
+    }
+
     /// A vendored dependency, compiled by the real toolchain.
     ///
     /// This is the half of package installation that has nothing to do with the

@@ -93,7 +93,7 @@ struct LessonNextStep: View {
             } label: {
                 HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(isFinished ? "Next lesson" : "Skip ahead")
+                        Text(isFinished ? "Next lesson" : "Skip this lesson")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(isFinished ? .white.opacity(0.85) : .secondary)
                         Text(next.title)

@@ -12,7 +12,10 @@ enum CourseUnitInterfaces {
         useful interfaces are small and defined next to the code using them, \
         not next to the type satisfying them.
         """,
-        lessons: [implicitSatisfaction, methodSets, nilInterface, typeSwitch, embedding]
+        lessons: [
+            implicitSatisfaction, methodSets, nilInterface, typeSwitch, embedding,
+            stringer, emptyInterface,
+        ]
     )
 
     static let implicitSatisfaction = Lesson(

@@ -15,6 +15,7 @@ enum CourseUnitCore {
         lessons: [
             zeroValues, shortDeclaration, multipleReturns, unusedIsAnError,
             constantsAndIota, switchWithoutBreak, conversionsAreExplicit,
+            namedResults, stackingDefers,
         ]
     )
 

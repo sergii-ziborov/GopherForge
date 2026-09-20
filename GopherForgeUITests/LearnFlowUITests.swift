@@ -52,11 +52,11 @@ final class LearnFlowUITests: XCTestCase {
     func testMarkingALessonCompleteShowsUpInTheUnit() {
         launch(arguments: ["-GopherForgeSection", "learn"])
 
-        let unit = app.buttons["unit.concurrency"]
+        let unit = app.buttons["unit.core"]
         XCTAssertTrue(app.waitForElement(unit))
         unit.tap()
 
-        let row = app.buttons["lesson.concurrency.channel-close"]
+        let row = app.buttons["lesson.core.short-declaration"]
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         row.tap()
 

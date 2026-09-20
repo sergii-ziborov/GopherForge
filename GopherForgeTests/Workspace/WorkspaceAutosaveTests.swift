@@ -234,4 +234,53 @@ final class WorkspaceAutosaveTests: XCTestCase {
             []
         )
     }
+
+    func testOpeningADiagnosticMarksThatLineUntilItIsEdited() async {
+        let workspace = await openedWorkspace()
+        workspace.updateEditorText("package main\n\nfunc main() {\n\t_ = unused\n}\n")
+
+        workspace.select(file: "main.go", revealingLine: 4)
+        XCTAssertEqual(workspace.markedLines, [4])
+        XCTAssertEqual(workspace.revealLine, 4)
+
+        workspace.updateEditorText("package main\n\nfunc main() {\n\t_ = unused\n}\n")
+        XCTAssertEqual(workspace.markedLines, [4], "an identical buffer is not an edit")
+
+        workspace.updateEditorText("package main\n\nfunc main() {\n\tfmt.Println(1)\n}\n")
+        XCTAssertTrue(workspace.markedLines.isEmpty, "editing the marked line should drop the highlight")
+    }
+
+    func testEditingADifferentLineKeepsTheDiagnosticMark() async {
+        let workspace = await openedWorkspace()
+        workspace.updateEditorText("package main\n\nfunc main() {\n\t_ = unused\n}\n")
+        workspace.select(file: "main.go", revealingLine: 4)
+
+        workspace.updateEditorText("package playground\n\nfunc main() {\n\t_ = unused\n}\n")
+        XCTAssertEqual(workspace.markedLines, [4])
+    }
+
+    func testOpeningASiteExampleServesLocalhost() async throws {
+        let workspace = WorkspaceModel(library: library)
+        workspace.open(GoExampleProjectGinCafe.cafe.project())
+        await workspace.libraryUpdated()
+
+        let url = try XCTUnwrap(workspace.sitePreviewURL)
+        XCTAssertEqual(url.host, "127.0.0.1")
+        XCTAssertGreaterThan(url.port ?? 0, 0)
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+        let http = try XCTUnwrap(response as? HTTPURLResponse)
+        XCTAssertEqual(http.statusCode, 200)
+        XCTAssertTrue(String(decoding: data, as: UTF8.self).contains("Gopher Café"))
+
+        workspace.open(
+            GopherForgeProject(
+                name: "Plain",
+                files: ["main.go": "package main\n"],
+                entryFile: "main.go",
+                provenance: nil
+            )
+        )
+        XCTAssertNil(workspace.sitePreviewURL)
+    }
 }

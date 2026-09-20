@@ -22,6 +22,8 @@ final class GoPackageCatalogTests: XCTestCase {
         XCTAssertTrue(GoPackageCatalog.filtered(by: "HTTP").allSatisfy { $0.category == "HTTP" || $0.blurb.lowercased().contains("http") || $0.path.lowercased().contains("http") })
         XCTAssertTrue(GoPackageCatalog.filtered(by: "no-such-module").isEmpty)
         XCTAssertEqual(GoPackageCatalog.entries(in: "Testing").count, 2)
+        XCTAssertTrue(GoPackageCatalog.entries.contains { $0.path == "github.com/gin-gonic/gin" })
+        XCTAssertEqual(GoPackageCatalog.entries(in: "HTTP").count, 3)
     }
 
     func testATypedPathLooksLikeAModule() {

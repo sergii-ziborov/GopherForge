@@ -86,5 +86,17 @@ enum LessonSymbol {
         GoConcept.stdlibHTTP: "network",
         GoConcept.stdlibImage: "photo",
         GoConcept.stdlibStrconv: "textformat.123",
+
+        GoConcept.namedResults: "return",
+        GoConcept.makeVsNew: "plus.square.on.square",
+        GoConcept.arrays: "rectangle.split.3x1",
+        GoConcept.mapCommaOK: "checkmark.circle",
+        GoConcept.stringer: "text.quote",
+        GoConcept.emptyInterface: "circle.dashed",
+        GoConcept.bufferedChannel: "tray.2",
+        GoConcept.rangeOverChannel: "arrow.forward.to.line",
+        GoConcept.selectDefault: "arrow.uturn.forward",
+        GoConcept.syncOnce: "1.circle",
+        GoConcept.functionValue: "function",
     ]
 }

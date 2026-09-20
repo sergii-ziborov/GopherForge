@@ -32,6 +32,10 @@ final class SourceFileBadgeTests: XCTestCase {
     func testDocumentationAndAnythingElse() {
         XCTAssertEqual(SourceFileBadge.of(path: "README.md"), .documentation)
         XCTAssertEqual(SourceFileBadge.of(path: "notes.txt"), .documentation)
+        XCTAssertEqual(SourceFileBadge.of(path: "web/index.html"), .markup)
+        XCTAssertEqual(SourceFileBadge.of(path: "web/app.js"), .script)
+        XCTAssertEqual(SourceFileBadge.of(path: "web/styles.css"), .stylesheet)
+        XCTAssertEqual(SourceFileBadge.of(path: "web/api/health.json"), .documentation)
         XCTAssertEqual(SourceFileBadge.of(path: "data.bin"), .other)
     }
 

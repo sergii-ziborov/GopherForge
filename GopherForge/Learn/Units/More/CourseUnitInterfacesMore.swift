@@ -117,4 +117,121 @@ extension CourseUnitInterfaces {
         ),
         idiomaticSolution: nil
     )
+
+    static let stringer = Lesson(
+        id: "interfaces.stringer",
+        title: "fmt looks for String(), not a Stringer keyword",
+        objective: "Make a type print itself as a dotted IPv4 address.",
+        explanation: """
+        The Tour's "Stringers" page and its exercise are the same interface \
+        the whole standard library uses:
+
+            type Stringer interface { String() string }
+
+        `fmt`, `log`, and the debugger call `String()` when a value has it. \
+        There is no registration. The Tour exercise is `IPAddr [4]byte` \
+        printing as `1.2.3.4` — a type that is not a string, describing \
+        itself as one.
+
+        Do not call `fmt.Sprint(v)` from `v`'s own `String` method. Sprint \
+        looks for Stringer and you recurse until the stack blows. Convert \
+        first, or format the fields yourself.
+        """,
+        conceptTags: [GoConcept.stringer, GoConcept.smallInterface],
+        task: .compile(
+            starter: """
+            package main
+
+            type IPAddr [4]byte
+
+            // String should print 1.2.3.4 for IPAddr{1, 2, 3, 4}.
+            func (ip IPAddr) String() string {
+            \treturn ""
+            }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import (
+            \t"fmt"
+            \t"testing"
+            )
+
+            func TestIPAddrStringer(t *testing.T) {
+            \tgot := fmt.Sprint(IPAddr{1, 2, 3, 4})
+            \tif got != "1.2.3.4" {
+            \t\tt.Fatalf("Sprint = %q, want 1.2.3.4", got)
+            \t}
+            \tif (IPAddr{127, 0, 0, 1}).String() != "127.0.0.1" {
+            \t\tt.Fatal("localhost should print 127.0.0.1")
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func (ip IPAddr) String() string {
+        \treturn fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
+        }
+        """
+    )
+
+    static let emptyInterface = Lesson(
+        id: "interfaces.empty",
+        title: "any is interface{}, and it has no methods",
+        objective: "Report the dynamic type of a value held in any.",
+        explanation: """
+        The Tour's "The empty interface" page: `interface{}` specifies zero \
+        methods, so every type implements it. `any` is the alias. \
+        `fmt.Print` takes `...any` for that reason.
+
+        Holding a value in `any` throws the static type away. Getting it \
+        back is a type assertion or a type switch — the two-value form, or \
+        you panic. `%T` in fmt is the cheap way to see what is inside, and \
+        it is what this lesson asks you to return.
+        """,
+        conceptTags: [GoConcept.emptyInterface, GoConcept.typeAssertion],
+        task: .compile(
+            starter: """
+            package main
+
+            // Kind returns the dynamic type, as fmt would: "int", "string",
+            // "*int". A nil any prints as <nil>.
+            func Kind(value any) string {
+            \treturn ""
+            }
+
+            func main() {}
+            """,
+            hiddenTest: """
+            package main
+
+            import "testing"
+
+            func TestKind(t *testing.T) {
+            \tn := 3
+            \tfor _, c := range []struct {
+            \t\tin   any
+            \t\twant string
+            \t}{
+            \t\t{7, "int"},
+            \t\t{"go", "string"},
+            \t\t{true, "bool"},
+            \t\t{&n, "*int"},
+            \t\t{nil, "<nil>"},
+            \t} {
+            \t\tif got := Kind(c.in); got != c.want {
+            \t\t\tt.Errorf("Kind(%v) = %q, want %q", c.in, got, c.want)
+            \t\t}
+            \t}
+            }
+            """
+        ),
+        idiomaticSolution: """
+        func Kind(value any) string {
+        \treturn fmt.Sprintf("%T", value)
+        }
+        """
+    )
 }

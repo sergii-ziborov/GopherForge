@@ -54,6 +54,11 @@
 	<string>public.app-category.developer-tools</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Serhii Ziborov. All rights reserved.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

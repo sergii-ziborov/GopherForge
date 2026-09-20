@@ -85,6 +85,21 @@ enum QuizCatalogCore {
                     + "import only for its side effects, write _ \"os\".",
                 conceptTag: GoConcept.unusedImport
             ),
+            QuizQuestion(
+                id: "core.q.named",
+                prompt: "What does a naked return send?",
+                code: "func Split(n, d int) (quot, rem int) {\n\tquot = n / d\n\trem = n % d\n\treturn\n}",
+                options: [
+                    "Always 0, 0",
+                    "A compile error — return needs values",
+                    "Whatever is in scope named x, y",
+                    "The named results as they stand",
+                ],
+                correctIndex: 3,
+                explanation: "The names in the result list are variables. A return with no "
+                    + "arguments sends those. The Tour says keep that for short functions.",
+                conceptTag: GoConcept.namedResults
+            ),
         ]
     )
 
@@ -156,6 +171,36 @@ enum QuizCatalogCore {
                 explanation: "i is a byte offset, so it jumps by more than one for multi-byte "
                     + "characters. r is the rune itself.",
                 conceptTag: GoConcept.stringRunes
+            ),
+            QuizQuestion(
+                id: "coll.q.array",
+                prompt: "Why will this not compile?",
+                code: "func Sum(a [4]int) int\nSum([3]int{1, 2, 3})",
+                options: [
+                    "[3]int and [4]int are different types",
+                    "Arrays cannot be passed to functions",
+                    "The literal needs a ...",
+                    "Sum must take a slice",
+                ],
+                correctIndex: 0,
+                explanation: "The length is in the type. The Tour's Arrays page is the one "
+                    + "people skip, then a [32]byte parameter refuses a [16]byte.",
+                conceptTag: GoConcept.arrays
+            ),
+            QuizQuestion(
+                id: "coll.q.funcval",
+                prompt: "What is the type of this value?",
+                code: "double := func(n int) int { return n * 2 }",
+                options: [
+                    "int",
+                    "func",
+                    "closure",
+                    "func(int) int",
+                ],
+                correctIndex: 3,
+                explanation: "The Tour: functions are values. The type includes the arguments "
+                    + "and the result. func(int) int is not the same as func(int) string.",
+                conceptTag: GoConcept.functionValue
             ),
         ]
     )

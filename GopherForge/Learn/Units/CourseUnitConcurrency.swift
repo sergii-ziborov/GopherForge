@@ -2,13 +2,13 @@ import Foundation
 
 /// Unit F — goroutines, channels, select and cancellation.
 ///
-/// Every lesson here has a matching Concurrency Lab scenario, so a learner can
-/// move from reading about a shape to watching a real program produce it.
+/// Shapes taken from A Tour of Go's concurrency pages, written for someone
+/// who already has threads and wants the Go versions of them.
 enum CourseUnitConcurrency {
     static let unit = CourseUnit(
         id: "concurrency",
         title: "Concurrency",
-        summary: "Goroutines, channel ownership, select and context, with the lab attached.",
+        summary: "Goroutines, channel ownership, select, buffers and who may send.",
         translationNote: """
         A goroutine is not a promise and not a thread. It has no handle, no \
         return value and no join — which is why channels and WaitGroups exist, \
@@ -18,6 +18,8 @@ enum CourseUnitConcurrency {
         lessons: [
             unbufferedRendezvous, goroutinesHaveNoHandle, senderOwnsClose,
             selectAndContext, mutexOrChannel, workerPool,
+            bufferedChannels, rangeAndClose, selectDefault, directionalChannels,
+            syncOnce,
         ]
     )
 

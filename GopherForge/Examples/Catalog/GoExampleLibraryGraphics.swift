@@ -8,7 +8,9 @@ import Foundation
 /// writes a file. The app shows what it drew, so the loop is as tight as
 /// printing text, and the result is something worth looking at.
 enum GoExampleLibraryGraphics {
-    static let all: [GoExample] = [mandelbrot, colourWheel, sineWaves, sierpinski, gameOfLife]
+    static let all: [GoExample] = [
+        mandelbrot, colourWheel, sineWaves, sierpinski, gameOfLife,
+    ]
 
     static let mandelbrot = GoExample(
         id: "graphics.mandelbrot",

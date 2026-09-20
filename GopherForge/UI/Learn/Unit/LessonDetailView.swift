@@ -41,6 +41,13 @@ struct LessonDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
+                LessonHintCard(
+                    hint: model.hint,
+                    canRealize: model.canRealize,
+                    tint: tint,
+                    onRealize: { model.realize() }
+                )
+
                 taskSection
 
                 if lesson.requiresCompiler, !model.canCheck, !model.isChecking {
@@ -71,7 +78,10 @@ struct LessonDetailView: View {
         }
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
-        .task { await model.loadProgress() }
+        .task {
+            await model.loadProgress()
+            await model.prewarm()
+        }
         .toolbar {
             // The completion control lives here because a compile lesson puts a
             // text view between the explanation and the bottom of the page, and
@@ -102,17 +112,9 @@ struct LessonDetailView: View {
 
     // MARK: - Finishing
 
-    /// Whether this is done, and the way to say so.
-    ///
-    /// Every lesson can be ticked. It used to be that only a lesson with
-    /// nothing to run could, which left four of the seven units with no way to
-    /// record progress at all — their lessons are all compile lessons, and a
-    /// learner who had done the work elsewhere could not say so.
-    ///
-    /// The two ways are named rather than left to be guessed. "Check" hands the
-    /// work to the compiler; the button below is the learner's own word, and
-    /// the app records which of the two happened rather than flattening them
-    /// into one tick.
+    /// Whether this is done, and — only for lessons with nothing to run — the
+    /// way to say so. A compile lesson is marked when Check passes. Next skips
+    /// without recording a pass.
     @ViewBuilder
     private var completion: some View {
         if model.isCompleted {
@@ -158,30 +160,21 @@ struct LessonDetailView: View {
     private var unfinishedCard: some View {
         if lesson.isJudgedByCompiler {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Two ways to finish this")
+                Text("Check records a pass. Next skips.")
                     .font(.callout.weight(.semibold))
-                Text("**Check** compiles your code against the lesson's hidden test and "
-                    + "records a pass the compiler witnessed. If you have already worked "
-                    + "through this — on paper, in another editor, years ago in another "
-                    + "language — say so instead. The app keeps the two apart.")
+                Text("The hidden test is the only way this lesson finishes. "
+                    + "A pass is marked automatically. Skip this lesson below "
+                    + "if you want to move on without a tick.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                HStack(spacing: 10) {
-                    Button(action: check) {
-                        Label("Check", systemImage: "checkmark.diamond")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(!model.canCheck || model.isChecking)
-
-                    Button(action: markDone) {
-                        Text("I've done this")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
+                Button(action: check) {
+                    Label("Check", systemImage: "checkmark.diamond")
+                        .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.borderedProminent)
+                .disabled(!model.canCheck || model.isChecking)
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -219,7 +212,7 @@ struct LessonDetailView: View {
             }
             .accessibilityLabel("Marked done. Tap to undo.")
             .accessibilityIdentifier(AccessibilityID.lessonUncomplete)
-        } else {
+        } else if model.canSelfReport {
             Button(action: markDone) {
                 Label("Mark done", systemImage: "circle")
             }

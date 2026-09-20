@@ -275,4 +275,10 @@ final class ProjectLibraryTests: XCTestCase {
         XCTAssertFalse(items[0].favorite)
         XCTAssertEqual(items[0].folderLabel, ProjectLibraryItem.looseFolder)
     }
+
+    func testTheHomeScreenKeepsFiveRecents() {
+        XCTAssertEqual(ProjectHomeLimits.recentCount, 5)
+        let ids = (0..<8).map { _ in UUID() }
+        XCTAssertEqual(Array(ids.prefix(ProjectHomeLimits.recentCount)).count, 5)
+    }
 }

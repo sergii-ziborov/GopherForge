@@ -29,10 +29,17 @@ final class LessonCompletionTests: XCTestCase {
         )
     }
 
+    private func aSelfReportLesson() throws -> Lesson {
+        try XCTUnwrap(
+            GoCourseCatalog.teachingLessons.first(where: \.canSelfReport),
+            "the course should contain a lesson with nothing to run"
+        )
+    }
+
     // MARK: - What the store records
 
     func testAHandMarkedLessonIsCompleteButNotCompilerVerified() async throws {
-        let lesson = try aCompileLesson()
+        let lesson = try aSelfReportLesson()
         let progress = await LearnProgress(store: store)
 
         await progress.markCompleted(lesson)
@@ -70,7 +77,7 @@ final class LessonCompletionTests: XCTestCase {
     // MARK: - Undoing
 
     func testAHandMarkedLessonCanBeUndone() async throws {
-        let lesson = try aCompileLesson()
+        let lesson = try aSelfReportLesson()
         let progress = await LearnProgress(store: store)
         await progress.markCompleted(lesson)
 
@@ -167,5 +174,35 @@ final class LessonCompletionTests: XCTestCase {
         )
 
         XCTAssertEqual(stats.lessonsPassedFirstTry, 1)
+    }
+
+    func testACompileLessonRefusesAHandTick() async throws {
+        let lesson = try aCompileLesson()
+        XCTAssertFalse(lesson.canSelfReport)
+        let progress = await LearnProgress(store: store)
+        await progress.markCompleted(lesson)
+        let isCompleted = await progress.isCompleted(lesson.id)
+        XCTAssertFalse(isCompleted, "Check is the pass; Next is the skip")
+    }
+
+    func testACompileLessonSnapshotReusesTheSameWorkTree() throws {
+        let lesson = try aCompileLesson()
+        let first = try XCTUnwrap(lesson.checkSnapshot(source: "package main\nfunc main() {}\n"))
+        let second = try XCTUnwrap(lesson.checkSnapshot(source: "package main\nfunc main() {}\n"))
+        XCTAssertEqual(first.workspaceReuseKey, "lesson.\(lesson.id)")
+        XCTAssertEqual(first.workspaceReuseKey, second.workspaceReuseKey)
+        XCTAssertTrue(first.files.keys.contains("lesson_test.go"))
+    }
+
+    func testEveryCompileLessonHasAReusableSnapshot() {
+        for lesson in GoCourseCatalog.lessons where lesson.requiresCompiler {
+            XCTAssertNotNil(lesson.checkSnapshot(source: "package main\n"), lesson.id)
+        }
+    }
+
+    func testPredictAndGuidedLessonsCanBeTicked() {
+        let reportable = GoCourseCatalog.lessons.filter(\.canSelfReport)
+        XCTAssertFalse(reportable.isEmpty)
+        XCTAssertTrue(reportable.allSatisfy { !$0.requiresCompiler })
     }
 }

@@ -37,7 +37,12 @@ struct WorkspacePaneContent: View {
         case .problems:
             DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [], onReveal: onRevealCode)
         case .output:
-            OutputStreamView(result: workspace.lastResult, progress: workspace.runningStep)
+            OutputStreamView(
+                result: workspace.lastResult,
+                progress: workspace.runningStep,
+                siteURL: workspace.sitePreviewURL,
+                siteGeneration: workspace.siteGeneration
+            )
         case .tests:
             TestResultListView(tests: workspace.lastResult?.tests ?? [])
         case .idioms:

@@ -167,4 +167,19 @@ final class QuizCatalogTests: XCTestCase {
         let ids = QuizCatalog.all.flatMap { $0.questions.map(\.id) }
         XCTAssertEqual(Set(ids).count, ids.count)
     }
+
+    func testTheNewTourQuestionsAreInTheCatalog() {
+        let ids = Set(QuizCatalog.all.flatMap { $0.questions.map(\.id) })
+        for id in ["core.q.named", "coll.q.array", "coll.q.funcval", "iface.q.stringer",
+                   "conc.q.buffer", "conc.q.once", "std.q.handler", "std.q.atoi", "err.q.recover"] {
+            XCTAssertTrue(ids.contains(id), id)
+        }
+    }
+
+    func testEveryUnitQuizStaysInsideTheSittingBudget() {
+        for quiz in QuizCatalog.all {
+            XCTAssertGreaterThanOrEqual(quiz.questions.count, 4, quiz.unitID)
+            XCTAssertLessThanOrEqual(quiz.questions.count, Quiz.maximumQuestions, quiz.unitID)
+        }
+    }
 }
