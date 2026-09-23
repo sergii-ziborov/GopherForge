@@ -98,4 +98,19 @@ struct ProjectLibraryItem: Codable, Equatable, Identifiable, Sendable {
         }
         return result
     }
+
+    /// A visible, collision-free default for Duplicate. Copying under the same
+    /// name is technically safe because identity is a UUID, but visually it
+    /// leaves two indistinguishable rows and makes the action look broken.
+    static func suggestedCopyName(of sourceName: String, existingNames: [String]) -> String {
+        let used = Set(existingNames.map {
+            $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        })
+        let first = "\(sourceName) copy"
+        if !used.contains(first.lowercased()) { return first }
+
+        var number = 2
+        while used.contains("\(first) \(number)".lowercased()) { number += 1 }
+        return "\(first) \(number)"
+    }
 }

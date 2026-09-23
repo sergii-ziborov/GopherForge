@@ -178,7 +178,7 @@ struct NewProjectView: View {
             } header: {
                 Text("Name")
             } footer: {
-                Text("This is the name in My projects, not the template you started from.")
+                Text("This is the name in Project library, not the template you started from.")
             }
 
             Section {

@@ -102,13 +102,24 @@ struct LocalProjectLoader {
         let enumerator = fileManager.enumerator(
             at: root,
             includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
-            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+            options: [.skipsPackageDescendants]
         )
 
         while let url = enumerator?.nextObject() as? URL {
-            let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+            let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey, .isDirectoryKey])
+            if values?.isDirectory == true, url.lastPathComponent.hasPrefix(".") {
+                enumerator?.skipDescendants()
+                continue
+            }
             guard values?.isRegularFile == true else { continue }
-            guard Self.readableExtensions.contains(url.pathExtension.lowercased()) else { continue }
+            let isFolderMarker = url.lastPathComponent == GopherForgeProject.folderMarker
+            guard isFolderMarker || Self.readableExtensions.contains(url.pathExtension.lowercased()) else {
+                continue
+            }
+            let relativePath = relative(url, to: root)
+            guard isFolderMarker || !relativePath.split(separator: "/").contains(where: { $0.hasPrefix(".") }) else {
+                continue
+            }
 
             let size = values?.fileSize ?? 0
             guard size <= limits.maximumFileBytes else { continue }
@@ -122,7 +133,6 @@ struct LocalProjectLoader {
             guard let data = try? Data(contentsOf: url) else { continue }
             let text = String(decoding: data, as: UTF8.self)
             guard !SourceFileLimit.exceedsLimit(text) else { continue }
-            let relativePath = relative(url, to: root)
             files[relativePath] = text
         }
 

@@ -78,10 +78,21 @@ final class LessonModel {
     }
 
     /// Puts the verified answer in the editor. Check still has to run: Realize
-    /// is a fill, not a pass.
+    /// is a fill, not a pass. The old failed verdict is cleared so the screen
+    /// never claims that the newly inserted answer is the source that failed.
     func realize() {
         guard let source = LessonHintCatalog.realizeSource(for: lesson) else { return }
         editorText = source
+        result = nil
+    }
+
+    /// The action offered after a failed Check is deliberately end-to-end:
+    /// insert the catalogued answer and have the same hidden test verify it.
+    /// A learner asking to see the answer should not have to guess whether a
+    /// stale red verdict belongs to the old source or press a second button.
+    func realizeAndCheck() async {
+        realize()
+        await check()
     }
 
     /// Records a lesson the compiler cannot judge.

@@ -77,3 +77,151 @@ extension WorkspaceModel {
         return ""
     }
 }
+
+enum ProjectFileError: LocalizedError {
+    case invalidName
+    case alreadyExists
+    case notFound
+    case protectedFile
+    case lastFile
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidName: "Choose a name without slashes, reserved names, or control characters."
+        case .alreadyExists: "A file or folder with that name already exists."
+        case .notFound: "That file or folder is no longer in this project."
+        case .protectedFile: "Installed packages are managed from Packages."
+        case .lastFile: "A project needs at least one file."
+        }
+    }
+}
+
+extension WorkspaceModel {
+    /// An empty directory is recorded by a hidden marker so it survives a save
+    /// or archive without introducing a second, unsynchronised folder model.
+    @discardableResult
+    func createFolder(named name: String, in directory: String = "") throws -> String {
+        let path = try newPath(named: name, in: directory)
+        var files = try currentFiles()
+        guard directory.isEmpty || files.keys.contains(where: { $0.hasPrefix(directory + "/") }) else {
+            throw ProjectFileError.notFound
+        }
+        guard !hasPath(path, in: files) else { throw ProjectFileError.alreadyExists }
+        files[path + "/" + GopherForgeProject.folderMarker] = ""
+        replaceFiles(with: files)
+        return path
+    }
+
+    @discardableResult
+    func createFile(named name: String, in directory: String = "") throws -> String {
+        let path = try newPath(named: name, in: directory)
+        var files = try currentFiles()
+        guard directory.isEmpty || files.keys.contains(where: { $0.hasPrefix(directory + "/") }) else {
+            throw ProjectFileError.notFound
+        }
+        guard !hasPath(path, in: files) else { throw ProjectFileError.alreadyExists }
+        let package = files.keys.sorted().first { candidate in
+            GoPackageGraph.directory(of: candidate) == directory
+                && candidate.hasSuffix(".go") && !candidate.hasSuffix("_test.go")
+        }.map { GoSourceHeader.parse(files[$0] ?? "").packageName }
+        let fallback = directory.split(separator: "/").last.map(String.init) ?? "main"
+        let identifier = fallback.replacingOccurrences(
+            of: "[^A-Za-z0-9_]", with: "_", options: .regularExpression
+        )
+        let source = path.hasSuffix(".go")
+            ? "package \(package.flatMap { $0.isEmpty ? nil : $0 } ?? (identifier.first?.isNumber == true || identifier == "_" ? "main" : identifier))\n\n"
+            : ""
+        files[path] = source
+        replaceFiles(with: files)
+        select(file: path)
+        return path
+    }
+
+    func renameFile(at path: String, to name: String) throws {
+        guard !GoVendorWriter.isVendoredPath(path) else { throw ProjectFileError.protectedFile }
+        let destination = try newPath(named: name, in: GoPackageGraph.directory(of: path))
+        if destination == path { return }
+        var files = try currentFiles()
+        guard let contents = files.removeValue(forKey: path) else { throw ProjectFileError.notFound }
+        guard !hasPath(destination, in: files) else { throw ProjectFileError.alreadyExists }
+        files[destination] = contents
+        let entry = project?.entryFile == path ? destination : project?.entryFile
+        applyFileChange(files, entryFile: entry, selectedFile: selectedFile == path ? destination : selectedFile)
+    }
+
+    func deleteFile(at path: String) throws {
+        guard !GoVendorWriter.isVendoredPath(path) else { throw ProjectFileError.protectedFile }
+        var files = try currentFiles()
+        guard files.removeValue(forKey: path) != nil else { throw ProjectFileError.notFound }
+        let remaining = files.keys.filter { !$0.hasSuffix("/" + GopherForgeProject.folderMarker) }
+        guard !remaining.isEmpty else { throw ProjectFileError.lastFile }
+        let entry = project?.entryFile == path ? preferredEntry(in: remaining) : project?.entryFile
+        applyFileChange(files, entryFile: entry, selectedFile: selectedFile == path ? entry ?? "" : selectedFile)
+    }
+
+    func renameFolder(at directory: String, to name: String) throws {
+        guard !directory.isEmpty, !GoVendorWriter.isVendoredPath(directory) else {
+            throw ProjectFileError.protectedFile
+        }
+        let destination = try newPath(named: name, in: GoPackageGraph.directory(of: directory))
+        if destination == directory { return }
+        var files = try currentFiles()
+        guard files.keys.contains(where: { $0.hasPrefix(directory + "/") }) else {
+            throw ProjectFileError.notFound
+        }
+        guard !hasPath(destination, in: files) else { throw ProjectFileError.alreadyExists }
+        for key in files.keys.filter({ $0.hasPrefix(directory + "/") }) {
+            files[destination + key.dropFirst(directory.count)] = files.removeValue(forKey: key)
+        }
+        func moved(_ path: String) -> String {
+            path.hasPrefix(directory + "/") ? destination + path.dropFirst(directory.count) : path
+        }
+        let entry = project.map { moved($0.entryFile) }
+        applyFileChange(files, entryFile: entry, selectedFile: moved(selectedFile))
+    }
+
+    func deleteFolder(at directory: String) throws {
+        guard !directory.isEmpty, !GoVendorWriter.isVendoredPath(directory) else {
+            throw ProjectFileError.protectedFile
+        }
+        var files = try currentFiles()
+        let descendants = files.keys.filter { $0.hasPrefix(directory + "/") }
+        guard !descendants.isEmpty else { throw ProjectFileError.notFound }
+        for key in descendants { files.removeValue(forKey: key) }
+        let remaining = files.keys.filter { !$0.hasSuffix("/" + GopherForgeProject.folderMarker) }
+        guard !remaining.isEmpty else { throw ProjectFileError.lastFile }
+        let entry = project?.entryFile ?? ""
+        let nextEntry = descendants.contains(entry) ? preferredEntry(in: remaining) : entry
+        let nextSelected = descendants.contains(selectedFile) ? nextEntry : selectedFile
+        applyFileChange(files, entryFile: nextEntry, selectedFile: nextSelected)
+    }
+
+    private func currentFiles() throws -> [String: String] {
+        commitEditorText()
+        guard let project else { throw ProjectFileError.notFound }
+        return project.files
+    }
+
+    private func newPath(named rawName: String, in directory: String) throws -> String {
+        let name = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty, name != ".", name != "..", name != GopherForgeProject.folderMarker,
+              !name.contains("/"), !name.contains("\\"), !name.contains("\0"),
+              name.rangeOfCharacter(from: .controlCharacters) == nil,
+              !(directory.isEmpty && name == "vendor"),
+              directory != "vendor", !GoVendorWriter.isVendoredPath(directory)
+        else { throw ProjectFileError.invalidName }
+        return directory.isEmpty ? name : directory + "/" + name
+    }
+
+    private func hasPath(_ path: String, in files: [String: String]) -> Bool {
+        files[path] != nil || files.keys.contains { $0.hasPrefix(path + "/") }
+    }
+
+    private func preferredEntry(in paths: [String]) -> String {
+        paths.sorted { left, right in
+            if left.hasSuffix(".go") != right.hasSuffix(".go") { return left.hasSuffix(".go") }
+            return left < right
+        }.first ?? ""
+    }
+
+}

@@ -32,14 +32,6 @@ struct ProjectFileRow: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.tail)
-                } else if path.contains("/") {
-                    // The directory only in the tree, where a row's section
-                    // already says it, and always in results, where it does not.
-                    Text(path)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                        .lineLimit(1)
-                        .truncationMode(.head)
                 }
             }
             Spacer(minLength: 0)

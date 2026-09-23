@@ -95,6 +95,12 @@ struct WorkspaceView: View {
         .task {
             if terminal == nil { terminal = ProjectTerminalSession(workspace: workspace) }
         }
+        .onChange(of: workspace.projectGeneration) {
+            pane = .code
+            dockPane = .problems
+            isDrawerOpen = false
+            terminal = ProjectTerminalSession(workspace: workspace)
+        }
         // A finished run opens the pane that answers it. Keyed on the
         // generation rather than the result, so running the same thing twice
         // still moves.

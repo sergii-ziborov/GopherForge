@@ -62,6 +62,52 @@ final class ProjectLibraryTests: XCTestCase {
         XCTAssertEqual(Set(items.compactMap { $0.project.files["main.go"] }).count, 2)
     }
 
+    func testDuplicatingCreatesAnIndependentNamedCopyAndKeepsItsFiling() async throws {
+        _ = try await library.record(
+            project: project(named: "original", files: ["main.go": "package main\n// source\n"]),
+            lastBuild: nil
+        )
+        let recorded = try await library.items()
+        let original = try XCTUnwrap(recorded.first)
+        _ = try await library.update(
+            id: original.id,
+            folder: "Experiments",
+            tags: ["go"],
+            isFavorite: true,
+            summary: "A useful base"
+        )
+
+        let duplicated = try await library.duplicate(id: original.id, named: "working copy")
+        let copy = try XCTUnwrap(duplicated)
+        XCTAssertNotEqual(copy.id, original.id)
+        XCTAssertEqual(copy.project.name, "working copy")
+        XCTAssertEqual(copy.project.files, original.project.files)
+        XCTAssertEqual(copy.folder, "Experiments")
+        XCTAssertEqual(copy.tags, ["go"])
+        XCTAssertEqual(copy.summary, "A useful base")
+        XCTAssertFalse(copy.favorite)
+        XCTAssertNil(copy.lastBuild)
+
+        _ = try await library.recordSource(
+            id: copy.id,
+            revision: 1,
+            project: project(named: "working copy", files: ["main.go": "package main\n// changed\n"])
+        )
+        let storedOriginal = try await library.project(id: original.id)
+        let unchanged = try XCTUnwrap(storedOriginal)
+        XCTAssertEqual(unchanged.project.files["main.go"], "package main\n// source\n")
+    }
+
+    func testCopyNameMakesRepeatedDuplicatesReadable() {
+        XCTAssertEqual(
+            ProjectLibraryItem.suggestedCopyName(
+                of: "Server",
+                existingNames: ["Server", "Server copy", "server COPY 2"]
+            ),
+            "Server copy 3"
+        )
+    }
+
     func testReopeningTheSameProjectUpdatesItRatherThanDuplicating() async throws {
         let id = UUID()
         _ = try await library.recordSource(id: id, revision: 0, project: project(named: "same"))

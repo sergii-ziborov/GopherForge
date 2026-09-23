@@ -144,3 +144,65 @@ struct ProjectOrganizerSheet: View {
         }
     }
 }
+
+/// Makes copying unmistakable: the original name is shown as context, while
+/// the new name is chosen before any data is written.
+struct ProjectDuplicateSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var name: String
+
+    let item: ProjectLibraryItem
+    let onDuplicate: (String) -> Void
+
+    init(
+        item: ProjectLibraryItem,
+        existingNames: [String],
+        onDuplicate: @escaping (String) -> Void
+    ) {
+        self.item = item
+        self.onDuplicate = onDuplicate
+        _name = State(
+            initialValue: ProjectLibraryItem.suggestedCopyName(
+                of: item.project.name,
+                existingNames: existingNames
+            )
+        )
+    }
+
+    private var trimmedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    LabeledContent("Original", value: item.project.name)
+                    TextField("Copy name", text: $name)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .accessibilityIdentifier(AccessibilityID.projectDuplicateName)
+                } header: {
+                    Text("New project")
+                } footer: {
+                    Text("This creates an independent copy. Editing it will not change the original.")
+                }
+            }
+            .navigationTitle("Duplicate project")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create copy") {
+                        onDuplicate(trimmedName)
+                        dismiss()
+                    }
+                    .disabled(trimmedName.isEmpty)
+                    .accessibilityIdentifier(AccessibilityID.projectDuplicateCreate)
+                }
+            }
+        }
+    }
+}

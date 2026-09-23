@@ -12,6 +12,7 @@ final class WorkspaceModel {
     private(set) var toolchain: ToolchainStatus = .missing
     private(set) var project: GopherForgeProject?
     private(set) var projectID: UUID?
+    private(set) var projectGeneration = 0
     private(set) var sourceRevision: UInt64 = 0
     private(set) var savedRevision: UInt64 = 0
     private(set) var hasUnsavedChanges = false
@@ -125,7 +126,13 @@ final class WorkspaceModel {
 
     @discardableResult
     func open(_ item: ProjectLibraryItem) -> Bool {
-        if projectID == item.id { return true }
+        if projectID == item.id {
+            commitEditorText()
+            selectedFile = project?.entryFile ?? item.project.entryFile
+            editorText = project?.files[selectedFile] ?? ""
+            resetProjectPresentation()
+            return true
+        }
         return open(item.project, id: item.id, revision: item.sourceRevision ?? 0, isNew: false)
     }
 
@@ -150,13 +157,12 @@ final class WorkspaceModel {
         if recoveryProject == nil, pendingBuildRecord == nil { saveError = nil }
         selectedFile = project.entryFile
         editorText = project.files[project.entryFile] ?? ""
-        lastResult = nil
-        clearFocusedError()
+        resetProjectPresentation()
         compileAttempts = 0
         refreshIdioms()
         // A project is yours from the moment you make it. The library used to
         // hear about one only when a build finished, so anything created and
-        // not yet compiled was missing from My projects — which is every
+        // not yet compiled was missing from Project library — which is every
         // project, for as long as it takes to press Build.
         //
         // The task is kept so a screen that is about to list the library can
@@ -168,6 +174,15 @@ final class WorkspaceModel {
         }
         refreshSitePreview()
         return true
+    }
+
+    private func resetProjectPresentation() {
+        projectGeneration &+= 1
+        lastResult = nil
+        runningStep = nil
+        revealLine = nil
+        highlightQuery = ""
+        clearFocusedError()
     }
 
     /// Completes once the open above has reached the library.
@@ -272,6 +287,7 @@ final class WorkspaceModel {
         commitEditorText()
         guard let project, let projectID, !isRunning else { return }
         let revision = sourceRevision
+        let opening = projectGeneration
         let sourceReady = remembering
 
         isRunning = true
@@ -287,7 +303,7 @@ final class WorkspaceModel {
             workspaceReuseKey: projectID.uuidString
         )
         let result = await execute(phase: phase, snapshot: snapshot, projectID: projectID)
-        if self.projectID == projectID, sourceRevision == revision {
+        if self.projectID == projectID, sourceRevision == revision, projectGeneration == opening {
             lastResult = result
             resultGeneration += 1
             clearFocusedError()
@@ -353,6 +369,24 @@ final class WorkspaceModel {
             selectedFile = updated.entryFile
         }
         editorText = files[selectedFile] ?? ""
+        refreshIdioms()
+        scheduleAutosave()
+        refreshSitePreview()
+    }
+
+    /// One atomic source change for rename/delete, including the entry point
+    /// and the selected buffer. Saving must see the same paths as the editor.
+    func applyFileChange(_ files: [String: String], entryFile: String?, selectedFile: String) {
+        guard let project, let entryFile else { return }
+        self.project = GopherForgeProject(
+            name: project.name, files: files, entryFile: entryFile, provenance: project.provenance
+        )
+        self.selectedFile = selectedFile
+        editorText = files[selectedFile] ?? ""
+        highlightQuery = ""
+        clearFocusedError()
+        sourceRevision &+= 1
+        hasUnsavedChanges = true
         refreshIdioms()
         scheduleAutosave()
         refreshSitePreview()

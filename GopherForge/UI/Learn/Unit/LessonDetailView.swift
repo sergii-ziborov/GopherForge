@@ -10,6 +10,7 @@ struct LessonDetailView: View {
     let lesson: Lesson
 
     @State private var model: LessonModel
+    @State private var showsFailureHelp = false
     @Environment(LearnProgress.self) private var progress
 
     init(lesson: Lesson) {
@@ -41,12 +42,12 @@ struct LessonDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                LessonHintCard(
-                    hint: model.hint,
-                    canRealize: model.canRealize,
-                    tint: tint,
-                    onRealize: { model.realize() }
-                )
+                // A reading exercise has no failing Check that could open the
+                // help sheet, so its authored hint remains on the page. Code
+                // lessons reveal theirs only after an actual failed attempt.
+                if !lesson.requiresCompiler {
+                    LessonReferenceHintCard(hint: model.hint, tint: tint)
+                }
 
                 taskSection
 
@@ -58,7 +59,11 @@ struct LessonDetailView: View {
                 }
 
                 if let result = model.result {
-                    LessonVerdictView(result: result, solution: lesson.idiomaticSolution)
+                    LessonVerdictView(
+                        result: result,
+                        solution: lesson.idiomaticSolution,
+                        onHelp: result.succeeded ? nil : { showsFailureHelp = true }
+                    )
                 }
 
                 completion
@@ -78,6 +83,17 @@ struct LessonDetailView: View {
         }
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showsFailureHelp) {
+            if let result = model.result, !result.succeeded {
+                LessonFailureSheet(
+                    result: result,
+                    hint: model.hint,
+                    canRealize: model.canRealize,
+                    tint: tint,
+                    onRealize: realizeAndCheck
+                )
+            }
+        }
         .task {
             await model.loadProgress()
             await model.prewarm()
@@ -231,9 +247,26 @@ struct LessonDetailView: View {
     private func check() {
         Task {
             await model.check()
+            if model.result?.succeeded == false {
+                showsFailureHelp = true
+            }
             // The course is showing this lesson's state too, and a pass it
             // never hears about is a tick nobody sees.
             await progress.refresh()
+        }
+    }
+
+    private func realizeAndCheck() {
+        showsFailureHelp = false
+        Task {
+            await model.realizeAndCheck()
+            await progress.refresh()
+            // Catalogued answers are compiler-gated. If one ever regresses,
+            // keep the failure visible with its real diagnostics instead of
+            // returning to an unexplained red count.
+            if model.result?.succeeded == false {
+                showsFailureHelp = true
+            }
         }
     }
 
@@ -289,6 +322,7 @@ struct LessonDetailView: View {
 struct LessonVerdictView: View {
     let result: CompilationResult
     let solution: String?
+    let onHelp: (() -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -303,6 +337,36 @@ struct LessonVerdictView: View {
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            ForEach(result.tests.filter { $0.outcome == .failed }) { test in
+                VStack(alignment: .leading, spacing: 4) {
+                    Label(test.name, systemImage: "xmark.circle.fill")
+                        .font(.caption.monospaced().weight(.semibold))
+                        .foregroundStyle(.red)
+                    Text(test.output.isEmpty ? "The test failed without an additional message." : test.output)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+
+            if !result.succeeded, result.tests.isEmpty, result.diagnostics.isEmpty,
+               !result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text(result.stderr)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+            }
+
+            if let onHelp {
+                Button(action: onHelp) {
+                    Label("Hint and solution", systemImage: "lightbulb")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityIdentifier(AccessibilityID.lessonFailureHelp)
             }
 
             if result.succeeded, let solution {

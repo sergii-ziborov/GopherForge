@@ -84,4 +84,43 @@ final class LessonSolutionGateTests: XCTestCase {
             "these lessons are already solved before the learner starts: \(passing)"
         )
     }
+
+    /// The phone flow is not a fresh compile: opening the lesson prewarms its
+    /// answer, the learner's first Check fails, and Realize then replaces that
+    /// source in the same persistent work tree. This is the exact regression
+    /// sequence from the UI, including the stable reuse key.
+    @MainActor
+    func testRealizePassesAfterAFailedCheckInTheReusedLessonWorkspace() async throws {
+        let lesson = try XCTUnwrap(GoCourseCatalog.lesson(id: "core.multiple-returns"))
+        let reuseKey = "lesson.\(lesson.id)"
+        let workRoot = GoWorkspaceStager.persistentRootURL(for: reuseKey)
+        try? FileManager.default.removeItem(at: workRoot)
+        defer { try? FileManager.default.removeItem(at: workRoot) }
+
+        let storeURL = FileManager.default.temporaryDirectory
+            .appending(path: "gopherforge-realize-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: storeURL) }
+        let model = LessonModel(
+            lesson: lesson,
+            compiler: compiler,
+            store: LearningProgressStore(storageURL: storeURL)
+        )
+
+        await model.prewarm()
+        await model.check()
+        let failedResult = try XCTUnwrap(model.result)
+        XCTAssertEqual(failedResult.tests.failedCount, 2)
+        XCTAssertTrue(
+            failedResult.tests.contains { !$0.output.isEmpty },
+            "A failed hidden test must carry the message the lesson UI shows"
+        )
+
+        await model.realizeAndCheck()
+        let result = try XCTUnwrap(model.result)
+        XCTAssertTrue(
+            result.succeeded,
+            "Realize source failed: \(result.detail)\n\(result.stdout)\n\(result.stderr)"
+        )
+        XCTAssertEqual(result.tests.passedCount, 2)
+    }
 }

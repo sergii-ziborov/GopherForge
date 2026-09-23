@@ -63,26 +63,25 @@ struct ProjectsHomeView: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.newProject)
 
-                if !recents.isEmpty {
-                    NavigationLink {
-                        MyProjectsView(
-                            items: recents,
-                            onOpen: { open($0) },
-                            onToggleFavorite: toggleFavorite,
-                            onOrganize: organize,
-                            onDelete: delete
-                        )
+                NavigationLink {
+                    MyProjectsView(
+                        items: recents,
+                        onOpen: { open($0) },
+                        onToggleFavorite: toggleFavorite,
+                        onOrganize: organize,
+                        onDuplicate: duplicate,
+                        onDelete: delete
+                    )
+                } label: {
+                    LabeledContent {
+                        Text("\(recents.count)")
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
                     } label: {
-                        LabeledContent {
-                            Text("\(recents.count)")
-                                .font(.caption.monospacedDigit())
-                                .foregroundStyle(.secondary)
-                        } label: {
-                            Label("My projects", systemImage: "square.grid.2x2")
-                        }
+                        Label("Project library", systemImage: "square.grid.2x2")
                     }
-                    .accessibilityIdentifier(AccessibilityID.libraryEntry)
                 }
+                .accessibilityIdentifier(AccessibilityID.libraryEntry)
 
                 Button {
                     filePick = .openProject
@@ -117,14 +116,14 @@ struct ProjectsHomeView: View {
             } footer: {
                 Text("Projects stay on this device unless you pick an iCloud Drive "
                     + "or Files folder for the library. Export a project from its "
-                    + "file menu — in My projects, or the ⋯ menu in the editor.")
+                    + "file menu — in Project library, or the ⋯ menu in the editor.")
             }
 
             if !recents.isEmpty {
                 Section {
                     // A strip, not the library: five is what fits without the
                     // first screen becoming a wall, and everything else is one
-                    // tap away in My projects.
+                    // tap away in Project library.
                     ForEach(recents.prefix(ProjectHomeLimits.recentCount)) { item in
                         Button {
                             open(item)
@@ -139,13 +138,26 @@ struct ProjectsHomeView: View {
                     Text("Recent")
                 } footer: {
                     if recents.count > ProjectHomeLimits.recentCount {
-                        Text("\(recents.count - ProjectHomeLimits.recentCount) more in My projects.")
+                        Text("\(recents.count - ProjectHomeLimits.recentCount) more in Project library.")
                     }
                 }
             }
 
-            ProjectsExamplesSections { example in
-                open(example.project())
+            Section {
+                NavigationLink {
+                    ExampleLibraryView()
+                } label: {
+                    LabeledContent {
+                        Text("\(GoExampleLibrary.all.count)")
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    } label: {
+                        Label("Examples", systemImage: "curlybraces")
+                    }
+                }
+                .accessibilityIdentifier(AccessibilityID.projectsExamples)
+            } footer: {
+                Text("Browse runnable programs and site projects in their own library.")
             }
 
             if let importFailure {
@@ -302,6 +314,21 @@ struct ProjectsHomeView: View {
                 importFailure = "Не удалось сохранить проект: \(error.localizedDescription)"
             }
             await reload()
+        }
+    }
+
+    private func duplicate(_ item: ProjectLibraryItem, named name: String) {
+        Task {
+            do {
+                guard let copy = try await library.duplicate(id: item.id, named: name) else {
+                    importFailure = "The original project is no longer in the library."
+                    return
+                }
+                recents = try await library.items()
+                open(copy)
+            } catch {
+                importFailure = "Could not duplicate the project: \(error.localizedDescription)"
+            }
         }
     }
 

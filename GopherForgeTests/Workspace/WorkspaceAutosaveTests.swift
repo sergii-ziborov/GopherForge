@@ -129,6 +129,65 @@ final class WorkspaceAutosaveTests: XCTestCase {
         )
     }
 
+    func testCreatingFilesAndEmptyFoldersSurvivesSavingAndReopening() async throws {
+        let workspace = await openedWorkspace()
+        let folder = try workspace.createFolder(named: "handlers")
+        XCTAssertEqual(folder, "handlers")
+        XCTAssertEqual(workspace.project?.files["handlers/.gopherforge-folder"], "")
+        let file = try workspace.createFile(named: "server.go", in: folder)
+        XCTAssertEqual(file, "handlers/server.go")
+        XCTAssertEqual(workspace.selectedFile, file)
+        XCTAssertTrue(workspace.editorText.hasPrefix("package handlers"))
+        workspace.updateEditorText("package handlers\n\nfunc Serve() {}\n")
+        await workspace.flush()
+
+        let items = try await library.items()
+        let item = try XCTUnwrap(items.first)
+        let reopened = WorkspaceModel(library: library)
+        XCTAssertTrue(reopened.open(item))
+        XCTAssertEqual(reopened.project?.files[file], "package handlers\n\nfunc Serve() {}\n")
+        XCTAssertEqual(reopened.project?.files["handlers/.gopherforge-folder"], "")
+    }
+
+    func testRenameAndDeleteKeepEntryAndSelectedFileValid() async throws {
+        let workspace = await openedWorkspace()
+        try workspace.createFolder(named: "cmd")
+        let first = try workspace.createFile(named: "tool.go", in: "cmd")
+        workspace.updateEditorText("package main\nfunc main() {}\n")
+        try workspace.renameFolder(at: "cmd", to: "bin")
+        XCTAssertEqual(workspace.selectedFile, "bin/tool.go")
+        XCTAssertEqual(workspace.project?.files["bin/tool.go"], "package main\nfunc main() {}\n")
+
+        try workspace.renameFile(at: "main.go", to: "start.go")
+        XCTAssertEqual(workspace.project?.entryFile, "start.go")
+        XCTAssertThrowsError(try workspace.createFile(named: "start.go"))
+        XCTAssertThrowsError(try workspace.createFile(named: "../outside.go"))
+
+        try workspace.deleteFolder(at: "bin")
+        XCTAssertEqual(workspace.selectedFile, "start.go")
+        XCTAssertEqual(workspace.project?.files[first], nil)
+        XCTAssertThrowsError(try workspace.deleteFile(at: "start.go"))
+        await workspace.flush()
+        let items = try await library.items()
+        let item = try XCTUnwrap(items.first)
+        XCTAssertEqual(item.project.entryFile, "start.go")
+    }
+
+    func testOpeningAnotherProjectOrReopeningSameOneClearsRunState() async throws {
+        let workspace = await openedWorkspace()
+        let items = try await library.items()
+        let item = try XCTUnwrap(items.first)
+        let firstGeneration = workspace.projectGeneration
+        XCTAssertTrue(workspace.open(item))
+        XCTAssertGreaterThan(workspace.projectGeneration, firstGeneration)
+        XCTAssertEqual(workspace.selectedFile, "main.go")
+        XCTAssertNil(workspace.lastResult)
+
+        XCTAssertTrue(workspace.open(ProjectTemplate.commandLineTool.project(named: "Next")))
+        XCTAssertNil(workspace.lastResult)
+        XCTAssertGreaterThan(workspace.projectGeneration, firstGeneration + 1)
+    }
+
     func testSwitchingProjectsBeforeDebounceKeepsTheFirstEdit() async throws {
         let workspace = await openedWorkspace()
         let firstID = try XCTUnwrap(workspace.projectID)

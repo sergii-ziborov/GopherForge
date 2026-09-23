@@ -2,6 +2,10 @@ import Foundation
 
 /// A Go project as the app holds it: paths to contents, plus where it came from.
 struct GopherForgeProject: Codable, Equatable, Sendable {
+    /// Empty folders need an on-disk representation in the existing file map.
+    /// Hidden from the editor and ignored by the Go package graph.
+    static let folderMarker = ".gopherforge-folder"
+
     struct Provenance: Codable, Equatable, Sendable {
         enum Source: String, Codable, Sendable {
             case files

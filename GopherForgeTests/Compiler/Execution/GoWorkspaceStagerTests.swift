@@ -60,6 +60,20 @@ final class GoWorkspaceStagerTests: XCTestCase {
         )
     }
 
+    func testStagingDropsAnEmptyFolderMarkerWhenFolderIsDeleted() throws {
+        let stager = GoWorkspaceStager()
+        let layout = try stager.createLayout(named: "stage-folder-\(UUID().uuidString)")
+        defer { stager.remove(layout) }
+        try stager.stage(files: [
+            "main.go": "package main\n",
+            "empty/.gopherforge-folder": "",
+        ], into: layout.work)
+        try stager.stage(files: ["main.go": "package main\n"], into: layout.work)
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: layout.work.appending(path: "empty/.gopherforge-folder").path
+        ))
+    }
+
     func testPersistentWorkAndTempSurviveJobCleanup() throws {
         let stager = GoWorkspaceStager()
         let root = FileManager.default.temporaryDirectory

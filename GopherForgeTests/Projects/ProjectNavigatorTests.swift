@@ -124,6 +124,18 @@ final class ProjectFileSearchTests: XCTestCase {
 }
 
 final class ProjectNavigatorListingTests: XCTestCase {
+    func testEmptyFoldersAndParentsAppearWithoutExposingMarkers() {
+        let files = [
+            "main.go": "package main\n",
+            "a/b/.gopherforge-folder": "",
+            "a/b/readme.md": "hello",
+        ]
+        let groups = ProjectNavigatorListing.fileGroups(in: files)
+        XCTAssertEqual(groups.map(\.directory), ["", "a", "a/b"])
+        XCTAssertEqual(groups.first { $0.directory == "a/b" }?.paths, ["a/b/readme.md"])
+        XCTAssertTrue(ProjectFileSearch.results(query: "gopherforge-folder", in: files).isEmpty)
+    }
+
     func testVendorFilesAreNotGroupedInTheTree() {
         let groups = ProjectNavigatorListing.fileGroups(in: [
             "main.go": "package main\n",

@@ -99,6 +99,12 @@
                   Identifier = "BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()">
                </Test>
                <Test
+                  Identifier = "BundledContentGateTests/testEveryGinSiteRunsWithTheBundledCompiler()">
+               </Test>
+               <Test
+                  Identifier = "BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()">
+               </Test>
+               <Test
                   Identifier = "BundledContentGateTests/testExampleIdentifiersAreUnique()">
                </Test>
                <Test
@@ -106,6 +112,9 @@
                </Test>
                <Test
                   Identifier = "LessonSolutionGateTests/testAStarterDoesNotAlreadyPass()">
+               </Test>
+               <Test
+                  Identifier = "LessonSolutionGateTests/testRealizePassesAfterAFailedCheckInTheReusedLessonWorkspace()">
                </Test>
                <Test
                   Identifier = "BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()">

@@ -40,7 +40,8 @@ struct WorkspacePaneContent: View {
             OutputStreamView(
                 result: workspace.lastResult,
                 progress: workspace.runningStep,
-                siteURL: workspace.sitePreviewURL,
+                siteURL: workspace.lastResult?.phase == .run && workspace.lastResult?.succeeded == true
+                    ? workspace.sitePreviewURL : nil,
                 siteGeneration: workspace.siteGeneration
             )
         case .tests:

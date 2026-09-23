@@ -49,6 +49,38 @@ final class BundledContentGateTests: XCTestCase {
         XCTAssertTrue(failures.isEmpty, failures.joined(separator: "\n\n"))
     }
 
+    func testEveryGinSiteRunsWithTheBundledCompiler() async {
+        for example in GoExampleLibrarySites.all {
+            let result = await compiler.run(project: example.snapshot())
+            XCTAssertTrue(result.succeeded, "\(example.id): \(report(result))")
+            XCTAssertEqual(result.stdout, example.expectedOutput, example.id)
+        }
+    }
+
+    @MainActor
+    func testGinProjectRunsWhenOpenedInWorkspace() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appending(path: "gin-workspace-\(UUID().uuidString)", directoryHint: .isDirectory)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let workspace = WorkspaceModel(
+            compiler: compiler,
+            library: ProjectLibrary(storageURL: root.appending(path: "projects.json"))
+        )
+        await workspace.prepare()
+        let example = GoExampleProjectGinCafe.cafe
+        XCTAssertTrue(workspace.open(example.project()))
+        await workspace.run(.run)
+        XCTAssertTrue(workspace.lastResult?.succeeded == true, workspace.lastResult?.detail ?? "no result")
+        XCTAssertEqual(workspace.lastResult?.stdout, example.expectedOutput)
+        XCTAssertNotNil(workspace.sitePreviewURL)
+
+        let previousOpening = workspace.projectGeneration
+        XCTAssertTrue(workspace.open(ProjectTemplate.commandLineTool.project(named: "Fresh")))
+        XCTAssertGreaterThan(workspace.projectGeneration, previousOpening)
+        XCTAssertNil(workspace.lastResult)
+        XCTAssertEqual(workspace.selectedFile, "main.go")
+    }
+
     /// Identifiers are how an example is referred to from a concept or a
     /// review item, so two examples sharing one is a silent redirect.
     func testExampleIdentifiersAreUnique() {

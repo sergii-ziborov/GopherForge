@@ -45,36 +45,6 @@ struct ExampleLibraryView: View {
     }
 }
 
-/// The expanded library under Recent on the Projects home screen.
-struct ProjectsExamplesSections: View {
-    let onOpen: (GoExample) -> Void
-
-    var body: some View {
-        ForEach(Array(GoExampleLibrary.sections.enumerated()), id: \.element.title) { index, section in
-            Section {
-                ForEach(section.examples) { example in
-                    NavigationLink {
-                        ExampleDetailView(example: example, onOpen: onOpen)
-                    } label: {
-                        ExampleRow(example: example)
-                    }
-                    .accessibilityIdentifier("example.\(example.id)")
-                }
-            } header: {
-                Text(index == 0 ? "Examples · \(section.title)" : section.title)
-                    .accessibilityIdentifier(
-                        index == 0 ? AccessibilityID.projectsExamples : "examples.\(section.title)"
-                    )
-            } footer: {
-                if index == 0 {
-                    Text("Recent stays at \(ProjectHomeLimits.recentCount). "
-                        + "These compile and run here: pictures, tools, and tiny websites.")
-                }
-            }
-        }
-    }
-}
-
 struct ExampleRow: View {
     let example: GoExample
 
@@ -128,6 +98,13 @@ struct ExampleDetailView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier(AccessibilityID.exampleOpen)
+
+                if example.servesSite {
+                    Label("In Code, tap Run to build this Gin preview. The site then appears in Output.",
+                          systemImage: "play.rectangle")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
 
                 SourceBlock(title: "main.go", text: example.source)
                 ForEach(pageFiles, id: \.path) { file in

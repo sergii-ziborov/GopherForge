@@ -18,6 +18,11 @@ struct ProjectNavigatorView: View {
     @State private var query = ""
     @State private var isShowingPackages = false
     @State private var packageSearch = ""
+    @State private var creating: Creation?
+    @State private var renaming: FileTarget?
+    @State private var deleting: FileTarget?
+    @State private var nameDraft = ""
+    @State private var fileError: String?
     /// Called after a file is chosen, so a drawer can close itself.
     var onSelect: () -> Void = {}
     /// Called after a file is chosen so the workspace can show the editor,
@@ -26,7 +31,36 @@ struct ProjectNavigatorView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            HStack {
+                Label("Files", systemImage: "folder")
+                    .font(.headline)
+                Spacer()
+                Menu {
+                    Button { beginCreating(.file, in: "") } label: {
+                        Label("New file", systemImage: "doc.badge.plus")
+                    }
+                    .accessibilityIdentifier(AccessibilityID.newFile)
+                    Button { beginCreating(.folder, in: "") } label: {
+                        Label("New folder", systemImage: "folder.badge.plus")
+                    }
+                    .accessibilityIdentifier(AccessibilityID.newFolder)
+                } label: {
+                    Label("Add", systemImage: "plus")
+                }
+                .accessibilityIdentifier(AccessibilityID.addFileMenu)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             ProjectSearchField(query: $query)
+            if let fileError {
+                HStack {
+                    Text(fileError).font(.caption).foregroundStyle(.red)
+                    Spacer()
+                    Button("Dismiss", systemImage: "xmark") { self.fileError = nil }
+                        .labelStyle(.iconOnly)
+                }
+                .padding(8)
+            }
             Divider()
 
             if query.isEmpty {
@@ -52,18 +86,122 @@ struct ProjectNavigatorView: View {
                 }
             }
         }
+        .alert(creating?.kind == .folder ? "New folder" : "New file", isPresented: Binding(
+            get: { creating != nil },
+            set: { if !$0 { creating = nil } }
+        )) {
+            TextField("Name", text: $nameDraft)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+            Button("Create") {
+                guard let creating else { return }
+                do {
+                    if creating.kind == .file {
+                        let path = try workspace.createFile(named: nameDraft, in: creating.directory)
+                        open(path, at: nil)
+                    } else {
+                        try workspace.createFolder(named: nameDraft, in: creating.directory)
+                        query = ""
+                    }
+                    fileError = nil
+                } catch { fileError = error.localizedDescription }
+                self.creating = nil
+            }
+            Button("Cancel", role: .cancel) { creating = nil }
+        } message: {
+            Text("Add to \(creating.map { $0.directory.isEmpty ? "project root" : $0.directory } ?? "project root")")
+        }
+        .alert("Rename", isPresented: Binding(
+            get: { renaming != nil },
+            set: { if !$0 { renaming = nil } }
+        )) {
+            TextField("Name", text: $nameDraft)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+            Button("Save") {
+                guard let renaming else { return }
+                do {
+                    if renaming.isFolder {
+                        try workspace.renameFolder(at: renaming.path, to: nameDraft)
+                    } else {
+                        try workspace.renameFile(at: renaming.path, to: nameDraft)
+                    }
+                    fileError = nil
+                } catch { fileError = error.localizedDescription }
+                self.renaming = nil
+            }
+            Button("Cancel", role: .cancel) { renaming = nil }
+        } message: {
+            Text(renaming?.path ?? "")
+        }
+        .confirmationDialog(
+            "Delete \(deleting?.path ?? "")?",
+            isPresented: Binding(
+                get: { deleting != nil },
+                set: { if !$0 { deleting = nil } }
+            )
+        ) {
+            Button("Delete", role: .destructive) {
+                guard let deleting else { return }
+                do {
+                    if deleting.isFolder {
+                        try workspace.deleteFolder(at: deleting.path)
+                    } else {
+                        try workspace.deleteFile(at: deleting.path)
+                    }
+                    fileError = nil
+                } catch { fileError = error.localizedDescription }
+                self.deleting = nil
+            }
+        } message: {
+            Text("This removes it from this project.")
+        }
     }
 
     // MARK: - Tree
 
     private var tree: some View {
         List {
-            packagesSection
             ForEach(groups, id: \.directory) { group in
-                Section(group.title) { rows(in: group) }
+                Section {
+                    rows(in: group)
+                } header: {
+                    folderHeader(for: group)
+                }
             }
+            packagesSection
         }
         .listStyle(.sidebar)
+    }
+
+    private func folderHeader(for group: (directory: String, title: String, paths: [String])) -> some View {
+        HStack {
+            Label(group.title, systemImage: group.directory.isEmpty ? "tray.full" : "folder")
+            Spacer()
+            if !group.directory.isEmpty {
+                Menu {
+                    Button { beginCreating(.file, in: group.directory) } label: {
+                        Label("New file here", systemImage: "doc.badge.plus")
+                    }
+                    Button { beginCreating(.folder, in: group.directory) } label: {
+                        Label("New subfolder", systemImage: "folder.badge.plus")
+                    }
+                    Divider()
+                    Button { beginRenaming(.init(path: group.directory, isFolder: true)) } label: {
+                        Label("Rename folder", systemImage: "pencil")
+                    }
+                    Button(role: .destructive) {
+                        deleting = .init(path: group.directory, isFolder: true)
+                    } label: {
+                        Label("Delete folder", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("Folder actions for \(group.directory)")
+            }
+        }
+        .textCase(nil)
     }
 
     private var packagesSection: some View {
@@ -116,7 +254,38 @@ struct ProjectNavigatorView: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier(AccessibilityID.file(path))
+            .contextMenu {
+                Button { beginRenaming(.init(path: path, isFolder: false)) } label: {
+                    Label("Rename file", systemImage: "pencil")
+                }
+                Button(role: .destructive) {
+                    deleting = .init(path: path, isFolder: false)
+                } label: {
+                    Label("Delete file", systemImage: "trash")
+                }
+            }
         }
+    }
+
+    private func beginCreating(_ kind: Creation.Kind, in directory: String) {
+        nameDraft = ""
+        creating = Creation(kind: kind, directory: directory)
+    }
+
+    private func beginRenaming(_ target: FileTarget) {
+        nameDraft = target.path.split(separator: "/").last.map(String.init) ?? target.path
+        renaming = target
+    }
+
+    private struct Creation {
+        enum Kind { case file, folder }
+        let kind: Kind
+        let directory: String
+    }
+
+    private struct FileTarget {
+        let path: String
+        let isFolder: Bool
     }
 
     // MARK: - Search
@@ -253,20 +422,27 @@ private struct InstalledPackageRow: View {
 /// The project's own files, grouped by directory, with `vendor/` left out.
 enum ProjectNavigatorListing {
     static func fileGroups(in files: [String: String]) -> [(directory: String, title: String, paths: [String])] {
-        let own = files.keys.filter { !GoVendorWriter.isVendoredPath($0) }.sorted()
+        let own = files.keys.filter {
+            !GoVendorWriter.isVendoredPath($0)
+                && !$0.hasSuffix("/" + GopherForgeProject.folderMarker)
+        }.sorted()
         let grouped = Dictionary(grouping: own) { path -> String in
             let components = path.split(separator: "/").dropLast()
-            return components.isEmpty ? "." : components.joined(separator: "/")
+            return components.joined(separator: "/")
         }
-        return grouped
-            .sorted { $0.key < $1.key }
-            .map { directory, paths in
+        var directories: Set<String> = [""]
+        for path in files.keys where !GoVendorWriter.isVendoredPath(path) {
+            let components = path.split(separator: "/").dropLast()
+            guard !components.isEmpty else { continue }
+            for count in 1...components.count {
+                directories.insert(components.prefix(count).joined(separator: "/"))
+            }
+        }
+        return directories.sorted().map { directory in
                 (
                     directory: directory,
-                    // A directory is a package in Go, so the tree teaches the
-                    // structure while it is used.
-                    title: directory == "." ? "module root" : directory,
-                    paths: paths.sorted()
+                    title: directory.isEmpty ? "Project files" : directory,
+                    paths: (grouped[directory] ?? []).sorted()
                 )
             }
     }

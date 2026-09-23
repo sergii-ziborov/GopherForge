@@ -29,12 +29,14 @@ struct MyProjectsView: View {
     @State private var favoritesOnly = false
     @State private var sort: Sort = .recentlyOpened
     @State private var organizing: ProjectLibraryItem?
+    @State private var duplicating: ProjectLibraryItem?
     @State private var deletionCandidate: ProjectLibraryItem?
 
     let items: [ProjectLibraryItem]
     let onOpen: (ProjectLibraryItem) -> Void
     let onToggleFavorite: (ProjectLibraryItem) -> Void
     let onOrganize: (ProjectLibraryItem, ProjectFilingDraft) -> Void
+    let onDuplicate: (ProjectLibraryItem, String) -> Void
     let onDelete: (ProjectLibraryItem) -> Void
 
     private var folders: [String] {
@@ -80,7 +82,7 @@ struct MyProjectsView: View {
                 }
             }
         }
-        .navigationTitle("My projects")
+        .navigationTitle("Project library")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(
             text: $query,
@@ -96,6 +98,14 @@ struct MyProjectsView: View {
         .sheet(item: $organizing) { item in
             ProjectOrganizerSheet(item: item, existingFolders: folders) { draft in
                 onOrganize(item, draft)
+            }
+        }
+        .sheet(item: $duplicating) { item in
+            ProjectDuplicateSheet(
+                item: item,
+                existingNames: items.map(\.project.name)
+            ) { name in
+                onDuplicate(item, name)
             }
         }
         .alert(
@@ -180,13 +190,53 @@ struct MyProjectsView: View {
     }
 
     private func row(for item: ProjectLibraryItem) -> some View {
-        Button {
-            onOpen(item)
-        } label: {
-            ProjectLibraryRow(item: item)
+        HStack(spacing: 8) {
+            Button {
+                onOpen(item)
+            } label: {
+                ProjectLibraryRow(item: item)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier(AccessibilityID.project(item.id))
+
+            Menu {
+                Button {
+                    duplicating = item
+                } label: {
+                    Label("Duplicate…", systemImage: "plus.square.on.square")
+                }
+                .accessibilityIdentifier(AccessibilityID.projectDuplicate)
+                Button {
+                    organizing = item
+                } label: {
+                    Label("Rename and file…", systemImage: "folder")
+                }
+                ShareLink(
+                    item: ProjectExport(project: item.project),
+                    preview: SharePreview(item.project.name)
+                ) {
+                    Label("Export as .tar.gz", systemImage: "square.and.arrow.up")
+                }
+                Button {
+                    onToggleFavorite(item)
+                } label: {
+                    Label(item.favorite ? "Unstar" : "Star", systemImage: "star")
+                }
+                Button(role: .destructive) {
+                    deletionCandidate = item
+                } label: {
+                    Label("Remove", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 36, height: 36)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Project actions for \(item.project.name)")
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(AccessibilityID.project(item.id))
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 deletionCandidate = item
@@ -206,6 +256,12 @@ struct MyProjectsView: View {
                 Label("Export", systemImage: "square.and.arrow.up")
             }
             .tint(.indigo)
+            Button {
+                duplicating = item
+            } label: {
+                Label("Duplicate", systemImage: "plus.square.on.square")
+            }
+            .tint(.blue)
         }
         .swipeActions(edge: .leading) {
             Button {
@@ -219,6 +275,12 @@ struct MyProjectsView: View {
             .tint(GopherForgeTheme.sun)
         }
         .contextMenu {
+            Button {
+                duplicating = item
+            } label: {
+                Label("Duplicate…", systemImage: "plus.square.on.square")
+            }
+            .accessibilityIdentifier(AccessibilityID.projectDuplicate)
             Button {
                 organizing = item
             } label: {

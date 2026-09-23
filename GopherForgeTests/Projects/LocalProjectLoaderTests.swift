@@ -105,6 +105,7 @@ final class LocalProjectLoaderTests: XCTestCase {
     func testProjectPackageRoundTrips() throws {
         try write("go.mod", "module example.com/forge\n\ngo 1.27\n")
         try write("main.go", "package main\n\nfunc main() {}\n")
+        try write("empty/subfolder/.gopherforge-folder", "")
         let project = try LocalProjectLoader().load(from: root)
 
         let exported = root.appending(path: "Exported.gopherforgeproject", directoryHint: .isDirectory)
@@ -114,6 +115,7 @@ final class LocalProjectLoaderTests: XCTestCase {
         XCTAssertEqual(reopened.name, project.name)
         XCTAssertEqual(reopened.entryFile, project.entryFile)
         XCTAssertEqual(reopened.files["main.go"], project.files["main.go"])
+        XCTAssertEqual(reopened.files["empty/subfolder/.gopherforge-folder"], "")
         XCTAssertNil(reopened.files["gopherforge.json"])
     }
 

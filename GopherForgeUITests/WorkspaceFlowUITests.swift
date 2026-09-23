@@ -50,6 +50,16 @@ final class WorkspaceFlowUITests: XCTestCase {
             app.buttons[AccessibilityIdentifier.keepLibraryInCloud].exists,
             "the landing screen should offer to keep the library in iCloud"
         )
+        let library = app.buttons[AccessibilityIdentifier.libraryEntry]
+        XCTAssertTrue(
+            library.exists,
+            "Project library should be a separate destination even before the first project exists"
+        )
+        library.tap()
+        XCTAssertTrue(
+            app.navigationBars["Project library"].waitForExistence(timeout: 5),
+            "Projects should lead to a dedicated library screen"
+        )
         attachScreenshot(named: "01-projects")
     }
 
@@ -60,6 +70,9 @@ final class WorkspaceFlowUITests: XCTestCase {
         ]
         app.launch()
 
+        let examples = app.buttons[AccessibilityIdentifier.projectsExamples]
+        XCTAssertTrue(examples.waitForExistence(timeout: 10))
+        examples.tap()
         let cafe = app.buttons["example.site.cafe"]
         for _ in 0..<6 where !cafe.isHittable { app.swipeUp() }
         XCTAssertTrue(cafe.waitForExistence(timeout: 10))
@@ -68,6 +81,14 @@ final class WorkspaceFlowUITests: XCTestCase {
         let open = app.buttons[AccessibilityIdentifier.exampleOpen]
         XCTAssertTrue(open.waitForExistence(timeout: 5))
         open.tap()
+
+        let run = app.buttons["phase.run"]
+        XCTAssertTrue(run.waitForExistence(timeout: 10))
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "enabled == true"), object: run
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 20), .completed)
+        run.tap()
 
         let output = app.buttons["pane.output"]
         XCTAssertTrue(output.waitForExistence(timeout: 10))
@@ -143,6 +164,75 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertTrue(editor.waitForExistence(timeout: 10), "opening a template should show the editor")
         XCTAssertTrue(editor.value as? String ?? "" != "", "the editor should hold the template's source")
         attachScreenshot(named: "02-editor")
+    }
+
+    func testOpeningAnotherProjectReturnsToCodeWithEmptyOutput() {
+        app.launchArguments = [
+            "-GopherForgeSection", Section.build.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
+        app.launch()
+
+        let output = app.buttons["pane.output"]
+        XCTAssertTrue(output.waitForExistence(timeout: 10))
+        output.tap()
+
+        let projects = app.tabBars.buttons["Projects"]
+        XCTAssertTrue(projects.waitForExistence(timeout: 5))
+        projects.tap()
+        openNewProject()
+        let template = app.buttons["template.cli"]
+        XCTAssertTrue(template.waitForExistence(timeout: 5))
+        template.tap()
+        app.buttons[AccessibilityIdentifier.newProjectCreate].tap()
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        XCTAssertTrue((editor.value as? String ?? "").contains("package main"))
+        XCTAssertTrue(app.buttons["pane.code"].isSelected)
+        output.tap()
+        XCTAssertTrue(app.staticTexts["Nothing has run yet"].waitForExistence(timeout: 5))
+    }
+
+    func testProjectLibraryDuplicatesWithAVisibleNewName() {
+        app.launchArguments = [
+            "-GopherForgeSection", Section.projects.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
+        app.launch()
+
+        openNewProject()
+        let template = app.buttons["template.cli"]
+        XCTAssertTrue(template.waitForExistence(timeout: 5))
+        template.tap()
+        app.buttons[AccessibilityIdentifier.newProjectCreate].tap()
+
+        let projects = app.tabBars.buttons["Projects"]
+        XCTAssertTrue(projects.waitForExistence(timeout: 10))
+        projects.tap()
+        let library = app.buttons[AccessibilityIdentifier.libraryEntry]
+        XCTAssertTrue(library.waitForExistence(timeout: 5))
+        library.tap()
+
+        let actions = app.buttons["Project actions for Command-line tool"]
+        XCTAssertTrue(
+            actions.waitForExistence(timeout: 5),
+            "each library row should expose an obvious actions menu"
+        )
+        actions.tap()
+        app.buttons["Duplicate…"].tap()
+
+        let name = app.textFields[AccessibilityIdentifier.projectDuplicateName]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        XCTAssertEqual(name.value as? String, "Command-line tool copy")
+        app.buttons[AccessibilityIdentifier.projectDuplicateCreate].tap()
+
+        XCTAssertTrue(app.textViews[AccessibilityIdentifier.editor].waitForExistence(timeout: 10))
+        projects.tap()
+        XCTAssertTrue(
+            app.staticTexts["Command-line tool copy"].waitForExistence(timeout: 5),
+            "the copy should appear as a separate, clearly named project"
+        )
     }
 
     func testTypingReachesTheBuffer() {
@@ -491,6 +581,10 @@ final class WorkspaceFlowUITests: XCTestCase {
 /// breaks compilation in exactly one file.
 enum AccessibilityIdentifier {
     static let welcomeCard = "projects.welcome"
+    static let projectsExamples = "projects.examples"
+    static let libraryEntry = "projects.library"
+    static let projectDuplicateName = "library.duplicate.name"
+    static let projectDuplicateCreate = "library.duplicate.create"
     static let newProject = "projects.new"
     static let newProjectCreate = "projects.new.create"
     static let exampleOpen = "example.open"

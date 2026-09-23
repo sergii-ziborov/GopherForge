@@ -134,7 +134,7 @@ struct GoWorkspaceStager {
         guard let enumerator = fileManager.enumerator(
             at: work,
             includingPropertiesForKeys: [.isRegularFileKey],
-            options: [.skipsHiddenFiles]
+            options: []
         ) else {
             return
         }

@@ -56,7 +56,9 @@ enum ProjectFileSearch {
         let searchesContent = needle.count >= minimumContentQueryLength
         var found: [FileResult] = []
 
-        for path in files.keys.sorted() where !GoVendorWriter.isVendoredPath(path) {
+        for path in files.keys.sorted()
+        where !GoVendorWriter.isVendoredPath(path)
+            && !path.hasSuffix("/" + GopherForgeProject.folderMarker) {
             let matchesName = path.lowercased().contains(needle)
             let (lines, extra) = searchesContent
                 ? contentMatches(needle: needle, source: files[path] ?? "")

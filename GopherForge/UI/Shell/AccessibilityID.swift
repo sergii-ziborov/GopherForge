@@ -72,6 +72,9 @@ enum AccessibilityID {
     static func installedPackage(_ path: String) -> String { "package.installed.\(path)" }
     static let libraryEntry = "projects.library"
     static let libraryFilter = "library.filter"
+    static let projectDuplicate = "library.duplicate"
+    static let projectDuplicateName = "library.duplicate.name"
+    static let projectDuplicateCreate = "library.duplicate.create"
     static func libraryFolder(_ name: String) -> String { "library.folder.\(name)" }
     static func project(_ id: UUID) -> String { "project.\(id.uuidString)" }
     static let projectOrganize = "project.organize"
@@ -87,6 +90,9 @@ enum AccessibilityID {
     static let packageSignals = "package.signals"
     static let packageError = "package.error"
     static let fileSearch = "files.search"
+    static let addFileMenu = "files.add"
+    static let newFile = "files.newFile"
+    static let newFolder = "files.newFolder"
     static let filesToggle = "workspace.filesToggle"
     static let exportProject = "projects.export"
     static let projectMenu = "workspace.projectMenu"
@@ -107,6 +113,7 @@ enum AccessibilityID {
     static let lessonHint = "lesson.hint"
     static let lessonNuance = "lesson.nuance"
     static let lessonRealize = "lesson.realize"
+    static let lessonFailureHelp = "lesson.failureHelp"
     static let practiceEntry = "learn.practice"
     static let gameCenterStatus = "gamecenter.status"
     static let gameCenterDashboard = "gamecenter.dashboard"

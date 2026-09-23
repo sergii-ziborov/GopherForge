@@ -87,6 +87,33 @@ actor ProjectLibrary {
         return try items()
     }
 
+    /// Creates an independent project with the same source and filing.
+    ///
+    /// Build history and the star are intentionally not copied: both describe
+    /// the original entry. Folder, tags and note are copied because they are
+    /// still useful context for the new branch of work.
+    func duplicate(id: UUID, named name: String) throws -> ProjectLibraryItem? {
+        var current = try state()
+        guard let original = current.items.first(where: { $0.id == id }) else { return nil }
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let copy = ProjectLibraryItem(
+            id: UUID(),
+            project: original.project.renamed(to: trimmed),
+            lastOpenedAt: Date(),
+            sourceRevision: 0,
+            folder: original.folder,
+            tags: original.tags,
+            isFavorite: false,
+            summary: original.summary
+        )
+        current.items.append(copy)
+        current.items.sort { $0.lastOpenedAt > $1.lastOpenedAt }
+        try persist(current)
+        return copy
+    }
+
     /// Source writes are keyed by the library UUID, never by a mutable name.
     /// A delayed save from an older editor revision cannot replace newer code.
     @discardableResult

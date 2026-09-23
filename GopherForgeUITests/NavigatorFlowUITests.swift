@@ -56,6 +56,37 @@ final class NavigatorFlowUITests: XCTestCase {
         attachScreenshot(named: "21-search")
     }
 
+    func testCreateFolderAndFileFromTheNavigator() {
+        launch()
+        openNavigator()
+
+        let add = app.buttons["files.add"]
+        XCTAssertTrue(add.waitForExistence(timeout: 5))
+        add.tap()
+        let folderAction = app.buttons["files.newFolder"]
+        XCTAssertTrue(folderAction.waitForExistence(timeout: 5))
+        folderAction.tap()
+        let name = app.alerts.textFields["Name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        name.tap()
+        name.typeText("helpers")
+        app.alerts.buttons["Create"].tap()
+
+        add.tap()
+        let fileAction = app.buttons["files.newFile"]
+        XCTAssertTrue(fileAction.waitForExistence(timeout: 5))
+        fileAction.tap()
+        let fileName = app.alerts.textFields["Name"]
+        XCTAssertTrue(fileName.waitForExistence(timeout: 5))
+        fileName.tap()
+        fileName.typeText("extra.go")
+        app.alerts.buttons["Create"].tap()
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        XCTAssertTrue((editor.value as? String ?? "").contains("package main"))
+    }
+
     /// A file chosen while the terminal is showing still has to open in the
     /// editor. Leaving the pane where it was hid the file behind the console.
     func testChoosingAFileShowsTheCodeEvenFromTheTerminal() {
