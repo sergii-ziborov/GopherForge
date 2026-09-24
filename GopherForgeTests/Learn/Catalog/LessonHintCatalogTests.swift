@@ -134,10 +134,118 @@ final class LessonModelTests: XCTestCase {
         XCTAssertEqual(model.editorText, starter)
     }
 
+    func testRepeatedTapsStartOnlyOneCheckAndShowBusyImmediately() async throws {
+        let lesson = try compileLesson()
+        let runner = ControlledLessonTestRunner()
+        let model = controlledModel(lesson: lesson, runner: runner)
+
+        let firstTap = Task { await model.check() }
+        await runner.waitForCallCount(1)
+        XCTAssertTrue(model.isChecking, "the first tap must become visible before compilation finishes")
+
+        let impatientSecondTap = Task { await model.check() }
+        await impatientSecondTap.value
+        let callsAfterSecondTap = await runner.callCount
+        XCTAssertEqual(callsAfterSecondTap, 1, "a second tap must not queue stale work")
+
+        await runner.finishNext(with: .lessonSuccess)
+        await firstTap.value
+        XCTAssertFalse(model.isChecking)
+        XCTAssertTrue(model.result?.succeeded == true)
+    }
+
+    func testRealizeReusesTheVerifiedPrewarmInsteadOfCompilingForAnotherMinute() async throws {
+        let lesson = try compileLesson()
+        let runner = ControlledLessonTestRunner()
+        let model = controlledModel(lesson: lesson, runner: runner)
+
+        let prewarm = Task { await model.prewarm() }
+        await runner.waitForCallCount(1)
+        let prewarmedSource = await runner.source(at: 0)
+        XCTAssertEqual(prewarmedSource, lesson.verifiedSolution)
+        await runner.finishNext(with: .lessonSuccess)
+        await prewarm.value
+
+        let failedCheck = Task { await model.check() }
+        await runner.waitForCallCount(2)
+        await runner.finishNext(with: .lessonFailure)
+        await failedCheck.value
+        XCTAssertFalse(model.result?.succeeded == true)
+
+        await model.realizeAndCheck()
+        let callsAfterRealize = await runner.callCount
+        XCTAssertEqual(callsAfterRealize, 2, "Realize should use the exact answer already tested by prewarm")
+        XCTAssertTrue(model.result?.succeeded == true)
+    }
+
+    private func controlledModel(
+        lesson: Lesson,
+        runner: ControlledLessonTestRunner
+    ) -> LessonModel {
+        LessonModel(
+            lesson: lesson,
+            store: store(),
+            toolchainStatus: ToolchainStatus(
+                isReady: true,
+                toolSize: 1,
+                goVersion: "go-test",
+                label: "Test toolchain",
+                detail: "Controlled by the unit test."
+            ),
+            testRunner: { snapshot in await runner.run(snapshot) }
+        )
+    }
+
     private func store() -> LearningProgressStore {
         LearningProgressStore(
             storageURL: FileManager.default.temporaryDirectory
                 .appending(path: "gopherforge-lesson-model-\(UUID().uuidString).json")
         )
     }
+}
+
+private actor ControlledLessonTestRunner {
+    private var snapshots: [GoSourceSnapshot] = []
+    private var pending: [CheckedContinuation<CompilationResult, Never>] = []
+
+    var callCount: Int { snapshots.count }
+
+    func source(at index: Int) -> String? {
+        snapshots[index].files["main.go"]
+    }
+
+    func run(_ snapshot: GoSourceSnapshot) async -> CompilationResult {
+        snapshots.append(snapshot)
+        return await withCheckedContinuation { continuation in
+            pending.append(continuation)
+        }
+    }
+
+    func waitForCallCount(_ expected: Int) async {
+        while snapshots.count < expected {
+            await Task.yield()
+        }
+    }
+
+    func finishNext(with result: CompilationResult) {
+        pending.removeFirst().resume(returning: result)
+    }
+}
+
+private extension CompilationResult {
+    static let lessonSuccess = CompilationResult(
+        succeeded: true,
+        phase: .test,
+        exitCode: 0,
+        diagnostics: [],
+        stdout: "ok",
+        stderr: "",
+        duration: .zero,
+        detail: "2 of 2 tests passed."
+    )
+
+    static let lessonFailure = CompilationResult.failure(
+        phase: .test,
+        detail: "2 of 2 tests failed."
+    )
 }

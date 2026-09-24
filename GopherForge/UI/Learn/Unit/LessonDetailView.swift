@@ -176,21 +176,29 @@ struct LessonDetailView: View {
     private var unfinishedCard: some View {
         if lesson.isJudgedByCompiler {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Check records a pass. Next skips.")
+                Text("Run the hidden tests")
                     .font(.callout.weight(.semibold))
-                Text("The hidden test is the only way this lesson finishes. "
-                    + "A pass is marked automatically. Skip this lesson below "
-                    + "if you want to move on without a tick.")
+                Text("The first check prepares the compiler and can take up to a minute. "
+                    + "It starts on the first tap and marks the lesson complete "
+                    + "automatically when every test passes.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Button(action: check) {
-                    Label("Check", systemImage: "checkmark.diamond")
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: 8) {
+                        if model.isChecking {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "checkmark.diamond")
+                        }
+                        Text(model.isChecking ? "Checking…" : "Check")
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(!model.canCheck || model.isChecking)
+                .disabled(!model.canCheck)
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)

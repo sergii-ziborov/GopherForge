@@ -22,24 +22,30 @@ final class LessonModel {
     private(set) var isCompilerVerified = false
     var editorText: String
 
-    private let compiler: WasmGoCompiler
     private let analyzer: IdiomAnalyzer
     private let store: LearningProgressStore
     private let toolchain: ToolchainStatus
+    private let testRunner: @Sendable (GoSourceSnapshot) async -> CompilationResult
     private var attempts = 0
-    private var compileTask: Task<CompilationResult?, Never>?
+    private var prewarmTask: Task<CompilationResult?, Never>?
+    private var prewarmedSource: String?
+    private var prewarmedResult: CompilationResult?
 
     init(
         lesson: Lesson,
         compiler: WasmGoCompiler = WasmGoCompiler(),
         analyzer: IdiomAnalyzer = IdiomAnalyzer(),
-        store: LearningProgressStore = .shared
+        store: LearningProgressStore = .shared,
+        toolchainStatus: ToolchainStatus? = nil,
+        testRunner: (@Sendable (GoSourceSnapshot) async -> CompilationResult)? = nil
     ) {
         self.lesson = lesson
-        self.compiler = compiler
         self.analyzer = analyzer
         self.store = store
-        toolchain = compiler.probe()
+        toolchain = toolchainStatus ?? compiler.probe()
+        self.testRunner = testRunner ?? { project in
+            await compiler.test(project: project)
+        }
         editorText = LessonModel.starter(for: lesson)
     }
 
@@ -63,18 +69,23 @@ final class LessonModel {
     }
 
     /// Compiles the verified answer (or the starter) into the reused work
-    /// tree so Check only has to rebuild what the learner edited.
+    /// tree so Check only has to rebuild what the learner edited. Its result is
+    /// retained as well: Realize inserts this exact verified source, so running
+    /// the same hidden test for a second minute would prove nothing new.
     func prewarm() async {
-        guard lesson.requiresCompiler, toolchain.isReady, compileTask == nil else { return }
+        guard lesson.requiresCompiler, toolchain.isReady, prewarmTask == nil,
+              prewarmedResult == nil, !isChecking else { return }
         isPrewarming = true
-        defer { isPrewarming = false }
         let source = lesson.verifiedSolution ?? editorText
-        compileTask = Task { [compiler] in
+        prewarmedSource = source
+        let task = Task<CompilationResult?, Never> { [testRunner] in
             guard let snapshot = lesson.checkSnapshot(source: source) else { return nil }
-            return await compiler.test(project: snapshot)
+            return await testRunner(snapshot)
         }
-        _ = await compileTask?.value
-        compileTask = nil
+        prewarmTask = task
+        prewarmedResult = await task.value
+        prewarmTask = nil
+        isPrewarming = false
     }
 
     /// Puts the verified answer in the editor. Check still has to run: Realize
@@ -119,18 +130,35 @@ final class LessonModel {
     }
 
     func check() async {
-        guard case .compile = lesson.task, !isChecking else { return }
-        if let compileTask { _ = await compileTask.value }
+        guard case .compile = lesson.task, toolchain.isReady, !isChecking else { return }
+
+        // Claim the check before the first suspension. Previously this flag was
+        // set only after waiting for prewarm, so every impatient tap queued a
+        // second test of the old source. Those stale tests could then overwrite
+        // the result produced by Realize.
         isChecking = true
         defer { isChecking = false }
 
-        guard let snapshot = lesson.checkSnapshot(source: editorText) else { return }
-        compileTask = Task { [compiler] in
-            await compiler.test(project: snapshot)
+        if let task = prewarmTask {
+            prewarmedResult = await task.value
+            prewarmTask = nil
+            isPrewarming = false
         }
-        let outcome = await compileTask?.value
-        compileTask = nil
-        guard let outcome else { return }
+
+        let source = editorText
+        guard let snapshot = lesson.checkSnapshot(source: source) else { return }
+
+        let outcome: CompilationResult
+        if source == prewarmedSource, let cached = prewarmedResult {
+            outcome = cached
+            // Reuse only for the hand-off from prewarm to the first exact
+            // Check. A later press should really run the tests again.
+            prewarmedSource = nil
+            prewarmedResult = nil
+        } else {
+            outcome = await testRunner(snapshot)
+        }
+
         result = outcome
         attempts += 1
         if outcome.succeeded {
@@ -138,7 +166,7 @@ final class LessonModel {
             isCompilerVerified = true
         }
 
-        let findings = analyzer.analyze(source: editorText, fileName: "main.go")
+        let findings = analyzer.analyze(source: source, fileName: "main.go")
         try? await store.record(
             LessonAttempt.from(
                 lessonID: lesson.id,
