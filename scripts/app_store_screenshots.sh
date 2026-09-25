@@ -54,7 +54,7 @@ DERIVED="$PROJECT_ROOT/DerivedDataScreenshots"
 
 # device type : output folder : the name this script owns
 #
-# The first two are the sizes Apple requires; the other two fill the remaining
+# The first two are the sizes Apple requires; the other four fill the remaining
 # slots App Store Connect offers for devices that can actually run this app.
 # Its deployment target is iOS 18, so the 12.9-inch (2nd generation), 10.5-inch
 # and 9.7-inch iPad slots are deliberately left empty: those are 2017 hardware
@@ -70,7 +70,7 @@ DEVICES=(
 )
 
 # Named folders limit the run to those devices; no arguments captures them all.
-# A full pass is four simulators and the better part of an hour, and most of the
+# A full pass is six simulators and the better part of an hour, and most of the
 # time only one size has changed.
 WANTED=("$@")
 

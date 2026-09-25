@@ -13,6 +13,7 @@ than screens.
 > Forge real Go, anywhere.
 
 [**Product website**](https://gopherforge.app) ·
+[App Store screenshots](docs/app-store/screenshots) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·
 [Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
@@ -37,15 +38,25 @@ goroutine trace are what the app actually produced, not mock-ups.
 | **The course is a journey.** Nine units on a rail, then the lessons inside one on a winding path. A node says whether it was ticked by hand or sealed by a compiler pass — and nothing is locked, because a course for people who already program is one they enter at goroutines. | **Inside a unit.** Every lesson is marked `READ` or `COMPILE` before it is opened, so it is clear which ones the toolchain will judge. |
 | <img src="docs/screenshots/run-output.png" alt="The iPad workspace: a worker-pool program in the editor and an Output pane reporting it compiled and executed locally, printing 1 4 9 16 25"> | <img src="docs/screenshots/problems.png" alt="The Problems pane, badged 1, reading declared and not used: unusedTotal at main.go:10:5, with line 10 highlighted red in the editor and marked in the gutter"> |
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
-| <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane reading 4 passed, 0 failed with per-case rows for TestReverse and its subtests"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab: nine runnable scenarios on a shelf, grouped into channels, coordination and ways it goes wrong"> |
-| **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Review is matching now.** Five terms on the left, five meanings on the right, up to five boards from lessons already finished. Achievements stay on Learn. |
-| <img src="docs/screenshots/my-projects.png" alt="My projects: a search field for name, folder, tag or file, and three projects under Unfiled — Playground, Package with tests with a Build failed chip, and Worker pool with a Run ok chip"> | <img src="docs/screenshots/navigator-iphone-code.png" width="300" alt="The iPhone Build workspace with the file drawer closed: the code editor spans the available width, with no file column behind it"> |
+| <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane with per-case results from a real Go test run"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab with runnable channel and coordination scenarios"> |
+| **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Concurrency Lab.** Run channel and goroutine scenarios and inspect the events they print as lanes. |
+| <img src="docs/screenshots/my-projects.png" alt="My projects library showing projects created from the bundled templates"> | <img src="docs/screenshots/navigator-iphone-code.png" width="300" alt="The iPhone Build workspace with the file drawer closed: the code editor spans the available width, with no file column behind it"> |
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone editor.** Code uses the available width; Files opens one drawer only when tapped. |
 | <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
 | **iPhone files.** The file tree overlays the editor, and choosing a file closes it. | **iPad files.** One file tree stays beside the editor, including in a narrow iPad window. |
 
 The navigator images come from the UI regression in
 `NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
+
+The [App Store screenshot sets](docs/app-store/screenshots) are captured from
+the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones and 11 and
+13-inch iPads. Each set opens with a real Go run, followed by a real test run,
+the course, a lesson, the Concurrency Lab and the project library. The
+additional unit and diagnostic captures supply the README images above. Run
+`scripts/app_store_screenshots.sh` to refresh both sets, then
+`scripts/check_app_store_screenshots.sh` to check dimensions and alpha channels
+before uploading them. The App Review video is separate evidence: Apple asks
+for a recording of the app on a physical device, starting at launch.
 
 ## What is built, and what is not
 

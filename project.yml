@@ -7,6 +7,13 @@ options:
   createIntermediateGroups: true
   generateEmptyDirectories: true
 
+# Keep release documentation and captured screenshots browsable in Xcode.
+# These groups are references only; they are not added to the app bundle.
+fileGroups:
+  - README.md
+  - docs/screenshots
+  - docs/app-store/screenshots
+
 # A third configuration, and it earns its place. The compiler gates run a real
 # Go build inside the Wasm interpreter, which is unusably slow unoptimised — a
 # Debug gate run reads as a hang rather than a measurement. They cannot run in
@@ -244,9 +251,12 @@ schemes:
             - IncrementalBuildGateTests/testEditingOneFileRecompilesOnlyThatPackage()
             - IncrementalBuildGateTests/testChangingADependencyRebuildsWhatImportsIt()
             - BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
+            - BundledContentGateTests/testEveryGinSiteRunsWithTheBundledCompiler()
+            - BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()
             - BundledContentGateTests/testExampleIdentifiersAreUnique()
             - LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()
             - LessonSolutionGateTests/testAStarterDoesNotAlreadyPass()
+            - LessonSolutionGateTests/testRealizePassesAfterAFailedCheckInTheReusedLessonWorkspace()
             - BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
             - BundledContentGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()
 
@@ -291,8 +301,11 @@ schemes:
             - IncrementalBuildGateTests/testEditingOneFileRecompilesOnlyThatPackage()
             - IncrementalBuildGateTests/testChangingADependencyRebuildsWhatImportsIt()
             - BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
+            - BundledContentGateTests/testEveryGinSiteRunsWithTheBundledCompiler()
+            - BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()
             - BundledContentGateTests/testExampleIdentifiersAreUnique()
             - LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()
             - LessonSolutionGateTests/testAStarterDoesNotAlreadyPass()
+            - LessonSolutionGateTests/testRealizePassesAfterAFailedCheckInTheReusedLessonWorkspace()
             - BundledContentGateTests/testAVendoredPackageIsCompiledUnderItsPublishedImportPath()
             - BundledContentGateTests/testAnUninstalledImportIsRefusedWithSomethingReadable()
