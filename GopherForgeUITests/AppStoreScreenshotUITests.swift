@@ -11,6 +11,8 @@ import XCTest
 /// because the thing worth paying for is a compiler that runs on the device,
 /// and a listing that opens with a lesson list reads as one more tutorial app.
 /// The course comes third, once the claim has been shown rather than stated.
+/// Shots 07 to 09 — a drawn picture, a served site and the library they come
+/// from — close the listing; 10 and 11 are for the README only.
 ///
 /// Run it with `scripts/app_store_screenshots.sh`, which drives the device
 /// sizes Apple asks for and collects the attachments.
@@ -70,7 +72,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         app.buttons["unit.concurrency"].tap()
         let lesson = app.buttons["lesson.concurrency.channel-close"]
         XCTAssertTrue(lesson.waitForExistence(timeout: 30), "the unit should list its lessons")
-        capture("07-unit")
+        capture("10-unit")
 
         lesson.tap()
         XCTAssertTrue(
@@ -96,6 +98,45 @@ final class AppStoreScreenshotUITests: XCTestCase {
             "the library should list the projects that were opened"
         )
         capture("06-projects")
+
+        // What the six above never showed: programs that draw, and sites
+        // served from the device. Both come from the example library, which is
+        // where a newcomer finds them, so the library is photographed on the
+        // way in. They run after the library shot so it keeps showing the
+        // projects a person made rather than examples opened for the camera.
+        openExamples()
+        capture("09-examples")
+
+        openExample("graphics.mandelbrot")
+        runPhase("run")
+        showOutput()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: "output.image.mandelbrot.png")
+                .firstMatch
+                .waitForExistence(timeout: 120),
+            "the Mandelbrot example should show the picture it drew"
+        )
+        capture("07-graphics")
+
+        openExamples()
+        openExample("site.notes")
+        runPhase("run")
+        showOutput()
+        XCTAssertTrue(
+            app.staticTexts[AccessibilityIdentifier.outputSite].waitForExistence(timeout: 120),
+            "a site example should publish its localhost URL in Output"
+        )
+        // The address appears before the page does: the preview is a web view
+        // loading from the app's own loopback server, and a shot taken on the
+        // address alone is a shot of an empty grey box.
+        XCTAssertTrue(
+            app.webViews.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Sticky notes'"))
+                .firstMatch
+                .waitForExistence(timeout: 120),
+            "the preview should show the page the project serves"
+        )
+        capture("08-site")
     }
 
     /// Breaks the open project on purpose, builds it, and photographs what the
@@ -142,7 +183,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
                 .element.waitForExistence(timeout: 60),
             "a build that cannot succeed should be reported in Problems"
         )
-        capture("08-problems")
+        capture("11-problems")
     }
 
     // MARK: - Helpers
@@ -218,9 +259,9 @@ final class AppStoreScreenshotUITests: XCTestCase {
     }
 
     /// Asserts the editor arrived and has the template's source in it.
-    private func expectSource() {
+    private func expectSource(timeout: TimeInterval = 30) {
         let editor = app.textViews[AccessibilityIdentifier.editor]
-        XCTAssertTrue(editor.waitForExistence(timeout: 30), "opening a template should land in the editor")
+        XCTAssertTrue(editor.waitForExistence(timeout: timeout), "opening a template should land in the editor")
         XCTAssertFalse(
             (editor.value as? String ?? "").isEmpty,
             "the editor should hold the template's source"
@@ -232,13 +273,68 @@ final class AppStoreScreenshotUITests: XCTestCase {
         XCTAssertTrue(app.waitForElement(create), "the dashboard should offer a way to start")
         create.tap()
 
+        // Generous, because a capture on a busy Mac is slow rather than wrong:
+        // a 6.5-inch run once waited more than thirty seconds for this sheet.
         let template = app.buttons["template.\(id)"]
-        XCTAssertTrue(template.waitForExistence(timeout: 30), "template \(id) should be offered")
+        XCTAssertTrue(template.waitForExistence(timeout: 120), "template \(id) should be offered")
         template.tap()
 
         let confirm = app.buttons[AccessibilityIdentifier.newProjectCreate]
-        XCTAssertTrue(confirm.waitForExistence(timeout: 10), "the name screen should offer Create")
+        XCTAssertTrue(confirm.waitForExistence(timeout: 60), "the name screen should offer Create")
         confirm.tap()
+    }
+
+    /// The example library, reached the way a person reaches it: from the
+    /// Projects dashboard rather than a launch argument.
+    private func openExamples() {
+        launch(section: "projects")
+        let examples = app.buttons[AccessibilityIdentifier.projectsExamples]
+        XCTAssertTrue(app.waitForElement(examples), "the dashboard should offer the example library")
+        examples.tap()
+        XCTAssertTrue(
+            app.navigationBars["Examples"].waitForExistence(timeout: 10),
+            "Examples should open the library"
+        )
+    }
+
+    /// Opens one example into the workspace, where it is an ordinary project.
+    private func openExample(_ id: String) {
+        let example = app.buttons["example.\(id)"]
+        XCTAssertTrue(app.waitForElement(example), "example \(id) should be in the library")
+        example.tap()
+
+        let open = app.buttons[AccessibilityIdentifier.exampleOpen]
+        XCTAssertTrue(open.waitForExistence(timeout: 30), "an example should offer Open in workspace")
+        open.tap()
+        // A site example opens with its web files and vendored Gin, which is a
+        // much bigger project than a template; on a busy Mac the iPad took
+        // longer than thirty seconds to show its editor.
+        expectSource(timeout: 180)
+    }
+
+    /// Brings Output forward and, on iPad, gives it the room a picture needs.
+    ///
+    /// The dock opens at 280 points: enough for lines of text, and half of a
+    /// drawn image or a site preview. The height is remembered, so raising it
+    /// once serves both shots that need it; the app clamps it at 640.
+    private func showOutput() {
+        let output = app.buttons["pane.output"]
+        XCTAssertTrue(app.tapReachable(output), "the Output pane should be reachable")
+        XCTAssertTrue(app.waitForSelection(of: output), "Output should become the selected pane")
+
+        // The phone stacks its panes full height and has no seam to drag.
+        let handle = app.otherElements[AccessibilityIdentifier.dockResizeHandle]
+        guard handle.waitForExistence(timeout: 2) else { return }
+
+        // Slowly, with a hold at each end, for the reason the dock test gives:
+        // a jump with no events between is a drag the gesture never sees.
+        let seat = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        seat.press(
+            forDuration: 0.3,
+            thenDragTo: seat.withOffset(CGVector(dx: 0, dy: -400)),
+            withVelocity: .slow,
+            thenHoldForDuration: 0.3
+        )
     }
 
     /// Named with a leading number so the files sort into listing order once

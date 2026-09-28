@@ -141,6 +141,10 @@ for entry in "${DEVICES[@]}"; do
   # itself. Shorter than this and a banner lands on the first screenshot.
   sleep 60
 
+  # Diagnostics collection is off: the pictures are the result, and on a
+  # loaded Mac the simulator's diagnostics request timed out after ten minutes
+  # on a run that had already passed.
+  #
   # A scheme of its own, in Release. The first screenshot is a real build
   # result, so the run compiles Go under the interpreter — which is unusably
   # slow unoptimised. The ordinary scheme cannot be built in Release because it
@@ -151,6 +155,7 @@ for entry in "${DEVICES[@]}"; do
     -configuration Release \
     -destination "platform=iOS Simulator,id=$udid" \
     -derivedDataPath "$DERIVED" \
+    -collect-test-diagnostics never \
     SWIFT_SUPPRESS_WARNINGS=NO \
     test
 
@@ -223,12 +228,14 @@ mkdir -p "$README_SHOTS"
 # README name : device folder : capture
 README_MAP=(
   "learn-path:ipad-13:03-course"
-  "unit-path:ipad-13:07-unit"
+  "unit-path:ipad-13:10-unit"
   "run-output:ipad-13:01-compiler"
-  "problems:ipad-13:08-problems"
+  "problems:ipad-13:11-problems"
   "workspace-tests:ipad-13:02-tests"
   "lab:ipad-13:05-lab"
   "my-projects:ipad-13:06-projects"
+  "graphics:ipad-13:07-graphics"
+  "site-preview:ipad-13:08-site"
   "iphone-workspace:iphone-6.9:01-compiler"
 )
 

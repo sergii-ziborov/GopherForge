@@ -40,6 +40,8 @@ goroutine trace are what the app actually produced, not mock-ups.
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
 | <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane with per-case results from a real Go test run"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab with runnable channel and coordination scenarios"> |
 | **`go test`, per case.** Run by the bundled toolchain and parsed from the same stream a developer reads, kept apart from diagnostics. | **Concurrency Lab.** Run channel and goroutine scenarios and inspect the events they print as lanes. |
+| <img src="docs/screenshots/graphics.png" alt="The Mandelbrot example after Run on iPad: Output reports that the program ran and drew one image, and shows the PNG it wrote"> | <img src="docs/screenshots/site-preview.png" alt="The Sticky notes example after Run on iPad: Output shows the site's 127.0.0.1 address and a live preview of its page"> |
+| **Programs that draw.** `image/png` from the standard library, run in the sandbox; the app shows the PNG the program wrote. | **Sites, served on the device.** Go checks the Gin routes with `httptest`; the app serves the project's HTML, CSS and JavaScript on 127.0.0.1 for a live preview. |
 | <img src="docs/screenshots/my-projects.png" alt="My projects library showing projects created from the bundled templates"> | <img src="docs/screenshots/navigator-iphone-code.png" width="300" alt="The iPhone Build workspace with the file drawer closed: the code editor spans the available width, with no file column behind it"> |
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **iPhone editor.** Code uses the available width; Files opens one drawer only when tapped. |
 | <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
@@ -51,12 +53,17 @@ The navigator images come from the UI regression in
 The [App Store screenshot sets](docs/app-store/screenshots) are captured from
 the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones and 11 and
 13-inch iPads. Each set opens with a real Go run, followed by a real test run,
-the course, a lesson, the Concurrency Lab and the project library. The
-additional unit and diagnostic captures supply the README images above. Run
-`scripts/app_store_screenshots.sh` to refresh both sets, then
-`scripts/check_app_store_screenshots.sh` to check dimensions and alpha channels
-before uploading them. The App Review video is separate evidence: Apple asks
-for a recording of the app on a physical device, starting at launch.
+the course, a lesson, the Concurrency Lab and the project library, then a
+program that draws, a site previewed from 127.0.0.1 and the example library
+both come from. The unit and diagnostic captures (`10-unit`, `11-problems`)
+supply README images only. Run `scripts/app_store_screenshots.sh` to refresh
+both sets, then `scripts/check_app_store_screenshots.sh` to check dimensions
+and alpha channels before uploading them. App Store Connect takes the 6.9-inch
+and 13-inch sets and scales them for the smaller slots.
+
+The App Review video is separate evidence and is not kept here: a screen
+recording from a physical iPhone, starting at launch from TestFlight, is
+attached to the App Review information in App Store Connect.
 
 ## What is built, and what is not
 
@@ -76,7 +83,9 @@ see [docs/TOOLCHAIN.md](docs/TOOLCHAIN.md).
 
 What is still unproven is everything only real hardware can answer: the offline
 claim, the thermal and memory envelope, and stopping a runaway program. A
-Simulator run must never be presented as if it had settled those.
+Simulator run must never be presented as if it had settled those. The App
+Review recording shows the compile-and-run loop on a physical iPhone, but it
+was made with the network on, so it does not settle the offline claim either.
 
 Concretely, the app currently contains:
 

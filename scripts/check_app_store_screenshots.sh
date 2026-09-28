@@ -35,9 +35,12 @@ EXPECTED=(
   "ipad-11:1668:2420"
 )
 
-# What the listing itself uses, in order. The capture also writes 07-unit and
-# 08-problems for the README, which are not part of the upload.
-LISTING=(01-compiler 02-tests 03-course 04-lesson 05-lab 06-projects)
+# What the listing itself uses, in order. The capture also writes 10-unit and
+# 11-problems for the README, which are not part of the upload.
+LISTING=(
+  01-compiler 02-tests 03-course 04-lesson 05-lab 06-projects
+  07-graphics 08-site 09-examples
+)
 
 failures=0
 
