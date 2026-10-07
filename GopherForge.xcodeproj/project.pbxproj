@@ -754,6 +754,7 @@
 		BA8DA6A30E48DC0EE1F83C27 /* 11-problems.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "11-problems.png"; sourceTree = "<group>"; };
 		BAEC2A697C023AFCCFFCC2FF /* navigator-iphone-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigator-iphone-code.png"; sourceTree = "<group>"; };
 		BAFAC6D84921E5D734815B48 /* CodeEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditorView.swift; sourceTree = "<group>"; };
+		BB0783C8F5F02FC5721DFAC9 /* 00-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "00-code.png"; sourceTree = "<group>"; };
 		BB63A7CBF98FDFA6C45656CD /* ProjectTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTemplateTests.swift; sourceTree = "<group>"; };
 		BDC40C849BEBC3FC26683E76 /* GopherForgeShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GopherForgeShare.entitlements; sourceTree = "<group>"; };
 		BEAB817E46E385B03E45BDC2 /* WorkspacePane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspacePane.swift; sourceTree = "<group>"; };
@@ -1470,6 +1471,7 @@
 		791E8D838D3BC9CF2C574465 /* iphone-6.9 */ = {
 			isa = PBXGroup;
 			children = (
+				BB0783C8F5F02FC5721DFAC9 /* 00-code.png */,
 				D96B08632601108C47F21777 /* 01-compiler.png */,
 				87045A4C2EC80E4A0E82C23F /* 02-tests.png */,
 				0762CD0F6F39AAE0B469A36C /* 03-course.png */,

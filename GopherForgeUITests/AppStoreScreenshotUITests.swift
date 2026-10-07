@@ -7,10 +7,8 @@ import XCTest
 /// listings are the one place where a stale or empty screenshot is invisible
 /// until a reviewer sees it.
 ///
-/// The order is the argument. The first two pictures are real build output,
-/// because the thing worth paying for is a compiler that runs on the device,
-/// and a listing that opens with a lesson list reads as one more tutorial app.
-/// The course comes third, once the claim has been shown rather than stated.
+/// The order is the argument. The editor opens the listing with real Go code,
+/// followed by real build and test output from the bundled toolchain.
 /// Shots 07 to 09 — a drawn picture, a served site and the library they come
 /// from — close the listing; 10 and 11 are for the README only.
 ///
@@ -49,8 +47,9 @@ final class AppStoreScreenshotUITests: XCTestCase {
         launch(section: "projects")
         openTemplate("worker-pool")
         expectSource()
+        capture("00-code")
 
-        // The picture the listing opens with: Go, compiled and run here.
+        // Go, compiled and run here.
         runPhase("run")
         capture("01-compiler")
 
