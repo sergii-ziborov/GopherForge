@@ -12,7 +12,8 @@ than screens.
 
 > Forge real Go, anywhere.
 
-[**Product website**](https://gopherforge.app) ·
+[**App Store**](https://apps.apple.com/us/app/gopherforge-go-workbench/id6809702319) ·
+[Product website](https://gopherforge.app) ·
 [App Store screenshots](docs/app-store/screenshots) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·
@@ -21,8 +22,9 @@ Custom domain: **[gopherforge.app](https://gopherforge.app)**. Connected in Lova
 on 8 September 2026; DNS now points to the hosting server and HTTPS serves the
 site.
 
-**Launch pricing:** $6.99 in the US, $4.99 in Ukraine, and Apple-localized
-prices elsewhere. One-time purchase, no subscription. App features,
+**Available on the App Store.** Launch pricing: $6.99 in the US, $4.99 in
+Ukraine, and Apple-localized prices elsewhere. One-time purchase, no
+subscription. App features,
 limitations, privacy and support are shared with this repository; the website
 should reflect the app's actual App Store availability.
 
