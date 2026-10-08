@@ -1,10 +1,10 @@
 import XCTest
 @testable import GopherForge
 
-/// The two links a submission is rejected without.
+/// Settings links should always open over HTTPS.
 final class AppLinksTests: XCTestCase {
-    func testBothLinksAreHTTPS() {
-        for url in [AppLinks.privacyPolicy, AppLinks.support] {
+    func testExternalLinksAreHTTPS() {
+        for url in [AppLinks.privacyPolicy, AppLinks.support, AppLinks.writeReview] {
             XCTAssertEqual(url.scheme, "https", "\(url) is not https")
             XCTAssertNotNil(url.host, "\(url) has no host")
         }

@@ -112,6 +112,11 @@ struct SettingsView: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.settingsSupport)
 
+                Link(destination: AppLinks.writeReview) {
+                    Label("Rate GopherForge", systemImage: "star")
+                }
+                .accessibilityIdentifier(AccessibilityID.settingsWriteReview)
+
                 LabeledContent("Product", value: "GopherForge")
                 LabeledContent("Version", value: AppLinks.versionSummary)
                     .accessibilityIdentifier(AccessibilityID.settingsVersion)

@@ -122,5 +122,6 @@ enum AccessibilityID {
     static let settingsAcknowledgements = "settings.acknowledgements"
     static let settingsPrivacyPolicy = "settings.privacyPolicy"
     static let settingsSupport = "settings.support"
+    static let settingsWriteReview = "settings.writeReview"
     static let settingsVersion = "settings.version"
 }

@@ -238,23 +238,11 @@ final class AppStoreScreenshotUITests: XCTestCase {
         XCTAssertTrue(finished, "\(phase) did not finish within \(Int(buildTimeout))s")
     }
 
-    /// Opens the source file from the phone tree.
-    ///
-    /// Dragging the chip row is the wrong way here: a left-to-right flick on
-    /// that row is the Files-drawer gesture, and the dim overlay then sits on
-    /// top of Code. Choosing the file is what a person does, and it always
-    /// lands on the editor.
+    /// Returns to the editor after the test output has covered it on iPhone.
     private func revealPhoneEditor() {
-        let closeFiles = app.buttons["Close files"]
-        if closeFiles.exists { closeFiles.tap() }
-
-        let files = app.buttons[AccessibilityIdentifier.filesToggle]
-        XCTAssertTrue(files.waitForExistence(timeout: 10), "the phone workspace should offer Files")
-        files.tap()
-
-        let source = app.buttons["file.main.go"]
-        XCTAssertTrue(source.waitForExistence(timeout: 10), "the tree should list the open file")
-        source.tap()
+        let code = app.buttons["pane.code"]
+        XCTAssertTrue(app.tapReachable(code), "the Code pane should be reachable")
+        XCTAssertTrue(app.waitForSelection(of: code), "Code should become the selected pane")
     }
 
     /// Asserts the editor arrived and has the template's source in it.

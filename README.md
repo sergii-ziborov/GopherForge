@@ -54,18 +54,22 @@ The navigator images come from the UI regression in
 
 The [App Store screenshot sets](docs/app-store/screenshots) are captured from
 the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones and 11 and
-13-inch iPads. Each set opens with a real Go run, followed by a real test run,
-the course, a lesson, the Concurrency Lab and the project library, then a
-program that draws, a site previewed from 127.0.0.1 and the example library
-both come from. The unit and diagnostic captures (`10-unit`, `11-problems`)
-supply README images only. Run `scripts/app_store_screenshots.sh` to refresh
-both sets, then `scripts/check_app_store_screenshots.sh` to check dimensions
+13-inch iPads. Each set opens with Go code in the editor, followed by a real
+Go run and a real test run, the course, a lesson, the Concurrency Lab and the
+project library, then a program that draws, a site previewed from 127.0.0.1
+and the example library. The unit and diagnostic captures (`10-unit`,
+`11-problems`) supply README images only. Run
+`scripts/app_store_screenshots.sh` to refresh all six sets, then
+`scripts/check_app_store_screenshots.sh` to check dimensions
 and alpha channels before uploading them. App Store Connect takes the 6.9-inch
-and 13-inch sets and scales them for the smaller slots.
+and 13-inch sets and scales them for the smaller slots. The
+[product page header and search artwork](docs/app-store/creative-assets) use
+the same real editor capture and can be regenerated with
+`scripts/make_app_store_creative_assets.py`.
 
 The App Review video is separate evidence and is not kept here: a screen
-recording from a physical iPhone, starting at launch from TestFlight, is
-attached to the App Review information in App Store Connect.
+recording from a physical iPhone, starting at launch from TestFlight, was
+provided for the original App Review.
 
 ## What is built, and what is not
 

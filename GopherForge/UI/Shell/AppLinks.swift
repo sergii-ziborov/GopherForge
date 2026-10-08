@@ -13,6 +13,7 @@ enum AppLinks {
     /// worth handling. `AppLinksTests` fails first if one is malformed.
     static let privacyPolicy = URL(string: "https://github.com/sergii-ziborov/GopherForge/blob/main/PRIVACY.md")!
     static let support = URL(string: "https://github.com/sergii-ziborov/GopherForge/blob/main/SUPPORT.md")!
+    static let writeReview = URL(string: "https://apps.apple.com/app/id6809702319?action=write-review")!
 
     /// What Settings shows, and what a support request should quote.
     static var versionSummary: String {
