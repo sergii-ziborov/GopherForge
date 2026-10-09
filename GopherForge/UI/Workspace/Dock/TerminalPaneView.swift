@@ -2,7 +2,11 @@ import SwiftUI
 
 /// The project console.
 struct TerminalPaneView: View {
+    @Environment(WorkspaceModel.self) private var workspace
     @Bindable var session: ProjectTerminalSession
+    @FocusState private var commandIsFocused: Bool
+
+    private let quickCommands = ["help", "ls", "go build", "go test", "go run", "clear"]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,12 +27,43 @@ struct TerminalPaneView: View {
 
             Divider()
 
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 7) {
+                    ForEach(quickCommands, id: \.self) { command in
+                        Button {
+                            session.input = command
+                            Task { await session.submit() }
+                        } label: {
+                            Text(command)
+                                .font(.caption2.monospaced().weight(.semibold))
+                                .foregroundStyle(command == "clear" ? Color.red : GopherForgeTheme.accent)
+                                .padding(.horizontal, 10)
+                                .frame(height: 28)
+                                .background(
+                                    (command == "clear" ? Color.red : GopherForgeTheme.accent).opacity(0.1),
+                                    in: Capsule()
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(session.isBusy)
+                        .accessibilityIdentifier("terminal.quick.\(command)")
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+            }
+            .background(Color(.secondarySystemBackground))
+
+            Divider()
+
             HStack(spacing: 8) {
-                Text("$")
+                Text("\(workspace.project?.name ?? "go") $")
                     .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(GopherForgeTheme.accent)
+                    .lineLimit(1)
                 TextField("go build", text: $session.input)
                     .font(.caption.monospaced())
+                    .focused($commandIsFocused)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .submitLabel(.go)
@@ -36,11 +71,28 @@ struct TerminalPaneView: View {
                     .accessibilityIdentifier("terminal.input")
                 if session.isBusy {
                     ProgressView().controlSize(.small)
+                } else {
+                    Button {
+                        Task { await session.submit() }
+                    } label: {
+                        Image(systemName: "return")
+                    }
+                    .disabled(session.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityLabel("Run command")
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(Color(.tertiarySystemBackground))
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Hide keyboard", systemImage: "keyboard.chevron.compact.down") {
+                    commandIsFocused = false
+                }
+                .labelStyle(.iconOnly)
+            }
         }
     }
 

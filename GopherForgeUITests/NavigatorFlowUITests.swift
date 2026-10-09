@@ -94,8 +94,7 @@ final class NavigatorFlowUITests: XCTestCase {
 
         let terminal = app.buttons["pane.terminal"]
         if terminal.waitForExistence(timeout: 5) {
-            XCTAssertTrue(app.scrollHorizontally(to: terminal) || terminal.isHittable)
-            terminal.tap()
+            XCTAssertTrue(app.selectWorkspacePane("terminal"))
         }
 
         openNavigator()
@@ -130,10 +129,9 @@ final class NavigatorFlowUITests: XCTestCase {
         attachScreenshot(named: "05-gomod")
     }
 
-    /// The phone once rendered a narrow file column underneath its Files
-    /// drawer. The editor started halfway across the screen, and tapping Files
-    /// opened a second copy of the tree. iPad should keep its single column.
-    func testNavigatorOccupiesOnePlaceForTheDevice() {
+    /// A narrow window uses one drawer; a wide window keeps one visible tree.
+    /// A folding phone can use either layout without changing its device idiom.
+    func testNavigatorOccupiesOnePlaceForTheWindow() {
         launch()
 
         let editor = app.textViews[AccessibilityIdentifier.editor]
@@ -143,22 +141,21 @@ final class NavigatorFlowUITests: XCTestCase {
         let search = app.textFields[AccessibilityIdentifier.fileSearch]
         let goMod = app.buttons["file.go.mod"]
 
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            XCTAssertFalse(files.exists, "iPad should not offer a button to open a second tree")
-            XCTAssertTrue(search.waitForExistence(timeout: 5), "iPad should show its file tree")
+        if search.waitForExistence(timeout: 3) {
+            XCTAssertFalse(files.exists, "a visible tree must not have a second Files button")
             XCTAssertTrue(goMod.waitForExistence(timeout: 5))
-            attachScreenshot(named: "navigator-ipad-persistent")
+            attachScreenshot(named: "navigator-wide-persistent")
             goMod.tap()
-            XCTAssertTrue(search.exists, "choosing a file should leave the iPad tree in place")
+            XCTAssertTrue(search.exists, "choosing a file should leave the tree in place")
         } else {
             XCTAssertTrue(files.waitForExistence(timeout: 5))
-            XCTAssertFalse(search.exists, "the phone drawer should start closed")
+            XCTAssertFalse(search.exists, "the drawer should start closed")
 
             let window = app.windows.firstMatch.frame
             let initialEditor = editor.frame
             XCTAssertLessThan(
                 initialEditor.minX, window.width * 0.15,
-                "a phantom file column must not push the phone editor sideways"
+                "a phantom file column must not push the editor sideways"
             )
             XCTAssertGreaterThan(initialEditor.width, window.width * 0.7)
             attachScreenshot(named: "navigator-iphone-code")
@@ -181,8 +178,7 @@ final class NavigatorFlowUITests: XCTestCase {
         app.launch()
     }
 
-    /// iPad shows the navigator beside the editor; iPhone keeps it behind the
-    /// Files control. Open it whichever way this device offers.
+    /// The navigator may be a visible column or a drawer in a narrow window.
     private func openNavigator() {
         let search = app.textFields[AccessibilityIdentifier.fileSearch]
         guard !search.waitForExistence(timeout: 6) else { return }

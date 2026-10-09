@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Renders whichever pane is selected.
 ///
-/// Both layouts route through this, so a pane cannot look different depending
+/// Every layout routes through this, so a pane cannot look different depending
 /// on which device is showing it.
 struct WorkspacePaneContent: View {
     @Environment(WorkspaceModel.self) private var workspace
@@ -10,8 +10,8 @@ struct WorkspacePaneContent: View {
     let terminal: ProjectTerminalSession
     let fontSize: Double
 
-    /// What a tap on a diagnostic does after moving the editor; the phone
-    /// switches to the Code tab, the iPad has nothing to switch.
+    /// What a tap on a diagnostic does after moving the editor; a single work
+    /// pane switches to Code, while a layout with a visible editor need not.
     var onRevealCode: () -> Void = {}
 
     var body: some View {
@@ -19,21 +19,42 @@ struct WorkspacePaneContent: View {
 
         switch pane {
         case .code:
-            SyntaxCodeEditor(
-                // Through the model's setter rather than straight at the
-                // property: every keystroke has to reach the project and the
-                // autosave, and a plain binding reaches neither.
-                text: Binding(
-                    get: { workspace.editorText },
-                    set: { workspace.updateEditorText($0) }
-                ),
-                fileKind: workspace.fileKind,
-                fontSize: fontSize,
-                markedLines: workspace.markedLines,
-                searchQuery: workspace.highlightQuery,
-                revealLine: workspace.revealLine,
-                onReveal: workspace.clearReveal
-            )
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    Image(systemName: "doc.text")
+                        .foregroundStyle(GopherForgeTheme.accent)
+                    Text(workspace.selectedFile)
+                        .font(.caption.monospaced().weight(.semibold))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Spacer(minLength: 0)
+                    if workspace.hasUnsavedChanges {
+                        Circle()
+                            .fill(GopherForgeTheme.accent)
+                            .frame(width: 6, height: 6)
+                            .accessibilityLabel("Unsaved changes")
+                    }
+                }
+                .padding(.horizontal, 12)
+                .frame(height: 34)
+                .background(Color(.secondarySystemBackground))
+                Divider()
+                SyntaxCodeEditor(
+                    // Through the model's setter rather than straight at the
+                    // property: every keystroke has to reach the project and
+                    // autosave, and a plain binding reaches neither.
+                    text: Binding(
+                        get: { workspace.editorText },
+                        set: { workspace.updateEditorText($0) }
+                    ),
+                    fileKind: workspace.fileKind,
+                    fontSize: fontSize,
+                    markedLines: workspace.markedLines,
+                    searchQuery: workspace.highlightQuery,
+                    revealLine: workspace.revealLine,
+                    onReveal: workspace.clearReveal
+                )
+            }
         case .problems:
             DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [], onReveal: onRevealCode)
         case .output:
@@ -67,29 +88,48 @@ struct WorkspacePanePicker: View {
     let panes: [WorkspacePane]
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 7) {
-                    ForEach(panes) { pane in
-                        PaneChip(
-                            pane: pane,
-                            count: count(for: pane),
-                            isSelected: pane == selection
-                        ) {
-                            withAnimation(.easeOut(duration: 0.18)) { selection = pane }
-                        }
-                        .id(pane)
+        HStack(spacing: 0) {
+            Menu {
+                ForEach(panes) { pane in
+                    Button {
+                        withAnimation(.easeOut(duration: 0.18)) { selection = pane }
+                    } label: {
+                        Label(pane.title, systemImage: pane.systemImage)
                     }
+                    .accessibilityIdentifier("pane.menu.\(pane.rawValue)")
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+            } label: {
+                Image(systemName: "square.grid.2x2")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
-            .accessibilityIdentifier(AccessibilityID.dockPicker)
-            .onChange(of: selection) { _, pane in
-                // Selecting a pane from elsewhere — a diagnostic tapped in the
-                // editor, say — should bring its chip into view rather than
-                // leaving the row looking unchanged.
-                withAnimation { proxy.scrollTo(pane, anchor: .center) }
+            .accessibilityIdentifier("pane.more")
+            .accessibilityLabel("Choose panel")
+            Divider().frame(height: 24)
+
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 7) {
+                        ForEach(panes) { pane in
+                            PaneChip(
+                                pane: pane,
+                                count: count(for: pane),
+                                isSelected: pane == selection
+                            ) {
+                                withAnimation(.easeOut(duration: 0.18)) { selection = pane }
+                            }
+                            .id(pane)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                }
+                .accessibilityIdentifier(AccessibilityID.dockPicker)
+                .onChange(of: selection) { _, pane in
+                    withAnimation { proxy.scrollTo(pane, anchor: .center) }
+                }
             }
         }
     }

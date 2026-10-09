@@ -60,6 +60,24 @@ extension XCUIApplication {
         return isOnScreen(element)
     }
 
+    /// System controls on Duo can occupy the trailing edge of a scrolling
+    /// chip row. The fixed panel menu remains reachable on its leading edge.
+    func selectWorkspacePane(_ name: String) -> Bool {
+        let menu = buttons["pane.more"]
+        if menu.waitForExistence(timeout: 5), menu.isHittable {
+            menu.tap()
+            let item = buttons["pane.menu.\(name)"]
+            if item.waitForExistence(timeout: 5) {
+                item.tap()
+                return true
+            }
+        }
+        let chip = buttons["pane.\(name)"]
+        guard scrollHorizontally(to: chip), chip.isHittable else { return false }
+        chip.tap()
+        return true
+    }
+
     /// Taps a chip that may sit in a horizontal scroller.
     ///
     /// XCUITest will refuse `tap()` on a control that exists, has a real frame,

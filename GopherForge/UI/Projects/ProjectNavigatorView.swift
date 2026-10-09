@@ -6,7 +6,7 @@ import SwiftUI
 /// It was a sheet, and a sheet is the wrong shape for this. Choosing a file is
 /// not a decision you make once and dismiss — it is something you do while
 /// reading code, and a sheet covers the code you were reading. Here it is a
-/// column on iPad and a drawer on iPhone, and either way the editor stays
+/// column when the window is wide and a drawer when narrow, and either way the editor stays
 /// where it was.
 ///
 /// Vendored modules are packages, not folders. Expanding `vendor/gin-gonic`

@@ -2,8 +2,8 @@ import SwiftUI
 
 /// The panes a workspace can show.
 ///
-/// One list for both layouts, because iPhone shows them as full-height tabs
-/// and iPad shows the editor beside a dock — and the two must never drift into
+/// One list for every layout, because narrow windows show full-height tabs
+/// and broad windows show the editor beside a dock — and they must never drift into
 /// offering different things.
 enum WorkspacePane: String, CaseIterable, Identifiable {
     case code
@@ -55,9 +55,15 @@ enum WorkspacePane: String, CaseIterable, Identifiable {
         }
     }
 
-    /// On iPad the editor is always on screen, so the dock offers everything
+    /// In the broad layouts the editor is always on screen, so the dock offers everything
     /// except the code itself.
     static var dockPanes: [WorkspacePane] {
         allCases.filter { $0 != .code }
     }
+
+    /// Code and terminal are the two panes people switch between most while
+    /// working. Keep both visible on the outer display before the row scrolls.
+    static let workPanes: [WorkspacePane] = [
+        .code, .terminal, .problems, .output, .tests, .idioms
+    ]
 }

@@ -304,11 +304,7 @@ final class WorkspaceFlowUITests: XCTestCase {
         // phone are unreadable and the last two are unreachable.
         for pane in ["output", "tests", "idioms", "terminal", "problems"] {
             let chip = app.buttons["pane.\(pane)"]
-            XCTAssertTrue(
-                app.scrollHorizontally(to: chip),
-                "\(pane) should be reachable, scrolling the row if it has to"
-            )
-            chip.tap()
+            XCTAssertTrue(app.selectWorkspacePane(pane), "\(pane) should be reachable")
             // Selection animates, so wait for it rather than asking the instant
             // after the tap — under a full suite the app is slower than it is
             // running one test alone, and that difference is not a defect.
@@ -326,9 +322,7 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testTerminalAnswersFromTheProjectAndNeverInvents() {
         launch(section: .build)
 
-        let terminal = app.buttons["pane.terminal"]
-        XCTAssertTrue(app.scrollHorizontally(to: terminal))
-        terminal.tap()
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
 
         let input = app.textFields["terminal.input"]
         XCTAssertTrue(input.waitForExistence(timeout: 5), "the console should offer a prompt")
@@ -346,7 +340,9 @@ final class WorkspaceFlowUITests: XCTestCase {
         // compiler is staged — which is what makes it the right thing to assert
         // in a UI test. Whether `go build` compiles or refuses is the compiler
         // gate's question, and it is asked there.
-        send("ls", to: input)
+        let listFiles = app.buttons["terminal.quick.ls"]
+        XCTAssertTrue(listFiles.waitForExistence(timeout: 5), "common commands should be one tap away")
+        listFiles.tap()
         XCTAssertTrue(
             app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'main.go'")).element
                 .waitForExistence(timeout: 5),
