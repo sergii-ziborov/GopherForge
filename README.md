@@ -1,5 +1,7 @@
 # GopherForge — native Go workspace for iPhone and iPad
 
+**Code, test & learn offline.**
+
 GopherForge is a **native SwiftUI application** for learning,
 editing, checking, testing and running Go locally on iPhone and iPad. The Go
 compiler runs offline. Website examples use an on-device localhost server and
@@ -15,6 +17,7 @@ than screens.
 [**App Store**](https://apps.apple.com/us/app/gopherforge-go-workbench/id6809702319) ·
 [Product website](https://gopherforge.app) ·
 [App Store screenshots](docs/app-store/screenshots) ·
+[Listing metadata audit](docs/app-store/listing.md) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·
 [Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
