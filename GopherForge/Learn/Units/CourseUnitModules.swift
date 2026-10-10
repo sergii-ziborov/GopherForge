@@ -46,8 +46,10 @@ enum CourseUnitModules {
             answer: """
             import "example.com/forge/internal/build"
 
-            No other module can. internal/ is compiler-enforced: only packages \
-            rooted at example.com/forge may import it.
+            The importer must have an import path within the example.com/forge \
+            tree. A separate module named example.com/forge/client can satisfy \
+            that rule; other.example/client cannot. The boundary follows the \
+            parent import-path tree, rather than the identity of the module.
             """
         ),
         idiomaticSolution: nil

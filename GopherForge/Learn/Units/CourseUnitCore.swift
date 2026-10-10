@@ -50,8 +50,10 @@ enum CourseUnitCore {
             answer: """
             0 "" true 0
 
-            The zero value of a slice is nil, and len of a nil slice is 0. \
-            Reading a nil slice is fine; only writing to one is not.
+            The zero value of a slice is nil. Its length and capacity are 0. \
+            You can range over it or append to it; append returns the resulting \
+            slice. Indexing the empty slice to read or write an element is \
+            out of bounds.
             """
         ),
         idiomaticSolution: nil

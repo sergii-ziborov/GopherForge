@@ -637,6 +637,7 @@
 		7350822ED80A1CBE29CECC0D /* LocalSiteServerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSiteServerTests.swift; sourceTree = "<group>"; };
 		7449557FEEF51133F4046BEF /* 09-examples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "09-examples.png"; sourceTree = "<group>"; };
 		7472AFE8191AFFFF497C44D8 /* GopherForgeProjectDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GopherForgeProjectDocument.swift; sourceTree = "<group>"; };
+		74B9798883C6B8861696905D /* 1.1-publication.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1-publication.json"; sourceTree = "<group>"; };
 		7534C762E1439ED0B3E80A6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		76391BE490F2230C009746A4 /* GoProgramRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoProgramRunner.swift; sourceTree = "<group>"; };
 		767B39A0F010BB85DC68480F /* ConcurrencyLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyLabView.swift; sourceTree = "<group>"; };
@@ -813,6 +814,7 @@
 		CC441A712F7BC3C0E57C8160 /* WorkspaceAutosaveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceAutosaveTests.swift; sourceTree = "<group>"; };
 		CC7442C8C031DA767437A047 /* SharedImportQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedImportQueue.swift; sourceTree = "<group>"; };
 		CC823635DEE04D51AEEA1588 /* GoBuildPlanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBuildPlanTests.swift; sourceTree = "<group>"; };
+		CCBA4CA61774051C45FDFC86 /* listing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = listing.md; sourceTree = "<group>"; };
 		CECA28BEB6077C642963A832 /* GoTestFunctionScannerMoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoTestFunctionScannerMoreTests.swift; sourceTree = "<group>"; };
 		CFD88851CF194BAC4389F664 /* LessonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonDetailView.swift; sourceTree = "<group>"; };
 		D08AA6F0E11BDD6F0675B99F /* MatchingDrillSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchingDrillSession.swift; sourceTree = "<group>"; };
@@ -894,6 +896,7 @@
 		FBD5093022DCC78FE092878E /* 10-unit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "10-unit.png"; sourceTree = "<group>"; };
 		FDC6911E371D55ECFBE01581 /* VendoredModuleLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendoredModuleLoader.swift; sourceTree = "<group>"; };
 		FDE9AA0BA176E0B055D83BD0 /* 09-examples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "09-examples.png"; sourceTree = "<group>"; };
+		FE6CA14C3DD889B036723945 /* 1.1.en-US.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.en-US.json"; sourceTree = "<group>"; };
 		FE8D03444A51C052DC9FD4DD /* 04-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "04-lesson.png"; sourceTree = "<group>"; };
 		FE8D0DA5D5DBF1C698A74548 /* ProjectNavigatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectNavigatorTests.swift; sourceTree = "<group>"; };
 		FEF7D193E189EF27EE79F09F /* GoConceptCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoConceptCatalogTests.swift; sourceTree = "<group>"; };
@@ -1007,6 +1010,7 @@
 		08B0B5967AC7817946B9A555 /* releases */ = {
 			isa = PBXGroup;
 			children = (
+				74B9798883C6B8861696905D /* 1.1-publication.json */,
 				7A972BD83E502587AFBBE02F /* 1.1.md */,
 			);
 			path = releases;
@@ -1414,7 +1418,9 @@
 		63B7BF5830303E6F0C37A2E0 /* app-store */ = {
 			isa = PBXGroup;
 			children = (
+				CCBA4CA61774051C45FDFC86 /* listing.md */,
 				F3D36F5E27908E5E9BF9039D /* creative-assets */,
+				E746E6BFD8D1BD4F496B2983 /* metadata */,
 				FC276D9C1C2A083B7A527F9C /* screenshots */,
 			);
 			path = "app-store";
@@ -2060,6 +2066,14 @@
 				9ACF31241E073A41379EC723 /* SyntaxAttributedStringBuilder.swift */,
 			);
 			path = Highlight;
+			sourceTree = "<group>";
+		};
+		E746E6BFD8D1BD4F496B2983 /* metadata */ = {
+			isa = PBXGroup;
+			children = (
+				FE6CA14C3DD889B036723945 /* 1.1.en-US.json */,
+			);
+			path = metadata;
 			sourceTree = "<group>";
 		};
 		E8B5E5D4C4A5DDE4D18948CC /* GopherForgeShared */ = {
@@ -2810,7 +2824,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -2922,7 +2936,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3039,7 +3053,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3068,7 +3082,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3096,7 +3110,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3118,7 +3132,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
