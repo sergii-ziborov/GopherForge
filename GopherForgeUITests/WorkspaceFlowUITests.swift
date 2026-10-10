@@ -341,6 +341,41 @@ final class WorkspaceFlowUITests: XCTestCase {
         assertLaptopTabsSwapKeyboardForResults()
     }
 
+    /// The section bar is hidden in laptop posture. Projects must remain
+    /// reachable while the software keyboard fills the lower display.
+    func testLaptopProjectsBackWorksWithKeyboardOpen() throws {
+        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launch()
+        guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
+            throw XCTSkip("No horizontal Duo division region is active")
+        }
+
+        let back = app.buttons[AccessibilityIdentifier.laptopProjectsBack]
+        XCTAssertTrue(back.waitForExistence(timeout: 5))
+        XCTAssertTrue(back.isHittable)
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.keyboards.firstMatch.isHittable)
+        back.tap()
+
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.libraryEntry].waitForExistence(timeout: 10))
+        XCTAssertFalse(back.exists)
+        let build = app.tabBars.buttons["Build"]
+        XCTAssertTrue(build.waitForExistence(timeout: 5))
+        build.tap()
+        XCTAssertTrue(back.waitForExistence(timeout: 5))
+    }
+
+    func testProjectsBackIsAbsentOutsideLaptopPosture() throws {
+        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launch()
+        guard !app.buttons["laptop.files"].waitForExistence(timeout: 3) else {
+            throw XCTSkip("Laptop posture is active")
+        }
+
+        XCTAssertFalse(app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists)
+        XCTAssertTrue(app.tabBars.buttons["Projects"].waitForExistence(timeout: 5))
+    }
+
     func testDetectedLaptopTerminalKeyboard() throws {
         app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
         app.launch()
@@ -712,6 +747,7 @@ enum AccessibilityIdentifier {
     static let settingsAppearance = "settings.appearance"
     static let fileSearch = "files.search"
     static let filesToggle = "workspace.filesToggle"
+    static let laptopProjectsBack = "laptop.projectsBack"
     static let projectMenu = "workspace.projectMenu"
     static let keepLibraryInCloud = "projects.keepInCloud"
     static let drillBoard = "drill.board"

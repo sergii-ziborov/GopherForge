@@ -94,6 +94,7 @@ enum AccessibilityID {
     static let newFile = "files.newFile"
     static let newFolder = "files.newFolder"
     static let filesToggle = "workspace.filesToggle"
+    static let laptopProjectsBack = "laptop.projectsBack"
     static let exportProject = "projects.export"
     static let projectMenu = "workspace.projectMenu"
     static let openFromCloud = "projects.openCloud"
