@@ -90,10 +90,11 @@
     "embeddedCodeScrollsPage": "passed",
     "fullscreenCodeScrollsInternally": "passed",
     "fullscreenEditsRetained": "passed",
-    "nativeLaptopPosture": "pending native simulator recovery: Mac unlocked; Device Hub connection timeout; test runner launch failed with Mach -308",
+    "nativeLaptopPosture": "pending host recovery: Mac unlocked and Device Hub controls accessible; CoreSimulator blocks reading runtime bundles in __getdirentries64 with process state U",
     "nativeDisplayCaptures": "build 17 native Duo code and visual lesson",
     "nativeProjectsListScroll": "automated screenshot walk did not reach example library; manual check pending native simulator recovery",
-    "nativeExampleRecapture": "compiled successfully; no checks executed because the test runner failed to install or launch (Mach -308)"
+    "nativeExampleRecapture": "compiled successfully; no checks executed because the test runner failed to install or launch (Mach -308)",
+    "hostRecovery": "CoreSimulator service, launch host and rendering workers restarted; the new service still blocks inside macOS directory I/O; final native checks remain unverified"
   },
   "officialGuideReferences": {
     "guideCount": 69,
