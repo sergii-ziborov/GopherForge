@@ -37,28 +37,28 @@
       {
         "url": "https://gopherforge.app/support",
         "status": 200,
-        "title": "Support \u2014 GopherForge"
+        "title": "Support — GopherForge"
       },
       {
         "url": "https://gopherforge.app/privacy",
         "status": 200,
-        "title": "Privacy Policy \u2014 GopherForge"
+        "title": "Privacy Policy — GopherForge"
       },
       {
         "url": "https://gopherforge.app/terms",
         "status": 200,
-        "title": "Terms of Use \u2014 GopherForge"
+        "title": "Terms of Use — GopherForge"
       },
       {
         "url": "https://gopherforge.app/updates",
         "status": 200,
-        "title": "Version 1.1 preview \u2014 GopherForge"
+        "title": "Version 1.1 preview — GopherForge"
       }
     ],
     "checkedAt": "2026-10-10T21:57:22.362252+00:00",
     "networkFAQMatchesSupport": true
   },
-  "checkedAt": "2026-10-10T21:57:22.362252+00:00",
+  "checkedAt": "2026-10-10T22:57:27.930135+00:00",
   "existingReviewRecording": {
     "fileName": "GopherForge-physical-iPhone-original-review.mp4",
     "fileSize": 25500411,
@@ -90,11 +90,26 @@
     "embeddedCodeScrollsPage": "passed",
     "fullscreenCodeScrollsInternally": "passed",
     "fullscreenEditsRetained": "passed",
-    "nativeLaptopPosture": "pending host recovery: Mac unlocked and Device Hub controls accessible; CoreSimulator blocks reading runtime bundles in __getdirentries64 with process state U",
+    "nativeLaptopPosture": "pending Device Hub UI recovery: owned native Duo boots after runtime-image service recovery without Mac reboot; posture-control access times out",
     "nativeDisplayCaptures": "build 17 native Duo code and visual lesson",
     "nativeProjectsListScroll": "automated screenshot walk did not reach example library; manual check pending native simulator recovery",
-    "nativeExampleRecapture": "compiled successfully; no checks executed because the test runner failed to install or launch (Mach -308)",
-    "hostRecovery": "CoreSimulator service, launch host and rendering workers restarted; the new service still blocks inside macOS directory I/O; final native checks remain unverified"
+    "nativeExampleRecapture": "Verified cached Release build 17 runs: example captures 1 passed/0 failed/0 skipped; site paint recapture 1 passed/0 failed/0 skipped. All three images visually verified and uploaded.",
+    "hostRecovery": "Owned Duo boot and bootstatus recovered without Mac reboot after runtime-image service recovery. Device Hub became accessible and selected the owned device; input remains intermittent under host load.",
+    "recoveryWithoutHostReboot": {
+      "checkedAt": "2026-10-10T22:45:09.446923+00:00",
+      "hostRebooted": false,
+      "nativeDuoBootSucceeded": true,
+      "nativeDuoBootStatusComplete": true,
+      "cachedSimulatorVersion": "1.1",
+      "cachedSimulatorBuild": "17",
+      "cachedGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+      "focusedRecaptureSelectorPresent": true,
+      "nativeLaptopSelectorsPresent": true,
+      "postureChecksVerified": false,
+      "deviceHubSelectionVerified": true,
+      "subsequentBootStatus": "Second boot reported Data Migration Failed, but the subsequent site-only UI test ran successfully. No host reboot or device erase was needed."
+    },
+    "nativeSiteScreenshot": "Painted live localhost page visually verified; native 1398x2034 RGB image uploaded and ordered."
   },
   "officialGuideReferences": {
     "guideCount": 69,
@@ -155,7 +170,7 @@
     "skipped": 0
   },
   "appStoreMedia": {
-    "screenshotCount": 69,
+    "screenshotCount": 70,
     "creativeAssetCount": 2,
     "groups": [
       {
@@ -275,7 +290,7 @@
       {
         "placementType": "APP_SCREENSHOT",
         "group": "IPHONE_DUO_PROFILE",
-        "count": 9,
+        "count": 10,
         "orderedAssets": [
           {
             "file": "docs/app-store/screenshots/iphone-duo/00-code.png",
@@ -313,13 +328,18 @@
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/10-unit.png",
-            "sha256": "6dd8b8b02afa7f4380906e3a7768c0deffc4d3181409bb44537681798ad01f41",
+            "file": "docs/app-store/screenshots/iphone-duo/07-graphics.png",
+            "sha256": "f11a82873ef84eae92bd5dc56a386769a952307ccaec1faccc78a307e3d022cb",
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/11-problems.png",
-            "sha256": "9352964b490f942b4c6982c80f56f86ac4826d0c1d8c1e7f8926f528d7807c4e",
+            "file": "docs/app-store/screenshots/iphone-duo/08-site.png",
+            "sha256": "939a551adef78f883972abb94eaa2c9484d82f3a1608af78a603aaa7c7f6d76a",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/09-examples.png",
+            "sha256": "875fb2c1d0a104f00483ebe931dc55a49f20a815224c8f6cf4cb2bbadaad9702",
             "imageState": "PREPARE_FOR_SUBMISSION"
           }
         ]
@@ -579,12 +599,32 @@
     ],
     "fileHashesMatchSource": true,
     "firstScreenshot": "00-code.png",
-    "checkedAt": "2026-10-10T21:12:20.335456+00:00"
+    "checkedAt": "2026-10-10T23:33:15.423743+00:00",
+    "nativeSiteCapturePending": false
   },
   "repository": {
     "branch": "main",
     "mergeCommit": "9e17bf9dceb6f6c86484b3abaeba7d8587825122",
     "pullRequest": "https://github.com/sergii-ziborov/GopherForge/pull/5",
     "appSourceMatchesUploadedBuild": true
+  },
+  "nextBuild": {
+    "build": "18",
+    "state": "in preparation; not uploaded",
+    "changes": [
+      "syntax highlighting in example source previews",
+      "syntax highlighting in diagnostic source lines",
+      "syntax highlighting and search marks in navigator matches",
+      "inline code styling in quiz choices"
+    ],
+    "guideCatalogUnchanged": true
+  },
+  "nativeSitePaintVerification": {
+    "build": "17",
+    "passedTests": 1,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "visualInspection": "passed",
+    "sha256": "939a551adef78f883972abb94eaa2c9484d82f3a1608af78a603aaa7c7f6d76a"
   }
 }

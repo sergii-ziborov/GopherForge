@@ -317,7 +317,10 @@ struct ProjectNavigatorView: View {
                             Button {
                                 open(result.path, at: line.number)
                             } label: {
-                                SearchLineRow(line: line, query: query)
+                                SearchLineRow(
+                                    line: line, query: query,
+                                    fileKind: SourceFileKind.of(path: result.path)
+                                )
                             }
                             .buttonStyle(.plain)
                             .accessibilityIdentifier("search.line:\(result.path):\(line.number)")

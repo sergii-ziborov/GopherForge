@@ -53,7 +53,9 @@ struct DiagnosticListView: View {
                             .foregroundStyle(.secondary)
 
                         if !span.sourceLine.isEmpty {
-                            Text(span.sourceLine)
+                            Text(AttributedString(SyntaxAttributedStringBuilder(
+                                fileKind: SourceFileKind.of(path: span.fileName), fontSize: 12
+                            ).build(span.sourceLine)))
                                 .font(.caption.monospaced())
                                 .padding(6)
                                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -27,7 +27,9 @@ struct ProjectFileRow: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
                 if let detail {
-                    Text(detail)
+                    Text(AttributedString(SyntaxAttributedStringBuilder(
+                        fileKind: SourceFileKind.of(path: path), fontSize: 11
+                    ).build(detail)))
                         .font(.caption2.monospaced())
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -115,6 +117,7 @@ struct SearchFileHeader: View {
 struct SearchLineRow: View {
     let line: ProjectFileSearch.Line
     let query: String
+    var fileKind: SourceFileKind = .go
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -125,7 +128,9 @@ struct SearchLineRow: View {
                 // ragged code is much harder to scan than ragged numbers.
                 .frame(width: 30, alignment: .trailing)
 
-            HighlightedText(text: line.snippet, query: query)
+            Text(AttributedString(SyntaxAttributedStringBuilder(
+                fileKind: fileKind, fontSize: 11, searchQuery: query
+            ).build(line.snippet)))
                 .lineLimit(1)
                 .truncationMode(.tail)
 

@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 /// Captures the App Store screenshots by driving the real app.
 ///
@@ -116,6 +117,12 @@ final class AppStoreScreenshotUITests: XCTestCase {
         captureExampleScreenshots(relaunchExamples: true)
     }
 
+    func testCaptureSiteScreenshot() {
+        launch(section: "learn", screen: "examples")
+        XCTAssertTrue(app.navigationBars["Examples"].waitForExistence(timeout: 30))
+        captureSiteScreenshot()
+    }
+
     private func captureExampleScreenshots(relaunchExamples: Bool = false) {
         capture("09-examples")
 
@@ -137,6 +144,10 @@ final class AppStoreScreenshotUITests: XCTestCase {
         } else {
             openExamples()
         }
+        captureSiteScreenshot()
+    }
+
+    private func captureSiteScreenshot() {
         openExample("site.notes")
         runPhase("run")
         showOutput()
@@ -153,7 +164,45 @@ final class AppStoreScreenshotUITests: XCTestCase {
                 .waitForExistence(timeout: 120),
             "the preview should show the page the project serves"
         )
+        XCTAssertTrue(waitForSitePaint(), "the site's pixels should be painted before photographing it")
         capture("08-site")
+    }
+
+    /// WebKit can publish its accessibility tree before its compositor paints
+    /// the page on an overloaded simulator. Sample the interior of the real
+    /// preview so a uniform placeholder cannot pass as a finished screenshot.
+    private func waitForSitePaint() -> Bool {
+        let webView = app.webViews.firstMatch
+        let deadline = Date().addingTimeInterval(90)
+        while Date() < deadline {
+            if let image = webView.screenshot().image.cgImage {
+                let side = 24
+                var pixels = [UInt8](repeating: 0, count: side * side * 4)
+                let painted = pixels.withUnsafeMutableBytes { bytes -> Bool in
+                    guard let context = CGContext(
+                        data: bytes.baseAddress, width: side, height: side,
+                        bitsPerComponent: 8, bytesPerRow: side * 4,
+                        space: CGColorSpaceCreateDeviceRGB(),
+                        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+                    ) else { return false }
+                    context.draw(image, in: CGRect(x: 0, y: 0, width: side, height: side))
+                    let samples = bytes.bindMemory(to: UInt8.self)
+                    var colors = Set<Int>()
+                    for y in 4..<20 {
+                        for x in 4..<20 {
+                            let i = (y * side + x) * 4
+                            colors.insert(Int(samples[i] / 16) << 8
+                                | Int(samples[i + 1] / 16) << 4
+                                | Int(samples[i + 2] / 16))
+                        }
+                    }
+                    return colors.count >= 6
+                }
+                if painted { return true }
+            }
+            Thread.sleep(forTimeInterval: 2)
+        }
+        return false
     }
 
     /// Breaks the open project on purpose, builds it, and photographs what the
@@ -310,6 +359,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
 
         let open = app.buttons[AccessibilityIdentifier.exampleOpen]
         XCTAssertTrue(open.waitForExistence(timeout: 30), "an example should offer Open in workspace")
+        if id == "site.notes" { capture("example-site-source-preview") }
         open.tap()
         // A site example opens with its web files and vendored Gin, which is a
         // much bigger project than a template; on a busy Mac the iPad took

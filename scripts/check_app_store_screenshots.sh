@@ -36,9 +36,8 @@ EXPECTED=(
   "iphone-duo:1398:2034"
 )
 
-# What the ordinary-size listings use, in order. The current native Duo draft
-# has nine captures, including its unit and diagnostic views. Its full walk
-# needs a manual check of Projects scrolling before capturing the examples.
+# Ten feature captures for every display group. Unit and diagnostic images
+# are supplementary README material, not replacements for the example shots.
 LISTING=(
   00-code 04-lesson 03-course 02-tests 01-compiler 05-lab 06-projects
   07-graphics 08-site 09-examples
@@ -58,10 +57,6 @@ for entry in "${EXPECTED[@]}"; do
   want_height="${rest##*:}"
   directory="$SHOTS/$folder"
   listing=("${LISTING[@]}")
-  if [[ "$folder" == "iphone-duo" ]]; then
-    listing=(00-code 04-lesson 03-course 02-tests 01-compiler 05-lab 06-projects 10-unit 11-problems)
-  fi
-
   echo "$folder:"
 
   if [[ ! -d "$directory" ]]; then

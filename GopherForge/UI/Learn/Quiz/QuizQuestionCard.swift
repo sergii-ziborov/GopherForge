@@ -65,7 +65,7 @@ struct QuizOptionRow: View {
                 Image(systemName: symbol)
                     .foregroundStyle(tint)
                     .font(.body)
-                Text(text)
+                Text(LearningProse.inline(text))
                     .font(.callout)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
