@@ -14,15 +14,15 @@
   "lessonGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
   "website": {
     "url": "https://gopherforge.app",
-    "publishedCommit": "431f9d7da1e29bcd3c8d594f187853cddd8a6380",
+    "publishedCommit": "dbf5b8738344d0350b6a520031321cf22537e3c4",
     "courseEntries": 69,
     "galleryVersion": "1.1 preview",
     "nativeLessonContentMatch": "all 9 unit records, 69 lesson records and 69 guide records match by ID",
     "hiddenTestsOrSolutionsPublished": false,
     "galleryImageCount": 13,
-    "previewCommit": "431f9d7da1e29bcd3c8d594f187853cddd8a6380",
+    "previewCommit": "dbf5b8738344d0350b6a520031321cf22537e3c4",
     "courseConsistencyChecksPassed": 989,
-    "deploymentId": "2b11becd-48c0-42bb-8167-d550fcc1c00d",
+    "deploymentId": "1c20fd85-4678-43d3-94af-3f9411d820a6",
     "publicGalleryImages": 13,
     "publicLessonLinks": 69,
     "publicCodeHero": "loaded",
@@ -55,9 +55,10 @@
         "title": "Version 1.1 preview \u2014 GopherForge"
       }
     ],
-    "checkedAt": "2026-10-10T21:14:51.613365+00:00"
+    "checkedAt": "2026-10-10T21:57:22.362252+00:00",
+    "networkFAQMatchesSupport": true
   },
-  "checkedAt": "2026-10-10T21:14:51.613377+00:00",
+  "checkedAt": "2026-10-10T21:57:22.362252+00:00",
   "existingReviewRecording": {
     "fileName": "GopherForge-physical-iPhone-original-review.mp4",
     "fileSize": 25500411,
@@ -578,5 +579,11 @@
     "fileHashesMatchSource": true,
     "firstScreenshot": "00-code.png",
     "checkedAt": "2026-10-10T21:12:20.335456+00:00"
+  },
+  "repository": {
+    "branch": "main",
+    "mergeCommit": "9e17bf9dceb6f6c86484b3abaeba7d8587825122",
+    "pullRequest": "https://github.com/sergii-ziborov/GopherForge/pull/5",
+    "appSourceMatchesUploadedBuild": true
   }
 }
