@@ -64,8 +64,7 @@ extension XCUIApplication {
     /// chip row. The fixed panel menu remains reachable on its leading edge.
     func selectWorkspacePane(_ name: String) -> Bool {
         let menu = buttons["pane.more"]
-        if menu.waitForExistence(timeout: 5), menu.isHittable {
-            menu.tap()
+        if menu.waitForExistence(timeout: 5), tapReachable(menu) {
             let item = buttons["pane.menu.\(name)"]
             if item.waitForExistence(timeout: 5) {
                 item.tap()

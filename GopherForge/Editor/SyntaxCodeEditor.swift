@@ -31,6 +31,11 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     var revealLine: Int?
     var onReveal: (() -> Void)?
     var onCaretLineChange: ((Int, String) -> Void)?
+    /// Positive generations request focus; -1 releases it when a laptop
+    /// result pane replaces the keyboard. Zero leaves normal layouts alone.
+    var focusRequest = 0
+    var externalKeyboardAccessory = false
+    var onTextViewReady: ((UITextView) -> Void)?
 
     func makeUIView(context: Context) -> CodeEditorView {
         // TextKit 1 on purpose: the gutter positions each number from a line
@@ -46,7 +51,9 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         textView.smartInsertDeleteType = .no
         textView.backgroundColor = .clear
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 24, right: 8)
-        textView.inputAccessoryView = context.coordinator.makeAccessoryView(for: textView)
+        textView.inputAccessoryView = externalKeyboardAccessory
+            ? nil : context.coordinator.makeAccessoryView(for: textView)
+        context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
 
         // Code does not wrap. A wrapped Go line hides its own indentation and
         // makes every line below it start in a different place, which is worse
@@ -96,6 +103,27 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         context.coordinator.editor = editor
         editor.gutter.setNeedsDisplay()
 
+        if context.coordinator.appliedExternalKeyboardAccessory != externalKeyboardAccessory {
+            context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
+            textView.inputAccessoryView = externalKeyboardAccessory
+                ? nil : context.coordinator.makeAccessoryView(for: textView)
+            if textView.isFirstResponder { textView.reloadInputViews() }
+        }
+        if externalKeyboardAccessory, let onTextViewReady {
+            DispatchQueue.main.async { [weak textView] in
+                if let textView { onTextViewReady(textView) }
+            }
+        }
+
+        if context.coordinator.appliedFocusRequest != focusRequest {
+            context.coordinator.appliedFocusRequest = focusRequest
+            if focusRequest < 0 {
+                textView.resignFirstResponder()
+            } else if focusRequest > 0 {
+                context.coordinator.focusWhenAttached(textView, generation: focusRequest)
+            }
+        }
+
         if let revealLine {
             // After the text update, and on the next turn of the run loop:
             // scrolling to a range the layout manager has not laid out yet
@@ -130,6 +158,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         var appliedFileKind: SourceFileKind = .plain
         var appliedSearchQuery = ""
         var appliedMarkedLines: Set<Int> = []
+        var appliedFocusRequest = 0
+        var appliedExternalKeyboardAccessory = false
         /// Redrawn whenever the text or the scroll position changes, because
         /// the numbers are painted rather than laid out.
         weak var gutter: LineNumberGutterView?
@@ -140,6 +170,25 @@ struct SyntaxCodeEditor: UIViewRepresentable {
 
         init(parent: SyntaxCodeEditor) {
             self.parent = parent
+        }
+
+        /// SwiftUI can ask for focus before the wrapped text view enters its
+        /// window, especially when the Duo posture changes during navigation.
+        /// Retry only until attachment, and abandon an obsolete request when
+        /// a result tab has already dismissed the keyboard.
+        func focusWhenAttached(_ textView: UITextView, generation: Int, attempts: Int = 8) {
+            DispatchQueue.main.async { [weak self, weak textView] in
+                guard let self, let textView,
+                      self.appliedFocusRequest == generation else { return }
+                if textView.window != nil {
+                    textView.becomeFirstResponder()
+                } else if attempts > 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak textView] in
+                        guard let self, let textView else { return }
+                        self.focusWhenAttached(textView, generation: generation, attempts: attempts - 1)
+                    }
+                }
+            }
         }
 
         func highlighted(_ source: String, fontSize: CGFloat) -> NSAttributedString {

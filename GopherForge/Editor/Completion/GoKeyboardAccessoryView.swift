@@ -1,3 +1,4 @@
+import SwiftUI
 import UIKit
 
 /// The row above the keyboard.
@@ -204,5 +205,58 @@ final class GoKeyboardAccessoryView: UIView {
         button.accessibilityLabel = accessibilityLabel ?? title
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }
+}
+
+/// The Duo laptop layout keeps the same editor actions in its own row below
+/// the work tabs. UIKit's input accessory floats above the hinge in this
+/// posture, leaving a large gap before the software keyboard.
+struct GoKeyboardHelperBar: UIViewRepresentable {
+    let textView: UITextView
+    let fileKind: SourceFileKind
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(textView: textView, fileKind: fileKind)
+    }
+
+    func makeUIView(context: Context) -> GoKeyboardAccessoryView {
+        let coordinator = context.coordinator
+        return GoKeyboardAccessoryView(
+            onInsert: { [weak coordinator] text in
+                coordinator?.textView?.insertText(text)
+            },
+            onDismiss: { [weak coordinator] in
+                coordinator?.textView?.resignFirstResponder()
+            },
+            suggestions: { [weak coordinator] in
+                coordinator?.suggestions() ?? []
+            }
+        )
+    }
+
+    func updateUIView(_ view: GoKeyboardAccessoryView, context: Context) {
+        context.coordinator.textView = textView
+        context.coordinator.fileKind = fileKind
+    }
+
+    final class Coordinator {
+        weak var textView: UITextView?
+        var fileKind: SourceFileKind
+
+        init(textView: UITextView, fileKind: SourceFileKind) {
+            self.textView = textView
+            self.fileKind = fileKind
+        }
+
+        func suggestions() -> [GoCompletionSuggestion] {
+            guard let textView else { return [] }
+            let source = textView.text as NSString
+            let caret = min(textView.selectedRange.location, source.length)
+            let range = source.lineRange(for: NSRange(location: caret, length: 0))
+            let line = source.substring(with: range).trimmingCharacters(in: .newlines)
+            return GoCodeCompletion().suggestions(
+                for: GoCodeCompletion.Context(line: line, fileKind: fileKind)
+            )
+        }
     }
 }

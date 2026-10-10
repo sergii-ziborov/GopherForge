@@ -9,6 +9,9 @@ struct WorkspacePaneContent: View {
     let pane: WorkspacePane
     let terminal: ProjectTerminalSession
     let fontSize: Double
+    var focusRequest = 0
+    var keyboardCommandsOnly = false
+    var onEditorReady: ((UITextView) -> Void)?
 
     /// What a tap on a diagnostic does after moving the editor; a single work
     /// pane switches to Code, while a layout with a visible editor need not.
@@ -52,7 +55,10 @@ struct WorkspacePaneContent: View {
                     markedLines: workspace.markedLines,
                     searchQuery: workspace.highlightQuery,
                     revealLine: workspace.revealLine,
-                    onReveal: workspace.clearReveal
+                    onReveal: workspace.clearReveal,
+                    focusRequest: focusRequest,
+                    externalKeyboardAccessory: keyboardCommandsOnly,
+                    onTextViewReady: onEditorReady
                 )
             }
         case .problems:
@@ -70,7 +76,11 @@ struct WorkspacePaneContent: View {
         case .idioms:
             IdiomFindingListView(findings: workspace.idiomFindings)
         case .terminal:
-            TerminalPaneView(session: terminal)
+            TerminalPaneView(
+                session: terminal,
+                focusRequest: focusRequest,
+                keyboardCommandsOnly: keyboardCommandsOnly
+            )
         }
     }
 }

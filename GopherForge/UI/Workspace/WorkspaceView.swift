@@ -40,8 +40,17 @@ struct WorkspaceView: View {
 
     @State private var pane: WorkspacePane = .code
     @State private var dockPane: WorkspacePane = .problems
-    @State private var laptopPane: WorkspacePane = .terminal
+    @State private var laptopPane: WorkspacePane = .code
+    @State private var laptopWorkPane: WorkspacePane = .code
     @State private var laptopShowsFiles = false
+    @State private var laptopFocusGeneration = 0
+    @State private var laptopShouldFocus = false
+    @State private var keyboardVisible = false
+    @State private var laptopEditor: UITextView?
+    @State private var duoPartiallyOpen = false
+    @State private var usesLaptopLayout = ProcessInfo.processInfo.arguments.contains(
+        "-GopherForgeDuoLaptopUITest"
+    )
     @State private var layout: WorkspaceLayout = .compact
     @State private var terminal: ProjectTerminalSession?
     /// The dock's height on iPad, dragged at the seam and remembered. 280 fits
@@ -56,7 +65,17 @@ struct WorkspaceView: View {
     @State private var libraryFolders: [String] = []
     @State private var filingItem: ProjectLibraryItem?
 
-    var body: some View {
+    @ViewBuilder var body: some View {
+        if #available(iOS 27.1, *) {
+            workspaceRoot.onHingeChange { _, context in
+                duoPartiallyOpen = context.hinge?.status == .partiallyOpen
+            }
+        } else {
+            workspaceRoot
+        }
+    }
+
+    private var workspaceRoot: some View {
         VStack(spacing: 0) {
             WorkspaceStatusStrip(status: workspace.toolchain)
             if workspace.hasUnsavedChanges || workspace.saveError != nil {
@@ -86,43 +105,16 @@ struct WorkspaceView: View {
             }
 
             if let terminal {
-                GeometryReader { geometry in
-                    let availableLayout = WorkspaceLayout.resolve(
-                        width: geometry.size.width,
-                        isPad: UIDevice.current.userInterfaceIdiom == .pad
-                    )
-                    Group {
-                        if #available(iOS 27.1, *),
-                           availableLayout != .compact,
-                           !geometry.reservedRegions(kind: .division).isEmpty {
-                            foldedLayout(
-                                terminal: terminal,
-                                layout: availableLayout,
-                                isLaptop: geometry.size.height > geometry.size.width
-                            )
-                        } else {
-                            switch availableLayout {
-                            case .compact:
-                                compactLayout(terminal: terminal)
-                            case .columns:
-                                columnsLayout(terminal: terminal, width: geometry.size.width)
-                            case .canvas:
-                                canvasLayout(terminal: terminal, width: geometry.size.width)
-                            case .tablet:
-                                tabletLayout(terminal: terminal, width: geometry.size.width)
-                            }
-                        }
-                    }
-                    .onAppear { adoptLayout(availableLayout) }
-                    .onChange(of: availableLayout) { _, newValue in adoptLayout(newValue) }
-                }
+                workspaceArea(terminal: terminal)
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .ignoresSafeArea(usesLaptopLayout ? .keyboard : [], edges: .bottom)
         .navigationTitle(workspace.project?.name ?? "Workspace")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
+        .toolbar(usesLaptopLayout ? .hidden : .visible, for: .tabBar)
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
                 PackageBrowserView(allowsProjectChoice: false) {
@@ -146,10 +138,14 @@ struct WorkspaceView: View {
         .onChange(of: workspace.projectGeneration) {
             pane = .code
             dockPane = .problems
-            laptopPane = .terminal
+            laptopPane = .code
+            laptopWorkPane = .code
             laptopShowsFiles = false
+            laptopShouldFocus = false
+            laptopEditor = nil
             isDrawerOpen = false
             terminal = ProjectTerminalSession(workspace: workspace)
+            if usesLaptopLayout { scheduleInitialLaptopFocus() }
         }
         // A finished run opens the pane that answers it. Keyed on the
         // generation rather than the result, so running the same thing twice
@@ -164,8 +160,7 @@ struct WorkspaceView: View {
                 if layout.showsDock {
                     dockPane = destination
                 }
-                laptopPane = destination
-                laptopShowsFiles = false
+                selectLaptopPane(destination)
                 pane = destination
             }
         }
@@ -179,14 +174,117 @@ struct WorkspaceView: View {
                 if layout.showsDock {
                     dockPane = destination
                 }
-                laptopPane = destination
-                laptopShowsFiles = false
+                selectLaptopPane(destination)
                 pane = destination
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            keyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
+            keyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardVisible = false
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { _ in
+            keyboardVisible = false
         }
     }
 
     // MARK: - Layouts
+
+    private var forceLaptopLayout: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-GopherForgeDuoLaptopUITest")
+        #else
+        false
+        #endif
+    }
+
+    private func activeDivisionFrame(in geometry: GeometryProxy) -> CGRect? {
+        if #available(iOS 27.1, *) {
+            geometry.reservedRegions(kind: .division)
+                .map(\.frame)
+                .first { $0.intersects(CGRect(origin: .zero, size: geometry.size)) }
+        } else {
+            nil
+        }
+    }
+
+    /// Device Hub can report a half-open hinge without a division region.
+    /// The window midpoint still marks the horizontal hinge in that posture.
+    private func fallbackLaptopDivision(in geometry: GeometryProxy) -> CGRect? {
+        guard duoPartiallyOpen, geometry.size.height > geometry.size.width else { return nil }
+        let hingeGlobalY = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .bounds.midY ?? geometry.frame(in: .global).midY
+        let hingeY = hingeGlobalY - geometry.frame(in: .global).minY
+        guard hingeY > 80, hingeY < geometry.size.height - 80 else { return nil }
+        return CGRect(x: 0, y: hingeY, width: geometry.size.width, height: 12)
+    }
+
+    private func workspaceArea(terminal: ProjectTerminalSession) -> some View {
+        GeometryReader { geometry in
+            let availableLayout = WorkspaceLayout.resolve(
+                width: geometry.size.width,
+                isPad: UIDevice.current.userInterfaceIdiom == .pad
+            )
+            let division = activeDivisionFrame(in: geometry)
+            let horizontalDivision = division.flatMap { $0.width > $0.height * 2 ? $0 : nil }
+            let laptopDivision = horizontalDivision
+                ?? (division == nil ? fallbackLaptopDivision(in: geometry) : nil)
+            let showsLaptop = forceLaptopLayout || laptopDivision != nil
+            workspaceContent(
+                terminal: terminal,
+                layout: availableLayout,
+                width: geometry.size.width,
+                division: division,
+                laptopDivision: laptopDivision,
+                showsLaptop: showsLaptop
+            )
+            .onAppear {
+                adoptLayout(availableLayout)
+                usesLaptopLayout = showsLaptop
+            }
+            .onChange(of: availableLayout) { _, newValue in adoptLayout(newValue) }
+            .onChange(of: showsLaptop) { wasLaptop, isLaptop in
+                usesLaptopLayout = isLaptop
+                if isLaptop && !wasLaptop {
+                    laptopPane = pane
+                    if pane == .code || pane == .terminal {
+                        laptopWorkPane = pane
+                        requestLaptopFocus()
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func workspaceContent(
+        terminal: ProjectTerminalSession,
+        layout: WorkspaceLayout,
+        width: CGFloat,
+        division: CGRect?,
+        laptopDivision: CGRect?,
+        showsLaptop: Bool
+    ) -> some View {
+        if showsLaptop {
+            laptopLayout(terminal: terminal, division: forceLaptopLayout ? nil : laptopDivision)
+        } else if #available(iOS 27.1, *), layout != .compact, division != nil {
+            foldedLayout(terminal: terminal, layout: layout)
+        } else {
+            switch layout {
+            case .compact: compactLayout(terminal: terminal)
+            case .columns: columnsLayout(terminal: terminal, width: width)
+            case .canvas: canvasLayout(terminal: terminal, width: width)
+            case .tablet: tabletLayout(terminal: terminal, width: width)
+            }
+        }
+    }
 
     private func adoptLayout(_ newLayout: WorkspaceLayout) {
         guard layout != newLayout else { return }
@@ -232,12 +330,11 @@ struct WorkspaceView: View {
     @available(iOS 27.1, *)
     private func foldedLayout(
         terminal: ProjectTerminalSession,
-        layout: WorkspaceLayout,
-        isLaptop: Bool
+        layout: WorkspaceLayout
     ) -> some View {
         ArrangementView {
             Group {
-                if isLaptop || layout.showsDock {
+                if layout.showsDock {
                     WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
                 } else {
                     paneStack(terminal: terminal)
@@ -246,17 +343,13 @@ struct WorkspaceView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } secondary: {
             Group {
-                if isLaptop {
-                    laptopPanel(terminal: terminal)
-                } else {
-                    VStack(spacing: 0) {
-                        ProjectNavigatorView(onOpenFile: revealCode)
+                VStack(spacing: 0) {
+                    ProjectNavigatorView(onOpenFile: revealCode)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    if layout.showsDock {
+                        Divider()
+                        dockContent(terminal: terminal)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        if layout.showsDock {
-                            Divider()
-                            dockContent(terminal: terminal)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        }
                     }
                 }
             }
@@ -266,43 +359,168 @@ struct WorkspaceView: View {
         .arrangementViewStyle(.split)
     }
 
-    /// With the hinge horizontal, keep code above it and the active console or
-    /// result below it. Files remain one tap away in the lower pane.
-    private func laptopPanel(terminal: ProjectTerminalSession) -> some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Button {
-                    laptopShowsFiles = true
-                } label: {
-                    Label("Files", systemImage: "folder")
-                        .labelStyle(.iconOnly)
-                        .frame(width: 44, height: 44)
-                }
-                .accessibilityLabel("Files")
-                .accessibilityIdentifier("laptop.files")
-                Divider().frame(height: 24)
-                WorkspacePanePicker(
-                    selection: Binding(
-                        get: { laptopPane },
-                        set: { laptopPane = $0; laptopShowsFiles = false }
-                    ),
-                    panes: WorkspacePane.dockPanes
-                )
-            }
-            .background(Color(.secondarySystemBackground))
-            Divider()
-            if laptopShowsFiles {
-                ProjectNavigatorView(onOpenFile: {
-                    laptopShowsFiles = false
-                    revealCode()
-                })
-            } else {
+    /// The upper display is the active work surface. With Code or Terminal
+    /// selected, the system keyboard owns the lower display and the helper row
+    /// sits immediately below these tabs. Results replace the keyboard below
+    /// the hinge while the last work surface remains visible above it.
+    private func laptopLayout(terminal: ProjectTerminalSession, division: CGRect?) -> some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
                 WorkspacePaneContent(
-                    pane: laptopPane,
+                    pane: laptopWorkPane,
                     terminal: terminal,
-                    fontSize: fontSize
+                    fontSize: fontSize,
+                    focusRequest: laptopShouldFocus ? laptopFocusGeneration : -1,
+                    keyboardCommandsOnly: true,
+                    onEditorReady: { textView in
+                        if laptopWorkPane == .code && laptopEditor !== textView {
+                            laptopEditor = textView
+                        }
+                    }
                 )
+                .frame(maxWidth: .infinity)
+                .frame(height: laptopWorkHeight(in: geometry, division: division))
+
+                Divider()
+                laptopTabs
+                Divider()
+
+                if keyboardVisible && !laptopShowsFiles {
+                    if laptopPane == .code, let laptopEditor {
+                        GoKeyboardHelperBar(textView: laptopEditor, fileKind: workspace.fileKind)
+                            .frame(height: 46)
+                    } else if laptopPane == .terminal {
+                        laptopTerminalHelpers(terminal)
+                    }
+                }
+
+                if laptopShowsFiles {
+                    ProjectNavigatorView(onOpenFile: {
+                        selectLaptopPane(.code)
+                        revealCode()
+                    })
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if laptopPane != .code && laptopPane != .terminal {
+                    WorkspacePaneContent(
+                        pane: laptopPane,
+                        terminal: terminal,
+                        fontSize: fontSize,
+                        onRevealCode: { selectLaptopPane(.code) }
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if !keyboardVisible {
+                    Spacer(minLength: 0)
+                }
             }
+        }
+        .onAppear {
+            if laptopPane == .code || laptopPane == .terminal {
+                scheduleInitialLaptopFocus()
+            }
+        }
+    }
+
+    private var laptopTabs: some View {
+        HStack(spacing: 0) {
+            Button {
+                laptopShowsFiles = true
+                laptopShouldFocus = false
+                dismissLaptopKeyboard()
+            } label: {
+                Label("Files", systemImage: "folder")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 44, height: 44)
+            }
+            .accessibilityLabel("Files")
+            .accessibilityIdentifier("laptop.files")
+            Divider().frame(height: 24)
+            WorkspacePanePicker(
+                selection: Binding(
+                    get: { laptopPane },
+                    set: { selectLaptopPane($0) }
+                ),
+                panes: WorkspacePane.workPanes
+            )
+        }
+        .background(Color(.secondarySystemBackground))
+    }
+
+    private func laptopTerminalHelpers(_ terminal: ProjectTerminalSession) -> some View {
+        HStack(spacing: 0) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(TerminalPaneView.quickCommands, id: \.self) { command in
+                        Button(command) {
+                            terminal.input = command
+                            Task { await terminal.submit() }
+                        }
+                        .font(.caption.monospaced())
+                        .disabled(terminal.isBusy)
+                        .accessibilityIdentifier("terminal.quick.\(command)")
+                    }
+                }
+                .padding(.horizontal, 12)
+            }
+            Button("Hide keyboard", systemImage: "keyboard.chevron.compact.down") {
+                laptopShouldFocus = false
+                dismissLaptopKeyboard()
+            }
+            .labelStyle(.iconOnly)
+            .frame(width: 44, height: 44)
+            .accessibilityIdentifier("terminal.hideKeyboard")
+        }
+        .frame(height: 46)
+        .background(Color(.secondarySystemBackground))
+    }
+
+    private func selectLaptopPane(_ destination: WorkspacePane) {
+        laptopPane = destination
+        pane = destination
+        laptopShowsFiles = false
+        if destination == .code || destination == .terminal {
+            laptopWorkPane = destination
+            if destination == .terminal { laptopEditor = nil }
+            requestLaptopFocus()
+        } else {
+            laptopShouldFocus = false
+            dismissLaptopKeyboard()
+        }
+    }
+
+    private func dismissLaptopKeyboard() {
+        // A picker inside a menu can keep the text view as first responder
+        // through the same SwiftUI update that swaps the lower pane. Dismiss
+        // it after the menu closes as well as updating the editor's request.
+        DispatchQueue.main.async {
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.resignFirstResponder),
+                to: nil,
+                from: nil,
+                for: nil
+            )
+        }
+    }
+
+    private func requestLaptopFocus() {
+        laptopFocusGeneration += 1
+        laptopShouldFocus = true
+    }
+
+    private func laptopWorkHeight(in geometry: GeometryProxy, division: CGRect?) -> CGFloat {
+        let hingeHeight = min(division?.maxY ?? geometry.size.height * 0.5, geometry.size.height)
+        // The Duo keyboard's rounded upper edge covers 21 points of the
+        // helper row at the division. Leave five more points for separation.
+        return max(0, hingeHeight - (keyboardVisible ? 26 : 0))
+    }
+
+    private func scheduleInitialLaptopFocus() {
+        // The editor can appear before project selection has settled. Focusing
+        // it during that replacement leaves a first responder with no keyboard.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            guard usesLaptopLayout,
+                  laptopPane == .code || laptopPane == .terminal,
+                  !laptopShouldFocus else { return }
+            requestLaptopFocus()
         }
     }
 

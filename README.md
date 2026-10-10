@@ -51,9 +51,19 @@ goroutine trace are what the app actually produced, not mock-ups.
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **Go code on iPhone.** A real worker pool in the editor, with the file drawer closed so the code uses the available width. |
 | <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
 | **iPhone files.** The file tree overlays the editor, and choosing a file closes it. | **iPad files.** One file tree stays beside the editor, including in a narrow iPad window. |
+| <img src="docs/screenshots/duo-laptop-code.png" width="300" alt="In the iPhone Duo laptop posture, Go code fills the upper display, workspace tabs sit at the hinge, and Go keyboard helpers sit directly above the lower keyboard"> | <img src="docs/screenshots/duo-laptop-terminal.png" width="300" alt="In the iPhone Duo laptop posture, the terminal fills the upper display, workspace tabs sit at the hinge, and terminal commands sit directly above the lower keyboard"> |
+| **Duo laptop posture: Code.** The editor stays above the hinge. Its Go symbols and completion controls appear above the keyboard and disappear with it. | **Duo laptop posture: Terminal.** The console uses the same upper display; its command shortcuts stay visible above the keyboard. Selecting Problems, Output, Tests or Idioms replaces the keyboard with that result. |
+
+<img src="docs/screenshots/duo-laptop-idioms.png" width="300" alt="The Duo laptop posture with code still above the hinge and the Idioms result occupying the lower display instead of the keyboard">
+
+**Duo result view.** The upper code stays in place while the selected result
+fills the lower display.
 
 The navigator images come from the UI regression in
 `NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
+The Duo images are from the iPhone Duo Simulator with the horizontal hinge
+active. This layout is in the current development build and has not been
+submitted for App Store review.
 
 The [App Store screenshot sets](docs/app-store/screenshots) are captured from
 the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones and 11 and
@@ -113,9 +123,12 @@ Concretely, the app currently contains:
   in it" rather than whatever you called it six weeks ago. Nothing is evicted;
   the dashboard keeps a five-project strip and links to the rest;
 - a workspace that changes shape by device: iPad shows the file tree, the editor
-  and a dock at once, while iPhone becomes full-height
-  `Code / Problems / Output / Tests / Idioms / Terminal` tabs with the switcher
-  at the top, where the keyboard cannot bury it;
+  and a dock at once; an ordinary iPhone has full-height
+  `Code / Problems / Output / Tests / Idioms / Terminal` panes with tabs at
+  the top; an iPhone Duo in laptop posture keeps Code or Terminal above the
+  horizontal hinge, tabs at the hinge, and the keyboard with its helpers below.
+  Problems, Output, Tests, Idioms and Files replace the lower keyboard while
+  the last work surface remains visible above;
 - a project console that maps `go build`, `go run`, `go test`, `go vet`,
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;

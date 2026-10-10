@@ -130,7 +130,7 @@ final class NavigatorFlowUITests: XCTestCase {
     }
 
     /// A narrow window uses a drawer, a book posture shows a visible tree,
-    /// and a laptop posture opens Files in its lower pane.
+    /// and a laptop posture opens Files below the work tabs.
     func testNavigatorOccupiesOnePlaceForTheWindow() {
         launch()
 
@@ -153,12 +153,12 @@ final class NavigatorFlowUITests: XCTestCase {
             let initialEditor = editor.frame
             laptopFiles.tap()
             XCTAssertTrue(search.waitForExistence(timeout: 5))
-            XCTAssertGreaterThan(search.frame.minY, initialEditor.midY,
-                                 "Files should appear below the editor, across the hinge")
+            XCTAssertGreaterThan(search.frame.minY, laptopFiles.frame.midY,
+                                 "Files should replace the keyboard below the tabs")
             XCTAssertEqual(editor.frame.minY, initialEditor.minY, accuracy: 2,
                            "opening Files must not move the upper editor")
-            XCTAssertEqual(editor.frame.height, initialEditor.height, accuracy: 2,
-                           "opening Files must not resize the upper editor")
+            XCTAssertLessThan(editor.frame.maxY, search.frame.minY,
+                              "Files should not cover the upper editor")
             goMod.tap()
             XCTAssertTrue(search.waitForNonExistence(timeout: 5))
             XCTAssertTrue((editor.value as? String ?? "").contains("module "))
@@ -182,7 +182,9 @@ final class NavigatorFlowUITests: XCTestCase {
             attachScreenshot(named: "navigator-iphone-files")
 
             XCTAssertTrue(goMod.waitForExistence(timeout: 5))
-            goMod.tap()
+            // iOS 27 reports the whole sidebar cell as the button; its blank
+            // trailing area does not activate the plain-style row.
+            goMod.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).tap()
             XCTAssertTrue(search.waitForNonExistence(timeout: 5), "selecting a file should close the drawer")
             XCTAssertEqual(editor.frame.minX, initialEditor.minX, accuracy: 2)
         }
