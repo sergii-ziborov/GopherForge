@@ -2,8 +2,8 @@ import SwiftUI
 
 /// The shell: four sections in a tab bar, on both devices.
 ///
-/// The workspace inside still adapts — iPad shows the file tree beside the
-/// editor and a dock below it, iPhone stacks them — but which section you are
+/// The workspace inside adapts to the available width, including a folding
+/// phone's changing display. Which section you are
 /// in is a shallow, four-way choice, and that is a tab bar's job on either
 /// screen.
 struct ContentView: View {

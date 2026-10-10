@@ -304,11 +304,7 @@ final class WorkspaceFlowUITests: XCTestCase {
         // phone are unreadable and the last two are unreachable.
         for pane in ["output", "tests", "idioms", "terminal", "problems"] {
             let chip = app.buttons["pane.\(pane)"]
-            XCTAssertTrue(
-                app.scrollHorizontally(to: chip),
-                "\(pane) should be reachable, scrolling the row if it has to"
-            )
-            chip.tap()
+            XCTAssertTrue(app.selectWorkspacePane(pane), "\(pane) should be reachable")
             // Selection animates, so wait for it rather than asking the instant
             // after the tap — under a full suite the app is slower than it is
             // running one test alone, and that difference is not a defect.
@@ -320,15 +316,121 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "04-panes")
     }
 
+    /// On a half-open Duo the editor and terminal belong above the hinge.
+    /// A result tab dismisses the keyboard and fills the lower display; going
+    /// back to a work tab restores its keyboard helpers.
+    func testLaptopTabsSwapKeyboardForResults() {
+        app.launchArguments = [
+            "-GopherForgeSection", Section.build.rawValue,
+            "-GopherForgeDuoLaptopUITest",
+        ]
+        app.launch()
+
+        assertLaptopTabsSwapKeyboardForResults()
+    }
+
+    /// Runs against a simulator whose Duo hinge is actually horizontal. It
+    /// skips ordinary phones so the same suite remains useful elsewhere.
+    func testDetectedLaptopPostureOnDuo() throws {
+        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launch()
+        guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
+            throw XCTSkip("No horizontal Duo division region is active")
+        }
+
+        assertLaptopTabsSwapKeyboardForResults()
+    }
+
+    func testDetectedLaptopTerminalKeyboard() throws {
+        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launch()
+        guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
+            throw XCTSkip("No horizontal Duo division region is active")
+        }
+
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        XCTAssertTrue(app.textFields["terminal.input"].waitForExistence(timeout: 5))
+        let keyboard = app.keyboards.firstMatch
+        let helper = app.buttons["terminal.quick.help"]
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
+        XCTAssertTrue(keyboard.isHittable)
+        XCTAssertTrue(helper.waitForExistence(timeout: 5))
+        XCTAssertLessThanOrEqual(helper.frame.maxY, keyboard.frame.minY)
+        XCTAssertLessThan(keyboard.frame.minY - helper.frame.maxY, 40)
+        attachScreenshot(named: "duo-terminal-keyboard-direct")
+        app.buttons["terminal.hideKeyboard"].tap()
+        XCTAssertTrue(helper.waitForNonExistence(timeout: 5))
+        XCTAssertFalse(keyboard.isHittable)
+        app.textFields["terminal.input"].tap()
+        XCTAssertTrue(helper.waitForExistence(timeout: 5))
+    }
+
+    private func assertLaptopTabsSwapKeyboardForResults() {
+        let filesTab = app.buttons["laptop.files"]
+        XCTAssertTrue(filesTab.waitForExistence(timeout: 5))
+
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        let hideKeyboard = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
+        XCTAssertTrue(keyboard.isHittable)
+        XCTAssertTrue(hideKeyboard.waitForExistence(timeout: 5))
+        XCTAssertLessThan(editor.frame.maxY, filesTab.frame.maxY)
+        let codeTabY = filesTab.frame.minY
+        XCTAssertLessThan(abs(keyboard.frame.minY - hideKeyboard.frame.maxY), 40,
+                          "keyboard helpers should sit immediately above the keys")
+        XCTAssertLessThanOrEqual(hideKeyboard.frame.maxY, keyboard.frame.minY,
+                                 "keyboard helpers must remain visible above the keys")
+        attachScreenshot(named: "duo-code-keyboard")
+
+        for (pane, emptyTitle) in [
+            ("problems", "No problems"),
+            ("output", "Nothing has run yet"),
+            ("tests", "No tests have run"),
+            ("idioms", "Nothing to suggest"),
+        ] {
+            XCTAssertTrue(app.selectWorkspacePane(pane))
+            XCTAssertTrue(app.waitForSelection(of: app.buttons["pane.\(pane)"]))
+            XCTAssertTrue(editor.exists, "code should remain on the upper display")
+            XCTAssertTrue(hideKeyboard.waitForNonExistence(timeout: 5))
+            let result = app.staticTexts[emptyTitle]
+            XCTAssertTrue(result.waitForExistence(timeout: 5))
+            XCTAssertGreaterThan(result.frame.midY, filesTab.frame.midY,
+                                 "\(pane) should replace the lower keyboard")
+            XCTAssertEqual(filesTab.frame.minY, codeTabY, accuracy: 30,
+                           "switching to results must not move the tabs away from the hinge")
+            if pane == "idioms" { attachScreenshot(named: "duo-idioms-result") }
+        }
+
+        XCTAssertTrue(app.selectWorkspacePane("code"))
+        XCTAssertTrue(hideKeyboard.waitForExistence(timeout: 5))
+        hideKeyboard.tap()
+        XCTAssertTrue(hideKeyboard.waitForNonExistence(timeout: 5))
+        editor.tap()
+        XCTAssertTrue(hideKeyboard.waitForExistence(timeout: 5))
+
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        XCTAssertTrue(app.textFields["terminal.input"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["terminal.quick.help"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "duo-terminal-keyboard")
+
+        XCTAssertTrue(app.selectWorkspacePane("problems"))
+        XCTAssertTrue(app.textFields["terminal.input"].exists,
+                      "terminal should remain on the upper display")
+        XCTAssertTrue(app.buttons["terminal.quick.help"].waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["No problems"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        XCTAssertTrue(app.buttons["terminal.quick.help"].waitForExistence(timeout: 5))
+    }
+
     /// The console is app-scoped: it must answer questions it can answer from
     /// the project alone, and it must never claim to have run something the
     /// toolchain cannot.
     func testTerminalAnswersFromTheProjectAndNeverInvents() {
         launch(section: .build)
 
-        let terminal = app.buttons["pane.terminal"]
-        XCTAssertTrue(app.scrollHorizontally(to: terminal))
-        terminal.tap()
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
 
         let input = app.textFields["terminal.input"]
         XCTAssertTrue(input.waitForExistence(timeout: 5), "the console should offer a prompt")
@@ -346,7 +448,9 @@ final class WorkspaceFlowUITests: XCTestCase {
         // compiler is staged — which is what makes it the right thing to assert
         // in a UI test. Whether `go build` compiles or refuses is the compiler
         // gate's question, and it is asked there.
-        send("ls", to: input)
+        let listFiles = app.buttons["terminal.quick.ls"]
+        XCTAssertTrue(listFiles.waitForExistence(timeout: 5), "common commands should be one tap away")
+        listFiles.tap()
         XCTAssertTrue(
             app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'main.go'")).element
                 .waitForExistence(timeout: 5),
