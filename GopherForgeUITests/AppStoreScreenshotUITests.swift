@@ -105,6 +105,18 @@ final class AppStoreScreenshotUITests: XCTestCase {
         // way in. They run after the library shot so it keeps showing the
         // projects a person made rather than examples opened for the camera.
         openExamples()
+        captureExampleScreenshots()
+    }
+
+    /// Re-captures the three example screens without rebuilding the preceding
+    /// templates. The normal capture above still verifies Projects navigation.
+    func testCaptureExampleScreenshots() {
+        launch(section: "learn", screen: "examples")
+        XCTAssertTrue(app.navigationBars["Examples"].waitForExistence(timeout: 30))
+        captureExampleScreenshots(relaunchExamples: true)
+    }
+
+    private func captureExampleScreenshots(relaunchExamples: Bool = false) {
         capture("09-examples")
 
         openExample("graphics.mandelbrot")
@@ -119,7 +131,12 @@ final class AppStoreScreenshotUITests: XCTestCase {
         )
         capture("07-graphics")
 
-        openExamples()
+        if relaunchExamples {
+            launch(section: "learn", screen: "examples")
+            XCTAssertTrue(app.navigationBars["Examples"].waitForExistence(timeout: 30))
+        } else {
+            openExamples()
+        }
         openExample("site.notes")
         runPhase("run")
         showOutput()

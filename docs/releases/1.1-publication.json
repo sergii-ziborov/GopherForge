@@ -37,22 +37,22 @@
       {
         "url": "https://gopherforge.app/support",
         "status": 200,
-        "title": "Support — GopherForge"
+        "title": "Support \u2014 GopherForge"
       },
       {
         "url": "https://gopherforge.app/privacy",
         "status": 200,
-        "title": "Privacy Policy — GopherForge"
+        "title": "Privacy Policy \u2014 GopherForge"
       },
       {
         "url": "https://gopherforge.app/terms",
         "status": 200,
-        "title": "Terms of Use — GopherForge"
+        "title": "Terms of Use \u2014 GopherForge"
       },
       {
         "url": "https://gopherforge.app/updates",
         "status": 200,
-        "title": "Version 1.1 preview — GopherForge"
+        "title": "Version 1.1 preview \u2014 GopherForge"
       }
     ],
     "checkedAt": "2026-10-10T21:14:51.613365+00:00"
@@ -89,9 +89,10 @@
     "embeddedCodeScrollsPage": "passed",
     "fullscreenCodeScrollsInternally": "passed",
     "fullscreenEditsRetained": "passed",
-    "nativeLaptopPosture": "pending Mac unlock",
+    "nativeLaptopPosture": "pending native simulator recovery: Mac unlocked; Device Hub connection timeout; test runner launch failed with Mach -308",
     "nativeDisplayCaptures": "build 17 native Duo code and visual lesson",
-    "nativeProjectsListScroll": "automated screenshot walk did not reach example library; manual check pending Mac unlock"
+    "nativeProjectsListScroll": "automated screenshot walk did not reach example library; manual check pending native simulator recovery",
+    "nativeExampleRecapture": "compiled successfully; no checks executed because the test runner failed to install or launch (Mach -308)"
   },
   "officialGuideReferences": {
     "guideCount": 69,

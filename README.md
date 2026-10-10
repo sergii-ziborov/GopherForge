@@ -88,7 +88,8 @@ The navigator images come from the UI regression in
 `NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
 The laptop images above were captured on 8 October with build 14 and the
 native iPhone Duo horizontal hinge active. Fresh build 17 posture checks are
-pending: Device Hub needs the Mac to be unlocked to change the hinge position.
+pending: after Mac unlock, CoreSimulator failed to launch the fresh native
+check (connection timeout and Mach server error).
 Version 1.1 has not been submitted for App Store review.
 
 | **Native Duo code capture** | **Native Duo visual lesson** |
@@ -111,7 +112,7 @@ the Concurrency Lab and project library, then graphics, a site previewed from
 and alpha channels before uploading them. The 1.1 draft includes ten ordered
 screenshots for each ordinary size and nine native Duo captures. The Duo
 capture reached Projects; scrolling to the example library still needs a
-manual check after Mac unlock. Its current set ends with a unit and diagnostics.
+manual check when the native simulator can launch again. Its current set ends with a unit and diagnostics.
 The
 [product page header and search artwork](docs/app-store/creative-assets) use
 the same real editor capture and can be regenerated with
