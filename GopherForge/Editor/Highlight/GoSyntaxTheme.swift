@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Colours for the editor, defined once and resolved against the current
 /// appearance so light and dark are a single source of truth.
@@ -15,15 +16,19 @@ struct GoSyntaxTheme: Sendable {
 
     static let standard = GoSyntaxTheme(
         plain: .primary,
-        keyword: Color(red: 0.68, green: 0.24, blue: 0.60),
-        type: Color(red: 0.16, green: 0.47, blue: 0.72),
-        string: Color(red: 0.76, green: 0.29, blue: 0.20),
-        number: Color(red: 0.20, green: 0.44, blue: 0.36),
+        keyword: adaptive(light: 0x9D2A91, dark: 0xDF9CE7),
+        type: adaptive(light: 0x236C9C, dark: 0x8ACDFA),
+        string: adaptive(light: 0xAD392B, dark: 0xFFA88C),
+        number: adaptive(light: 0x206F4F, dark: 0x8FDEAE),
         comment: Color.secondary,
-        function: Color(red: 0.36, green: 0.34, blue: 0.72),
-        package: Color(red: 0.24, green: 0.52, blue: 0.44),
-        directive: Color(red: 0.55, green: 0.42, blue: 0.16)
+        function: adaptive(light: 0x5551AE, dark: 0xB8B5FF),
+        package: adaptive(light: 0x286F60, dark: 0x80D6C1),
+        directive: adaptive(light: 0x806011, dark: 0xE9CB79)
     )
+
+    private static func adaptive(light: UInt32, dark: UInt32) -> Color {
+        Color(UIColor { traits in UIColor(hex: traits.userInterfaceStyle == .dark ? dark : light) })
+    }
 }
 
 /// The token kinds the highlighters produce. Kept separate from the theme so a

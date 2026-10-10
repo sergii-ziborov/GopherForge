@@ -88,6 +88,7 @@ struct MatchingDrillView: View {
         if let tile {
             MatchingTileView(
                 text: tile.text,
+                isCode: tile.side == .prompt && session.drill.pairs.first { $0.id == tile.pairID }?.promptIsCode == true,
                 state: session.state(of: tile),
                 identifier: "drill.tile.\(tile.id)"
             ) {

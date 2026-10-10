@@ -84,6 +84,7 @@ xcodebuild -project "$PROJECT_ROOT/GopherForge.xcodeproj" \
   -configuration Release \
   -destination 'generic/platform=iOS' \
   -archivePath "$ARCHIVE" \
+  -jobs "${GOPHERFORGE_BUILD_JOBS:-4}" \
   -allowProvisioningUpdates \
   SWIFT_SUPPRESS_WARNINGS=NO \
   archive

@@ -10,10 +10,10 @@ extension CourseUnitStandardLibrary {
         `time.Duration` is an int64 counting nanoseconds, and the constants are \
         what make it readable: `5 * time.Second` is a multiplication, not a \
         function call. That is also the trap — a bare `5` is five nanoseconds, \
-        and `time.Sleep(5)` returns immediately rather than after five of \
-        anything.
+        and `time.Sleep(5)` requests five nanoseconds, not five seconds. \
+        Scheduler timing may make the actual wait longer.
 
-        Two more worth knowing on sight: subtracting two Times gives a \
+        Two more worth knowing on sight: `end.Sub(start)` gives a \
         Duration, and comparing Times uses Before, After and Equal rather than \
         the operators, because a Time carries a monotonic reading as well as a \
         wall clock.
@@ -334,14 +334,9 @@ extension CourseUnitStandardLibrary {
         title: "image.Image is three methods, not a file",
         objective: "Implement a solid-colour image the standard library will accept.",
         explanation: """
-        The Tour's "Images" page: `image.Image` is ColorModel, Bounds and \
-        At. A PNG file implements it. So does a type you write in ten \
-        lines. `image/draw` and `image/png` talk to the interface, not to \
-        a concrete bitmap.
+        `image.Image` describes pixels through three methods: `ColorModel`, `Bounds` and `At`. A decoded PNG produces an image value; the encoded PNG file itself does not implement that interface. A type you write can implement the same pixel contract.
 
-        This lesson is a solid rectangle: every pixel the same colour, \
-        bounds you choose. The Tour exercise asks for a generated picture; \
-        the interface is the same.
+        `image/draw` and `image/png` work with image interfaces rather than requiring one concrete bitmap type. This lesson supplies a solid rectangle with chosen bounds and color; encoding that image is a separate step.
         """,
         conceptTags: [GoConcept.stdlibImage],
         task: .compile(

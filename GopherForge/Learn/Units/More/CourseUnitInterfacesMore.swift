@@ -123,19 +123,15 @@ extension CourseUnitInterfaces {
         title: "fmt looks for String(), not a Stringer keyword",
         objective: "Make a type print itself as a dotted IPv4 address.",
         explanation: """
-        The Tour's "Stringers" page and its exercise are the same interface \
-        the whole standard library uses:
+        `fmt.Stringer` is a small formatting contract:
 
-            type Stringer interface { String() string }
+        ```go
+        type Stringer interface { String() string }
+        ```
 
-        `fmt`, `log`, and the debugger call `String()` when a value has it. \
-        There is no registration. The Tour exercise is `IPAddr [4]byte` \
-        printing as `1.2.3.4` — a type that is not a string, describing \
-        itself as one.
+        Common string formatting operations in `fmt` call `String()` when the value implements it. Format verbs that explicitly request another representation may behave differently. No registration is needed.
 
-        Do not call `fmt.Sprint(v)` from `v`'s own `String` method. Sprint \
-        looks for Stringer and you recurse until the stack blows. Convert \
-        first, or format the fields yourself.
+        Do not format the same value through its own String method in a way that calls String again. Convert it to its underlying type or format its fields to avoid recursion.
         """,
         conceptTags: [GoConcept.stringer, GoConcept.smallInterface],
         task: .compile(

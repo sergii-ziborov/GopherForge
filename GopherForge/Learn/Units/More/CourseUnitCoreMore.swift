@@ -60,8 +60,8 @@ extension CourseUnitCore {
         In C, Java and JavaScript a case runs on into the next one unless you \
         write `break`. Go inverted that: a case ends at the next case, and \
         `fallthrough` is the keyword you write on the rare occasion you want \
-        the old behaviour. Every `break` in a Go switch is either a mistake or \
-        a habit that has not been unlearned.
+        the old behaviour. You do not need `break` just to end a case, though an explicit \
+        `break` can leave a switch early.
 
         Two more differences worth having: a case can list several values \
         separated by commas, and a switch with no expression is a tidy way to \

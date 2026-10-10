@@ -33,21 +33,50 @@ struct CodeBlock: View {
     let title: String
     let code: String
     var fileKind: SourceFileKind = .go
+    @State private var expanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             // Skipped when empty rather than drawn as a blank line: the block
             // is used inside titled sections now, where a second title would
             // be the same words twice.
-            if !title.isEmpty {
-                Text(title)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+            HStack {
+                if !title.isEmpty {
+                    Text(title)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button {
+                    expanded = true
+                } label: {
+                    Label("Full screen", systemImage: "arrow.up.left.and.arrow.down.right")
+                        .font(.caption2.weight(.semibold))
+                }
+                .accessibilityLabel("Open code in full screen")
             }
             GoCodeText(code: code, fileKind: fileKind)
                 .padding(10)
                 .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .fullScreenCover(isPresented: $expanded) {
+            NavigationStack {
+                ScrollView([.horizontal, .vertical]) {
+                    Text(AttributedString(SyntaxAttributedStringBuilder(fileKind: fileKind, fontSize: 14).build(code)))
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: true, vertical: true)
+                        .padding(16)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .navigationTitle(title.isEmpty ? "Code" : title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Back", systemImage: "chevron.down") { expanded = false }
+                    }
+                }
+            }
         }
     }
 }

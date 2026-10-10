@@ -131,9 +131,9 @@ enum CourseUnitGenerics {
         tilde your own named types are excluded, which is almost never what you \
         meant.
 
-        The standard library ships the common ones in `cmp` and `constraints`: \
-        `cmp.Ordered` is everything `<` works on. Reaching for those before \
-        writing your own is the usual advice, because a constraint is part of \
+        The standard library provides `cmp.Ordered` for types that support \
+        ordering. `constraints` is not a standard-library package. Reaching for \
+        `cmp.Ordered` before writing your own is useful, because a constraint is part of \
         your API and a homemade one is a second vocabulary for readers to learn.
         """,
         conceptTags: [GoConcept.constraint],
@@ -210,8 +210,8 @@ enum CourseUnitGenerics {
         available to the method.
 
         For most of generics' life a method could not introduce a parameter of \
-        its own, which is why `Map` is a function in every Go library written \
-        before 1.27 and a method in none. That restriction is gone; the next \
+        its own, so transformations to another type were written as functions \
+        before Go 1.27. That restriction is gone; the next \
         lesson is about what replaced it.
 
         The zero value still has to work. `var s Stack[int]` gives you a struct \
@@ -357,9 +357,9 @@ enum CourseUnitGenerics {
             concrete type. What it costs is a signature that has to be read
             twice.
 
-            The generic version does avoid one dynamic dispatch and one
-            allocation of an interface value, which is a real difference — and
-            an irrelevant one until a profiler says otherwise.
+            The runtime and compiler may handle dispatch and allocation differently.
+            Neither version guarantees a heap allocation or a performance
+            advantage; measure before trading clarity for speculation.
             """
         ),
         idiomaticSolution: nil
@@ -382,9 +382,8 @@ enum CourseUnitGenerics {
         ```
 
         `E` comes from the receiver; `F` belongs to the method. Before this, \
-        the second one had no place to live, so every `Map` in every Go library \
-        is a package-level function taking the collection as its first \
-        argument. That was not a style choice — the language had no way to \
+        the second one had no place to live, so this transformation was commonly written as a package-level \
+        function taking the collection as its first argument. That was not a style choice — the language had no way to \
         write it as a method.
 
         Like a generic function, a generic method is instantiated before it is \

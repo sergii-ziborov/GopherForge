@@ -25,6 +25,7 @@ struct LessonDetailView: View {
     }
 
     private var nextLesson: Lesson? { GoCourseCatalog.lesson(after: lesson.id) }
+    private var guide: LessonGuide? { LessonGuideCatalog.guide(for: lesson.id) }
 
     var body: some View {
         ScrollView {
@@ -36,10 +37,25 @@ struct LessonDetailView: View {
                     tint: tint
                 )
 
+                if let guide {
+                    LessonInfographicView(guide: guide, tint: tint)
+                }
+
                 LessonSection(title: "What is going on", systemImage: "text.alignleft", tint: tint) {
-                    Text(lesson.explanation)
-                        .font(.callout)
-                        .fixedSize(horizontal: false, vertical: true)
+                    LearningProse(text: lesson.explanation)
+                }
+
+                if let guide {
+                    LessonSection(title: "In practice", systemImage: "lightbulb", tint: tint) {
+                        LearningProse(text: guide.practical)
+                            .accessibilityIdentifier("lesson.practical")
+                    }
+                    LessonSection(title: "Watch out", systemImage: "exclamationmark.bubble", tint: tint) {
+                        LearningProse(text: guide.watchOut)
+                            .accessibilityIdentifier("lesson.watchOut")
+                            .padding(12)
+                            .background(tint.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+                    }
                 }
 
                 // A reading exercise has no failing Check that could open the
@@ -68,6 +84,13 @@ struct LessonDetailView: View {
 
                 completion
 
+                if let guide {
+                    Link(destination: guide.reference) {
+                        Label("Go reference", systemImage: "book.closed")
+                            .font(.caption)
+                    }
+                }
+
                 // Only for what the course teaches. A challenge belongs to a
                 // unit but is reached from Practice, and it has no next lesson
                 // — offering one would walk somebody out of the drill they
@@ -81,6 +104,8 @@ struct LessonDetailView: View {
             .frame(maxWidth: 760)
             .frame(maxWidth: .infinity)
         }
+        .scrollDismissesKeyboard(.interactively)
+        .accessibilityIdentifier("lesson.page")
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showsFailureHelp) {
@@ -99,11 +124,7 @@ struct LessonDetailView: View {
             await model.prewarm()
         }
         .toolbar {
-            // The completion control lives here because a compile lesson puts a
-            // text view between the explanation and the bottom of the page, and
-            // a swipe over a text view scrolls the text rather than the page —
-            // which left the button underneath it unreachable. A toolbar item
-            // is reachable whatever is on screen.
+            // Completion remains reachable while reading or editing a long lesson.
             ToolbarItem(placement: .topBarTrailing) {
                 completionToggle
             }
@@ -300,11 +321,9 @@ struct LessonDetailView: View {
             LessonSection(title: "Predict the output", systemImage: "questionmark.circle", tint: tint) {
                 VStack(alignment: .leading, spacing: 10) {
                     CodeBlock(title: "", code: source)
-                    Text(question).font(.callout.weight(.medium))
+                    Text(LearningProse.inline(question)).font(.callout.weight(.medium))
                     DisclosureGroup("Show the answer") {
-                        Text(answer)
-                            .font(.callout)
-                            .fixedSize(horizontal: false, vertical: true)
+                        LearningProse(text: answer)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, 4)
                     }
@@ -313,14 +332,12 @@ struct LessonDetailView: View {
             }
         case .compile:
             LessonSection(title: "Edit until the hidden test passes", systemImage: "hammer", tint: tint) {
-                SyntaxCodeEditor(
+                LessonEditorCard(
                     text: $model.editorText,
-                    fileKind: .go,
-                    fontSize: 13
+                    canCheck: model.canCheck,
+                    isChecking: model.isChecking,
+                    onCheck: check
                 )
-                .frame(height: 320)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
         }
     }

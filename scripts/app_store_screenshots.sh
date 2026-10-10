@@ -132,8 +132,10 @@ for entry in "${DEVICES[@]}"; do
   fi
 
   echo "Capturing $folder on $own_name ($udid)…"
-  xcrun simctl shutdown "$udid" >/dev/null 2>&1 || true
-  xcrun simctl erase "$udid"
+  if [[ "${GOPHERFORGE_REUSE_CAPTURE_DEVICES:-0}" != "1" ]]; then
+    xcrun simctl shutdown "$udid" >/dev/null 2>&1 || true
+    xcrun simctl erase "$udid"
+  fi
   xcrun simctl boot "$udid" >/dev/null 2>&1 || true
   xcrun simctl bootstatus "$udid" -b >/dev/null 2>&1 || true
   xcrun simctl ui "$udid" appearance light >/dev/null 2>&1 || true
@@ -154,8 +156,12 @@ for entry in "${DEVICES[@]}"; do
     -scheme GopherForgeScreenshots \
     -configuration Release \
     -destination "platform=iOS Simulator,id=$udid" \
+    -destination-timeout 180 \
     -derivedDataPath "$DERIVED" \
     -collect-test-diagnostics never \
+    -disableAutomaticPackageResolution \
+    -jobs "${GOPHERFORGE_BUILD_JOBS:-4}" \
+    ONLY_ACTIVE_ARCH=YES \
     SWIFT_SUPPRESS_WARNINGS=NO \
     test
 

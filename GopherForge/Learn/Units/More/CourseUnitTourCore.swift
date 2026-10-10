@@ -8,16 +8,9 @@ extension CourseUnitCore {
         title: "A return can name what it is handing back",
         objective: "Write a short function that uses a naked return, and know when not to.",
         explanation: """
-        A Tour of Go's "Named return values" page is the whole rule. The names \
-        in the result list are variables declared at the top of the function. \
-        A `return` with no arguments — a naked return — sends those variables \
-        back. That is useful in a five-line helper whose results are `quot` \
-        and `rem`. It is a liability in a longer function, because a bare \
-        `return` no longer says what is leaving.
+        Names in a function's result list declare local result variables initialized to zero. A bare `return` returns their current values. In a short helper, names such as `quot` and `rem` can explain which result is which.
 
-        The names are also documentation the compiler checks. `func Split(n, \
-        d int) (quot, rem int)` tells a caller which number is which without \
-        a comment, and a later `return` cannot silently swap them.
+        An explicit `return quot, rem` is often easier to review once a function has branches. Result names document intent, but the compiler does not protect two same-typed results from being swapped. A deferred closure may change named results before the function returns to its caller.
         """,
         conceptTags: [GoConcept.namedResults, GoConcept.missingReturn],
         task: .compile(
@@ -65,15 +58,9 @@ extension CourseUnitCore {
         title: "Deferred calls stack, last one first",
         objective: "Say the print order of three deferred calls.",
         explanation: """
-        The Tour's "Stacking defers" page is one sentence that people forget: \
-        deferred calls are pushed onto a stack, and they run last-in, \
-        first-out when the function returns. Three `defer fmt.Println(n)` \
-        lines print in reverse order of how they were written.
+        Deferred calls run in last-in, first-out order when the surrounding function returns. Three `defer fmt.Println(n)` statements execute in the reverse of their registration order.
 
-        Arguments are evaluated when the defer is registered, not when it \
-        runs. `defer fmt.Println(i)` inside a loop captures each i as it \
-        was, which is why a loop of defers is safe and a loop of closures \
-        over a shared i is not.
+        The deferred function and its arguments are evaluated when `defer` executes. A deferred closure, in contrast, may read a captured variable when it eventually runs. Keep that distinction clear when a variable changes between registration and return.
         """,
         conceptTags: [GoConcept.deferCleanup],
         task: .predict(

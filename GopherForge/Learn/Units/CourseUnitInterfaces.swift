@@ -123,14 +123,9 @@ enum CourseUnitInterfaces {
         title: "A nil pointer in an interface is not a nil interface",
         objective: "Explain why err != nil can be true when the error is nil.",
         explanation: """
-        An interface value holds a type and a value. It is nil only when both \
-        are. Assign a nil *MyError to an error variable and the interface holds \
-        a type with a nil value — so err != nil is true and calling a method \
-        may panic.
+        An interface value holds a dynamic type and a dynamic value. It is nil only when it holds neither. Assigning a nil `*MyError` to an `error` variable preserves the pointer type, so `err != nil` is true even though its contained pointer is nil.
 
-        This is why a function returns a concrete error type only through the \
-        error interface, and why returning a typed nil is a bug rather than a \
-        style choice.
+        When a function returns an error interface, return literal `nil` on the success path rather than a typed nil pointer. Calling a method on an interface holding a nil pointer is safe only if that method deliberately supports a nil receiver.
         """,
         conceptTags: [GoConcept.nilInterface],
         task: .predict(

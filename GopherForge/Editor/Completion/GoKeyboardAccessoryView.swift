@@ -239,7 +239,7 @@ struct GoKeyboardHelperBar: UIViewRepresentable {
         context.coordinator.fileKind = fileKind
     }
 
-    final class Coordinator {
+    @MainActor final class Coordinator {
         weak var textView: UITextView?
         var fileKind: SourceFileKind
 

@@ -68,6 +68,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         XCTAssertTrue(app.waitForElement(app.buttons["unit.core"]), "the course should be on screen")
         capture("03-course")
 
+        XCTAssertTrue(app.waitForElement(app.buttons["unit.concurrency"]))
         app.buttons["unit.concurrency"].tap()
         let lesson = app.buttons["lesson.concurrency.channel-close"]
         XCTAssertTrue(lesson.waitForExistence(timeout: 30), "the unit should list its lessons")

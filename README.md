@@ -20,6 +20,7 @@ than screens.
 [Listing metadata audit](docs/app-store/listing.md) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·
+[Terms of Use](https://gopherforge.app/terms) ·
 [Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
 Custom domain: **[gopherforge.app](https://gopherforge.app)**. Connected in Lovable
 on 8 September 2026; DNS now points to the hosting server and HTTPS serves the
@@ -31,7 +32,28 @@ subscription. App features,
 limitations, privacy and support are shared with this repository; the website
 should reflect the app's actual App Store availability.
 
+## Version 1.1 preview
+
+Version 1.1 (build 15) is being prepared for TestFlight. The public App Store
+version remains 1.0.1; 1.1 has not been submitted for review.
+
+- iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
+  keeps code or terminal above the hinge and puts keyboard or result panes below.
+  Projects remains reachable while the keyboard is open.
+- All 47 lessons and 22 prediction challenges have an authored visual guide,
+  practical notes, common pitfalls and a link to the official Go reference.
+- Explanations, quizzes, matching drills and examples use consistent Go highlighting.
+- Embedded lesson editors show their complete source and scroll with the page.
+  Full-screen editing scrolls within the editor and preserves your changes.
+- Support, privacy and Terms of Use are accessible from Settings and the website.
+
+The [public lesson catalog](docs/website/lessons.json) and
+[diagram guides](GopherForge/Resources/LessonGuides.json) supply the website
+without publishing the exercises' hidden tests or verified solutions.
+
 ## What it looks like
+
+<img src="docs/app-store/screenshots/iphone-6.9/00-code.png" width="330" alt="Real Go code in the GopherForge editor on iPhone">
 
 Every compiler result below is a real run of the bundled toolchain in the
 Simulator — the test counts, the diagnostics, the program output and the

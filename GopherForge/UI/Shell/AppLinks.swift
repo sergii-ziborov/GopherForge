@@ -11,8 +11,9 @@ enum AppLinks {
     /// Force-unwrapped on purpose: these are compile-time constants, and a URL
     /// that fails to parse is a build-time mistake rather than a runtime state
     /// worth handling. `AppLinksTests` fails first if one is malformed.
-    static let privacyPolicy = URL(string: "https://github.com/sergii-ziborov/GopherForge/blob/main/PRIVACY.md")!
-    static let support = URL(string: "https://github.com/sergii-ziborov/GopherForge/blob/main/SUPPORT.md")!
+    static let privacyPolicy = URL(string: "https://gopherforge.app/privacy")!
+    static let support = URL(string: "https://gopherforge.app/support")!
+    static let termsOfUse = URL(string: "https://gopherforge.app/terms")!
     static let writeReview = URL(string: "https://apps.apple.com/app/id6809702319?action=write-review")!
 
     /// What Settings shows, and what a support request should quote.

@@ -106,13 +106,9 @@ enum CourseUnitConcurrency {
         title: "The sender closes, the receiver ranges",
         objective: "Decide who closes a channel, and why the other side must not.",
         explanation: """
-        Closing says "no more values will be sent". Only the goroutine that \
-        sends can know that, which is why closing belongs to the sender — and \
-        why a receiver that closes races with every send still in flight.
+        Closing a channel says that no more values will be sent. Give that decision to the producer, or to a coordinator that knows all producers have finished. A receiver should not close a stream while senders may still use it.
 
-        Once ownership is right, receivers get two conveniences: range over a \
-        channel ends when it closes, and v, ok := <-ch reports the difference \
-        between a zero value and a closed channel.
+        Receivers can drain a closed buffered channel. `v, ok := <-ch` reports false only when the channel is closed and empty; `for v := range ch` then ends. Sending after close and closing twice both panic.
         """,
         conceptTags: [GoConcept.channelClose],
         task: .compile(

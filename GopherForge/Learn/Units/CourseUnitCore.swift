@@ -24,15 +24,9 @@ enum CourseUnitCore {
         title: "Nothing is uninitialised",
         objective: "Predict the value of any declared variable before it is assigned.",
         explanation: """
-        Every Go variable starts at its type's zero value: 0 for numbers, "" \
-        for strings, false for bools, and nil for pointers, slices, maps, \
-        channels, functions and interfaces. There is no undefined and no \
-        garbage memory, which is why Go code so often declares a variable and \
-        uses it immediately without an assignment.
+        Every Go variable starts at its type's zero value: `0` for numbers, `""` for strings, `false` for booleans, and `nil` for pointers, slices, maps, channels, functions and interfaces. A declaration gives you a defined value immediately.
 
-        The consequence worth internalising: a struct is usable the moment it \
-        is declared. That is why Go rarely needs a constructor, and why the \
-        idiomatic New function exists only when the zero value would be wrong.
+        A struct starts with every field at its own zero value. Design that state to be useful when possible: counters and slices work naturally, while a map field still needs initialization before a write. A `New` function is useful when the type requires setup that its zero value cannot provide.
         """,
         conceptTags: [GoConcept.varsUnused],
         task: .predict(
@@ -68,13 +62,9 @@ enum CourseUnitCore {
         title: ":= declares, = assigns",
         objective: "Choose between := and = without guessing, and know when := is illegal.",
         explanation: """
-        := declares and assigns in one step, and it is only legal inside a \
-        function. It also requires at least one new variable on the left: \
-        reusing it with all-existing names is the "no new variables" error.
+        `:=` declares and assigns in one step inside a function. At least one non-blank name on the left must be new in the current block; otherwise the compiler reports "no new variables".
 
-        In a multiple assignment, := happily mixes new and existing names, \
-        which is exactly what makes the err pattern read well: err is reused \
-        while the value beside it is new each time.
+        A short declaration may mix new names with names already declared in that same block. Inside a nested block, however, it may introduce a different variable with the same spelling. Use `=` when the intention is to update an existing variable.
         """,
         conceptTags: [GoConcept.shortDeclaration],
         task: .guidedTyping(
@@ -93,14 +83,9 @@ enum CourseUnitCore {
         title: "Two returns instead of one exception",
         objective: "Write a function that returns a result and an error, and read one.",
         explanation: """
-        Go functions return several values, and the last one is an error by \
-        convention. This replaces exceptions entirely: there is no invisible \
-        control flow, and every failure appears at the call site as a value \
-        somebody has to handle.
+        Go functions can return several values. A common fallible signature returns a result followed by `error`; callers inspect that error before continuing with the result.
 
-        Coming from a language with exceptions, the surprise is how much of \
-        the function body ends up being error handling — and that this is the \
-        point. The cost is visible instead of hidden.
+        This makes ordinary failures explicit at the call site instead of using exceptions. Go also has `panic` and `recover` for exceptional control flow, but an error result is the usual contract for an expected failure. Short failure branches keep the successful path easy to read.
         """,
         conceptTags: [GoConcept.explicitErrorCheck, GoConcept.missingReturn],
         task: .compile(

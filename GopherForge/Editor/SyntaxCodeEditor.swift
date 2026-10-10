@@ -36,13 +36,17 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     var focusRequest = 0
     var externalKeyboardAccessory = false
     var onTextViewReady: ((UITextView) -> Void)?
+    /// Embedded lesson editors hand vertical gestures to the lesson page.
+    /// Workspace and full-screen editors own their vertical scrolling.
+    var scrollsVertically = true
 
     func makeUIView(context: Context) -> CodeEditorView {
         // TextKit 1 on purpose: the gutter positions each number from a line
         // fragment, and NSLayoutManager is the API that hands those over.
         let textView = UITextView(usingTextLayoutManager: false)
         textView.delegate = context.coordinator
-        textView.alwaysBounceVertical = true
+        textView.isScrollEnabled = scrollsVertically
+        textView.alwaysBounceVertical = scrollsVertically
         textView.autocapitalizationType = .none
         textView.autocorrectionType = .no
         textView.spellCheckingType = .no
@@ -74,6 +78,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     func updateUIView(_ editor: CodeEditorView, context: Context) {
         let textView = editor.textView
         context.coordinator.parent = self
+        textView.isScrollEnabled = scrollsVertically
+        textView.alwaysBounceVertical = scrollsVertically
         editor.gutter.fontSize = fontSize
         editor.gutter.markedLines = markedLines
 
@@ -133,6 +139,17 @@ struct SyntaxCodeEditor: UIViewRepresentable {
                 onReveal?()
             }
         }
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: CodeEditorView, context: Context) -> CGSize? {
+        guard !scrollsVertically else { return nil }
+        return CGSize(width: proposal.width ?? 320, height: Self.embeddedHeight(for: text, fontSize: fontSize))
+    }
+
+    static func embeddedHeight(for text: String, fontSize: CGFloat) -> CGFloat {
+        let lines = text.components(separatedBy: "\n").count
+        let lineHeight = UIFont.monospacedSystemFont(ofSize: fontSize, weight: .regular).lineHeight
+        return max(120, ceil(CGFloat(lines) * lineHeight) + 40)
     }
 
     func makeCoordinator() -> Coordinator {

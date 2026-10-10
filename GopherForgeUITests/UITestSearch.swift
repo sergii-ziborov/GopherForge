@@ -13,7 +13,7 @@ extension XCUIApplication {
     /// up is a hang rather than a failure.
     func waitForElement(
         _ element: XCUIElement,
-        scrollingUpTo attempts: Int = 6,
+        scrollingUpTo attempts: Int = 12,
         timeout: TimeInterval = 10
     ) -> Bool {
         if element.waitForExistence(timeout: timeout), isOnScreen(element) { return true }
@@ -23,7 +23,15 @@ extension XCUIApplication {
         // anyway fails somewhere else entirely.
         for _ in 0..<attempts {
             if element.exists, isOnScreen(element) { return true }
-            swipeUp()
+            // Drag through the page margin, outside selectable code and text.
+            let window = windows.firstMatch.frame
+            let origin = windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+            let x = window.width - 24
+            let targetIsAbove = element.exists && element.frame.maxY < window.minY + 100
+            let fromY: CGFloat = targetIsAbove ? 180 : window.height - 150
+            let toY: CGFloat = targetIsAbove ? window.height - 150 : 180
+            origin.withOffset(CGVector(dx: x, dy: fromY))
+                .press(forDuration: 0.05, thenDragTo: origin.withOffset(CGVector(dx: x, dy: toY)))
         }
         return element.exists && isOnScreen(element)
     }
@@ -41,7 +49,7 @@ extension XCUIApplication {
         // Frames are reported for clipped elements too, so the row's height is
         // readable from the target itself while it is still off screen.
         let rowMidY = element.frame.midY
-        guard rowMidY > 0, rowMidY < window.height else { return false }
+        guard rowMidY > window.minY, rowMidY < window.maxY else { return false }
 
         for _ in 0..<attempts {
             if isOnScreen(element) { return true }
@@ -49,8 +57,8 @@ extension XCUIApplication {
             // Start past the phone Files-drawer edge (72 pt). A drag that
             // begins at 15% of a 440-pt phone is a leading-edge flick and
             // opens the tree over the chip this is trying to reach.
-            let leading = max(window.width * 0.15, 80)
-            let trailing = window.width * 0.85
+            let leading = window.minX + max(window.width * 0.15, 80)
+            let trailing = window.minX + window.width * 0.85
             drag(
                 fromX: isPastTheRightEdge ? trailing : leading,
                 toX: isPastTheRightEdge ? leading : trailing,
@@ -100,7 +108,9 @@ extension XCUIApplication {
         guard element.exists else { return false }
         let frame = element.frame
         guard !frame.isEmpty else { return false }
-        return windows.firstMatch.frame.insetBy(dx: 2, dy: 0).contains(frame)
+        let window = windows.firstMatch.frame
+        let usable = CGRect(x: window.minX + 2, y: window.minY, width: window.width - 4, height: window.height - 85)
+        return usable.contains(frame)
     }
 
     /// Waits for an element to report itself selected.
@@ -127,12 +137,13 @@ extension XCUIApplication {
     }
 
     private func drag(fromX: CGFloat, toX: CGFloat, atY y: CGFloat) {
-        let origin = coordinate(withNormalizedOffset: .zero)
+        let window = windows.firstMatch
+        let origin = window.coordinate(withNormalizedOffset: .zero)
         origin
-            .withOffset(CGVector(dx: fromX, dy: y))
+            .withOffset(CGVector(dx: fromX - window.frame.minX, dy: y - window.frame.minY))
             .press(
                 forDuration: 0.05,
-                thenDragTo: origin.withOffset(CGVector(dx: toX, dy: y))
+                thenDragTo: origin.withOffset(CGVector(dx: toX - window.frame.minX, dy: y - window.frame.minY))
             )
     }
 }
