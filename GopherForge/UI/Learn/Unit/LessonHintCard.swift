@@ -13,12 +13,12 @@ struct LessonReferenceHintCard: View {
                 .foregroundStyle(tint)
                 .textCase(.uppercase)
 
-            Text(hint.hint)
+            Text(LearningProse.inline(hint.hint))
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier(AccessibilityID.lessonHint)
 
-            Text(hint.nuance)
+            Text(LearningProse.inline(hint.nuance))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -62,12 +62,12 @@ struct LessonFailureSheet: View {
                             .foregroundStyle(tint)
                             .textCase(.uppercase)
 
-                        Text(hint.hint)
+                        Text(LearningProse.inline(hint.hint))
                             .font(.callout)
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier(AccessibilityID.lessonHint)
 
-                        Text(hint.nuance)
+                        Text(LearningProse.inline(hint.nuance))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)

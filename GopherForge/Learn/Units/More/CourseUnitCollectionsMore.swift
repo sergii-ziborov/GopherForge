@@ -50,18 +50,12 @@ extension CourseUnitCollections {
 
     static let mapsAreUnordered = Lesson(
         id: "collections.map-order",
-        title: "Map iteration order is deliberately random",
+        title: "Map iteration order is not specified",
         objective: "Produce stable output from a map without hoping.",
         explanation: """
-        Ranging over a map yields its keys in a random order, and the \
-        randomness is on purpose: the runtime shuffles the start point so that \
-        no program can come to depend on an order the implementation never \
-        promised. A test that passes today and fails tomorrow for no reason is \
-        usually this.
+        The language does not specify map iteration order, and the order may change from one iteration to the next. A small example that repeatedly uses one order does not establish a guarantee.
 
-        The fix is always the same shape: collect the keys, sort them, and \
-        range over the sorted slice. That is three lines and it is the whole \
-        idiom.
+        When output must be deterministic, collect the keys, sort them and read values in that sorted order. When order is irrelevant, test the entries without requiring a particular traversal sequence.
         """,
         conceptTags: [GoConcept.mapOrder],
         task: .compile(
@@ -112,17 +106,12 @@ extension CourseUnitCollections {
 
     static let buildingStrings = Lesson(
         id: "collections.strings-builder",
-        title: "Adding to a string in a loop copies it every time",
-        objective: "Replace += in a loop with the thing that does not copy.",
+        title: "Concatenating in a loop repeatedly rebuilds a string",
+        objective: "Use strings.Builder for repeated construction without rebuilding the prefix.",
         explanation: """
-        Strings are immutable, so `s += piece` allocates a new string and \
-        copies everything each time round. For three pieces that is invisible; \
-        for thirty thousand it is quadratic, and it is one of the few \
-        performance traps in Go that a beginner meets by accident.
+        Strings are immutable. Repeated `s += piece` operations in a growing loop can copy the accumulated prefix repeatedly, producing quadratic work as the output grows. Small fixed concatenations may be optimized differently, so measure the actual workload.
 
-        `strings.Builder` writes into a growing buffer and hands back a string \
-        at the end, with no copy. `strings.Join` is even better when the pieces \
-        are already in a slice.
+        `strings.Builder` accumulates text in a growing buffer and exposes the result with `String`. `strings.Join` is a simpler choice when all pieces are already collected. A non-zero Builder must not be copied.
         """,
         conceptTags: [GoConcept.stringsBuilder],
         task: .compile(

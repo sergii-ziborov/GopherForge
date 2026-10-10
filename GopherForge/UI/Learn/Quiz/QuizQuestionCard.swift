@@ -13,22 +13,12 @@ struct QuestionCard: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                Text(question.prompt)
+                Text(LearningProse.inline(question.prompt))
                     .font(.headline)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if !question.code.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        Text(question.code)
-                            .font(.callout.monospaced())
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding(12)
-                    .background(
-                        Color(.secondarySystemGroupedBackground),
-                        in: RoundedRectangle(cornerRadius: 10)
-                    )
+                    CodeBlock(title: "Go", code: question.code)
                 }
 
                 VStack(spacing: 8) {

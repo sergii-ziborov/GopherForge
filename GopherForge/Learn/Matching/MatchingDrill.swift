@@ -5,6 +5,7 @@ struct MatchingPair: Identifiable, Equatable, Sendable {
     let id: String
     /// The left tile. Short by design — a term, a signature, a line of Go.
     let prompt: String
+    let promptIsCode: Bool
     /// The right tile. What it means, or what it does.
     let answer: String
     /// The concept this pair exercises, in the same vocabulary the compiler
@@ -20,10 +21,12 @@ struct MatchingPair: Identifiable, Equatable, Sendable {
         prompt: String,
         answer: String,
         conceptTag: String,
-        requiredLessonID: String? = nil
+        requiredLessonID: String? = nil,
+        promptIsCode: Bool = false
     ) {
         self.id = id
         self.prompt = prompt
+        self.promptIsCode = promptIsCode
         self.answer = answer
         self.conceptTag = conceptTag
         self.requiredLessonID = requiredLessonID

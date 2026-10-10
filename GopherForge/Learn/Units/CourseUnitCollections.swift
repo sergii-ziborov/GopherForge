@@ -65,12 +65,9 @@ enum CourseUnitCollections {
         title: "Two slices, one array",
         objective: "Spot the moment a subslice starts sharing writes with its parent.",
         explanation: """
-        Slicing does not copy. s[1:3] points into the same array as s, so a \
-        write through one is visible through the other — until an append \
-        reallocates and quietly ends the sharing.
+        Slicing does not copy elements. `s[1:3]` refers to the same backing array, so writes to overlapping elements are visible through both slices. An append that allocates a new array detaches the returned slice from that old storage.
 
-        The idiom that avoids the whole class of bugs is a full slice \
-        expression, s[1:3:3], which caps the capacity so any append must copy.
+        A full slice expression such as `s[1:3:3]` limits capacity, forcing an append of another element to allocate. It does not detach the elements already in the view. Use `copy` or `slices.Clone` when the result must be independently mutable.
         """,
         conceptTags: [GoConcept.sliceAliasing, GoConcept.sliceCapacity],
         task: .compile(
@@ -168,12 +165,9 @@ enum CourseUnitCollections {
         title: "A string is bytes; range gives you runes",
         objective: "Index, slice and iterate a string without corrupting characters.",
         explanation: """
-        A Go string is an immutable sequence of bytes, usually UTF-8. s[i] is a \
-        byte, not a character, and len(s) counts bytes.
+        A Go string is an immutable sequence of bytes, commonly containing UTF-8. `s[i]` returns one byte and `len(s)` counts bytes.
 
-        range is the exception: iterating a string yields runes with their byte \
-        offsets, decoding UTF-8 as it goes. So range is safe for characters and \
-        indexing is not.
+        Ranging over a string decodes UTF-8 and yields each rune with its byte offset. A rune is a Unicode code point, not necessarily a whole displayed character: combining marks and emoji sequences can contain several code points.
         """,
         conceptTags: [GoConcept.stringRunes],
         task: .predict(

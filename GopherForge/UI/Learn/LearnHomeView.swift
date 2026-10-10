@@ -113,6 +113,7 @@ struct LearnHomeView: View {
         .task {
             await progress.refresh()
             openedScreen = LaunchOptions.initialScreen
+            openedLessonID = LaunchOptions.initialLessonID
         }
     }
 

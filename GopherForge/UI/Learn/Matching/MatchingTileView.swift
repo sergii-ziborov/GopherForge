@@ -9,6 +9,7 @@ import SwiftUI
 /// started reaching.
 struct MatchingTileView: View {
     let text: String
+    var isCode = false
     let state: MatchingDrillSession.TileState
     /// Set on the button itself. An identifier applied to a wrapper does not
     /// reliably reach the control inside it, and a tile nothing can address is
@@ -18,7 +19,9 @@ struct MatchingTileView: View {
 
     var body: some View {
         Button(action: action) {
-            Text(text)
+            Text(isCode
+                 ? AttributedString(SyntaxAttributedStringBuilder(fileKind: .go, fontSize: 13).build(text))
+                 : LearningProse.inline(text))
                 .font(.callout)
                 .multilineTextAlignment(.leading)
                 .lineLimit(MatchingBoardMetrics.lineLimit)

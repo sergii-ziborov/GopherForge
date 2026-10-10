@@ -35,20 +35,9 @@ enum CourseUnitStructs {
         title: "A struct is data, and its fields have names",
         objective: "Declare a struct type and build values of it without positional guessing.",
         explanation: """
-        A struct groups fields under a type name. Building one has two forms, \
-        and only one of them is safe to read: `Point{X: 1, Y: 2}` names its \
-        fields, and `Point{1, 2}` relies on declaration order. The second \
-        breaks silently the day somebody adds a field in the middle, which is \
-        why the named form is what you will see in real code and what vet \
-        prefers for structs from other packages.
+        A struct groups fields under a type name. `Point{X: 1, Y: 2}` names its fields; `Point{1, 2}` relies on declaration order. Reordering same-typed fields can silently change an unkeyed literal's meaning. Adding a field usually makes an existing unkeyed literal fail to compile. Keyed literals make intent clearer, and vet checks unkeyed literals for structs from other packages.
 
-        A struct you do not initialise is not nil — it is its zero value, with \
-        every field at its own zero. `var p Point` is usable immediately, and \
-        `p.X` is 0 rather than a crash.
-
-        Fields whose names begin with a capital are visible outside the \
-        package; the rest are not. That is the same rule as for functions, and \
-        it is decided per field rather than per struct.
+        A struct's zero value is a struct, not nil. Each field begins at its own zero value. Fields beginning with an uppercase letter are exported; visibility is decided per field.
         """,
         conceptTags: [GoConcept.structLiteral],
         task: .compile(
@@ -250,21 +239,11 @@ enum CourseUnitStructs {
         title: "A function is a value, and it remembers where it came from",
         objective: "Return a function that carries state, and know what it captured.",
         explanation: """
-        Functions are values in Go: they can be stored, passed and returned. A \
-        function literal declared inside another function keeps a reference to \
-        the variables it used — not a copy of them. That is a closure, and it \
-        is how `sort.Slice` takes a comparison and how a middleware wraps a \
-        handler.
+        Functions are values: they can be stored, passed and returned. A function literal keeps access to the variables it captures, rather than taking an automatic snapshot of their values.
 
-        Captured by reference matters. Two closures over the same variable see \
-        each other's writes, which is either exactly what you wanted or a bug \
-        you will spend an afternoon on. When you want independence, give each \
-        closure its own variable.
+        Two closures capturing the same variable see each other's updates. Separate calls to a factory create separate environments. When you need a snapshot, make an explicit copy for the closure to capture.
 
-        The loop-variable trap that used to live here is gone: since Go 1.22 \
-        each iteration gets a fresh variable, so a closure made in a loop \
-        captures that iteration's value. Code written before 1.22 works around \
-        it with an extra assignment, which is why you will still see it.
+        Since Go 1.22, iteration variables declared by a loop get a fresh variable on each iteration. A loop assigning to a variable declared outside it still reuses that variable. The distinction between `:=` and `=` matters here too.
         """,
         conceptTags: [GoConcept.closure],
         task: .compile(

@@ -52,7 +52,7 @@ struct LeadingEdgeOpenGesture: UIViewRepresentable {
         uiView.coordinator = context.coordinator
     }
 
-    final class Coordinator: NSObject {
+    @MainActor final class Coordinator: NSObject {
         var onOpen: () -> Void
 
         init(onOpen: @escaping () -> Void) {
@@ -112,10 +112,13 @@ struct LeadingEdgeOpenGesture: UIViewRepresentable {
             installed = gesture
         }
 
-        deinit {
-            if let installed {
+        override func willMove(toSuperview newSuperview: UIView?) {
+            if newSuperview == nil, let installed {
                 host?.removeGestureRecognizer(installed)
+                self.installed = nil
+                host = nil
             }
+            super.willMove(toSuperview: newSuperview)
         }
     }
 }

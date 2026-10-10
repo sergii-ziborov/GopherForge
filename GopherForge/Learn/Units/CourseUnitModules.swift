@@ -23,15 +23,11 @@ enum CourseUnitModules {
         title: "The import path is the module path plus the directory",
         objective: "Predict the import path of any package in a module.",
         explanation: """
-        go.mod names the module, for example example.com/forge. A package in \
-        the directory internal/build is then imported as \
-        example.com/forge/internal/build. There is no separate registration \
-        step and no name that can drift from the directory.
+        `go.mod` names the module, such as `example.com/forge`. A package in `internal/build` is then imported using `example.com/forge/internal/build`.
 
-        Two rules fall out of this. internal/ is enforced by the compiler: only \
-        code rooted at its parent may import it. And the last element of the \
-        path is the default package name, which is why directories are singular \
-        and lowercase.
+        The import path locates the package; its `package` clause determines the default name used in source. The name often matches the last directory component, but does not have to. An import alias can choose another local name.
+
+        An `internal` directory also enforces an import boundary: only code within the tree rooted at its parent may import that package.
         """,
         conceptTags: [GoConcept.importPath],
         task: .predict(
@@ -50,8 +46,10 @@ enum CourseUnitModules {
             answer: """
             import "example.com/forge/internal/build"
 
-            No other module can. internal/ is compiler-enforced: only packages \
-            rooted at example.com/forge may import it.
+            The importer must have an import path within the example.com/forge \
+            tree. A separate module named example.com/forge/client can satisfy \
+            that rule; other.example/client cannot. The boundary follows the \
+            parent import-path tree, rather than the identity of the module.
             """
         ),
         idiomaticSolution: nil
@@ -91,13 +89,9 @@ enum CourseUnitModules {
         title: "Tests are a file, not a framework",
         objective: "Write a table-driven test and run it locally.",
         explanation: """
-        A test is a function named TestXxx taking *testing.T, in a file ending \
-        _test.go, in the same package. No annotations, no runner \
-        configuration, no dependency.
+        A test is a function such as `func TestParse(t *testing.T)` in a file ending `_test.go`. It can use the production package name, or a package name ending `_test` to exercise the exported API from outside the package.
 
-        The table-driven shape is the community default because it makes the \
-        cases the data and the assertion the code, and t.Run gives each row its \
-        own name in the output.
+        A table-driven test keeps cases in data and the assertion in code. `t.Run` gives each case a separate name in the result stream. No external test framework is required.
         """,
         conceptTags: [GoConcept.stdlibTesting],
         task: .compile(

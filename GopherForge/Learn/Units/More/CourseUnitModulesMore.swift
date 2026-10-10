@@ -7,15 +7,9 @@ extension CourseUnitModules {
         title: "The package name is half the API",
         objective: "Name a package and its exported function without repeating yourself.",
         explanation: """
-        A caller always writes the package name, so the name is part of every \
-        identifier in it. `http.Server` reads well; `http.HTTPServer` does not. \
-        This is why Go package names are short, lower case, one word and never \
-        plural — and why a function called `util.DoUtilThing` is a smell twice \
-        over.
+        A package's name becomes the qualifier callers read: `http.Server` is clearer than `http.HTTPServer`. Prefer short, descriptive lowercase names. Singular names are common, but useful standard-library packages such as `strings`, `errors` and `slices` are plural.
 
-        The rule that follows: never repeat the package name inside it. Inside \
-        package `chart`, the function is `New`, not `NewChart`, because callers \
-        will write `chart.New`.
+        Avoid needless repetition between package and exported name. `chart.New` can be clear for a package centered on one chart type; a package with several constructors may need more specific names. Read the whole selector to judge it.
         """,
         conceptTags: [GoConcept.importPath],
         task: .predict(
@@ -50,16 +44,9 @@ extension CourseUnitModules {
         title: "init runs before main, and order is defined",
         objective: "Predict the order of package variables, init and main.",
         explanation: """
-        Package-level variables are initialised first, in dependency order \
-        rather than in the order they are written. Then every `init` function \
-        in the package runs, in file order. Only then does `main` start. \
-        Imported packages finish all of this before the package that imports \
-        them begins.
+        A package initializes its variables using their dependency relationships, then runs its init functions in source order as presented to the compiler. Imported packages finish initialization before the importing package. `main` starts after the program's initialization completes.
 
-        `init` is genuinely useful for registering something — a database \
-        driver, an image format — and genuinely dangerous everywhere else: it \
-        runs whether or not anyone wanted it to, it cannot fail except by \
-        panicking, and it makes a package's behaviour depend on being imported.
+        Do not depend on arbitrary file presentation order for important behavior. Explicit constructors make configuration and recoverable failure handling visible. An init function takes no arguments and returns no result, though it can register a driver or format as a deliberate import side effect.
         """,
         conceptTags: [GoConcept.packageInit],
         task: .predict(

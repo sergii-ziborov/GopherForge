@@ -43,6 +43,15 @@ enum LaunchOptions {
         return Screen(rawValue: arguments[index + 1])
     }
 
+    /// Opens an existing lesson for automated visual and scroll verification.
+    static var initialLessonID: String? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-GopherForgeLesson"),
+              arguments.indices.contains(index + 1),
+              GoCourseCatalog.lesson(id: arguments[index + 1]) != nil else { return nil }
+        return arguments[index + 1]
+    }
+
     /// `-GopherForgeEmptyLibrary` starts with no projects at all.
     ///
     /// The landing screen introduces the product only when there is nothing to

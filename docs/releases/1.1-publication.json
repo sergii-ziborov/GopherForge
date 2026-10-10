@@ -1,0 +1,582 @@
+{
+  "version": "1.1",
+  "build": "17",
+  "buildId": "29b247dd-0648-4d8d-bab1-576fe2f4cdb8",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "internalBuildState": "IN_BETA_TESTING",
+  "appStoreState": "PREPARE_FOR_SUBMISSION",
+  "releaseType": "MANUAL",
+  "appReviewSubmitted": false,
+  "sourceCommit": "e1aef66",
+  "archiveValidation": "passed",
+  "lessonGuideCount": 69,
+  "lessonGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+  "website": {
+    "url": "https://gopherforge.app",
+    "publishedCommit": "431f9d7da1e29bcd3c8d594f187853cddd8a6380",
+    "courseEntries": 69,
+    "galleryVersion": "1.1 preview",
+    "nativeLessonContentMatch": "all 9 unit records, 69 lesson records and 69 guide records match by ID",
+    "hiddenTestsOrSolutionsPublished": false,
+    "galleryImageCount": 13,
+    "previewCommit": "431f9d7da1e29bcd3c8d594f187853cddd8a6380",
+    "courseConsistencyChecksPassed": 989,
+    "deploymentId": "2b11becd-48c0-42bb-8167-d550fcc1c00d",
+    "publicGalleryImages": 13,
+    "publicLessonLinks": 69,
+    "publicCodeHero": "loaded",
+    "publicChannelGuideNodes": [
+      "Produce",
+      "Finish",
+      "Drain"
+    ],
+    "publicGoHighlightingColors": 5,
+    "publicDesktopOverflow": false,
+    "legalAndUpdateRoutes": [
+      {
+        "url": "https://gopherforge.app/support",
+        "status": 200,
+        "title": "Support \u2014 GopherForge"
+      },
+      {
+        "url": "https://gopherforge.app/privacy",
+        "status": 200,
+        "title": "Privacy Policy \u2014 GopherForge"
+      },
+      {
+        "url": "https://gopherforge.app/terms",
+        "status": 200,
+        "title": "Terms of Use \u2014 GopherForge"
+      },
+      {
+        "url": "https://gopherforge.app/updates",
+        "status": 200,
+        "title": "Version 1.1 preview \u2014 GopherForge"
+      }
+    ],
+    "checkedAt": "2026-10-10T21:14:51.613365+00:00"
+  },
+  "checkedAt": "2026-10-10T21:14:51.613377+00:00",
+  "existingReviewRecording": {
+    "fileName": "GopherForge-physical-iPhone-original-review.mp4",
+    "fileSize": 25500411,
+    "sha256": "2316067a49bb3c07e075c67f9e096e32bfcee387248834c5c69a6dae5294ce8a",
+    "attachmentId": "ee745ece-ed63-4325-9e8d-6835d8f84658",
+    "deliveryState": "COMPLETE",
+    "recording": "Existing original physical-iPhone recording; no new recording made"
+  },
+  "nativeLessonVerification": {
+    "goVersion": "go version go1.27.1 darwin/arm64",
+    "lessonCount": 44,
+    "solutionsPassed": 44,
+    "startersRequireChanges": 44
+  },
+  "bundledCompilerVerification": {
+    "platform": "native iPhone Duo iOS 27.1 simulator",
+    "testCount": 19,
+    "failures": 0,
+    "allExamplesAndGinSites": "passed",
+    "solutionsPassed": 44,
+    "startersRequireChanges": 44,
+    "solutionAfterFailedCheck": "passed",
+    "build": "15; compiler inputs unchanged in 17"
+  },
+  "lessonUIVerification": {
+    "platform": "native iPhone Duo iOS 27.1 simulator",
+    "lessonFlowTestsPassed": 7,
+    "guidePresentation": "passed",
+    "embeddedCodeScrollsPage": "passed",
+    "fullscreenCodeScrollsInternally": "passed",
+    "fullscreenEditsRetained": "passed",
+    "nativeLaptopPosture": "pending native simulator recovery: Mac unlocked; Device Hub connection timeout; test runner launch failed with Mach -308",
+    "nativeDisplayCaptures": "build 17 native Duo code and visual lesson",
+    "nativeProjectsListScroll": "automated screenshot walk did not reach example library; manual check pending native simulator recovery",
+    "nativeExampleRecapture": "compiled successfully; no checks executed because the test runner failed to install or launch (Mach -308)"
+  },
+  "officialGuideReferences": {
+    "guideCount": 69,
+    "uniqueReferences": 19,
+    "officialPages": 18,
+    "brokenURLsOrAnchors": 0
+  },
+  "predictionChallengeVerification": {
+    "count": 22,
+    "successfulStandalonePrograms": 20,
+    "expectedDeadlock": "concurrency.unbuffered-rendezvous",
+    "moduleLayoutChallenge": "checked using separate modules inside and outside parent import-path tree",
+    "clarifiedAnswers": [
+      "core.zero-values",
+      "modules.import-path"
+    ],
+    "clarifiedUnitIntroductions": [
+      "core",
+      "generics"
+    ]
+  },
+  "metadataVerification": {
+    "version": "1.1",
+    "build": "17",
+    "metadataMatches": [
+      "description",
+      "keywords",
+      "promotionalText",
+      "supportUrl",
+      "marketingUrl",
+      "whatsNew"
+    ],
+    "appInfo": [
+      {
+        "state": "READY_FOR_SALE",
+        "subtitle": "Code, test & learn offline",
+        "privacyPolicyUrl": "https://gopherforge.app/privacy"
+      },
+      {
+        "state": "PREPARE_FOR_SUBMISSION",
+        "subtitle": "Code, test & learn offline",
+        "privacyPolicyUrl": "https://gopherforge.app/privacy"
+      }
+    ],
+    "internalTesters": 1,
+    "hasAccessToAllBuilds": true,
+    "state": "PREPARE_FOR_SUBMISSION",
+    "releaseType": "MANUAL",
+    "reviewSubmitted": false
+  },
+  "finalBuildVerification": {
+    "build": "17",
+    "platform": "native iPhone Duo iOS 27.1 simulator",
+    "catalogChecksPassed": 11,
+    "guideChecksPassed": 3,
+    "projectsBackAbsentOutsideLaptopPosture": "passed",
+    "failures": 0,
+    "skipped": 0
+  },
+  "appStoreMedia": {
+    "screenshotCount": 69,
+    "creativeAssetCount": 2,
+    "groups": [
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPAD_11_PROFILE",
+        "count": 10,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/ipad-11/00-code.png",
+            "sha256": "e4b5838cc00182da1546fd1ee2b7603ffb88c96fe077bc21ff7ce52883730c29",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/04-lesson.png",
+            "sha256": "5aca50687178ed5304bc1f06ab057dc664d45c5f186fc579d3e45119c1ba5a5a",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/03-course.png",
+            "sha256": "e5c54ae0e2314179b2dbeaee6525b66632e9b7ee46fd4d9b033b327033c25dd3",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/02-tests.png",
+            "sha256": "e39afff97f9771c241290780dbd955de930cb188181295d8d3e3541076d2d387",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/01-compiler.png",
+            "sha256": "710a58f5a329e198f32e62a2d9d32635a22cfb214c39ef81232927d4b366bd0b",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/05-lab.png",
+            "sha256": "bc59e66d804ada6b36b075c2e277ddc5e45d6cd90af9e6da0403dbb497068dee",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/06-projects.png",
+            "sha256": "ac0a93af90987ca472ca5e189de9a6e9e05de092a4f73ce0de448759b53d99c5",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/07-graphics.png",
+            "sha256": "a92f12b2efaaff10aeef45ac204cc50968222bb736d19fa0ea54288182149ec6",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/08-site.png",
+            "sha256": "fe7804a098737f2a22c3fd7fbd9c646953e36847465555b9ac6e6674bcad4758",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-11/09-examples.png",
+            "sha256": "30c3a0600cd26c5ee99361e07fca2ebae62e7e36d5dfc893ccbab01def67d546",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPAD_13_PROFILE",
+        "count": 10,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/ipad-13/00-code.png",
+            "sha256": "c937b08be1c9b5c7441d2113eec2464fea0e071208bf5cfcd3f7be7d3fe3d314",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/04-lesson.png",
+            "sha256": "f4b080990567fca3248ba71bc93a9d17cc6bb23f796f4c2e3483b9db36620f1b",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/03-course.png",
+            "sha256": "a855a4228b4748fb78a9a1b41df97e0289ad69b9fc30faf41b2043aedf0de883",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/02-tests.png",
+            "sha256": "eb974836bc64ef308f1f775a58eb83ab862e505ae56d8e01e22cbb3a390c4c73",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/01-compiler.png",
+            "sha256": "4fcda825d1a0be68c8c41540f8359e35709889d64deadb02320811ac1235680d",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/05-lab.png",
+            "sha256": "a75714f9f5a14d3ddb3219ffa25f52e797ece0d023c1f8d2b84ef6b661e0148f",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/06-projects.png",
+            "sha256": "53cecf59c17515e134a50a43151b1e3faca5e9fa75c158f64fa6ca2aeca8c3fd",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/07-graphics.png",
+            "sha256": "a025c78e94e1a7396fde661aee446fb52af75614d8ea574f938f4856de202e42",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/08-site.png",
+            "sha256": "894f178cb0403d79577d06d5b064a3fbb96169573eb3c5b639daee3df3249bb7",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/ipad-13/09-examples.png",
+            "sha256": "f8622da8aa429286b975d9eb4c5b70fabb50de70f6fb553cebe9380a9c926d6a",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPHONE_DUO_PROFILE",
+        "count": 9,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/00-code.png",
+            "sha256": "a29bb1e38070f68d4fcf61bd3060372c2ce3878db4c7ae677c97bd3e86bb3d25",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/04-lesson.png",
+            "sha256": "89adc953fcbbc0753732e5134590a01b74991da190a166d6839aa61ad921e307",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/03-course.png",
+            "sha256": "8e47c6d95e98157e2540c214c2b75f467feffa67b8e8caefb0be9d2722f640ce",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/02-tests.png",
+            "sha256": "4d2209c2e2249ab4276e11893e9fde9472315c41ada8e89865f2e4eb674feea1",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/01-compiler.png",
+            "sha256": "9e625b482d67f5e72c1c8759d319bd7e26cc771fe338b9153d0c990614f8840e",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/05-lab.png",
+            "sha256": "a2245135c282b73e8057f3eff90ba406379243c89163b741c5082513cf7ee224",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/06-projects.png",
+            "sha256": "c4e191d1b05310e0b83eb586481a803bd5e2972482fcad570b09d8dad92f9926",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/10-unit.png",
+            "sha256": "6dd8b8b02afa7f4380906e3a7768c0deffc4d3181409bb44537681798ad01f41",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-duo/11-problems.png",
+            "sha256": "9352964b490f942b4c6982c80f56f86ac4826d0c1d8c1e7f8926f528d7807c4e",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+        "count": 10,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/00-code.png",
+            "sha256": "d5e0f3f0cc680143941176d96c91e18c67632c4427b9c8c0c68ad8c358e4f466",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/04-lesson.png",
+            "sha256": "ca262eb028ebce2740f0943fb8745d89417a8e7ce42f567cc578e742e69fed12",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/03-course.png",
+            "sha256": "ed413f9a62d468cff3b981ccd99d332a76c09ab3d763c944527478bb7049fdb2",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/02-tests.png",
+            "sha256": "98c342c7eef580b2460118a18a81a669c0b5e751537b7502fdacde525ea03468",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/01-compiler.png",
+            "sha256": "f1f1c9e08e2c0ccb931c6237514218c70e04c2c5f94ac54c4deab8fa91202710",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/05-lab.png",
+            "sha256": "f57727b53a80caafb78b11eabe3417b402d2f1d49041974ecfc133cd0e3f7937",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/06-projects.png",
+            "sha256": "8555590d125fa24bbc039b21950716881b5b0f6ef2b7264532d960c7f6a15d59",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/07-graphics.png",
+            "sha256": "3347c7f5f77ac86512839de0c48b50efa8a98de641952ddabceca797aa8f4881",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/08-site.png",
+            "sha256": "350cb3739dae0981ccca889453694929701bc29a8ebde1e0ffd12a9605dc9126",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.9/09-examples.png",
+            "sha256": "4aecc996601f76becd5a12683fa8ab0707d59aeac875fb4493021afbd4363566",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+        "count": 10,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/00-code.png",
+            "sha256": "82ce12e763f31fab6b758d5841185a5e3817d4e97fe7e6f37d60af16028ba821",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/04-lesson.png",
+            "sha256": "daac7afe632b2de10ac4b698de354524ce3018c73458715c8a8b6d7b9ff5b32a",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/03-course.png",
+            "sha256": "b31d3604d7c42cbe99aa0124d68024bbf188742ca396f34303ed89495d3be9cc",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/02-tests.png",
+            "sha256": "caddb39614da342bf35764415a41f2869801a3416395071dc08269f0dad62e7d",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/01-compiler.png",
+            "sha256": "9a16fc9ca116171f381e7a7cac35d48fac382e3de7b001eda6b0e51f644170f2",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/05-lab.png",
+            "sha256": "c07a0319fb41bd5131323b22c1e2dddb9f09f355cb0bf702eb2e4afa6c4a5321",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/06-projects.png",
+            "sha256": "0ae5d46d9ec83d3470634375a91d94f045d509e3d3db4f947168cb5921f8d17a",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/07-graphics.png",
+            "sha256": "98638825f95fe88df3d0acd0b6df59cb8d68420708d9fb151a942c880b4301ab",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/08-site.png",
+            "sha256": "a9e3af6aca82cd3b35488fe0e1b1bf89b747eb50684ea2cbe45c8f8afd4da713",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.3/09-examples.png",
+            "sha256": "231e518dd68f099278dcf3d5789ed5bc73835f020f1c18eb4f1db315d31257e8",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPHONE_FACE_ID_LARGE_PROFILE",
+        "count": 10,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/00-code.png",
+            "sha256": "22c86fc0f69031e9b5f6d6d4b804c0c6781d1afb098476579a09a7f695296a38",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/04-lesson.png",
+            "sha256": "13fffef1c68064d69d5faf09827636d091af835910e8cf7ba5d20f18f0071acd",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/03-course.png",
+            "sha256": "4b98a784006708e917a611a4fcb16306a824d910eaaf3b941a26976e24799ad0",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/02-tests.png",
+            "sha256": "209a60930a17a6dbc0d09851aa64c7bf912ae5b3a086c4b43ea83642bad65d0b",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/01-compiler.png",
+            "sha256": "f8ba9d71f29081e718080e4fe5f930ae43a7e3a1ff83272230756707c71c01ef",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/05-lab.png",
+            "sha256": "40754f0a2a6efbbe98d17d546045f97a4e4ae4e40a710ea1fe93e15efd8d27c3",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/06-projects.png",
+            "sha256": "1e3d12ec087e51e670798c4ccd3ea40fb7283073e4f1d08debb9e35dd916fc9c",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/07-graphics.png",
+            "sha256": "17206311036d208d4fe81afb07d7486160ba004507ea872e0a17aaed87cba66b",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/08-site.png",
+            "sha256": "da8dd8f9dbba09a977cf695e4e9a992dfe51a8e3ab04c0343484402374bfca87",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.5/09-examples.png",
+            "sha256": "a63f2f5228e0e9f8dd026c9e1c079cec8f46d7911f237b12aae8869126fb5e01",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_SCREENSHOT",
+        "group": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+        "count": 10,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/00-code.png",
+            "sha256": "1f0faaef1699ae545cc44a13a3c9d12a189cea3915e941cc3a8be9d0b32b0556",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/04-lesson.png",
+            "sha256": "f27b67b3106b0dc57d9f547f4392fab02232fbda44cda24aeff553d84df69620",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/03-course.png",
+            "sha256": "6b7fdb863d5542164b2daca9328b83f1581524e46d22b576d792da46f629fde5",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/02-tests.png",
+            "sha256": "587bcfcf5192379a349309f2b638fbca86053e22080dfe4200a28086051e668a",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/01-compiler.png",
+            "sha256": "7e44bc771bd2d48759cc560ff7d96a6968743be59c9c340fce4087bbde6454d2",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/05-lab.png",
+            "sha256": "aa52b2bf5f66799b6237eaa897c003bb37d5db8b9ee5020f1bd7051c02493cb0",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/06-projects.png",
+            "sha256": "05fca4b65f06815bddd8d087840d0e86b050bae745fd8c5b340460643bcf6de3",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/07-graphics.png",
+            "sha256": "db3f8dca5452a2f9a24a033d7c0509c1f59277ad9bbd31393fc8185cb89cf4f2",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/08-site.png",
+            "sha256": "2bf18f92f4d634bb72296b4c5edc6083587f01c6d5385466dd6838a02995a242",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          },
+          {
+            "file": "docs/app-store/screenshots/iphone-6.1/09-examples.png",
+            "sha256": "fef9c02a11485cd3274929f85ae13ad8ae75a10eee01163e621e9d0f017ff2ab",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+        "group": "DEFAULT_PROFILE",
+        "count": 1,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/creative-assets/search-results.png",
+            "sha256": "39eb0f11936386dc5b50bfb60d79759307a982b09a89a83c657c21c3b49f2c82",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      },
+      {
+        "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+        "group": "DEFAULT_PROFILE",
+        "count": 1,
+        "orderedAssets": [
+          {
+            "file": "docs/app-store/creative-assets/header.png",
+            "sha256": "38fabecadb67cd877ee6876b7c35e8e25cc4d56877771f0590f8b8f2a7390e60",
+            "imageState": "PREPARE_FOR_SUBMISSION"
+          }
+        ]
+      }
+    ],
+    "fileHashesMatchSource": true,
+    "firstScreenshot": "00-code.png",
+    "checkedAt": "2026-10-10T21:12:20.335456+00:00"
+  }
+}

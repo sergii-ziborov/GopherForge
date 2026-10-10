@@ -32,7 +32,8 @@ enum MatchingDrillCatalog {
                 id: "core.short",
                 prompt: "x := 3",
                 answer: "Declares and infers, inside a function only",
-                conceptTag: GoConcept.shortDeclaration
+                conceptTag: GoConcept.shortDeclaration,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "core.unused",
@@ -44,7 +45,8 @@ enum MatchingDrillCatalog {
                 id: "core.zero",
                 prompt: "var s string",
                 answer: "Exists already, holding the zero value \"\"",
-                conceptTag: GoConcept.shortDeclaration
+                conceptTag: GoConcept.shortDeclaration,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "core.return",
@@ -76,8 +78,9 @@ enum MatchingDrillCatalog {
             MatchingPair(
                 id: "slices.alias",
                 prompt: "b := a[1:3]",
-                answer: "Shares memory with a until one of them grows",
-                conceptTag: GoConcept.sliceAliasing
+                answer: "Shares a backing array; append may detach it",
+                conceptTag: GoConcept.sliceAliasing,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "slices.bounds",
@@ -89,13 +92,15 @@ enum MatchingDrillCatalog {
                 id: "maps.missing",
                 prompt: "m[\"nope\"]",
                 answer: "The zero value, not an error and not a panic",
-                conceptTag: GoConcept.mapZeroValue
+                conceptTag: GoConcept.mapZeroValue,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "strings.range",
                 prompt: "for i, r := range s",
                 answer: "r is a rune; i counts bytes, not characters",
-                conceptTag: GoConcept.stringRunes
+                conceptTag: GoConcept.stringRunes,
+                promptIsCode: true
             ),
         ]
     )
@@ -110,7 +115,8 @@ enum MatchingDrillCatalog {
                 id: "iface.pointer",
                 prompt: "func (c *Counter) Add()",
                 answer: "Only *Counter satisfies it, never Counter",
-                conceptTag: GoConcept.methodSet
+                conceptTag: GoConcept.methodSet,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "iface.nil",
@@ -122,7 +128,8 @@ enum MatchingDrillCatalog {
                 id: "iface.small",
                 prompt: "interface { Read(...) }",
                 answer: "One method is easier to satisfy than five",
-                conceptTag: GoConcept.smallInterface
+                conceptTag: GoConcept.smallInterface,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "iface.accept",
@@ -143,25 +150,29 @@ enum MatchingDrillCatalog {
                 id: "errors.check",
                 prompt: "if err != nil",
                 answer: "The check Go asks for at every call that can fail",
-                conceptTag: GoConcept.explicitErrorCheck
+                conceptTag: GoConcept.explicitErrorCheck,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "errors.wrap",
                 prompt: "fmt.Errorf(\"...: %w\", err)",
                 answer: "Adds context and keeps the original reachable",
-                conceptTag: GoConcept.errorWrapping
+                conceptTag: GoConcept.errorWrapping,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "errors.sentinel",
                 prompt: "errors.Is(err, io.EOF)",
                 answer: "Compares against a known error, through wrapping",
-                conceptTag: GoConcept.errorSentinel
+                conceptTag: GoConcept.errorSentinel,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "errors.defer",
                 prompt: "defer f.Close()",
                 answer: "Runs when the function returns, however it returns",
-                conceptTag: GoConcept.deferCleanup
+                conceptTag: GoConcept.deferCleanup,
+                promptIsCode: true
             ),
         ]
     )
@@ -176,13 +187,15 @@ enum MatchingDrillCatalog {
                 id: "conc.unbuffered",
                 prompt: "make(chan int)",
                 answer: "A rendezvous: send waits for a receiver",
-                conceptTag: GoConcept.deadlock
+                conceptTag: GoConcept.deadlock,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "conc.close",
                 prompt: "close(ch)",
                 answer: "The sender's job, and only ever once",
-                conceptTag: GoConcept.channelClose
+                conceptTag: GoConcept.channelClose,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "conc.select",
@@ -194,7 +207,8 @@ enum MatchingDrillCatalog {
                 id: "conc.ctx",
                 prompt: "ctx context.Context",
                 answer: "First parameter, never stored in a struct",
-                conceptTag: GoConcept.contextFirstParameter
+                conceptTag: GoConcept.contextFirstParameter,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "conc.wg",
@@ -221,25 +235,29 @@ enum MatchingDrillCatalog {
                 id: "std.io",
                 prompt: "io.Reader",
                 answer: "One method, and half the library accepts it",
-                conceptTag: GoConcept.stdlibIO
+                conceptTag: GoConcept.stdlibIO,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "std.json",
                 prompt: "json.Unmarshal",
                 answer: "Fills a value you pass by pointer",
-                conceptTag: GoConcept.stdlibJSON
+                conceptTag: GoConcept.stdlibJSON,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "std.testing",
                 prompt: "t.Run(name, func)",
                 answer: "A subtest that can fail on its own",
-                conceptTag: GoConcept.stdlibTesting
+                conceptTag: GoConcept.stdlibTesting,
+                promptIsCode: true
             ),
             MatchingPair(
                 id: "std.bufio",
                 prompt: "bufio.Scanner",
                 answer: "Reads a stream a line at a time",
-                conceptTag: GoConcept.stdlibIO
+                conceptTag: GoConcept.stdlibIO,
+                promptIsCode: true
             ),
         ]
     )

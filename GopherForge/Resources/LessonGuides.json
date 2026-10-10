@@ -1,0 +1,1796 @@
+[
+  {
+    "id": "core.zero-values",
+    "title": "A value exists before you assign one",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Numbers",
+        "code": "var count int",
+        "detail": "Starts at 0"
+      },
+      {
+        "label": "Text and flags",
+        "code": "var name string",
+        "detail": "Starts at \"\"; bool starts at false"
+      },
+      {
+        "label": "References",
+        "code": "var p *int",
+        "detail": "Pointers, slices, maps and channels start nil"
+      }
+    ],
+    "caption": "The zero value comes from the type, not from leftover memory.",
+    "practical": "Design a type so its zero value is useful when possible. A zero counter can be incremented and a nil slice can be appended to. A nil map can be read, but needs allocation before a write; a nil channel blocks both sends and receives.",
+    "watchOut": "Zero does not mean ready for every operation. Check the rules of the specific type before using it.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.short-declaration",
+    "title": "Creation and reassignment are different steps",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Declare",
+        "code": "size := 8",
+        "detail": "Creates a name in this block"
+      },
+      {
+        "label": "Reuse",
+        "code": "size = 12",
+        "detail": "Assigns the existing name"
+      },
+      {
+        "label": "Mixed declaration",
+        "code": "size, err := read()",
+        "detail": "At least one name must be new"
+      }
+    ],
+    "caption": "Short declarations are for local variables; package-level declarations use var.",
+    "practical": "Read a short declaration together with its block. Inside a nested if or for block, the same spelling may introduce a different variable. A short declaration with multiple names may reuse names from that same block when at least one other name is new.",
+    "watchOut": "An inner `err :=` can shadow an outer `err`. Use `=` when you intend to update an existing variable.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.multiple-returns",
+    "title": "Check the error before using the value",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Call",
+        "code": "value, err := load()",
+        "detail": "The function returns both"
+      },
+      {
+        "label": "Branch",
+        "code": "if err != nil",
+        "detail": "Handle the failure path"
+      },
+      {
+        "label": "Continue",
+        "code": "use(value)",
+        "detail": "Use the successful result"
+      }
+    ],
+    "caption": "The signature makes the failure path visible at the call site.",
+    "practical": "Keep the failure branch short, then let the successful path continue without extra nesting. Give the error context at the boundary where you know what operation was attempted. A function may return a useful partial result with an error only when its contract explicitly says so.",
+    "watchOut": "Discarding an error with `_` does not handle it. Make that choice only when the operation is known to be safe.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.unused-is-an-error",
+    "title": "Every local name needs a purpose",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Import",
+        "code": "import \"fmt\"",
+        "detail": "A file must use its imports"
+      },
+      {
+        "label": "Local variable",
+        "code": "label := \"go\"",
+        "detail": "A declared local must be used"
+      },
+      {
+        "label": "Intentional discard",
+        "code": "_, err := read()",
+        "detail": "The blank identifier names no variable"
+      }
+    ],
+    "caption": "Go checks unused imports per file and unused local variables at compile time.",
+    "practical": "During a repair, decide whether the unused value belongs in the result or should be removed. Keep imports close to the code that needs them. The blank identifier is useful for an intentionally ignored result, but removing dead work usually makes the program clearer.",
+    "watchOut": "A blank assignment only satisfies the compiler. It does not explain why calculating an unused value was necessary.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.constants",
+    "title": "A constant gets a type when the context asks",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Exact constant",
+        "code": "const limit = 1 << 40",
+        "detail": "No machine-width integer yet"
+      },
+      {
+        "label": "Typed context",
+        "code": "var n int64 = limit",
+        "detail": "The value must fit int64"
+      },
+      {
+        "label": "Enumeration",
+        "code": "const first = iota",
+        "detail": "iota advances per ConstSpec"
+      }
+    ],
+    "caption": "Constant arithmetic is exact until a typed operation imposes a representation.",
+    "practical": "Use typed constants when a public API needs a particular type; keep untyped constants flexible when callers may use different numeric types. In a const block, iota counts specifications, including a blank-identifier specification. Several names on one specification share the same iota value.",
+    "watchOut": "A constant can be valid by itself and still overflow the type of the variable or argument receiving it.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.switch",
+    "title": "The first matching case finishes the switch",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Evaluate",
+        "code": "switch {",
+        "detail": "Conditions are checked in order"
+      },
+      {
+        "label": "Choose",
+        "code": "case ready:",
+        "detail": "Run the first matching case"
+      },
+      {
+        "label": "Finish",
+        "code": "default:",
+        "detail": "No implicit fallthrough"
+      }
+    ],
+    "caption": "An expressionless switch is a sequence of conditions, not a loop.",
+    "practical": "Put more specific conditions before broader ones. Several values can share one case, so avoid repeating an identical body. A break can explicitly leave a switch early, but no break is needed merely to stop at the end of a case.",
+    "watchOut": "`fallthrough` runs the next case body without testing its condition. Use it only when that behavior is intentional.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.conversions",
+    "title": "Make the type change visible",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Distinct types",
+        "code": "type Meters float64",
+        "detail": "A named type protects a meaning"
+      },
+      {
+        "label": "Explicit conversion",
+        "code": "float64(distance)",
+        "detail": "Choose a common numeric type"
+      },
+      {
+        "label": "Operation",
+        "code": "sum / float64(count)",
+        "detail": "Both operands now agree"
+      }
+    ],
+    "caption": "Equal storage widths do not make two numeric types interchangeable.",
+    "practical": "Choose the result type before choosing a conversion. Converting an integer to a float can lose precision for large values; converting a float to an integer truncates the fractional part. An explicit conversion documents the decision, but it does not make a lossy conversion harmless.",
+    "watchOut": "Check an empty collection before dividing by its length. Type correctness alone does not prevent division by zero.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.named-results",
+    "title": "Named results are local variables",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Signature",
+        "code": "func split() (a, b int)",
+        "detail": "Declares result variables"
+      },
+      {
+        "label": "Body",
+        "code": "a = 2",
+        "detail": "Assignments update those variables"
+      },
+      {
+        "label": "Return",
+        "code": "return a, b",
+        "detail": "Explicit values keep the exit clear"
+      }
+    ],
+    "caption": "A bare return returns the current named result values.",
+    "practical": "Use result names when they explain a pair of similar types, such as a lower and upper bound. They begin at their zero values and remain in scope for the body. An explicit return is often easier to review than a bare return once the function has branches.",
+    "watchOut": "A deferred closure can change named results before the caller receives them. That is useful, but deserves a visible contract.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "core.defer-stack",
+    "title": "Deferred work unwinds in reverse order",
+    "mode": "stack",
+    "nodes": [
+      {
+        "label": "Register first",
+        "code": "defer closeA()",
+        "detail": "Arguments are evaluated now"
+      },
+      {
+        "label": "Register second",
+        "code": "defer closeB()",
+        "detail": "This call is stacked above A"
+      },
+      {
+        "label": "Return",
+        "code": "closeB(); closeA()",
+        "detail": "The newest deferred call runs first"
+      }
+    ],
+    "caption": "Registration order and execution order point in opposite directions.",
+    "practical": "Put cleanup next to successful acquisition so later return paths cannot bypass it. The function and arguments of a deferred call are evaluated when defer executes; a deferred closure can instead read variables later. This difference explains many surprising loop and mutation examples.",
+    "watchOut": "Defer runs when the surrounding function returns, not at the end of an inner block or one loop iteration.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "structs.literals",
+    "title": "Field names make construction readable",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Type",
+        "code": "type Point struct { X, Y int }",
+        "detail": "A fixed set of fields"
+      },
+      {
+        "label": "Keyed literal",
+        "code": "Point{X: 3}",
+        "detail": "Omitted fields receive zero values"
+      },
+      {
+        "label": "Copy",
+        "code": "next := point",
+        "detail": "Copies the struct value"
+      }
+    ],
+    "caption": "A struct value carries its fields together; assigning it copies that value.",
+    "practical": "Prefer keyed literals when the field meanings are not obvious. An omitted field is deliberately zero, which is helpful for configuration structs. A struct copy is shallow: slice, map and pointer fields still refer to the same backing data even though the outer struct is a new value.",
+    "watchOut": "A copied struct containing a mutex must not be used as an independent lock after the original lock has been used.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "structs.methods",
+    "title": "A receiver gives a function a home",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Value",
+        "code": "type Counter struct { N int }",
+        "detail": "The receiver type owns the method"
+      },
+      {
+        "label": "Method",
+        "code": "func (c *Counter) Add()",
+        "detail": "A pointer receiver can mutate c"
+      },
+      {
+        "label": "Call",
+        "code": "counter.Add()",
+        "detail": "The receiver supplies the first operand"
+      }
+    ],
+    "caption": "The receiver is an explicit part of the method declaration.",
+    "practical": "Choose pointer receivers when a method needs to change the receiver or when copying the value would be inappropriate. Keep receiver naming short and consistent across methods. Whether a value satisfies an interface is decided by its method set, which is a separate rule from convenient call syntax.",
+    "watchOut": "Go may take the address of an addressable value for a method call. That convenience does not add pointer methods to its value method set.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "structs.pointers",
+    "title": "Two names can reach one value",
+    "mode": "shared",
+    "nodes": [
+      {
+        "label": "One value",
+        "code": "count := 4",
+        "detail": "The storage being referred to"
+      },
+      {
+        "label": "First pointer",
+        "code": "p := &count",
+        "detail": "Refers to count"
+      },
+      {
+        "label": "Second pointer",
+        "code": "q := p",
+        "detail": "Refers to that same count"
+      }
+    ],
+    "caption": "Assigning through either pointer changes the one shared value.",
+    "practical": "Use a pointer to communicate shared identity or a permitted mutation. A pointer is itself copied when passed to a function, so reassigning the parameter changes only that local pointer; assigning through it changes the pointed-to value. Check nil before dereferencing an optional pointer.",
+    "watchOut": "A pointer does not automatically make code faster. Allocation and copying behavior depend on the program and compiler.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "structs.closures",
+    "title": "The function keeps access to its environment",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Create",
+        "code": "total := 0",
+        "detail": "A captured variable is created"
+      },
+      {
+        "label": "Capture",
+        "code": "func() { total++ }",
+        "detail": "The closure uses that variable"
+      },
+      {
+        "label": "Call again",
+        "code": "next()",
+        "detail": "It sees the updated total"
+      }
+    ],
+    "caption": "Calls to one returned closure share its captured variables.",
+    "practical": "A closure is a useful way to return a small stateful operation without exposing a struct. Separate calls to the factory create separate captured state. Multiple closures created in one environment may share that state, so concurrent use still needs synchronization.",
+    "watchOut": "Capturing a variable does not freeze its current value. Copy it deliberately when the callback needs a snapshot.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "structs.escape",
+    "title": "The value outlives the returning function",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Create",
+        "code": "item := Item{}",
+        "detail": "The function creates a local value"
+      },
+      {
+        "label": "Return reference",
+        "code": "return &item",
+        "detail": "The caller may retain it"
+      },
+      {
+        "label": "Use safely",
+        "code": "p.Name = \"go\"",
+        "detail": "The value remains valid"
+      }
+    ],
+    "caption": "Go keeps reachable values alive; a returned pointer is not a dangling reference.",
+    "practical": "Escape analysis decides where storage can live while preserving language semantics. Returning a pointer to a local is safe, but it may require heap storage. Prefer the API shape that expresses ownership and optionality clearly, then inspect allocation behavior if a measured hot path needs improvement.",
+    "watchOut": "Safe lifetime does not mean synchronized access. Sharing the returned pointer across goroutines still requires coordination.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.length-capacity",
+    "title": "A slice sees part of a backing array",
+    "mode": "sequence",
+    "nodes": [
+      {
+        "label": "Visible elements",
+        "code": "len(s)",
+        "detail": "Indices from 0 up to len(s)-1"
+      },
+      {
+        "label": "Reserved storage",
+        "code": "cap(s)",
+        "detail": "The reslicing limit from this start"
+      },
+      {
+        "label": "Growth",
+        "code": "s = append(s, v)",
+        "detail": "May reuse or replace the backing array"
+      }
+    ],
+    "caption": "Length is the current view; capacity is the room available behind that view.",
+    "practical": "Use make with a capacity estimate when building a result incrementally. An append returns the updated slice header, so retain that returned value. The growth policy is an implementation detail; correct code must not depend on a particular capacity after an allocation.",
+    "watchOut": "Capacity does not permit indexing beyond length. Reslice first when exposing an existing part of the backing array.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.append-aliasing",
+    "title": "Slice headers can share one backing array",
+    "mode": "shared",
+    "nodes": [
+      {
+        "label": "Backing storage",
+        "code": "[1, 2, 3, 4]",
+        "detail": "The elements live here"
+      },
+      {
+        "label": "View A",
+        "code": "a := data[:2]",
+        "detail": "Has its own length and capacity"
+      },
+      {
+        "label": "View B",
+        "code": "b := data[1:3]",
+        "detail": "Overlapping elements refer to the same storage"
+      }
+    ],
+    "caption": "Copying a slice copies its header, not its elements.",
+    "practical": "Decide whether a function returns a view or an independent copy. Use copy or slices.Clone when callers must not share mutations. A full slice expression can restrict capacity and force a later append to allocate, but it does not detach elements already visible in the slice.",
+    "watchOut": "An append that fits capacity may overwrite values visible through another slice. An append that reallocates has different sharing behavior.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.map-zero-value",
+    "title": "Reading and writing have different requirements",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Nil map",
+        "code": "var m map[string]int",
+        "detail": "Reads return the value type zero"
+      },
+      {
+        "label": "Absent key",
+        "code": "m[\"missing\"]",
+        "detail": "Also returns zero"
+      },
+      {
+        "label": "Allocated map",
+        "code": "m = make(map[string]int)",
+        "detail": "Writes are now permitted"
+      }
+    ],
+    "caption": "A safe read does not imply that a map is allocated for writes.",
+    "practical": "Initialize a map at the point where a function takes responsibility for storing entries. Use the two-result lookup when an absent key must be distinguished from a stored zero. Deleting a key from a nil map is safe, but assignment to a nil map panics.",
+    "watchOut": "Maps are not safe for unsynchronized concurrent reads and writes. Protect access or transfer ownership.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.runes-not-bytes",
+    "title": "Bytes and Unicode code points are different views",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "UTF-8 bytes",
+        "code": "len(\"é\") == 2",
+        "detail": "Length counts bytes"
+      },
+      {
+        "label": "Rune iteration",
+        "code": "for _, r := range text",
+        "detail": "range decodes Unicode code points"
+      },
+      {
+        "label": "Byte index",
+        "code": "text[i]",
+        "detail": "Indexing returns one byte"
+      }
+    ],
+    "caption": "A rune is a code point; a user-visible character may contain several runes.",
+    "practical": "Choose the unit the operation actually needs. Protocols often need byte offsets; Unicode processing often needs runes. Range over a string yields the byte offset and the decoded rune, so its indexes are not a consecutive rune counter.",
+    "watchOut": "Counting runes is still not counting displayed characters. Combining marks and emoji sequences can contain multiple code points.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.iterators",
+    "title": "The iterator offers values through yield",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Producer",
+        "code": "func(yield func(int) bool)",
+        "detail": "The iterator supplies each value"
+      },
+      {
+        "label": "Consumer",
+        "code": "for v := range values",
+        "detail": "The loop body receives it"
+      },
+      {
+        "label": "Stop signal",
+        "code": "if !yield(v) { return }",
+        "detail": "A false result ends production"
+      }
+    ],
+    "caption": "The range loop and yield call cooperate to stop at the same boundary.",
+    "practical": "Keep iterator state local unless reuse is intentionally stateful. A rangeable function may yield no values, one value, or a key and value, according to its signature. As soon as yield returns false, stop calling it and release any resources owned by the iterator.",
+    "watchOut": "Calling yield again after it returned false violates the iterator protocol and can panic.",
+    "reference": "https://pkg.go.dev/iter"
+  },
+  {
+    "id": "collections.bounds",
+    "title": "Indexing and reslicing use different limits",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Index",
+        "code": "s[i]",
+        "detail": "Requires 0 ≤ i < len(s)"
+      },
+      {
+        "label": "Reslice",
+        "code": "s[:n]",
+        "detail": "May extend up to cap(s)"
+      },
+      {
+        "label": "Full slice",
+        "code": "s[:n:n]",
+        "detail": "Also limits future append capacity"
+      }
+    ],
+    "caption": "Both operations are checked; capacity is not an indexing permission.",
+    "practical": "Check bounds at the boundary where external indexes enter your program. A sub-slice capacity starts at its own first element, not at the original array beginning. A full slice expression is useful when passing a view to code that may append without permission to overwrite later elements.",
+    "watchOut": "Restricting capacity prevents append from using later storage; it does not prevent writes to elements already in the view.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.map-order",
+    "title": "Sort keys when output order matters",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Map",
+        "code": "map[string]int",
+        "detail": "Stores associations, not an order"
+      },
+      {
+        "label": "Collect",
+        "code": "keys = append(keys, key)",
+        "detail": "Extract the keys"
+      },
+      {
+        "label": "Sort then read",
+        "code": "slices.Sort(keys)",
+        "detail": "Produce deterministic output"
+      }
+    ],
+    "caption": "The language does not specify map iteration order.",
+    "practical": "Use sorted keys for reports, snapshots, stable tests and serialized text. Test membership independently of order when order is irrelevant. An iteration may use a different order on the next pass; seeing one repeated order in a small example does not establish a guarantee.",
+    "watchOut": "Do not describe map traversal as insertion order or rely on a particular random distribution.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.strings-builder",
+    "title": "Accumulate bytes before producing the string",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Builder",
+        "code": "var b strings.Builder",
+        "detail": "The zero value is ready"
+      },
+      {
+        "label": "Append",
+        "code": "b.WriteString(part)",
+        "detail": "Grow the accumulated buffer"
+      },
+      {
+        "label": "Finish",
+        "code": "result := b.String()",
+        "detail": "Read the completed string"
+      }
+    ],
+    "caption": "A builder avoids repeatedly concatenating an ever-growing prefix.",
+    "practical": "Use strings.Join when all pieces are already collected; use strings.Builder when generating text step by step. Grow can reserve a known size, but it is optional. A builder is for text, while bytes.Buffer is useful when both byte-oriented reads and writes are needed.",
+    "watchOut": "Do not copy a non-zero strings.Builder. Keep one owner and measure before adding speculative capacity estimates.",
+    "reference": "https://pkg.go.dev/strings#Builder"
+  },
+  {
+    "id": "collections.make-and-new",
+    "title": "Allocation and initialization answer different questions",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Slice",
+        "code": "make([]int, 3)",
+        "detail": "A usable slice with three zero elements"
+      },
+      {
+        "label": "Map or channel",
+        "code": "make(map[string]int)",
+        "detail": "Initializes runtime storage"
+      },
+      {
+        "label": "Pointer",
+        "code": "new(int)",
+        "detail": "Returns a pointer to a zero int"
+      }
+    ],
+    "caption": "make returns a slice, map or channel; new returns a pointer.",
+    "practical": "Pick the form that matches the value your API needs. A struct literal often expresses initialization more clearly than new. A pointer to a nil map is still a pointer to a nil map: allocating the pointer does not initialize the map it points to.",
+    "watchOut": "`new([]int)` yields a pointer to a nil slice. It does not allocate any slice elements.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.arrays",
+    "title": "Array length belongs to its type",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Fixed value",
+        "code": "[3]int",
+        "detail": "Exactly three elements"
+      },
+      {
+        "label": "Different type",
+        "code": "[4]int",
+        "detail": "Not assignable as [3]int"
+      },
+      {
+        "label": "Flexible view",
+        "code": "[]int",
+        "detail": "A slice refers to backing storage"
+      }
+    ],
+    "caption": "Arrays are values; slices describe a view over elements.",
+    "practical": "Use arrays when a fixed length is part of the contract, such as a digest. Array assignment copies every element. Slicing an array creates a view of it; converting or copying into another array is a separate operation with its own bounds requirements.",
+    "watchOut": "Passing an array by value copies it. A slice parameter does not copy its backing elements.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.map-ok",
+    "title": "Presence is a second result",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Stored zero",
+        "code": "m[\"known\"] = 0",
+        "detail": "value is 0; ok is true"
+      },
+      {
+        "label": "Absent entry",
+        "code": "v, ok := m[\"absent\"]",
+        "detail": "value is 0; ok is false"
+      },
+      {
+        "label": "Decision",
+        "code": "if !ok { ... }",
+        "detail": "Handle absence explicitly"
+      }
+    ],
+    "caption": "The boolean answers whether the key exists, independently of the value.",
+    "practical": "Use comma-ok when zero is a meaningful stored value. The same pattern appears in type assertions and channel receives, but the boolean answers a different presence question in each case. Give it a name such as found when that improves the branch.",
+    "watchOut": "Testing `v == 0` cannot distinguish an absent key from an entry explicitly containing zero.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.nil-slice",
+    "title": "A nil slice already supports empty operations",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Start",
+        "code": "var values []int",
+        "detail": "Length and capacity are zero"
+      },
+      {
+        "label": "Grow",
+        "code": "values = append(values, 9)",
+        "detail": "Append allocates when needed"
+      },
+      {
+        "label": "Use",
+        "code": "range values",
+        "detail": "An empty slice runs zero iterations"
+      }
+    ],
+    "caption": "Nil and empty slices behave alike for length, range and append.",
+    "practical": "Return a nil slice when no results is a natural zero value, unless the API requires a non-nil empty value. Most callers should inspect length rather than compare to nil. Encoders may distinguish the two representations, so document the serialized contract when it matters.",
+    "watchOut": "The standard encoding/json package encodes a nil slice as null and a non-nil empty slice as [].",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "collections.function-values",
+    "title": "A signature is a contract you can pass",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Function value",
+        "code": "func(int) bool",
+        "detail": "Names the input and output types"
+      },
+      {
+        "label": "Parameter",
+        "code": "keep func(int) bool",
+        "detail": "Accepts any matching function"
+      },
+      {
+        "label": "Invocation",
+        "code": "keep(value)",
+        "detail": "Calls the supplied behavior"
+      }
+    ],
+    "caption": "Named functions and closures can satisfy the same function type.",
+    "practical": "Pass a function when callers should choose one operation without defining a whole object. A closure can adapt an existing function or capture small configuration. Keep the signature narrow so it is easy to test; a function value may be nil, so establish whether nil is allowed.",
+    "watchOut": "A nil function value can be compared to nil, but calling it panics. Other function values cannot be compared for equality.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "interfaces.implicit",
+    "title": "The consumer defines the behavior it needs",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Consumer",
+        "code": "type Reader interface { Read() }",
+        "detail": "Declares a small contract"
+      },
+      {
+        "label": "Concrete type",
+        "code": "func (s Source) Read()",
+        "detail": "Supplies the matching method"
+      },
+      {
+        "label": "Assignment",
+        "code": "var r Reader = Source{}",
+        "detail": "Satisfaction is checked implicitly"
+      }
+    ],
+    "caption": "No implements declaration connects the type to the interface.",
+    "practical": "Define the interface next to the function that consumes it, using only the methods that function needs. Existing types can then satisfy it without knowing about your package. A compile-time assignment to the interface is a useful way to document and check a type intended to satisfy it.",
+    "watchOut": "Method names alone are insufficient. Parameter and result types must match the interface signature exactly.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "interfaces.method-sets",
+    "title": "Value and pointer types have different method sets",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Value receiver",
+        "code": "func (t T) Read()",
+        "detail": "Belongs to T and *T"
+      },
+      {
+        "label": "Pointer receiver",
+        "code": "func (t *T) Write()",
+        "detail": "Belongs to *T"
+      },
+      {
+        "label": "Interface check",
+        "code": "var w Writer = &value",
+        "detail": "The assigned type must supply Write"
+      }
+    ],
+    "caption": "Convenient method-call syntax does not change interface satisfaction.",
+    "practical": "When an interface assignment fails, inspect the type of the assigned expression and the receiver of each required method. An addressable local value may call a pointer method through automatic addressing; that same value still lacks the pointer method in its own method set.",
+    "watchOut": "Map elements are not addressable. Store pointers in the map or copy, modify and assign a value back.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "interfaces.nil",
+    "title": "An interface carries a type and a value",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Nil interface",
+        "code": "var x any",
+        "detail": "No dynamic type and no value"
+      },
+      {
+        "label": "Typed nil",
+        "code": "var p *Item = nil",
+        "detail": "A pointer type with a nil value"
+      },
+      {
+        "label": "Boxed pointer",
+        "code": "x = p",
+        "detail": "Dynamic type exists, so x != nil"
+      }
+    ],
+    "caption": "Both parts must be absent for the interface itself to be nil.",
+    "practical": "An interface holding a typed nil pointer still has a dynamic type. This commonly appears when a function returns an error interface from a typed pointer variable. Return a literal nil on the success path, and make nil-receiver behavior explicit for methods intended to support it.",
+    "watchOut": "An interface nil check does not prove that calling a method on the contained value is safe.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "interfaces.type-switch",
+    "title": "Inspect a dynamic type once at the boundary",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Input",
+        "code": "value any",
+        "detail": "The dynamic type is not yet known"
+      },
+      {
+        "label": "Dispatch",
+        "code": "switch v := value.(type)",
+        "detail": "Choose a concrete type case"
+      },
+      {
+        "label": "Typed branch",
+        "code": "case string:",
+        "detail": "v has the selected type"
+      }
+    ],
+    "caption": "A type switch can handle nil, known types and a default case.",
+    "practical": "Use a type switch when an API intentionally accepts several unrelated kinds of values. Put the type-dependent behavior in a small boundary function, then pass concrete values into the rest of your code. A case listing multiple types leaves the case variable with the original interface type.",
+    "watchOut": "A type switch sees the exact dynamic type. A named string type is not the same case as string unless you handle it explicitly.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "interfaces.embedding",
+    "title": "Promotion makes fields and methods easier to reach",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Embedded field",
+        "code": "type Outer struct { Inner }",
+        "detail": "Outer contains an Inner value"
+      },
+      {
+        "label": "Promotion",
+        "code": "outer.Run()",
+        "detail": "A convenient path to Inner.Run"
+      },
+      {
+        "label": "Explicit path",
+        "code": "outer.Inner.Run()",
+        "detail": "The contained value is still there"
+      }
+    ],
+    "caption": "Embedding is composition with promoted selectors.",
+    "practical": "Use embedding to expose a contained type deliberately, not to inherit an identity. The embedded value remains a field with its own receiver and state. A field or method on the outer type can hide a promoted selector; ambiguous promoted names must be reached through the explicit field path.",
+    "watchOut": "Outer is not assignable to Inner just because Inner is embedded in it. Promoted methods can nevertheless satisfy interfaces.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "interfaces.stringer",
+    "title": "Formatting can ask the value how to display itself",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Your type",
+        "code": "type Label int",
+        "detail": "Carries application meaning"
+      },
+      {
+        "label": "Method",
+        "code": "String() string",
+        "detail": "Returns a readable representation"
+      },
+      {
+        "label": "Formatting",
+        "code": "fmt.Sprint(label)",
+        "detail": "Uses the Stringer contract where applicable"
+      }
+    ],
+    "caption": "String returns text; it does not print or change the value.",
+    "practical": "Keep String useful for logs and human-facing diagnostics. Some format verbs request a numeric or other specific representation, so not every fmt operation uses String. Separate machine serialization from String when a stable wire format is required.",
+    "watchOut": "Formatting the same value with a string verb from inside its own String method can recurse. Convert to the underlying type first.",
+    "reference": "https://pkg.go.dev/fmt#Stringer"
+  },
+  {
+    "id": "interfaces.empty",
+    "title": "any preserves a dynamic value but promises no methods",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Store",
+        "code": "var value any = \"go\"",
+        "detail": "Any type can be held"
+      },
+      {
+        "label": "Recover type",
+        "code": "text, ok := value.(string)",
+        "detail": "Ask for a specific dynamic type"
+      },
+      {
+        "label": "Use safely",
+        "code": "if ok { use(text) }",
+        "detail": "Operate after checking the assertion"
+      }
+    ],
+    "caption": "any is an alias for interface{}; it is not a compile-time generic type parameter.",
+    "practical": "Use any at a deliberately untyped boundary, such as decoding heterogeneous data. Prefer a concrete type when the caller and callee already agree on the shape. A checked type assertion reports failure without panic; an unchecked assertion is appropriate only when the contract guarantees the type.",
+    "watchOut": "Saying any accepts every type does not mean every operation is legal on the resulting interface value.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "generics.type-parameters",
+    "title": "One algorithm keeps the caller’s element type",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Caller",
+        "code": "[]string",
+        "detail": "Supplies an element type"
+      },
+      {
+        "label": "Generic function",
+        "code": "func Keep[T any](in []T)",
+        "detail": "T is checked at compile time"
+      },
+      {
+        "label": "Typed result",
+        "code": "[]T",
+        "detail": "No per-element type assertion"
+      }
+    ],
+    "caption": "A constraint describes permitted types; a type argument selects one of them.",
+    "practical": "Keep a type parameter connected to the values whose type relationship matters. The compiler often infers it from ordinary arguments, but explicit instantiation is available when inference has no evidence. Generic code may use only the operations guaranteed by its constraint.",
+    "watchOut": "An any constraint does not permit arithmetic, ordering or arbitrary methods on T.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "generics.constraints",
+    "title": "The type set controls the operations you may use",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Exact member",
+        "code": "int",
+        "detail": "Allows the predeclared int type"
+      },
+      {
+        "label": "Underlying member",
+        "code": "~int",
+        "detail": "Also allows named types based on int"
+      },
+      {
+        "label": "Union",
+        "code": "type Number interface { … }",
+        "detail": "Allows ~int or ~float64; every member must support the operation"
+      }
+    ],
+    "caption": "A type-set interface can be a constraint without being usable as an ordinary value type.",
+    "practical": "Choose the smallest useful type set for the algorithm. Use cmp.Ordered for ordering and comparable when equality or map keys are needed. The tilde permits named types with the given underlying type. Constraints with type terms belong in type-parameter positions, not in ordinary variables.",
+    "watchOut": "constraints is not a standard-library package. The experimental golang.org/x/exp/constraints package is a separate dependency.",
+    "reference": "https://pkg.go.dev/cmp#Ordered"
+  },
+  {
+    "id": "generics.containers",
+    "title": "The receiver carries the container’s type argument",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Instantiate",
+        "code": "Stack[string]",
+        "detail": "Fixes the stored element type"
+      },
+      {
+        "label": "Receiver",
+        "code": "func (s *Stack[T]) Push(v T)",
+        "detail": "Reuses T from the receiver"
+      },
+      {
+        "label": "Zero value",
+        "code": "var s Stack[int]",
+        "detail": "Design operations to accept nil storage"
+      }
+    ],
+    "caption": "Each instantiation keeps its element type through every operation.",
+    "practical": "A generic container should preserve the caller’s type and provide a clear empty-state contract. Return a value and a boolean when an element may be absent. Clearing removed pointer-bearing elements can avoid retaining objects through the backing slice after a pop.",
+    "watchOut": "The zero value is useful only if the implementation supports it. Test an empty container before adding constructor requirements.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "generics.methods",
+    "title": "A method can transform to a new element type",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Receiver type",
+        "code": "Bag[E]",
+        "detail": "E is fixed by the receiver"
+      },
+      {
+        "label": "Method parameter",
+        "code": "Map[F any]",
+        "detail": "F belongs to this method"
+      },
+      {
+        "label": "Result type",
+        "code": "Bag[F]",
+        "detail": "The mapping can change the element type"
+      }
+    ],
+    "caption": "Go 1.27 adds method-specific type parameters.",
+    "practical": "Keep the receiver’s parameter and the method’s parameter separate in your reasoning. A mapping function consumes E and produces F; a result container stores F. The caller can often infer F from the callback. This lesson uses the Go 1.27 toolchain bundled with GopherForge.",
+    "watchOut": "Interface methods cannot declare type parameters, and a generic method cannot implement an interface method.",
+    "reference": "https://go.dev/doc/go1.27"
+  },
+  {
+    "id": "generics.when-not-to",
+    "title": "Choose the abstraction that preserves the needed relationship",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Concrete type",
+        "code": "func Print(v Record)",
+        "detail": "Best when one type is enough"
+      },
+      {
+        "label": "Small interface",
+        "code": "func Print(v Stringer)",
+        "detail": "Best when only behavior matters"
+      },
+      {
+        "label": "Type parameter",
+        "code": "func Clone[T any]([]T) []T",
+        "detail": "Preserves the element type relationship"
+      }
+    ],
+    "caption": "A type parameter should express a relationship the ordinary signature cannot express as clearly.",
+    "practical": "Start with the required behavior and the result type. If the caller needs the same concrete element type back, generics can carry that relationship. If the function only invokes one method and returns no type-related result, a small interface often communicates the contract more directly.",
+    "watchOut": "Interface use does not guarantee a heap allocation, and generics do not guarantee faster code. Measure a real hot path first.",
+    "reference": "https://go.dev/blog/when-generics"
+  },
+  {
+    "id": "errors.wrapping",
+    "title": "Context can preserve the original cause",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Cause",
+        "code": "err := read()",
+        "detail": "The original failure"
+      },
+      {
+        "label": "Context",
+        "code": "fmt.Errorf(\"load: %w\", err)",
+        "detail": "Adds a message and an unwrap link"
+      },
+      {
+        "label": "Caller",
+        "code": "errors.Is(err, target)",
+        "detail": "Can still recognize the cause"
+      }
+    ],
+    "caption": "Wrapping links the new error to the old one instead of replacing its identity.",
+    "practical": "Wrap where you can add useful operation context, and avoid repeating the same information at every layer. The percent-v verb formats an error as text; percent-w wraps it for later inspection. Wrapping exposes the cause as part of your API, so decide whether callers should be allowed to depend on it.",
+    "watchOut": "Only wrap a real non-nil error. A success path should return nil directly.",
+    "reference": "https://pkg.go.dev/errors"
+  },
+  {
+    "id": "errors.is-and-as",
+    "title": "Identity and type answer different questions",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Identity",
+        "code": "errors.Is(err, target)",
+        "detail": "Does a matching cause exist?"
+      },
+      {
+        "label": "Type",
+        "code": "errors.As(err, &typed)",
+        "detail": "Can a matching error type be extracted?"
+      },
+      {
+        "label": "Chain",
+        "code": "Unwrap() error",
+        "detail": "Inspection follows wrapped causes"
+      }
+    ],
+    "caption": "Inspect the error contract instead of parsing the human-readable message.",
+    "practical": "Use Is for sentinel conditions that callers branch on and As for structured details such as a status or path. Both can traverse wrapped errors. Declare the destination variable for As first and pass its address; pointer error types require a pointer-valued destination variable.",
+    "watchOut": "Comparing Error() strings is brittle. Messages can change while the error identity and type remain stable.",
+    "reference": "https://pkg.go.dev/errors"
+  },
+  {
+    "id": "errors.defer",
+    "title": "Cleanup belongs next to successful acquisition",
+    "mode": "stack",
+    "nodes": [
+      {
+        "label": "Acquire",
+        "code": "resource, err := open()",
+        "detail": "Handle a failure first"
+      },
+      {
+        "label": "Register",
+        "code": "defer resource.Close()",
+        "detail": "Cleanup is now tied to this function"
+      },
+      {
+        "label": "Exit",
+        "code": "return result",
+        "detail": "Deferred cleanup runs before the caller continues"
+      }
+    ],
+    "caption": "All ordinary return paths pass through the registered cleanup.",
+    "practical": "Register a close only after acquisition succeeds. Defer also runs during panic unwinding in the same goroutine. If closing can report a relevant failure, decide how that error participates in the result rather than discarding it by habit.",
+    "watchOut": "Calling os.Exit does not run deferred functions. A defer in a long loop also waits until the surrounding function exits.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "errors.custom-type",
+    "title": "An error can carry structured information",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Data",
+        "code": "type ParseError struct { Line int }",
+        "detail": "Fields describe the failure"
+      },
+      {
+        "label": "Contract",
+        "code": "Error() string",
+        "detail": "Supplies the human-readable message"
+      },
+      {
+        "label": "Inspection",
+        "code": "errors.As(err, &parseErr)",
+        "detail": "Recovers the structured fields"
+      }
+    ],
+    "caption": "The error interface is one method; behavior and metadata can live together.",
+    "practical": "Choose value or pointer receivers consistently with how the error will be returned and inspected. Keep Error free of side effects, because logging may call it more than once. An Unwrap method can expose a lower-level cause when that cause is part of the intended contract.",
+    "watchOut": "Avoid returning a typed nil pointer as an error interface; the resulting interface is non-nil.",
+    "reference": "https://pkg.go.dev/errors"
+  },
+  {
+    "id": "errors.panic",
+    "title": "Ordinary failures and broken invariants have different exits",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Expected failure",
+        "code": "return err",
+        "detail": "The caller decides how to handle it"
+      },
+      {
+        "label": "Broken invariant",
+        "code": "panic(\"invalid state\")",
+        "detail": "Stops normal execution in this goroutine"
+      },
+      {
+        "label": "Cleanup",
+        "code": "defer cleanup()",
+        "detail": "Runs while the stack unwinds"
+      }
+    ],
+    "caption": "Panic is an exceptional control flow, not a replacement for an error result.",
+    "practical": "Return errors for invalid input, missing files and canceled operations that callers can reasonably expect. Reserve panic for contracts that cannot continue safely, or for a deliberate internal boundary that will recover. An unrecovered panic terminates the program.",
+    "watchOut": "A deferred recover in one goroutine cannot catch a panic that happens in another goroutine.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "errors.recover",
+    "title": "Recover must run inside deferred cleanup",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Boundary",
+        "code": "defer func() { ... }()",
+        "detail": "Registers a recovery function"
+      },
+      {
+        "label": "Unwind",
+        "code": "panic(cause)",
+        "detail": "Begins unwinding this goroutine"
+      },
+      {
+        "label": "Recover",
+        "code": "r := recover()",
+        "detail": "A direct call in the deferred function catches it"
+      }
+    ],
+    "caption": "Recovery stops the unwind and lets the enclosing function return; it does not resume the panicking statement.",
+    "practical": "Put recovery at a boundary that can decide what a failed operation means, such as handling one request. Convert the recovered failure into an explicit result and record enough context to diagnose the bug. Do not hide unexpected failures in an apparently successful zero result.",
+    "watchOut": "Calling recover through a non-deferred helper does not recover the panic. The recovering call must be made directly by the deferred function.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "modules.import-path",
+    "title": "A package path comes from module plus directory",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Module",
+        "code": "module example.com/tools",
+        "detail": "Declared in go.mod"
+      },
+      {
+        "label": "Directory",
+        "code": "format/",
+        "detail": "Package location below the module root"
+      },
+      {
+        "label": "Import",
+        "code": "example.com/tools/format",
+        "detail": "Module path joined with that directory"
+      }
+    ],
+    "caption": "The import path locates the package; the package declaration names it in source.",
+    "practical": "Keep the distinction between path and local name clear. A package may declare a name different from its directory, and an import alias can choose another local spelling. Import cycles are rejected, so arrange dependencies to flow from higher-level features toward shared lower-level packages.",
+    "watchOut": "Moving a package directory changes its import path. Renaming only its package clause changes the name used by importing code.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "modules.exported-by-case",
+    "title": "Capitalization marks the package boundary",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Exported",
+        "code": "type Config struct { Port int }",
+        "detail": "Names beginning with uppercase are visible"
+      },
+      {
+        "label": "Internal",
+        "code": "func parse()",
+        "detail": "Lowercase names remain package-local"
+      },
+      {
+        "label": "Access",
+        "code": "config.Port",
+        "detail": "An exported type may still have private fields"
+      }
+    ],
+    "caption": "Export is per identifier, including each struct field and method.",
+    "practical": "Give exported names useful documentation and keep implementation helpers private. Visibility applies between packages, not between files in the same package. Standard-library encoders such as encoding/json normally inspect exported struct fields, so field visibility also affects serialization.",
+    "watchOut": "An exported struct type does not automatically export its lowercase fields.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "modules.tests",
+    "title": "A test is ordinary Go with a testing entry point",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "File",
+        "code": "parser_test.go",
+        "detail": "Included by the test build"
+      },
+      {
+        "label": "Entry",
+        "code": "func TestParse(t *testing.T)",
+        "detail": "Names the behavior being tested"
+      },
+      {
+        "label": "Cases",
+        "code": "t.Run(name, func(t *testing.T))",
+        "detail": "Reports each named case separately"
+      }
+    ],
+    "caption": "Production code and test code are compiled together according to the chosen test package.",
+    "practical": "Write tables around the observable contract: normal input, boundaries and failures. Use Fatal when continuing would make the rest of the test meaningless, and Error when collecting several independent mismatches is useful. Keep test data independent so adding a case does not change another case’s state.",
+    "watchOut": "Tests in package name_test exercise the exported API; tests in the same package can also inspect unexported details.",
+    "reference": "https://pkg.go.dev/testing"
+  },
+  {
+    "id": "modules.naming",
+    "title": "The package name becomes part of every selector",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Import path",
+        "code": "example.com/project/cache",
+        "detail": "Locates the package"
+      },
+      {
+        "label": "Package name",
+        "code": "package cache",
+        "detail": "Supplies the default qualifier"
+      },
+      {
+        "label": "Public name",
+        "code": "cache.Store",
+        "detail": "The two words are read together"
+      }
+    ],
+    "caption": "Read exported names with their package qualifier before deciding whether they are clear.",
+    "practical": "Prefer short, specific package names that describe the responsibility. Avoid repeating the package name in every exported identifier: cache.Store is usually clearer than cache.CacheStore. An import alias resolves a local naming conflict without changing the package’s own public name.",
+    "watchOut": "A vague package name such as utils tends to gather unrelated responsibilities and makes the dependency direction harder to understand.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "modules.init",
+    "title": "Initialization follows dependencies before main",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Dependencies",
+        "code": "imported packages",
+        "detail": "Initialize before their importers"
+      },
+      {
+        "label": "Package",
+        "code": "variables, then init()",
+        "detail": "Prepare package state"
+      },
+      {
+        "label": "Program",
+        "code": "main.main()",
+        "detail": "Runs after initialization completes"
+      }
+    ],
+    "caption": "Within a package, variable dependency analysis also affects initialization order.",
+    "practical": "Prefer explicit constructors when configuration or failure handling belongs to the caller. Init functions take no arguments and return no result, which makes them a poor place for recoverable setup. Several init functions are allowed, but hidden dependence on file presentation order makes maintenance harder.",
+    "watchOut": "A goroutine started during init may continue running while later initialization proceeds. It needs explicit synchronization if ordering matters.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.unbuffered-rendezvous",
+    "title": "A send and a receive meet at one point",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Sender",
+        "code": "ch <- value",
+        "detail": "Waits for a receiver"
+      },
+      {
+        "label": "Rendezvous",
+        "code": "make(chan int)",
+        "detail": "No queued value slot"
+      },
+      {
+        "label": "Receiver",
+        "code": "value := <-ch",
+        "detail": "Waits for a sender"
+      }
+    ],
+    "caption": "Completion of the exchange establishes synchronization between the participating goroutines.",
+    "practical": "Use an unbuffered channel when handing over a value should wait until a receiver is ready. Reason about both sides before launching work: a send performed before any receiver can run has nowhere to go. A channel communicates values and coordinates timing at the same time.",
+    "watchOut": "Sending and then receiving on the same unbuffered channel in one goroutine blocks at the send.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.no-handle",
+    "title": "Starting work is separate from waiting for it",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Start",
+        "code": "go work()",
+        "detail": "Begins a goroutine; returns no handle"
+      },
+      {
+        "label": "Coordinate",
+        "code": "done := make(chan struct{})",
+        "detail": "Choose a completion signal"
+      },
+      {
+        "label": "Wait",
+        "code": "<-done",
+        "detail": "Observe completion explicitly"
+      }
+    ],
+    "caption": "A go statement does not provide an implicit join or keep main alive.",
+    "practical": "Pick a completion contract before starting a goroutine. A closed channel can signal one operation’s completion; a WaitGroup can join several operations. Pass cancellation and result paths deliberately so a caller can stop and collect the work it starts.",
+    "watchOut": "When main returns, the program exits even if other goroutines have unfinished work.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.channel-close",
+    "title": "The sender announces that no more values are coming",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Produce",
+        "code": "ch <- value",
+        "detail": "Send every value first"
+      },
+      {
+        "label": "Finish",
+        "code": "close(ch)",
+        "detail": "Signal the end of production"
+      },
+      {
+        "label": "Drain",
+        "code": "for v := range ch",
+        "detail": "Read remaining values, then stop"
+      }
+    ],
+    "caption": "Close is a statement about the stream ending, not about discarding its queued values.",
+    "practical": "Give exactly one owner responsibility for closing. If multiple workers send, a coordinator can wait for all of them and close the results channel afterward. Receivers normally do not close because they cannot know that every sender has finished.",
+    "watchOut": "Sending to a closed channel or closing it twice panics. A channel used only for coordination does not always need to be closed.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.select-context",
+    "title": "Wait for work and cancellation together",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Work becomes ready",
+        "code": "case v := <-values:",
+        "detail": "Continue with a received value"
+      },
+      {
+        "label": "Cancellation",
+        "code": "case <-ctx.Done():",
+        "detail": "Return the context error"
+      },
+      {
+        "label": "Neither ready",
+        "code": "select { ... }",
+        "detail": "The goroutine waits"
+      }
+    ],
+    "caption": "If several cases can proceed, select chooses one; source order is not a priority rule.",
+    "practical": "Make every potentially blocking send or receive part of the cancellation design. A context is a signal, so the operation must actually observe it. When a channel may close, use the receive boolean to distinguish the end of the stream from a real zero-valued item.",
+    "watchOut": "Cancellation does not forcibly stop a goroutine. Work that never checks ctx.Done can keep running.",
+    "reference": "https://pkg.go.dev/context"
+  },
+  {
+    "id": "concurrency.mutex",
+    "title": "One lock protects one shared invariant",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Enter",
+        "code": "mu.Lock()",
+        "detail": "Wait for exclusive access"
+      },
+      {
+        "label": "Update",
+        "code": "counter++",
+        "detail": "Read and modify the protected state"
+      },
+      {
+        "label": "Leave",
+        "code": "mu.Unlock()",
+        "detail": "Allow the next owner to enter"
+      }
+    ],
+    "caption": "Every access participating in the shared invariant must follow the same locking rule.",
+    "practical": "Keep the critical section short and make lock ownership easy to see. A deferred unlock protects early returns, while an explicit unlock may be clearer around a small block. Use a channel when transferring ownership expresses the operation better than protecting shared mutable state.",
+    "watchOut": "Protect reads as well as writes. Copying a used mutex or taking the same mutex twice can break the synchronization contract.",
+    "reference": "https://pkg.go.dev/sync#Mutex"
+  },
+  {
+    "id": "concurrency.worker-pool",
+    "title": "Bound the workers while letting jobs flow",
+    "mode": "fanout",
+    "nodes": [
+      {
+        "label": "Jobs channel",
+        "code": "jobs <- job",
+        "detail": "One producer feeds the queue"
+      },
+      {
+        "label": "Worker A",
+        "code": "for job := range jobs",
+        "detail": "Processes a job at a time"
+      },
+      {
+        "label": "Worker B",
+        "code": "for job := range jobs",
+        "detail": "Shares the same bounded workload"
+      }
+    ],
+    "caption": "A fixed worker count bounds concurrent processing, not the total number of jobs.",
+    "practical": "Coordinate the full lifecycle: start workers, deliver jobs, close the jobs stream, wait for workers, then close the results stream. A separate results consumer may need to run while jobs are produced so backpressure cannot deadlock the producer.",
+    "watchOut": "Do not close results from an individual worker. Another worker may still be sending.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.buffered",
+    "title": "A channel buffer has a finite number of slots",
+    "mode": "sequence",
+    "nodes": [
+      {
+        "label": "Space available",
+        "code": "make(chan int, 2)",
+        "detail": "Two sends may queue without receivers"
+      },
+      {
+        "label": "Buffer full",
+        "code": "ch <- next",
+        "detail": "The sender waits for space"
+      },
+      {
+        "label": "Receive",
+        "code": "v := <-ch",
+        "detail": "Frees one queued slot"
+      }
+    ],
+    "caption": "Buffering changes when a send blocks; it does not remove synchronization requirements.",
+    "practical": "Choose capacity to express the intended amount of queued work. A small buffer can smooth bursts and decouple short timing differences. It cannot fix a missing receiver or an endless producer; once capacity is exhausted, backpressure still reaches the sender.",
+    "watchOut": "len(ch) is a momentary queue size, not a reliable precondition for a future send or receive.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.range-and-close",
+    "title": "The receiver drains before the loop ends",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Queue",
+        "code": "ch <- value",
+        "detail": "Values may already be buffered"
+      },
+      {
+        "label": "End production",
+        "code": "close(ch)",
+        "detail": "No new sends are allowed"
+      },
+      {
+        "label": "Drain and stop",
+        "code": "for v := range ch",
+        "detail": "Ends after the buffer is empty"
+      }
+    ],
+    "caption": "A closed channel may still contain unread values.",
+    "practical": "Use range when the entire stream should be consumed until its producer finishes. If cancellation is also required, use a select loop and inspect the two-result receive. Assign close ownership to the producer or the coordinator that knows all producers are done.",
+    "watchOut": "Ranging over a nil channel blocks forever. A never-closed stream also never ends by itself.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.select-default",
+    "title": "Default means continue immediately when nothing is ready",
+    "mode": "comparison",
+    "nodes": [
+      {
+        "label": "Ready case",
+        "code": "case value := <-ch:",
+        "detail": "Receive without waiting"
+      },
+      {
+        "label": "No ready case",
+        "code": "default:",
+        "detail": "Take the fallback immediately"
+      },
+      {
+        "label": "Blocking alternative",
+        "code": "select without default",
+        "detail": "Wait until a case can proceed"
+      }
+    ],
+    "caption": "Default changes a blocking select into a try operation.",
+    "practical": "Use a default case when a skipped operation is part of the contract, such as a best-effort status update. A loop with default can spin continuously when no work is ready. Prefer a blocking select with cancellation or an explicit timing source for a waiting loop.",
+    "watchOut": "Default does not run after a timeout and does not wait briefly. It is selected immediately when no communication is ready.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.direction",
+    "title": "The type limits who may send or receive",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Owner",
+        "code": "chan int",
+        "detail": "Can send, receive and close"
+      },
+      {
+        "label": "Producer parameter",
+        "code": "chan<- int",
+        "detail": "May send and close"
+      },
+      {
+        "label": "Consumer parameter",
+        "code": "<-chan int",
+        "detail": "May receive only"
+      }
+    ],
+    "caption": "A bidirectional channel can be passed to a directional parameter.",
+    "practical": "Use direction in function signatures to communicate roles and let the compiler reject accidental reverse operations. The owner still needs a runtime lifecycle rule: a send-only parameter can close a channel, but that ability does not establish that it is the correct owner to do so.",
+    "watchOut": "Direction is a permission, not an ownership guarantee. Two senders can still race to close unless the design assigns one closer.",
+    "reference": "https://go.dev/ref/spec"
+  },
+  {
+    "id": "concurrency.once",
+    "title": "Concurrent callers share one completed initialization",
+    "mode": "fanout",
+    "nodes": [
+      {
+        "label": "One shared Once",
+        "code": "once.Do(initialize)",
+        "detail": "The first caller runs the function"
+      },
+      {
+        "label": "Caller A",
+        "code": "once.Do(initialize)",
+        "detail": "Waits if initialization is in progress"
+      },
+      {
+        "label": "Caller B",
+        "code": "once.Do(initialize)",
+        "detail": "Observes the completed initialization"
+      }
+    ],
+    "caption": "Do does not return to any caller until the one initialization call has finished.",
+    "practical": "Keep the Once next to the state it protects, and keep that state in one shared object. It is suitable for initialization that must run at most once. Use another design if an operation may fail and needs retries; Once records the attempt rather than guaranteeing successful initialization.",
+    "watchOut": "If the function panics, Once still considers it done. Calling Do recursively on that same Once deadlocks.",
+    "reference": "https://pkg.go.dev/sync#Once"
+  },
+  {
+    "id": "stdlib.io",
+    "title": "Separate the operation from the transport",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Source",
+        "code": "io.Reader",
+        "detail": "Produces bytes"
+      },
+      {
+        "label": "Transformation",
+        "code": "copy or transform",
+        "detail": "Works against the small contracts"
+      },
+      {
+        "label": "Destination",
+        "code": "io.Writer",
+        "detail": "Accepts bytes"
+      }
+    ],
+    "caption": "The same operation can use files, memory buffers or other implementations.",
+    "practical": "Accept interfaces that describe only the I/O behavior the function uses. A reader may return bytes and an error in the same call; process those bytes before the error. Standard helpers such as io.Copy and io.ReadAll handle the protocol details, but ReadAll uses memory proportional to the input.",
+    "watchOut": "Do not assume one Read fills the requested buffer. For an exact byte count, use io.ReadFull.",
+    "reference": "https://pkg.go.dev/io"
+  },
+  {
+    "id": "stdlib.json",
+    "title": "Exported fields and tags define the wire representation",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Go value",
+        "code": "type Config struct { Name string }",
+        "detail": "Only exported fields are considered"
+      },
+      {
+        "label": "Field tag",
+        "code": "`json:\"name,omitempty\"`",
+        "detail": "Controls naming and omission"
+      },
+      {
+        "label": "JSON bytes",
+        "code": "json.Marshal(config)",
+        "detail": "Encoding can return an error"
+      }
+    ],
+    "caption": "Decoding into an existing value can preserve fields absent from the input.",
+    "practical": "Treat tags as part of the external contract and test representative encoded values. Decode into a fresh struct when missing fields should become zero. Use a pointer field when an absent field must be distinguished from a present zero, and consider DisallowUnknownFields for strict input.",
+    "watchOut": "Do not silently ignore Marshal or Unmarshal errors. Lowercase fields remain invisible even if they carry a json tag.",
+    "reference": "https://pkg.go.dev/encoding/json"
+  },
+  {
+    "id": "stdlib.time",
+    "title": "Make units visible in every duration",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Quantity",
+        "code": "5",
+        "detail": "A plain number has no readable unit"
+      },
+      {
+        "label": "Unit",
+        "code": "time.Second",
+        "detail": "A typed duration constant"
+      },
+      {
+        "label": "Timeout",
+        "code": "5 * time.Second",
+        "detail": "An explicit interval"
+      }
+    ],
+    "caption": "A Duration is an int64 measured in nanoseconds.",
+    "practical": "Use Add and Sub for instants and Before, After or Equal for comparisons. Time values may contain location and monotonic information, so == can differ from Equal. A context timeout or timer is often more useful than Sleep when the operation must be cancelable.",
+    "watchOut": "time.Sleep(5) requests five nanoseconds; scheduling overhead determines when execution actually resumes.",
+    "reference": "https://pkg.go.dev/time"
+  },
+  {
+    "id": "stdlib.sort",
+    "title": "Compare the first key, then break ties with the second",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Primary key",
+        "code": "cmp.Compare(a.Year, b.Year)",
+        "detail": "Negative, zero or positive"
+      },
+      {
+        "label": "Equal primary",
+        "code": "if result == 0",
+        "detail": "Only now compare another key"
+      },
+      {
+        "label": "Secondary key",
+        "code": "cmp.Compare(a.Name, b.Name)",
+        "detail": "Produces the final ordering"
+      }
+    ],
+    "caption": "slices.SortFunc takes a three-way comparison, not a less-than boolean.",
+    "practical": "Make the comparison consistent and transitive so the sorting algorithm can rely on it. Sorting changes the supplied slice in place; clone first if callers need the original order. Use SortStableFunc when equal elements must retain their original relative order.",
+    "watchOut": "Subtracting integers as a comparator can overflow. cmp.Compare expresses the ordering without that overflow risk.",
+    "reference": "https://pkg.go.dev/slices#SortFunc"
+  },
+  {
+    "id": "stdlib.context",
+    "title": "Cancellation has to reach the blocking operation",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Caller",
+        "code": "ctx, cancel := context.WithTimeout(...)",
+        "detail": "Sets the lifetime"
+      },
+      {
+        "label": "Wait",
+        "code": "select { case <-ctx.Done(): }",
+        "detail": "Observes the signal"
+      },
+      {
+        "label": "Finish",
+        "code": "return ctx.Err()",
+        "detail": "Reports cancellation or deadline"
+      }
+    ],
+    "caption": "The context carries a cancellation signal; it does not interrupt work automatically.",
+    "practical": "Pass context as the first parameter and propagate it to operations that already accept one. Call the returned cancel function to release resources, even if the deadline eventually expires. Keep contexts out of long-lived structs unless an API explicitly requires that lifetime.",
+    "watchOut": "Do not use context values for optional arguments or general application state. Values are for request-scoped data crossing API boundaries.",
+    "reference": "https://pkg.go.dev/context"
+  },
+  {
+    "id": "stdlib.http",
+    "title": "A handler can be exercised without opening a socket",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Request",
+        "code": "httptest.NewRequest(...)",
+        "detail": "Builds an in-memory request"
+      },
+      {
+        "label": "Recorder",
+        "code": "httptest.NewRecorder()",
+        "detail": "Captures status, headers and body"
+      },
+      {
+        "label": "Handler",
+        "code": "handler.ServeHTTP(w, r)",
+        "detail": "Writes status, headers and body into the recorder"
+      }
+    ],
+    "caption": "The lesson tests real handler behavior with an in-memory transport.",
+    "practical": "Keep HTTP behavior separate from business logic so handler tests can check methods, paths and invalid input directly. Set headers and status before writing a body; the first Write otherwise commits status 200. In GopherForge’s Wasm sandbox, httptest is the supported way to exercise these routes.",
+    "watchOut": "Passing an in-memory handler test does not claim that the Wasm program can bind a network socket.",
+    "reference": "https://pkg.go.dev/net/http/httptest"
+  },
+  {
+    "id": "stdlib.strconv",
+    "title": "Text parsing returns a value and a failure path",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Text input",
+        "code": "\"42\"",
+        "detail": "May contain invalid or out-of-range data"
+      },
+      {
+        "label": "Parse",
+        "code": "n, err := strconv.Atoi(text)",
+        "detail": "Conversion must be checked"
+      },
+      {
+        "label": "Typed result",
+        "code": "n",
+        "detail": "Use only after the error decision"
+      }
+    ],
+    "caption": "strconv parses representations; a numeric type conversion does not parse a string.",
+    "practical": "Use ParseInt with an explicit base and bit size when the data format requires a specific integer representation. Atoi targets int, whose width depends on the architecture. Distinguish syntax errors from out-of-range values when the user needs a useful message.",
+    "watchOut": "Whitespace is not automatically trimmed by Atoi. Decide whether your input contract allows it and normalize explicitly.",
+    "reference": "https://pkg.go.dev/strconv"
+  },
+  {
+    "id": "stdlib.image",
+    "title": "Pixels and encoded files are separate representations",
+    "mode": "flow",
+    "nodes": [
+      {
+        "label": "Image contract",
+        "code": "ColorModel, Bounds, At",
+        "detail": "Describes pixels and their coordinates"
+      },
+      {
+        "label": "Concrete buffer",
+        "code": "image.NewRGBA(bounds)",
+        "detail": "Stores mutable pixels"
+      },
+      {
+        "label": "Encoding",
+        "code": "png.Encode(writer, img)",
+        "detail": "Turns pixels into PNG bytes"
+      }
+    ],
+    "caption": "An image.Image is a pixel interface, not a filename or encoded data blob.",
+    "practical": "Read Bounds rather than assuming every image starts at (0,0). Image implementations may be views over shared pixel storage. Rendering and encoding are separate steps: the app can display a PNG written by a program, while the Go program still uses the standard image and encoding interfaces.",
+    "watchOut": "A rectangle excludes Max. Iterate while x < bounds.Max.X and y < bounds.Max.Y.",
+    "reference": "https://pkg.go.dev/image"
+  }
+]

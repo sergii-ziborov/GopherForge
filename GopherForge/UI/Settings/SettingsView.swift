@@ -107,6 +107,11 @@ struct SettingsView: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.settingsPrivacyPolicy)
 
+                Link(destination: AppLinks.termsOfUse) {
+                    Label("Terms of Use", systemImage: "doc.text")
+                }
+                .accessibilityIdentifier("settings.termsOfUse")
+
                 Link(destination: AppLinks.support) {
                     Label("Support", systemImage: "questionmark.circle")
                 }

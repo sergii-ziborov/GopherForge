@@ -40,8 +40,9 @@ to be added too. Opening a project reports what it found in a compatibility
 summary rather than failing halfway through a build.
 
 **Never happens:** no code leaves the device to be compiled. The compiler,
-linker, vet and gofmt are in the app. The network is used only when you ask for
-a package or import a repository.
+linker, vet and gofmt are in the app. Optional network use includes repository
+and package imports and external references. Local site previews run on device,
+but imported HTML or JavaScript may make its own requests to remote services.
 
 ## Privacy
 
@@ -52,3 +53,24 @@ The app collects nothing. The full policy is in
 
 Please use email rather than a public issue, and say what you did and what
 happened rather than only what you think the cause was.
+
+## Lessons and iPhone Duo
+
+Version 1.1 adds diagrams and practical notes to all 47 course lessons and 22
+prediction challenges. Embedded lesson code scrolls with the page; Full screen
+opens a code view that scrolls independently. Back to lesson keeps your edits.
+
+On iPhone Duo with iOS 27.1 or later, laptop posture keeps Code or Terminal
+above the hinge. Problems, Output, Tests and Idioms use the lower display in
+place of the keyboard. The Projects button beside the workspace title provides
+a way back while the keyboard hides the section bar.
+
+If reporting a layout problem, include the device, system version, posture
+(closed, open, or laptop), selected pane and whether the keyboard was visible.
+Version 1.1 is being prepared for TestFlight verification and is not yet
+available as an App Store update.
+
+## Terms of Use
+
+The app uses Apple's standard application EULA. Product details are in
+[Terms of Use](https://gopherforge.app/terms).

@@ -78,7 +78,13 @@ final class LearnFlowUITests: XCTestCase {
             "the lesson should say it is done, from somewhere reachable"
         )
 
-        app.navigationBars.buttons.element(boundBy: 0).tap()
+        // Duo moves navigation controls into its floating system toolbar.
+        let duoBack = app.buttons["BackButton"]
+        if duoBack.exists {
+            duoBack.tap()
+        } else {
+            app.navigationBars.buttons.element(boundBy: 0).tap()
+        }
 
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         XCTAssertEqual(

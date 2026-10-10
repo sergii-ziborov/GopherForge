@@ -7,15 +7,9 @@ extension CourseUnitConcurrency {
         title: "A mutex is for state; a channel is for handing over",
         objective: "Choose between a mutex and a channel for a given problem.",
         explanation: """
-        "Share memory by communicating" is good advice and is not a ban on \
-        mutexes. A channel moves a value from one goroutine to another. A mutex \
-        protects a value that stays where it is. A counter that many goroutines \
-        increment is the second thing, and writing it with a channel produces \
-        more code that is slower and harder to read.
+        A channel is useful for transferring values and coordinating ownership. A mutex protects shared state that remains in place. Choose the mechanism that makes the invariant and its owner easiest to understand; neither mechanism is always faster.
 
-        The practical shape is a small struct with the mutex beside the data it \
-        guards, and every method taking the lock. If the lock is somewhere else \
-        from the data, nothing tells the next reader what it protects.
+        Keep the mutex next to the data it protects and use the same locking rule for every read and write participating in the invariant. A small, clearly bounded critical section is easier to maintain than a lock whose protected state is scattered.
         """,
         conceptTags: [GoConcept.mutex],
         task: .compile(
@@ -97,15 +91,9 @@ extension CourseUnitConcurrency {
         title: "The worker pool, written once",
         objective: "Build a fixed set of workers that finishes cleanly.",
         explanation: """
-        Three rules make a pool terminate rather than hang. The sender closes \
-        the input channel when there is nothing more to send. Each worker \
-        ranges over that channel, which ends exactly when it closes. And \
-        somebody waits for every worker before closing the output, because \
-        closing it early would panic a worker mid-send.
+        A fixed number of workers bounds concurrent processing. The producer sends jobs and closes the input stream after the last job. Workers consume it until it is drained. A coordinator waits for every worker before closing the output stream.
 
-        Get any one of the three wrong and the failure is a deadlock or a \
-        panic, neither of which points at the line that caused it. Written the \
-        right way round it is about fifteen lines and never needs debugging.
+        Results may need to be consumed while jobs are still being produced, or backpressure can deadlock the producer and workers. Add cancellation deliberately, and test termination as well as returned values.
         """,
         conceptTags: [GoConcept.waitGroup, GoConcept.channelClose],
         task: .compile(

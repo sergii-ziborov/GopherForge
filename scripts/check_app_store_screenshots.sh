@@ -33,12 +33,14 @@ EXPECTED=(
   "iphone-6.1:1170:2532"
   "ipad-13:2064:2752"
   "ipad-11:1668:2420"
+  "iphone-duo:1398:2034"
 )
 
-# What the listing itself uses, in order. The capture also writes 10-unit and
-# 11-problems for the README, which are not part of the upload.
+# What the ordinary-size listings use, in order. The current native Duo draft
+# has nine captures, including its unit and diagnostic views. Its full walk
+# needs a manual check of Projects scrolling before capturing the examples.
 LISTING=(
-  00-code 01-compiler 02-tests 03-course 04-lesson 05-lab 06-projects
+  00-code 04-lesson 03-course 02-tests 01-compiler 05-lab 06-projects
   07-graphics 08-site 09-examples
 )
 
@@ -55,6 +57,10 @@ for entry in "${EXPECTED[@]}"; do
   want_width="${rest%%:*}"
   want_height="${rest##*:}"
   directory="$SHOTS/$folder"
+  listing=("${LISTING[@]}")
+  if [[ "$folder" == "iphone-duo" ]]; then
+    listing=(00-code 04-lesson 03-course 02-tests 01-compiler 05-lab 06-projects 10-unit 11-problems)
+  fi
 
   echo "$folder:"
 
@@ -63,7 +69,7 @@ for entry in "${EXPECTED[@]}"; do
     continue
   fi
 
-  for name in "${LISTING[@]}"; do
+  for name in "${listing[@]}"; do
     file="$directory/$name.png"
 
     if [[ ! -f "$file" ]]; then
@@ -73,7 +79,12 @@ for entry in "${EXPECTED[@]}"; do
 
     width="$(sips -g pixelWidth "$file" | awk '/pixelWidth/ { print $2 }')"
     height="$(sips -g pixelHeight "$file" | awk '/pixelHeight/ { print $2 }')"
-    if [[ "$width" != "$want_width" || "$height" != "$want_height" ]]; then
+    if [[ "$folder" == "iphone-duo" ]]; then
+      case "${width}x${height}" in
+        1398x2034|2034x1398|2007x2853|2853x2007) ;;
+        *) fail "$name.png is ${width}x${height}, not a native Duo size" ;;
+      esac
+    elif [[ "$width" != "$want_width" || "$height" != "$want_height" ]]; then
       fail "$name.png is ${width}x${height}, expected ${want_width}x${want_height}"
     fi
 
@@ -85,7 +96,7 @@ for entry in "${EXPECTED[@]}"; do
   done
 
   count="$(ls "$directory"/*.png 2>/dev/null | wc -l | tr -d ' ')"
-  echo "  ${#LISTING[@]} listing shots checked, $count files in the folder"
+  echo "  ${#listing[@]} listing shots checked, $count files in the folder"
 done
 
 echo

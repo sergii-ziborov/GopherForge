@@ -1,0 +1,887 @@
+[
+  {
+    "id" : "core",
+    "lessons" : [
+      {
+        "explanation" : "Every Go variable starts at its type's zero value: `0` for numbers, `\"\"` for strings, `false` for booleans, and `nil` for pointers, slices, maps, channels, functions and interfaces. A declaration gives you a defined value immediately.\n\nA struct starts with every field at its own zero value. Design that state to be useful when possible: counters and slices work naturally, while a map field still needs initialization before a write. A `New` function is useful when the type requires setup that its zero value cannot provide.",
+        "id" : "core.zero-values",
+        "kind" : "predict",
+        "objective" : "Predict the value of any declared variable before it is assigned.",
+        "question" : "What does this print, and why does len work on a nil slice?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Counter struct {\n\tTotal int\n\tLabel string\n\tTags  []string\n}\n\nfunc main() {\n\tvar c Counter\n\tfmt.Printf(\"%d %q %v %d\\n\", c.Total, c.Label, c.Tags == nil, len(c.Tags))\n}",
+        "tags" : [
+          "vars.unused"
+        ],
+        "title" : "Nothing is uninitialised"
+      },
+      {
+        "explanation" : "`:=` declares and assigns in one step inside a function. At least one non-blank name on the left must be new in the current block; otherwise the compiler reports \"no new variables\".\n\nA short declaration may mix new names with names already declared in that same block. Inside a nested block, however, it may introduce a different variable with the same spelling. Use `=` when the intention is to update an existing variable.",
+        "id" : "core.short-declaration",
+        "kind" : "read",
+        "objective" : "Choose between := and = without guessing, and know when := is illegal.",
+        "source" : "value, err := parse(input)\nif err != nil {\n\treturn err\n}",
+        "tags" : [
+          "vars.short-declaration"
+        ],
+        "title" : ":= declares, = assigns"
+      },
+      {
+        "explanation" : "Go functions can return several values. A common fallible signature returns a result followed by `error`; callers inspect that error before continuing with the result.\n\nThis makes ordinary failures explicit at the call site instead of using exceptions. Go also has `panic` and `recover` for exceptional control flow, but an error result is the usual contract for an expected failure. Short failure branches keep the successful path easy to read.",
+        "id" : "core.multiple-returns",
+        "kind" : "compile",
+        "objective" : "Write a function that returns a result and an error, and read one.",
+        "source" : "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// half returns n divided by two, and an error when n is odd.\nfunc half(n int) (int, error) {\n\t// TODO: return an error when n is odd, otherwise the halved value.\n\treturn 0, nil\n}\n\nfunc main() {\n\tvalue, err := half(9)\n\tfmt.Println(value, err)\n}\n\nvar errOdd = errors.New(\"value is odd\")",
+        "tags" : [
+          "errors.explicit-check",
+          "functions.missing-return"
+        ],
+        "title" : "Two returns instead of one exception"
+      },
+      {
+        "explanation" : "Go refuses to compile a function with a variable it never reads, and a file with an import it never uses. Not a warning — an error.\n\nThis feels hostile for about a week. What it buys is that dead code cannot accumulate quietly, and that a half-finished edit fails loudly instead of shipping. The escape hatch when you genuinely need it is assignment to _, which says \"deliberately discarded\" out loud.",
+        "id" : "core.unused-is-an-error",
+        "kind" : "compile",
+        "objective" : "Recognise the two unused errors on sight and know why they exist.",
+        "source" : "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\thost := \"localhost\"\n\tport := 8080\n\tfmt.Println(port)\n}",
+        "tags" : [
+          "vars.unused",
+          "modules.unused-import"
+        ],
+        "title" : "An unused variable stops the build"
+      },
+      {
+        "explanation" : "An untyped constant in Go has arbitrary precision and no type until it is used. `const big = 1 << 62` is fine even where an int is 32 bits, because nothing has asked it to become an int yet. The moment it is assigned or passed, it takes the type it is needed as — and that is where it can fail to fit.\n\n`iota` is the other half. Inside a const block it counts from zero, one step per line, which is how Go writes enumerations without an enum keyword. The idiom is worth recognising on sight: a type, a const block with iota, and often a String method.",
+        "id" : "core.constants",
+        "kind" : "predict",
+        "objective" : "Explain why 1 << 40 compiles as a constant but overflows as an int32.",
+        "question" : "What does this print?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Level int\n\nconst (\n\tDebug Level = iota\n\tInfo\n\tWarn\n\tError\n)\n\nfunc main() {\n\tfmt.Println(Debug, Info, Warn, Error)\n\tconst big = 1 << 40\n\tfmt.Println(big / 1024 / 1024 / 1024)\n}",
+        "tags" : [
+          "types.constants"
+        ],
+        "title" : "Constants have no type until they need one"
+      },
+      {
+        "explanation" : "In C, Java and JavaScript a case runs on into the next one unless you write `break`. Go inverted that: a case ends at the next case, and `fallthrough` is the keyword you write on the rare occasion you want the old behaviour. You do not need `break` just to end a case, though an explicit `break` can leave a switch early.\n\nTwo more differences worth having: a case can list several values separated by commas, and a switch with no expression is a tidy way to write a chain of conditions.",
+        "id" : "core.switch",
+        "kind" : "compile",
+        "objective" : "Write a Go switch without reaching for break.",
+        "source" : "package main\n\n// Classify returns \"small\" for n under 10, \"medium\" under 100,\n// and \"large\" otherwise. Write it with a switch that has no\n// expression after the keyword.\nfunc Classify(n int) string {\n\treturn \"\"\n}\n\nfunc main() {}",
+        "tags" : [
+          "control.switch"
+        ],
+        "title" : "switch does not fall through"
+      },
+      {
+        "explanation" : "There is no implicit numeric conversion in Go. An int and an int64 are different types even where they are the same width, and adding them is an error rather than a promotion. The fix is always an explicit conversion, and the point of the rule is that the place where precision could be lost is visible in the source.\n\nA named type behaves the same way. `type Celsius float64` cannot be added to a float64 without saying so, which is exactly what makes named types worth declaring: the compiler stops you mixing units.",
+        "id" : "core.conversions",
+        "kind" : "compile",
+        "objective" : "Fix a mismatched-type expression without guessing.",
+        "source" : "package main\n\ntype Celsius float64\n\n// Average returns the mean of the readings, in Celsius.\n// count is an int and the sum is a Celsius; make them agree.\nfunc Average(readings []Celsius) Celsius {\n\tvar sum Celsius\n\tfor _, r := range readings {\n\t\tsum += r\n\t}\n\treturn sum / len(readings)\n}\n\nfunc main() {}",
+        "tags" : [
+          "types.assignment",
+          "types.conversion"
+        ],
+        "title" : "Go never converts a number for you"
+      },
+      {
+        "explanation" : "Names in a function's result list declare local result variables initialized to zero. A bare `return` returns their current values. In a short helper, names such as `quot` and `rem` can explain which result is which.\n\nAn explicit `return quot, rem` is often easier to review once a function has branches. Result names document intent, but the compiler does not protect two same-typed results from being swapped. A deferred closure may change named results before the function returns to its caller.",
+        "id" : "core.named-results",
+        "kind" : "compile",
+        "objective" : "Write a short function that uses a naked return, and know when not to.",
+        "source" : "package main\n\n// Split returns n / d and n % d. Name the results and use a\n// naked return. Do not guard against d == 0; the test never\n// passes zero.\nfunc Split(n, d int) (int, int) {\n\treturn 0, 0\n}\n\nfunc main() {}",
+        "tags" : [
+          "functions.named-results",
+          "functions.missing-return"
+        ],
+        "title" : "A return can name what it is handing back"
+      },
+      {
+        "explanation" : "Deferred calls run in last-in, first-out order when the surrounding function returns. Three `defer fmt.Println(n)` statements execute in the reverse of their registration order.\n\nThe deferred function and its arguments are evaluated when `defer` executes. A deferred closure, in contrast, may read a captured variable when it eventually runs. Keep that distinction clear when a variable changes between registration and return.",
+        "id" : "core.defer-stack",
+        "kind" : "predict",
+        "objective" : "Say the print order of three deferred calls.",
+        "question" : "What does this print? The Tour's stacking-defers program.",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"counting\")\n\tfor i := 0; i < 3; i++ {\n\t\tdefer fmt.Println(i)\n\t}\n\tfmt.Println(\"done\")\n}",
+        "tags" : [
+          "errors.defer"
+        ],
+        "title" : "Deferred calls stack, last one first"
+      }
+    ],
+    "summary" : "Declarations, zero values, multiple returns and the shapes Go repeats everywhere.",
+    "title" : "Go core",
+    "translationNote" : "Most of this unit is not new material — it is unlearning. Go has no built-in class constructors or exception-handling syntax, and declared variables start with zero values, so habits from Java, C# and Python each need one specific adjustment rather than a general rewrite."
+  },
+  {
+    "id" : "structs",
+    "lessons" : [
+      {
+        "explanation" : "A struct groups fields under a type name. `Point{X: 1, Y: 2}` names its fields; `Point{1, 2}` relies on declaration order. Reordering same-typed fields can silently change an unkeyed literal's meaning. Adding a field usually makes an existing unkeyed literal fail to compile. Keyed literals make intent clearer, and vet checks unkeyed literals for structs from other packages.\n\nA struct's zero value is a struct, not nil. Each field begins at its own zero value. Fields beginning with an uppercase letter are exported; visibility is decided per field.",
+        "id" : "structs.literals",
+        "kind" : "compile",
+        "objective" : "Declare a struct type and build values of it without positional guessing.",
+        "source" : "package main\n\n// Declare a Rect type with Width and Height fields of type int,\n// then finish Area so it returns their product.\n\nfunc Area(r Rect) int {\n\treturn 0\n}\n\nfunc main() {\n\tprintln(Area(Rect{Width: 3, Height: 4}))\n}",
+        "tags" : [
+          "types.struct-literal"
+        ],
+        "title" : "A struct is data, and its fields have names"
+      },
+      {
+        "explanation" : "A method is declared outside the type, with the receiver in parentheses before the name: `func (r Rect) Area() int`. There is no class body, and methods can be attached to any type you declared in this package — including `type Celsius float64`, not only structs.\n\nThe receiver is a copy unless it is a pointer. `func (r Rect) Grow()` mutates a copy and the caller sees nothing; `func (r *Rect) Grow()` mutates the original. Go calls either form for you — `r.Grow()` works on an addressable value whichever receiver you chose — so the compiler will not warn you that the mutation went nowhere.\n\nThe convention is to pick one kind of receiver for the whole type. A type with some value methods and some pointer methods has a method set that changes depending on whether you hold a value or a pointer, and that is where \"it does not satisfy the interface\" comes from.",
+        "id" : "structs.methods",
+        "kind" : "compile",
+        "objective" : "Put a method on your own type and choose the receiver deliberately.",
+        "source" : "package main\n\ntype Counter struct {\n\tTotal int\n}\n\n// Add should increase the counter by n, and the change must be\n// visible to the caller. Total should report the current value.\n\nfunc main() {\n\tc := Counter{}\n\tc.Add(3)\n\tprintln(c.Value())\n}",
+        "tags" : [
+          "types.pointer",
+          "interfaces.method-set"
+        ],
+        "title" : "A method is a function with a receiver"
+      },
+      {
+        "explanation" : "Go passes everything by value. A struct handed to a function is copied, and writing to the copy changes nothing the caller can see. A pointer is how you say \"the same one\", and `&` and `*` are the whole syntax: `&value` takes an address, `*pointer` reads through one. Field access needs no `*` — `p.X` works on a pointer as well as a value, which is why you rarely see the star in ordinary code.\n\nThere is no pointer arithmetic. A Go pointer either points at something or is nil, and that is all it can do — which is why passing one is safe in a way it is not in C.\n\nThe reason to use one is mutation. \"Pointers are faster\" is a guess: for a small struct the copy is often cheaper than the indirection and the extra work the garbage collector inherits. Measure before believing it, and until you have, choose based on whether the callee needs to change what it was given.",
+        "id" : "structs.pointers",
+        "kind" : "predict",
+        "objective" : "Say when a pointer is required and when it is only noise.",
+        "question" : "What are the two numbers, and why are they different?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Settings struct {\n\tRetries int\n}\n\nfunc byValue(s Settings) {\n\ts.Retries = 9\n}\n\nfunc byPointer(s *Settings) {\n\ts.Retries = 9\n}\n\nfunc main() {\n\ts := Settings{Retries: 1}\n\tbyValue(s)\n\tfmt.Println(s.Retries)\n\tbyPointer(&s)\n\tfmt.Println(s.Retries)\n}",
+        "tags" : [
+          "types.pointer"
+        ],
+        "title" : "A pointer is for changing something, not for speed"
+      },
+      {
+        "explanation" : "Functions are values: they can be stored, passed and returned. A function literal keeps access to the variables it captures, rather than taking an automatic snapshot of their values.\n\nTwo closures capturing the same variable see each other's updates. Separate calls to a factory create separate environments. When you need a snapshot, make an explicit copy for the closure to capture.\n\nSince Go 1.22, iteration variables declared by a loop get a fresh variable on each iteration. A loop assigning to a variable declared outside it still reuses that variable. The distinction between `:=` and `=` matters here too.",
+        "id" : "structs.closures",
+        "kind" : "compile",
+        "objective" : "Return a function that carries state, and know what it captured.",
+        "source" : "package main\n\n// Counter should return a function that returns 1 the first time it\n// is called, 2 the second time, and so on. Two counters made by two\n// calls must not share their count.\n\nfunc main() {\n\tnext := Counter()\n\tprintln(next(), next())\n}",
+        "tags" : [
+          "functions.closure"
+        ],
+        "title" : "A function is a value, and it remembers where it came from"
+      },
+      {
+        "explanation" : "In C this is the classic mistake: return the address of a local and the stack frame is gone by the time the caller looks. Go removes the mistake rather than warning about it. The compiler works out that the value outlives the function — escape analysis — and allocates it somewhere that survives.\n\nSo `return &Config{}` is ordinary, idiomatic Go, and constructors called `New...` do it constantly. You are not choosing stack or heap; the compiler is, from how the value is used.\n\nWhat this does *not* mean is that pointers are free. An escaping value becomes garbage collector work, which is the real cost behind \"pointers are faster\" being a guess rather than a rule.",
+        "id" : "structs.escape",
+        "kind" : "predict",
+        "objective" : "Explain why Go lets you return the address of a local variable.",
+        "question" : "Does this compile, and what does it print?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Config struct {\n\tName string\n}\n\nfunc New(name string) *Config {\n\tlocal := Config{Name: name}\n\treturn &local\n}\n\nfunc main() {\n\tfirst := New(\"a\")\n\tsecond := New(\"b\")\n\tfmt.Println(first.Name, second.Name, first == second)\n}",
+        "tags" : [
+          "types.pointer"
+        ],
+        "title" : "Returning a pointer to a local is fine"
+      }
+    ],
+    "summary" : "Structs, methods, pointers, and functions that are values.",
+    "title" : "Types you define",
+    "translationNote" : "There is no class here and nothing to inherit from. A struct is data, a method is a function with a receiver written before its name, and the two are declared separately — which means you can put methods on any type you define, not only on structs.\n\nThe habit to unlearn is reaching for a pointer by default. In Go a value is copied unless you say otherwise, and that is usually what you want; a pointer is for when the method has to change the thing it was called on, or when copying it would genuinely cost."
+  },
+  {
+    "id" : "collections",
+    "lessons" : [
+      {
+        "explanation" : "A slice is three words: a pointer to an array, a length and a capacity. append writes into the existing array while the capacity allows it, and allocates a new one when it does not.\n\nThat single rule explains most slice surprises: whether a write is seen by another slice depends on whether an append happened to reallocate.",
+        "id" : "collections.length-capacity",
+        "kind" : "predict",
+        "objective" : "Predict when append allocates and when it writes in place.",
+        "question" : "What are the two length and capacity pairs?",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := make([]int, 0, 4)\n\ts = append(s, 1, 2)\n\tfmt.Println(len(s), cap(s))\n\ts = append(s, 3, 4, 5)\n\tfmt.Println(len(s), cap(s))\n}",
+        "tags" : [
+          "slices.capacity"
+        ],
+        "title" : "len is what you have, cap is what you can grow into"
+      },
+      {
+        "explanation" : "Slicing does not copy elements. `s[1:3]` refers to the same backing array, so writes to overlapping elements are visible through both slices. An append that allocates a new array detaches the returned slice from that old storage.\n\nA full slice expression such as `s[1:3:3]` limits capacity, forcing an append of another element to allocate. It does not detach the elements already in the view. Use `copy` or `slices.Clone` when the result must be independently mutable.",
+        "id" : "collections.append-aliasing",
+        "kind" : "compile",
+        "objective" : "Spot the moment a subslice starts sharing writes with its parent.",
+        "source" : "package main\n\n// window returns the middle of s without letting the caller's\n// appends overwrite the rest of s.\nfunc window(s []int) []int {\n\treturn s[1:3]\n}\n\nfunc main() {}",
+        "tags" : [
+          "slices.aliasing",
+          "slices.capacity"
+        ],
+        "title" : "Two slices, one array"
+      },
+      {
+        "explanation" : "Reading a key that is absent returns the value type's zero value, with no error. That is why comma-ok exists: v, ok := m[k] distinguishes \"absent\" from \"present and zero\".\n\nThe asymmetry to remember: reading from a nil map is legal and returns zero values, but writing to one panics. A map must be made before it can be written.",
+        "id" : "collections.map-zero-value",
+        "kind" : "compile",
+        "objective" : "Use comma-ok, and know which map operation panics.",
+        "source" : "package main\n\n// countWords returns how many times each word appears.\nfunc countWords(words []string) map[string]int {\n\tvar counts map[string]int\n\tfor _, word := range words {\n\t\tcounts[word]++\n\t}\n\treturn counts\n}\n\nfunc main() {}",
+        "tags" : [
+          "maps.zero-value"
+        ],
+        "title" : "Reading a missing key is fine, writing to a nil map is not"
+      },
+      {
+        "explanation" : "A Go string is an immutable sequence of bytes, commonly containing UTF-8. `s[i]` returns one byte and `len(s)` counts bytes.\n\nRanging over a string decodes UTF-8 and yields each rune with its byte offset. A rune is a Unicode code point, not necessarily a whole displayed character: combining marks and emoji sequences can contain several code points.",
+        "id" : "collections.runes-not-bytes",
+        "kind" : "predict",
+        "objective" : "Index, slice and iterate a string without corrupting characters.",
+        "question" : "Why do the two lengths differ, and which byte offsets appear?",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := \"héllo\"\n\tfmt.Println(len(s), len([]rune(s)))\n\tfor i, r := range s {\n\t\tif i < 3 {\n\t\t\tfmt.Printf(\"%d:%c \", i, r)\n\t\t}\n\t}\n\tfmt.Println()\n}",
+        "tags" : [
+          "strings.runes"
+        ],
+        "title" : "A string is bytes; range gives you runes"
+      },
+      {
+        "explanation" : "Since Go 1.23, `range` accepts a function as well as a slice, map or channel. A function of the shape `func(yield func(V) bool)` is an iterator: it calls `yield` once per element, and stops early when `yield` returns false — which is how a `break` in the caller's loop reaches you.\n\nThere are two shapes, and the standard library names them in `iter`: `iter.Seq[V]` yields one value per step, and `iter.Seq2[K, V]` yields two, which is what map-like iteration needs. You rarely write the type out; you write the function, and `range` accepts it.\n\nThe point is not novelty. Before this, a function returning a sequence had to hand back a whole slice — allocating every element even when the caller wanted the first one — or take a callback and lose `break`, `continue` and `return`. An iterator is lazy and keeps the loop keywords working, which is why `slices.Values` and `maps.Keys` return one instead of a copy.",
+        "id" : "collections.iterators",
+        "kind" : "compile",
+        "objective" : "Write something that can be ranged over without building a slice first.",
+        "source" : "package main\n\n// Take should return an iterator over at most n values from the\n// slice — nothing copied up front, and a caller that breaks out\n// early must stop the work rather than run to the end.\n\nfunc main() {\n\tfor value := range Take([]string{\"go\", \"forge\", \"run\"}, 2) {\n\t\tprintln(value)\n\t}\n}",
+        "tags" : [
+          "range-over-func"
+        ],
+        "title" : "range works on functions too"
+      },
+      {
+        "explanation" : "A slice has both a length and a capacity, and they gate different things. Indexing is checked against len: `s[i]` panics the moment i reaches len, however much capacity remains behind it. Reslicing is checked against cap: `s[:n]` is legal for any n up to cap, and that is how a slice grows back into space it had already allocated.\n\nThis is why `make([]int, 0, 10)` is not indexable at all and `make([]int, 10)` is: the first has room for ten and holds none.",
+        "id" : "collections.bounds",
+        "kind" : "predict",
+        "objective" : "Say which of two similar-looking index expressions panics.",
+        "question" : "What does this print?",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := make([]int, 3, 8)\n\tfmt.Println(len(s), cap(s))\n\n\tgrown := s[:6]\n\tfmt.Println(len(grown), cap(grown))\n\n\tdefer func() {\n\t\tif r := recover(); r != nil {\n\t\t\tfmt.Println(\"panic on index\")\n\t\t}\n\t}()\n\tfmt.Println(s[5])\n}",
+        "tags" : [
+          "slices.bounds",
+          "slices.capacity"
+        ],
+        "title" : "len is what you may read; cap is what you may reslice"
+      },
+      {
+        "explanation" : "The language does not specify map iteration order, and the order may change from one iteration to the next. A small example that repeatedly uses one order does not establish a guarantee.\n\nWhen output must be deterministic, collect the keys, sort them and read values in that sorted order. When order is irrelevant, test the entries without requiring a particular traversal sequence.",
+        "id" : "collections.map-order",
+        "kind" : "compile",
+        "objective" : "Produce stable output from a map without hoping.",
+        "source" : "package main\n\n// SortedKeys returns the map's keys in ascending order.\nfunc SortedKeys(m map[string]int) []string {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "maps.order"
+        ],
+        "title" : "Map iteration order is not specified"
+      },
+      {
+        "explanation" : "Strings are immutable. Repeated `s += piece` operations in a growing loop can copy the accumulated prefix repeatedly, producing quadratic work as the output grows. Small fixed concatenations may be optimized differently, so measure the actual workload.\n\n`strings.Builder` accumulates text in a growing buffer and exposes the result with `String`. `strings.Join` is a simpler choice when all pieces are already collected. A non-zero Builder must not be copied.",
+        "id" : "collections.strings-builder",
+        "kind" : "compile",
+        "objective" : "Use strings.Builder for repeated construction without rebuilding the prefix.",
+        "source" : "package main\n\n// Repeat joins n copies of word with a single space between them.\n// Build it without concatenating in the loop.\nfunc Repeat(word string, n int) string {\n\tout := \"\"\n\tfor i := 0; i < n; i++ {\n\t\tout += word + \" \"\n\t}\n\treturn out\n}\n\nfunc main() {}",
+        "tags" : [
+          "strings.builder"
+        ],
+        "title" : "Concatenating in a loop repeatedly rebuilds a string"
+      },
+      {
+        "explanation" : "The Tour's \"Creating a slice with make\" page and Effective Go's \"Allocation with new\" page are the same distinction. `new(T)` allocates a zero T and returns `*T`. That is all it does. `make` is only for slices, maps and channels: it allocates the backing store and returns a usable value, not a pointer to one.\n\n`new(map[string]int)` is a pointer to a nil map. Writing through it panics. `make(map[string]int)` is a map you can write. The same trap exists for a slice: `new([]int)` is `*[]int` pointing at nil; `make([]int, 0, 8)` is a slice with room.",
+        "id" : "collections.make-and-new",
+        "kind" : "compile",
+        "objective" : "Pick make or new for a slice, a map and a pointer.",
+        "source" : "package main\n\n// ReadyMap must be writable. ZeroCounter must be a pointer to 0,\n// not a nil *int.\nfunc ReadyMap() map[string]int { return nil }\nfunc ZeroCounter() *int        { return nil }\n\nfunc main() {}",
+        "tags" : [
+          "builtin.make-new",
+          "maps.zero-value"
+        ],
+        "title" : "make builds the header; new only allocates"
+      },
+      {
+        "explanation" : "The Tour's \"Arrays\" page is the one people skip because slices are what you use. Then a function signature says `[32]byte` and the compiler refuses a `[16]byte`. The length is in the type: `[4]int` and `[3]int` are as different as `int` and `string`.\n\nAn array is a value. Assigning it copies every element. A slice is a header pointing at an array, which is why two slices can share memory and two arrays never do unless you pass a pointer. The conversion is one way and explicit: `s := a[:]` views the array; there is no implicit `[n]T` from a slice of the wrong length.",
+        "id" : "collections.arrays",
+        "kind" : "compile",
+        "objective" : "Write a function that takes [4]int and returns [3]int.",
+        "source" : "package main\n\n// FirstThree returns the first three elements as an array, not\n// a slice. The length has to be in the type.\nfunc FirstThree(values [4]int) [3]int {\n\treturn [3]int{}\n}\n\nfunc main() {}",
+        "tags" : [
+          "types.array",
+          "slices.capacity"
+        ],
+        "title" : "The length is part of an array's type"
+      },
+      {
+        "explanation" : "The Tour's \"Mutating Maps\" page is the two-value read: `elem, ok := m[key]`. A missing key and a present zero look the same if you only take `elem`. Scores, counts, flags — anything whose zero is a legitimate stored value — need the ok.\n\n`delete(m, key)` is the other half of that page. Deleting a missing key is a no-op, not an error. After delete, ok is false even if the old value was zero.",
+        "id" : "collections.map-ok",
+        "kind" : "compile",
+        "objective" : "Report whether a key is present when its value can be zero.",
+        "source" : "package main\n\n// Has reports whether key is in m, even when m[key] is 0.\nfunc Has(m map[string]int, key string) bool {\n\treturn m[key] != 0\n}\n\nfunc main() {}",
+        "tags" : [
+          "maps.comma-ok",
+          "maps.zero-value"
+        ],
+        "title" : "Comma-ok is how you tell zero from missing"
+      },
+      {
+        "explanation" : "The Tour's \"Nil slices\" page: the zero value of a slice is nil, it has length and capacity 0, and it has no backing array. `append` treats that as a valid empty slice and allocates. JSON encodes a nil slice as `null` and a non-nil empty one as `[]` — the only common place the distinction leaks out.\n\n`s == nil` is true for `var s []int` and false for `s := []int{}`. Both have len 0. Prefer `len(s) == 0` unless you are talking to a wire format that cares.",
+        "id" : "collections.nil-slice",
+        "kind" : "predict",
+        "objective" : "Predict what len, == nil and append do to a zero slice.",
+        "question" : "What does this print?",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar s []int\n\tfmt.Println(s == nil, len(s), cap(s))\n\ts = append(s, 1)\n\tfmt.Println(s == nil, len(s), s[0])\n\tempty := []int{}\n\tfmt.Println(empty == nil, len(empty))\n}",
+        "tags" : [
+          "slices.capacity"
+        ],
+        "title" : "A nil slice is empty, and append still works"
+      },
+      {
+        "explanation" : "The Tour's \"Function values\" page: functions are values. They can be arguments and results. The type includes the parameters and the result, so `func(int) int` and `func(int) string` are as different as int and string.\n\nThis is not a method and not a generic yet. It is the shape map and filter had in Go before type parameters, and it is still how most callbacks are written.",
+        "id" : "collections.function-values",
+        "kind" : "compile",
+        "objective" : "Apply a func(int) int to every element of a slice.",
+        "source" : "package main\n\n// Apply returns fn(v) for each v, in order.\nfunc Apply(values []int, fn func(int) int) []int {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "functions.value",
+          "functions.closure"
+        ],
+        "title" : "A function is a value you can pass"
+      }
+    ],
+    "summary" : "Length against capacity, shared backing arrays, and why a string is not a []char.",
+    "title" : "Slices, maps and strings",
+    "translationNote" : "This is where habits from Python and JavaScript do real damage. A Go slice is a view over an array, not a list object, so two slices can share memory and a third can silently observe your writes."
+  },
+  {
+    "id" : "interfaces",
+    "lessons" : [
+      {
+        "explanation" : "A type satisfies an interface by having the methods. There is no implements keyword and no import relationship, so a package can accept types that were written before its interface existed.\n\nThe idiom that follows: accept interfaces, return structs. And keep the interface as small as the function actually uses — one method is common and two is already a design decision.",
+        "id" : "interfaces.implicit",
+        "kind" : "compile",
+        "objective" : "Write the smallest interface a function needs, at the call site.",
+        "source" : "package main\n\nimport \"strings\"\n\n// summarise should accept anything that can report its own length,\n// not just a strings.Builder.\nfunc summarise(b *strings.Builder) int {\n\treturn b.Len()\n}\n\nfunc main() {}",
+        "tags" : [
+          "interfaces.size"
+        ],
+        "title" : "The consumer declares the interface"
+      },
+      {
+        "explanation" : "A method with a value receiver belongs to both T and *T. A method with a pointer receiver belongs only to *T.\n\nSo if any method that satisfies an interface has a pointer receiver, a plain value does not satisfy it — and the compiler says \"does not implement\", often pointing at a line that looks obviously correct. The fix is nearly always &value rather than changing the receiver.",
+        "id" : "interfaces.method-sets",
+        "kind" : "predict",
+        "objective" : "Predict whether a value or only a pointer satisfies an interface.",
+        "question" : "Why must the assignment use &c, and what does this print?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Counter struct{ n int }\n\nfunc (c *Counter) Add()      { c.n++ }\nfunc (c Counter) Total() int { return c.n }\n\ntype adder interface{ Add() }\n\nfunc main() {\n\tvar c Counter\n\tvar a adder = &c\n\ta.Add()\n\tfmt.Println(c.Total())\n}",
+        "tags" : [
+          "interfaces.method-set"
+        ],
+        "title" : "Pointer receiver, pointer method set"
+      },
+      {
+        "explanation" : "An interface value holds a dynamic type and a dynamic value. It is nil only when it holds neither. Assigning a nil `*MyError` to an `error` variable preserves the pointer type, so `err != nil` is true even though its contained pointer is nil.\n\nWhen a function returns an error interface, return literal `nil` on the success path rather than a typed nil pointer. Calling a method on an interface holding a nil pointer is safe only if that method deliberately supports a nil receiver.",
+        "id" : "interfaces.nil",
+        "kind" : "predict",
+        "objective" : "Explain why err != nil can be true when the error is nil.",
+        "question" : "Does this print true or false, and why?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype PathError struct{ Path string }\n\nfunc (e *PathError) Error() string { return \"bad path: \" + e.Path }\n\nfunc find(name string) *PathError { return nil }\n\nfunc check(name string) error { return find(name) }\n\nfunc main() {\n\tfmt.Println(check(\"ok\") == nil)\n}",
+        "tags" : [
+          "interfaces.nil"
+        ],
+        "title" : "A nil pointer in an interface is not a nil interface"
+      },
+      {
+        "explanation" : "A type assertion has two forms and the difference matters. `v := x.(int)` panics when x is not an int. `v, ok := x.(int)` never panics: ok says whether it worked, and v is the zero value when it did not. In anything that handles input you did not write, the two-value form is the only one.\n\nA type switch is the same question asked about several types at once, and it is how Go writes what other languages do with pattern matching or a visitor.",
+        "id" : "interfaces.type-switch",
+        "kind" : "compile",
+        "objective" : "Read a value out of an interface without risking a panic.",
+        "source" : "package main\n\nimport \"fmt\"\n\n// Describe returns \"int 7\", \"string go\", \"bool true\" or\n// \"unknown\" for anything else. Use a type switch.\nfunc Describe(value any) string {\n\treturn \"\"\n}\n\nfunc main() { fmt.Println(Describe(7)) }",
+        "tags" : [
+          "types.assertion"
+        ],
+        "title" : "Asking an interface what it is holding"
+      },
+      {
+        "explanation" : "Writing a type inside a struct without a field name embeds it, and its methods are promoted to the outer type. It looks like inheritance and is not: there is no virtual dispatch and no super. The outer type gets a field it can reach through, and the promoted methods still run against that inner value.\n\nThe consequence people trip on: a method the outer type declares shadows the promoted one for outside callers, but a promoted method calling a sibling still calls the inner one. Go resolves this at compile time by name, not at run time by receiver.",
+        "id" : "interfaces.embedding",
+        "kind" : "predict",
+        "objective" : "Predict which method runs when an embedded type has one too.",
+        "question" : "What does this print? Look carefully at the second line.",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Base struct{ Name string }\n\nfunc (b Base) Describe() string { return \"base \" + b.Name }\nfunc (b Base) Greet() string    { return \"hello from \" + b.Describe() }\n\ntype Loud struct{ Base }\n\nfunc (l Loud) Describe() string { return \"LOUD \" + l.Name }\n\nfunc main() {\n\tl := Loud{Base{Name: \"ada\"}}\n\tfmt.Println(l.Describe())\n\tfmt.Println(l.Greet())\n}",
+        "tags" : [
+          "types.embedding",
+          "interfaces.method-set"
+        ],
+        "title" : "Embedding is not inheritance"
+      },
+      {
+        "explanation" : "`fmt.Stringer` is a small formatting contract:\n\n```go\ntype Stringer interface { String() string }\n```\n\nCommon string formatting operations in `fmt` call `String()` when the value implements it. Format verbs that explicitly request another representation may behave differently. No registration is needed.\n\nDo not format the same value through its own String method in a way that calls String again. Convert it to its underlying type or format its fields to avoid recursion.",
+        "id" : "interfaces.stringer",
+        "kind" : "compile",
+        "objective" : "Make a type print itself as a dotted IPv4 address.",
+        "source" : "package main\n\ntype IPAddr [4]byte\n\n// String should print 1.2.3.4 for IPAddr{1, 2, 3, 4}.\nfunc (ip IPAddr) String() string {\n\treturn \"\"\n}\n\nfunc main() {}",
+        "tags" : [
+          "fmt.stringer",
+          "interfaces.size"
+        ],
+        "title" : "fmt looks for String(), not a Stringer keyword"
+      },
+      {
+        "explanation" : "The Tour's \"The empty interface\" page: `interface{}` specifies zero methods, so every type implements it. `any` is the alias. `fmt.Print` takes `...any` for that reason.\n\nHolding a value in `any` throws the static type away. Getting it back is a type assertion or a type switch — the two-value form, or you panic. `%T` in fmt is the cheap way to see what is inside, and it is what this lesson asks you to return.",
+        "id" : "interfaces.empty",
+        "kind" : "compile",
+        "objective" : "Report the dynamic type of a value held in any.",
+        "source" : "package main\n\n// Kind returns the dynamic type, as fmt would: \"int\", \"string\",\n// \"*int\". A nil any prints as <nil>.\nfunc Kind(value any) string {\n\treturn \"\"\n}\n\nfunc main() {}",
+        "tags" : [
+          "interfaces.empty",
+          "types.assertion"
+        ],
+        "title" : "any is interface{}, and it has no methods"
+      }
+    ],
+    "summary" : "Implicit satisfaction, method sets, and the nil that is not nil.",
+    "title" : "Interfaces",
+    "translationNote" : "Nothing declares that it implements an interface. That inverts where abstraction lives: the consumer defines the interface it needs, so the useful interfaces are small and defined next to the code using them, not next to the type satisfying them."
+  },
+  {
+    "id" : "generics",
+    "lessons" : [
+      {
+        "explanation" : "Type parameters go in square brackets before the ordinary ones: `func Map[T, U any](in []T, f func(T) U) []U`. `T` and `U` are types the caller supplies, and in almost every call the compiler infers them so you write `Map(names, length)` with no brackets at all.\n\n`any` is the constraint that allows every type. It is a real alias for `interface{}`, but in this position it means something different: with `interface{}` as a *parameter* type you get a value you must assert your way out of, and with `any` as a *constraint* you get the caller's actual type, checked at compile time.\n\nThat is the whole gain. The old version of this function returned `[]interface{}` and every caller unpacked it; the generic one returns `[]U`, and a mistake is a compile error rather than a panic.",
+        "id" : "generics.type-parameters",
+        "kind" : "compile",
+        "objective" : "Write a function that works for several types without interface{} and without a cast.",
+        "source" : "package main\n\n// Keep should return a new slice holding the elements the predicate\n// returns true for, for any element type — no interface{} anywhere,\n// and the result keeps the caller's type.\n\nfunc main() {\n\teven := Keep([]int{1, 2, 3, 4}, func(n int) bool { return n%2 == 0 })\n\tprintln(len(even))\n}",
+        "tags" : [
+          "generics.type-parameter"
+        ],
+        "title" : "A type parameter is written in square brackets"
+      },
+      {
+        "explanation" : "A constraint says what the compiler may assume about `T`. It is written as an interface — the same keyword — but an interface used as a constraint can list *types* as well as methods:\n\n```\ntype Number interface {\n\t~int | ~int64 | ~float64\n}\n```\n\nThe `|` is a union, and the `~` means \"any type whose underlying type is this\", so `type Celsius float64` satisfies `~float64`. Without the tilde your own named types are excluded, which is almost never what you meant.\n\nThe standard library provides `cmp.Ordered` for types that support ordering. `constraints` is not a standard-library package. Reaching for `cmp.Ordered` before writing your own is useful, because a constraint is part of your API and a homemade one is a second vocabulary for readers to learn.",
+        "id" : "generics.constraints",
+        "kind" : "compile",
+        "objective" : "Constrain a type parameter to what your code actually needs.",
+        "source" : "package main\n\n// Sum should add up a slice of any numeric type and return the same\n// type it was given. Define whatever constraint it needs.\n\nfunc main() {\n\tprintln(Sum([]int{1, 2, 3}))\n}",
+        "tags" : [
+          "generics.constraint"
+        ],
+        "title" : "A constraint is an interface with types in it"
+      },
+      {
+        "explanation" : "Types take parameters with the same syntax: `type Stack[T any] struct { items []T }`. Methods on it repeat the parameter in the receiver — `func (s *Stack[T]) Push(v T)` — which makes the type's parameter available to the method.\n\nFor most of generics' life a method could not introduce a parameter of its own, so transformations to another type were written as functions before Go 1.27. That restriction is gone; the next lesson is about what replaced it.\n\nThe zero value still has to work. `var s Stack[int]` gives you a struct whose slice is nil, and appending to a nil slice is fine, so the stack is usable without a constructor — worth designing for rather than stumbling into.\n\nInstantiation is explicit where inference has nothing to work from: `Stack[int]{}` names the type, while `Push(1)` infers nothing because `T` is already fixed by the receiver.",
+        "id" : "generics.containers",
+        "kind" : "compile",
+        "objective" : "Write a container that holds one type rather than any type.",
+        "source" : "package main\n\n// A Stack that holds one element type. Push adds, Pop returns the\n// most recently added value and whether there was one. The zero\n// value must be usable without a constructor.\n\nfunc main() {\n\tvar s Stack[string]\n\ts.Push(\"go\")\n\tvalue, ok := s.Pop()\n\tprintln(value, ok)\n}",
+        "tags" : [
+          "generics.type-parameter"
+        ],
+        "title" : "A type can take parameters too"
+      },
+      {
+        "explanation" : "Go 1.27 lets a method declare type parameters of its own, in addition to the ones its receiver already carries:\n\n```\ntype List[E any] []E\n\nfunc (l List[E]) Apply[F any](f func(E) F) List[F] {\n\t...\n}\n```\n\n`E` comes from the receiver; `F` belongs to the method. Before this, the second one had no place to live, so this transformation was commonly written as a package-level function taking the collection as its first argument. That was not a style choice — the language had no way to write it as a method.\n\nLike a generic function, a generic method is instantiated before it is called, and in ordinary code the compiler infers the type argument from what you pass. The judgement from the previous lessons still applies: this removes a restriction, it does not create an obligation. A method earns a type parameter when the transformation genuinely produces a different element type, and not because it now can have one.",
+        "id" : "generics.methods",
+        "kind" : "compile",
+        "objective" : "Write the method that could only be a function before Go 1.27.",
+        "source" : "package main\n\n// Bag holds elements of one type. Give it a Map method that returns\n// a Bag of whatever type the function produces — a method, not a\n// package-level function.\n\ntype Bag[E any] struct {\n\titems []E\n}\n\nfunc main() {\n\tb := Bag[int]{items: []int{1, 2, 3}}\n\tprintln(len(b.Map(func(n int) string { return \"x\" }).items))\n}",
+        "tags" : [
+          "generic-method"
+        ],
+        "title" : "A method can take its own type parameter"
+      },
+      {
+        "explanation" : "The Go team's own guidance is narrow. Type parameters are for: functions over slices, maps and channels of any element type; general data structures like trees and stacks; and methods that are identical for several types apart from the type itself.\n\nThe case against everything else is readability. A generic function has to be read twice — once for what it does and once for what its constraint permits — and it cannot use anything the constraint does not promise, which usually makes it *less* capable than the concrete version it replaced.\n\nTwo smells worth naming. If the constraint ends up being an interface with methods and nothing else, an ordinary interface parameter is simpler and does the same thing at the cost of one dynamic dispatch. And if a function has a type parameter used exactly once, in one argument, it is a plain function wearing a costume.",
+        "id" : "generics.when-not-to",
+        "kind" : "predict",
+        "objective" : "Recognise the three cases where a type parameter earns its place, and the ones where it does not.",
+        "question" : "Both compile and print the same thing. Which should you write, and why?",
+        "source" : "package main\n\nimport \"fmt\"\n\ntype Stringer interface {\n\tString() string\n}\n\n// Two ways to write the same thing.\nfunc PrintGeneric[T Stringer](value T) { fmt.Println(value.String()) }\nfunc PrintPlain(value Stringer)        { fmt.Println(value.String()) }\n\ntype ID int\n\nfunc (i ID) String() string { return fmt.Sprintf(\"id-%d\", i) }\n\nfunc main() {\n\tPrintGeneric(ID(7))\n\tPrintPlain(ID(7))\n}",
+        "tags" : [
+          "generics.overuse"
+        ],
+        "title" : "Most code that could be generic should not be"
+      }
+    ],
+    "summary" : "Type parameters, constraints, and the times an interface is the better answer.",
+    "title" : "Generics, and when not to",
+    "translationNote" : "If you are coming from Java or C#, the shape will look familiar and the culture will not. Go got type parameters late and on purpose, and the community's default is still to reach for them last — a function that works on one concrete type is not a failure waiting to be generalised.\n\nThere is no reflection-based erasure story to learn and no covariance rules to fight. Interfaces describe both ordinary values and type-parameter constraints. A constraint with type terms is not an ordinary value type: use it to bound a type parameter."
+  },
+  {
+    "id" : "errors",
+    "lessons" : [
+      {
+        "explanation" : "fmt.Errorf with %w produces an error that both reads well and still contains the original. errors.Is and errors.As walk that chain.\n\nTwo conventions make the chain readable: error strings are lowercase and unpunctuated because they get concatenated, and each layer adds only what it uniquely knows — usually the operation and its input.",
+        "id" : "errors.wrapping",
+        "kind" : "compile",
+        "objective" : "Wrap an error so callers can still match the original.",
+        "source" : "package main\n\nimport (\n\t\"errors\"\n\t\"strconv\"\n)\n\nvar ErrNotANumber = errors.New(\"not a number\")\n\n// parsePort should report which input failed and still let callers\n// match ErrNotANumber.\nfunc parsePort(raw string) (int, error) {\n\tn, err := strconv.Atoi(raw)\n\tif err != nil {\n\t\treturn 0, ErrNotANumber\n\t}\n\treturn n, nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "errors.wrapping"
+        ],
+        "title" : "%w adds context without hiding the cause"
+      },
+      {
+        "explanation" : "errors.Is asks whether anything in the chain equals a sentinel. errors.As asks whether anything in the chain is a particular type, and gives it to you so you can read its fields.\n\nSentinel when the caller only needs to know which kind of failure it was; typed error when the caller needs a detail, such as which field was invalid.",
+        "id" : "errors.is-and-as",
+        "kind" : "read",
+        "objective" : "Choose between errors.Is and errors.As without trial and error.",
+        "source" : "var invalid *ValidationError\nif errors.As(err, &invalid) {\n\treturn invalid.Field\n}",
+        "tags" : [
+          "errors.sentinel",
+          "errors.wrapping"
+        ],
+        "title" : "Is compares, As extracts"
+      },
+      {
+        "explanation" : "A deferred call runs when the function returns, whichever return it was, and deferred calls run in reverse order. That is what makes acquire-then-defer-release safe against every early return an error check introduces.\n\nThe argument to a deferred call is evaluated immediately; only the call is postponed. This surprises people exactly once.",
+        "id" : "errors.defer",
+        "kind" : "predict",
+        "objective" : "Release what you acquired, in the right order, on every path.",
+        "question" : "In what order do the numbers print?",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfor i := 1; i <= 3; i++ {\n\t\tdefer fmt.Print(i, \" \")\n\t}\n\tfmt.Print(\"end \")\n}",
+        "tags" : [
+          "errors.defer"
+        ],
+        "title" : "defer runs last in, first out"
+      },
+      {
+        "explanation" : "`error` is an interface with one method, so anything with `Error() string` is one. That is what makes an error able to carry structured information: a field for the line that failed, the value that was rejected, the operation that was attempted.\n\n`errors.As` is the counterpart to `errors.Is`. Where Is asks \"is this that particular error\", As asks \"is there an error of this type anywhere in the chain, and if so give it to me\" — which is how a caller reads those fields back out after the error has been wrapped.",
+        "id" : "errors.custom-type",
+        "kind" : "compile",
+        "objective" : "Write an error that carries data the caller can read.",
+        "source" : "package main\n\n// ParseError should report which field failed and why, and\n// satisfy the error interface.\ntype ParseError struct {\n\tField  string\n\tReason string\n}\n\n// Parse returns a *ParseError when field is empty.\nfunc Parse(field, value string) error {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "errors.custom",
+          "errors.wrapping"
+        ],
+        "title" : "An error is any type with an Error method"
+      },
+      {
+        "explanation" : "A file that will not open is a failure: it is expected, the caller can do something about it, and it is an error value. An index past the end of a slice is a bug: the program's own logic is wrong, and continuing would be worse than stopping. Go draws that line deliberately, and a library that panics on bad input has drawn it in the wrong place.\n\n`recover` exists, and its honest use is narrow: stopping one request from taking down a server, at the boundary, before returning an ordinary error. It is not a catch block, and using it as one hides the bug that caused it.",
+        "id" : "errors.panic",
+        "kind" : "predict",
+        "objective" : "Say which of two situations deserves a panic.",
+        "question" : "What does this print? Note that err is a named return.",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc safe(work func()) (err error) {\n\tdefer func() {\n\t\tif r := recover(); r != nil {\n\t\t\terr = fmt.Errorf(\"recovered: %v\", r)\n\t\t}\n\t}()\n\twork()\n\treturn nil\n}\n\nfunc main() {\n\tfmt.Println(safe(func() { fmt.Println(\"fine\") }))\n\tfmt.Println(safe(func() { panic(\"bad state\") }))\n}",
+        "tags" : [
+          "errors.panic",
+          "errors.explicit-check"
+        ],
+        "title" : "panic is for bugs, not for failures"
+      },
+      {
+        "explanation" : "The Tour shows panic as a value and Effective Go keeps recover for a server boundary: one request, one goroutine, then an ordinary error back to the caller. `recover` only works inside a deferred function. A named result is how that error gets out — a `return nil` after `work()` would overwrite it.\n\nA library that recovers in the middle of a calculation is hiding a bug. A process that recovers at main is pretending the program is still sound. The honest width is one unit of work you can abandon.",
+        "id" : "errors.recover",
+        "kind" : "compile",
+        "objective" : "Turn a panic into an error without swallowing the rest of the program.",
+        "source" : "package main\n\n// Guard runs work and returns an error if it panics. A clean\n// run returns nil. Use recover in a defer.\nfunc Guard(work func()) error {\n\twork()\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "errors.panic",
+          "functions.named-results"
+        ],
+        "title" : "recover belongs at the boundary"
+      }
+    ],
+    "summary" : "Wrapping, errors.Is and errors.As, sentinels, defer and the panic boundary.",
+    "title" : "Errors",
+    "translationNote" : "There is no catch. An error is a value you return, and the caller decides. What replaces a stack trace is a chain of wrapped context, built deliberately at each level that knows something the level below did not."
+  },
+  {
+    "id" : "modules",
+    "lessons" : [
+      {
+        "explanation" : "`go.mod` names the module, such as `example.com/forge`. A package in `internal/build` is then imported using `example.com/forge/internal/build`.\n\nThe import path locates the package; its `package` clause determines the default name used in source. The name often matches the last directory component, but does not have to. An import alias can choose another local name.\n\nAn `internal` directory also enforces an import boundary: only code within the tree rooted at its parent may import that package.",
+        "id" : "modules.import-path",
+        "kind" : "predict",
+        "objective" : "Predict the import path of any package in a module.",
+        "question" : "How does cmd/forge/main.go import Run, and could a different module do the same?",
+        "source" : "// go.mod\nmodule example.com/forge\n\ngo 1.24\n\n// internal/build/build.go\npackage build\n\nfunc Run() {}",
+        "tags" : [
+          "modules.import-path"
+        ],
+        "title" : "The import path is the module path plus the directory"
+      },
+      {
+        "explanation" : "An identifier starting with an upper-case letter is visible outside its package; anything else is not. There is no public, private or protected.\n\nBecause the name carries the visibility, renaming is an API change, and Go's naming conventions get unusually strict: no stuttering (build.Runner, not build.BuildRunner), no Get prefix on getters, and short names for short-lived variables.",
+        "id" : "modules.exported-by-case",
+        "kind" : "read",
+        "objective" : "Control visibility without keywords, and name things accordingly.",
+        "source" : "// Runner executes one build.\ntype Runner struct {\n\tworkdir string\n}\n\nfunc NewRunner(workdir string) *Runner {\n\treturn &Runner{workdir: workdir}\n}",
+        "tags" : [
+          "interfaces.size"
+        ],
+        "title" : "A capital letter is the access modifier"
+      },
+      {
+        "explanation" : "A test is a function such as `func TestParse(t *testing.T)` in a file ending `_test.go`. It can use the production package name, or a package name ending `_test` to exercise the exported API from outside the package.\n\nA table-driven test keeps cases in data and the assertion in code. `t.Run` gives each case a separate name in the result stream. No external test framework is required.",
+        "id" : "modules.tests",
+        "kind" : "compile",
+        "objective" : "Write a table-driven test and run it locally.",
+        "source" : "package main\n\n// Clamp returns value limited to the range low..high.\nfunc Clamp(value, low, high int) int {\n\treturn value\n}\n\nfunc main() {}",
+        "tags" : [
+          "stdlib.testing"
+        ],
+        "title" : "Tests are a file, not a framework"
+      },
+      {
+        "explanation" : "A package's name becomes the qualifier callers read: `http.Server` is clearer than `http.HTTPServer`. Prefer short, descriptive lowercase names. Singular names are common, but useful standard-library packages such as `strings`, `errors` and `slices` are plural.\n\nAvoid needless repetition between package and exported name. `chart.New` can be clear for a package centered on one chart type; a package with several constructors may need more specific names. Read the whole selector to judge it.",
+        "id" : "modules.naming",
+        "kind" : "predict",
+        "objective" : "Name a package and its exported function without repeating yourself.",
+        "question" : "What does this print?",
+        "source" : "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\t// Every one of these reads as package.Identifier at the call site.\n\tfmt.Println(strings.ToUpper(\"go\"))\n\tfmt.Println(strings.HasPrefix(\"gopher\", \"go\"))\n\tr := strings.NewReplacer(\"a\", \"4\", \"e\", \"3\")\n\tfmt.Println(r.Replace(\"beware\"))\n}",
+        "tags" : [
+          "modules.import-path"
+        ],
+        "title" : "The package name is half the API"
+      },
+      {
+        "explanation" : "A package initializes its variables using their dependency relationships, then runs its init functions in source order as presented to the compiler. Imported packages finish initialization before the importing package. `main` starts after the program's initialization completes.\n\nDo not depend on arbitrary file presentation order for important behavior. Explicit constructors make configuration and recoverable failure handling visible. An init function takes no arguments and returns no result, though it can register a driver or format as a deliberate import side effect.",
+        "id" : "modules.init",
+        "kind" : "predict",
+        "objective" : "Predict the order of package variables, init and main.",
+        "question" : "In what order do the lines appear?",
+        "source" : "package main\n\nimport \"fmt\"\n\nvar first = announce(\"first\")\nvar second = announce(\"second\")\n\nfunc announce(name string) string {\n\tfmt.Println(\"var\", name)\n\treturn name\n}\n\nfunc init() {\n\tfmt.Println(\"init\")\n}\n\nfunc main() {\n\tfmt.Println(\"main\", first, second)\n}",
+        "tags" : [
+          "packages.init"
+        ],
+        "title" : "init runs before main, and order is defined"
+      }
+    ],
+    "summary" : "Import paths, go.mod, go test and go vet, without a search engine.",
+    "title" : "Packages, modules and tooling",
+    "translationNote" : "Go's survey found professionals repeatedly returning to documentation for core go subcommands. That is not a knowledge gap so much as a model gap: once the module, the import path and the package directory line up in your head, the commands stop needing to be memorised."
+  },
+  {
+    "id" : "concurrency",
+    "lessons" : [
+      {
+        "explanation" : "A send on an unbuffered channel does not complete until a receiver takes the value, and a receive does not complete until a sender provides one. It is a rendezvous, not a mailbox.\n\nThis is why the classic first Go deadlock is one line long: send on an unbuffered channel from the only goroutine there is, and nobody can ever arrive to meet it. The runtime notices that every goroutine is asleep and stops the program, which is a much better failure than a silent hang.",
+        "id" : "concurrency.unbuffered-rendezvous",
+        "kind" : "predict",
+        "objective" : "Say what blocks, and for how long, on a channel with no buffer.",
+        "question" : "What happens, and would a buffer of one change it?",
+        "source" : "package main\n\nfunc main() {\n\tready := make(chan string)\n\tready <- \"hello\"\n\tprintln(<-ready)\n}",
+        "tags" : [
+          "concurrency.deadlock",
+          "concurrency.select"
+        ],
+        "title" : "An unbuffered channel is a meeting"
+      },
+      {
+        "explanation" : "go f() starts f and immediately continues. There is no future to await and no value to collect, so the result has to come back through a channel or a shared variable protected by something.\n\nThe second half matters just as much: when main returns, the program exits and every remaining goroutine simply stops. A goroutine still blocked at that moment did not fail — it was never finished.",
+        "id" : "concurrency.no-handle",
+        "kind" : "predict",
+        "objective" : "Get a result out of a goroutine, and know when the program stops waiting.",
+        "question" : "Is the second goroutine guaranteed to print?",
+        "source" : "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tresults := make(chan int)\n\tgo func() { results <- 42 }()\n\tgo func() { fmt.Println(\"this may never print\") }()\n\tfmt.Println(<-results)\n}",
+        "tags" : [
+          "concurrency.goroutine-leak",
+          "concurrency.waitgroup"
+        ],
+        "title" : "go returns nothing"
+      },
+      {
+        "explanation" : "Closing a channel says that no more values will be sent. Give that decision to the producer, or to a coordinator that knows all producers have finished. A receiver should not close a stream while senders may still use it.\n\nReceivers can drain a closed buffered channel. `v, ok := <-ch` reports false only when the channel is closed and empty; `for v := range ch` then ends. Sending after close and closing twice both panic.",
+        "id" : "concurrency.channel-close",
+        "kind" : "compile",
+        "objective" : "Decide who closes a channel, and why the other side must not.",
+        "source" : "package main\n\n// squares should send each square and then let the consumer's range\n// loop finish on its own.\nfunc squares(n int) <-chan int {\n\tout := make(chan int)\n\tgo func() {\n\t\tfor i := 1; i <= n; i++ {\n\t\t\tout <- i * i\n\t\t}\n\t}()\n\treturn out\n}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.channel-close"
+        ],
+        "title" : "The sender closes, the receiver ranges"
+      },
+      {
+        "explanation" : "select blocks until one of its cases can proceed, and picks randomly among those that are ready. Adding a case for <-ctx.Done() turns any wait into a cancellable one.\n\nThe convention that makes this composable: context is the first parameter, it is passed rather than stored, and cancel is always deferred so the resources behind it are released on every path.",
+        "id" : "concurrency.select-context",
+        "kind" : "compile",
+        "objective" : "Make a blocking operation cancellable without a flag or a kill switch.",
+        "source" : "package main\n\nimport (\n\t\"context\"\n\t\"errors\"\n)\n\n// waitFor should return ctx.Err() when the context is cancelled\n// before a value arrives.\nfunc waitFor(ctx context.Context, values <-chan int) (int, error) {\n\treturn <-values, nil\n}\n\nfunc main() { _ = errors.New }",
+        "tags" : [
+          "concurrency.select",
+          "context.cancel",
+          "context.first-parameter"
+        ],
+        "title" : "select waits on several things; context says stop"
+      },
+      {
+        "explanation" : "A channel is useful for transferring values and coordinating ownership. A mutex protects shared state that remains in place. Choose the mechanism that makes the invariant and its owner easiest to understand; neither mechanism is always faster.\n\nKeep the mutex next to the data it protects and use the same locking rule for every read and write participating in the invariant. A small, clearly bounded critical section is easier to maintain than a lock whose protected state is scattered.",
+        "id" : "concurrency.mutex",
+        "kind" : "compile",
+        "objective" : "Choose between a mutex and a channel for a given problem.",
+        "source" : "package main\n\nimport \"sync\"\n\n// Counter should be safe for many goroutines at once.\ntype Counter struct {\n\tmu    sync.Mutex\n\tcount map[string]int\n}\n\nfunc NewCounter() *Counter {\n\treturn nil\n}\n\nfunc (c *Counter) Add(key string) {}\n\nfunc (c *Counter) Get(key string) int { return 0 }\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.mutex"
+        ],
+        "title" : "A mutex is for state; a channel is for handing over"
+      },
+      {
+        "explanation" : "A fixed number of workers bounds concurrent processing. The producer sends jobs and closes the input stream after the last job. Workers consume it until it is drained. A coordinator waits for every worker before closing the output stream.\n\nResults may need to be consumed while jobs are still being produced, or backpressure can deadlock the producer and workers. Add cancellation deliberately, and test termination as well as returned values.",
+        "id" : "concurrency.worker-pool",
+        "kind" : "compile",
+        "objective" : "Build a fixed set of workers that finishes cleanly.",
+        "source" : "package main\n\n// Squares runs the numbers through workers goroutines and returns\n// every square. Order does not matter; finishing does.\nfunc Squares(numbers []int, workers int) []int {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.waitgroup",
+          "concurrency.channel-close"
+        ],
+        "title" : "The worker pool, written once"
+      },
+      {
+        "explanation" : "The Tour's \"Buffered Channels\" page: `make(chan int, 100)` sends without a receiver until the buffer is full, and receives without a sender until it is empty. An unbuffered channel is a rendezvous. A buffered one is a mailbox of a known size.\n\nThe deadlock people then write is filling a buffer of 1 with two sends from the only goroutine there is. The buffer does not make the channel unbounded. It makes the bound visible in the `make`.",
+        "id" : "concurrency.buffered",
+        "kind" : "compile",
+        "objective" : "Send n values on a channel of capacity n without another goroutine.",
+        "source" : "package main\n\n// Fill sends 0..n-1 on a channel of capacity n, closes it, and\n// returns what a range reads back. It must not start a goroutine.\nfunc Fill(n int) []int {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.buffered",
+          "concurrency.deadlock"
+        ],
+        "title" : "A buffer is a mailbox, not a meeting"
+      },
+      {
+        "explanation" : "The Tour's \"Range and Close\" page: `v, ok := <-ch` sets ok to false once the channel is closed and empty. `for v := range ch` is that loop written once. Only the sender closes. Sending after a close panics. Closing is not required for the garbage collector — only for telling a range there is nothing more.\n\nChannels are not files. Most of them never close, because nobody is ranging. Close when a range (or an ok-receive) needs the signal.",
+        "id" : "concurrency.range-and-close",
+        "kind" : "compile",
+        "objective" : "Drain a channel with range, and close it from the sender.",
+        "source" : "package main\n\n// Drain reads every value until ch closes and returns them in\n// the order they arrived.\nfunc Drain(ch <-chan int) []int {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.range-channel",
+          "concurrency.channel-close"
+        ],
+        "title" : "range over a channel ends when it closes"
+      },
+      {
+        "explanation" : "The Tour's \"Default Selection\" page: a `default` case runs when no other case is ready, so the select returns instead of blocking. That is how you poll a channel, and how you try a send without parking the goroutine.\n\nWithout default, select waits. With it, \"nothing ready\" is a value you handle, not a hang. A busy loop of default-selects is a spin; use it for a single try, not as a substitute for a timer.",
+        "id" : "concurrency.select-default",
+        "kind" : "compile",
+        "objective" : "Receive from a channel if a value is ready, and return if it is not.",
+        "source" : "package main\n\n// TryRecv returns the next value and true when one is ready,\n// or 0 and false without waiting.\nfunc TryRecv(ch <-chan int) (int, bool) {\n\treturn <-ch, true\n}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.select-default",
+          "concurrency.select"
+        ],
+        "title" : "default makes select try, not wait"
+      },
+      {
+        "explanation" : "The Tour writes `ch <- v` and `v := <-ch` and then, in Effective Go, the type itself carries the arrow: `chan<- int` is send-only, `<-chan int` is receive-only. A function that only produces values should take `chan<- T`. The compiler then refuses a receive in that body, which is the whole point — the restriction is the API.\n\nConversion is one way: a bidirectional channel may be passed where a directional one is wanted. The other direction does not compile. Close is a send-side operation, so it belongs on `chan<- T`.",
+        "id" : "concurrency.direction",
+        "kind" : "compile",
+        "objective" : "Write a producer that takes chan<- int and closes it.",
+        "source" : "package main\n\n// Produce sends every value and then closes out. The parameter\n// is send-only: a receive in this function should not compile.\nfunc Produce(out chan<- int, values []int) {}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.channel-direction",
+          "concurrency.channel-close"
+        ],
+        "title" : "The arrow in the type is who may send"
+      },
+      {
+        "explanation" : "Effective Go and the sync docs: `Once.Do(f)` runs f once, even when many goroutines call Do at the same time. After that, Do is a no-op. It is the right shape for a lazy setup that must not run twice — registering a driver, reading a config, seeding a generator.\n\nDo not copy an Once after it has been used. Do not call Do with a different f and expect that second f to run. The once is on the Once, not on the function value.",
+        "id" : "concurrency.once",
+        "kind" : "compile",
+        "objective" : "Initialise shared state without a lock you have to remember.",
+        "source" : "package main\n\nimport \"sync\"\n\n// Call runs fn through once. Two calls must run fn once.\nfunc Call(once *sync.Once, fn func()) {\n\tfn()\n}\n\nfunc main() {}",
+        "tags" : [
+          "concurrency.once",
+          "concurrency.mutex"
+        ],
+        "title" : "sync.Once runs a function one time, for everyone"
+      }
+    ],
+    "summary" : "Goroutines, channel ownership, select, buffers and who may send.",
+    "title" : "Concurrency",
+    "translationNote" : "A goroutine is not a promise and not a thread. It has no handle, no return value and no join — which is why channels and WaitGroups exist, and why \"who closes this channel\" is a design question rather than a detail."
+  },
+  {
+    "id" : "stdlib",
+    "lessons" : [
+      {
+        "explanation" : "io.Reader has Read. io.Writer has Write. Files, network connections, HTTP bodies, gzip streams, strings.Reader and bytes.Buffer all satisfy one or both.\n\nAccepting them instead of a concrete type is what makes Go code testable without mocks: the test passes a bytes.Buffer and reads the result back.",
+        "id" : "stdlib.io",
+        "kind" : "compile",
+        "objective" : "Write a function that works on a file, a string and a test buffer.",
+        "source" : "package main\n\nimport (\n\t\"os\"\n\t\"strings\"\n)\n\n// WriteUpper copies src to dst, upper-cased. It should work with any\n// reader and writer, not just files.\nfunc WriteUpper(dst *os.File, src *strings.Reader) error {\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "stdlib.io",
+          "interfaces.size"
+        ],
+        "title" : "Two interfaces, one method each"
+      },
+      {
+        "explanation" : "encoding/json maps struct fields by name, and a tag overrides that. Only exported fields are considered, which is the first thing that catches people: a lower-case field is invisible to the encoder with no error.\n\nUnmarshal leaves fields absent from the input untouched rather than zeroing them, so decoding into a reused struct can silently keep old values.",
+        "id" : "stdlib.json",
+        "kind" : "predict",
+        "objective" : "Control field names, omit empties, and know what unmarshalling leaves untouched.",
+        "question" : "What is printed, and where did port and secret go?",
+        "source" : "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Config struct {\n\tHost    string `json:\"host\"`\n\tPort    int    `json:\"port,omitempty\"`\n\tsecret  string\n}\n\nfunc main() {\n\tdata, _ := json.Marshal(Config{Host: \"localhost\", secret: \"hidden\"})\n\tfmt.Println(string(data))\n}",
+        "tags" : [
+          "stdlib.json"
+        ],
+        "title" : "Struct tags are the JSON schema"
+      },
+      {
+        "explanation" : "`time.Duration` is an int64 counting nanoseconds, and the constants are what make it readable: `5 * time.Second` is a multiplication, not a function call. That is also the trap — a bare `5` is five nanoseconds, and `time.Sleep(5)` requests five nanoseconds, not five seconds. Scheduler timing may make the actual wait longer.\n\nTwo more worth knowing on sight: `end.Sub(start)` gives a Duration, and comparing Times uses Before, After and Equal rather than the operators, because a Time carries a monotonic reading as well as a wall clock.",
+        "id" : "stdlib.time",
+        "kind" : "predict",
+        "objective" : "Write a timeout without wondering what unit it is in.",
+        "question" : "What does this print? Durations print themselves.",
+        "source" : "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\td := 90 * time.Second\n\tfmt.Println(d)\n\tfmt.Println(d.Minutes())\n\n\tstart := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)\n\tend := start.Add(36 * time.Hour)\n\tfmt.Println(end.Sub(start))\n\tfmt.Println(end.After(start))\n}",
+        "tags" : [
+          "stdlib.time"
+        ],
+        "title" : "A Duration is a number of nanoseconds with a type"
+      },
+      {
+        "explanation" : "`slices.SortFunc` takes a comparison that returns a negative number, zero or a positive one — not a bool. That trips people coming from languages where the comparator answers \"is a before b\". `cmp.Compare` does the right thing for any ordered type and is what the comparison should usually be built from.\n\nFor a second key, compare the first and fall through only when it is equal. That is the whole pattern, and it is worth writing out once.",
+        "id" : "stdlib.sort",
+        "kind" : "compile",
+        "objective" : "Sort a slice of structs by two keys.",
+        "source" : "package main\n\ntype Release struct {\n\tName string\n\tYear int\n}\n\n// SortReleases orders by year ascending, and by name for\n// releases from the same year. It sorts in place.\nfunc SortReleases(releases []Release) {}\n\nfunc main() {}",
+        "tags" : [
+          "stdlib.sort"
+        ],
+        "title" : "Sorting by whatever you like"
+      },
+      {
+        "explanation" : "A context is how a caller says \"stop, I no longer need this\". Anything that could block — a network call, a sleep, a channel receive — should take one and should select on `ctx.Done()` alongside whatever it was waiting for. A function that ignores its context is a function nothing can cancel.\n\n`ctx.Err()` says which happened: `context.Canceled` when someone called cancel, `context.DeadlineExceeded` when the timeout ran out. Returning it directly is usually right — the caller already knows what it asked for.",
+        "id" : "stdlib.context",
+        "kind" : "compile",
+        "objective" : "Make a function that waits stop waiting when told to.",
+        "source" : "package main\n\nimport (\n\t\"context\"\n\t\"time\"\n)\n\n// WaitFor returns nil once d has passed, or the context's error\n// if the context finishes first. It must not outlive either.\nfunc WaitFor(ctx context.Context, d time.Duration) error {\n\ttime.Sleep(d)\n\treturn nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "context.cancel",
+          "context.first-parameter"
+        ],
+        "title" : "Every blocking call should take a context"
+      },
+      {
+        "explanation" : "Go's own \"Writing Web Applications\" tutorial and the Tour's \"where to go next\" both land on `http.Handler`. It is one method:\n\n    ServeHTTP(http.ResponseWriter, *http.Request)\n\n`http.HandlerFunc` turns a function into that type. `http.ServeMux` is a Handler that dispatches to others. The sandbox has no network, so this lesson uses `httptest`: the types are real, the listen is not. A function that accepts `http.Handler` can be tested the same way in any Go module.",
+        "id" : "stdlib.http",
+        "kind" : "compile",
+        "objective" : "Serve /hello from an in-memory request, with no listen.",
+        "source" : "package main\n\nimport \"net/http\"\n\n// Hello answers GET /hello with \"hi\" and 404 for anything else.\nfunc Hello() http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})\n}\n\nfunc main() {}",
+        "tags" : [
+          "stdlib.http",
+          "interfaces.size"
+        ],
+        "title" : "http.Handler is one method, like Reader"
+      },
+      {
+        "explanation" : "The Tour's Errors page uses `strconv.Atoi` as the example of a function that returns `(int, error)`. That is the package: no `ParseInt` surprises in everyday code, no `fmt.Sscan` for a single number. `Atoi` is `ParseInt(s, 10, 0)` with a shorter name.\n\nFailure is an error, not a panic and not a zero you are meant to guess at. Discarding that error is how `\"x\"` becomes port 0.",
+        "id" : "stdlib.strconv",
+        "kind" : "compile",
+        "objective" : "Parse a port with Atoi and reject anything outside 1…65535.",
+        "source" : "package main\n\n// ParsePort accepts 1 through 65535. Anything else is an error,\n// including text that is not a number.\nfunc ParsePort(raw string) (int, error) {\n\treturn 0, nil\n}\n\nfunc main() {}",
+        "tags" : [
+          "stdlib.strconv",
+          "errors.explicit-check"
+        ],
+        "title" : "strconv is how text becomes a number"
+      },
+      {
+        "explanation" : "`image.Image` describes pixels through three methods: `ColorModel`, `Bounds` and `At`. A decoded PNG produces an image value; the encoded PNG file itself does not implement that interface. A type you write can implement the same pixel contract.\n\n`image/draw` and `image/png` work with image interfaces rather than requiring one concrete bitmap type. This lesson supplies a solid rectangle with chosen bounds and color; encoding that image is a separate step.",
+        "id" : "stdlib.image",
+        "kind" : "compile",
+        "objective" : "Implement a solid-colour image the standard library will accept.",
+        "source" : "package main\n\nimport (\n\t\"image\"\n\t\"image/color\"\n)\n\ntype Solid struct {\n\tW, H int\n\tC    color.RGBA\n}\n\nfunc (s Solid) ColorModel() color.Model { return color.RGBAModel }\nfunc (s Solid) Bounds() image.Rectangle { return image.Rectangle{} }\nfunc (s Solid) At(x, y int) color.Color { return color.RGBA{} }\n\nfunc main() {}",
+        "tags" : [
+          "stdlib.image"
+        ],
+        "title" : "image.Image is three methods, not a file"
+      }
+    ],
+    "summary" : "io.Reader and io.Writer, encoding/json, and testing without a framework.",
+    "title" : "Standard library patterns",
+    "translationNote" : "Go's survey lists getting more from the standard library as a top friction. The reason is usually not missing knowledge of a package but missing knowledge of two interfaces: once io.Reader and io.Writer click, a surprising share of third-party code stops being necessary.\n\nSome of this unit runs against in-memory transports rather than real sockets, because the sandbox has no network. The compilation and the types are real; only the transport is simulated, and every lesson says so where it applies."
+  }
+]

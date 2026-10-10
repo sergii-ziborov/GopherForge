@@ -20,6 +20,7 @@ than screens.
 [Listing metadata audit](docs/app-store/listing.md) ·
 [Support](https://gopherforge.app/support) ·
 [Privacy](https://gopherforge.app/privacy) ·
+[Terms of Use](https://gopherforge.app/terms) ·
 [Lovable editor](https://lovable.dev/projects/c56d903d-f45d-4e68-818f-1c334f7e4420)
 Custom domain: **[gopherforge.app](https://gopherforge.app)**. Connected in Lovable
 on 8 September 2026; DNS now points to the hosting server and HTTPS serves the
@@ -31,7 +32,28 @@ subscription. App features,
 limitations, privacy and support are shared with this repository; the website
 should reflect the app's actual App Store availability.
 
+## Version 1.1 preview
+
+Version 1.1 (build 17) is available to internal TestFlight testers. The public App Store
+version remains 1.0.1; 1.1 has not been submitted for review.
+
+- iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
+  keeps code or terminal above the hinge and puts keyboard or result panes below.
+  Projects remains reachable while the keyboard is open.
+- All 47 lessons and 22 prediction challenges have an authored visual guide,
+  practical notes, common pitfalls and a link to the official Go reference.
+- Explanations, quizzes, matching drills and examples use consistent Go highlighting.
+- Embedded lesson editors show their complete source and scroll with the page.
+  Full-screen editing scrolls within the editor and preserves your changes.
+- Support, privacy and Terms of Use are accessible from Settings and the website.
+
+The [public lesson catalog](docs/website/lessons.json) and
+[diagram guides](GopherForge/Resources/LessonGuides.json) supply the website
+without publishing the exercises' hidden tests or verified solutions.
+
 ## What it looks like
+
+<img src="docs/app-store/screenshots/iphone-6.9/00-code.png" width="330" alt="Real Go code in the GopherForge editor on iPhone">
 
 Every compiler result below is a real run of the bundled toolchain in the
 Simulator — the test counts, the diagnostics, the program output and the
@@ -41,6 +63,9 @@ goroutine trace are what the app actually produced, not mock-ups.
 | --- | --- |
 | <img src="docs/screenshots/learn-path.png" alt="The Learn screen: a progress card over nine units, cards for Review, Practice and Achievements, and the units themselves on a rail, each with its own icon and a lessons-done badge"> | <img src="docs/screenshots/unit-path.png" alt="The Concurrency unit opened: a note for people who already program, and its lessons on a winding trail, each with its own icon and marked COMPILE"> |
 | **The course is a journey.** Nine units on a rail, then the lessons inside one on a winding path. A node says whether it was ticked by hand or sealed by a compiler pass — and nothing is locked, because a course for people who already program is one they enter at goroutines. | **Inside a unit.** Every lesson is marked `READ` or `COMPILE` before it is opened, so it is clear which ones the toolchain will judge. |
+| **Visual lesson on iPhone** | **Visual lesson on iPad** |
+| <img src="docs/app-store/screenshots/iphone-6.9/04-lesson.png" width="300" alt="Version 1.1 channel ownership lesson with its topic-specific diagram, expanded explanation and highlighted Go code"> | <img src="docs/app-store/screenshots/ipad-13/04-lesson.png" alt="The same version 1.1 visual lesson adapted to the wider iPad screen"> |
+| **Every topic has a visual guide.** Three labeled steps show the idea; practical notes and common pitfalls connect it to real Go code. | **The same complete lesson on iPad.** Highlighted source scrolls with the page, with an explicit control for full-screen editing. |
 | <img src="docs/screenshots/run-output.png" alt="The iPad workspace: a worker-pool program in the editor and an Output pane reporting it compiled and executed locally, printing 1 4 9 16 25"> | <img src="docs/screenshots/problems.png" alt="The Problems pane, badged 1, reading declared and not used: unusedTotal at main.go:10:5, with line 10 highlighted red in the editor and marked in the gutter"> |
 | **Go, compiled and run on the device.** The file tree, the editor and the dock at once on iPad. Three goroutines, a jobs channel and a `WaitGroup` — built and executed inside the bounded WasmKit sandbox, with no network. | **Real diagnostics.** Go's own error text, parsed for line and column, with the line marked in the editor and in the gutter. |
 | <img src="docs/screenshots/workspace-tests.png" alt="The Tests pane with per-case results from a real Go test run"> | <img src="docs/screenshots/lab.png" alt="The Concurrency Lab with runnable channel and coordination scenarios"> |
@@ -61,21 +86,34 @@ fills the lower display.
 
 The navigator images come from the UI regression in
 `NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
-The Duo images are from the iPhone Duo Simulator with the horizontal hinge
-active. This layout is in the current development build and has not been
-submitted for App Store review.
+The laptop images above were captured on 8 October with build 14 and the
+native iPhone Duo horizontal hinge active. Fresh build 17 posture checks are
+pending: after Mac unlock, CoreSimulator failed to launch the fresh native
+check (connection timeout and Mach server error).
+Version 1.1 has not been submitted for App Store review.
+
+| **Native Duo code capture** | **Native Duo visual lesson** |
+| --- | --- |
+| <img src="docs/screenshots/duo-native-code.png" width="300" alt="Fresh build 17 native iPhone Duo capture showing real worker-pool Go source"> | <img src="docs/screenshots/duo-native-lesson.png" width="300" alt="Fresh build 17 native Duo lesson capture showing Produce, Finish and Drain in the channel ownership diagram"> |
+
+These two build 17 captures use the simulator's current native display. They
+verify the running app and guide presentation; they do not replace the pending
+open, book and laptop posture checks.
 
 The [App Store screenshot sets](docs/app-store/screenshots) are captured from
-the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones and 11 and
-13-inch iPads. Each set opens with Go code in the editor, followed by a real
-Go run and a real test run, the course, a lesson, the Concurrency Lab and the
-project library, then a program that draws, a site previewed from 127.0.0.1
-and the example library. The unit and diagnostic captures (`10-unit`,
+the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones, native iPhone
+Duo and 11 and 13-inch iPads. Each set opens with Go code in the editor, followed by a real
+visual lesson and the course, followed by a real test run and a real Go run,
+the Concurrency Lab and project library, then graphics, a site previewed from
+127.0.0.1 and the example library. The unit and diagnostic captures (`10-unit`,
 `11-problems`) supply README images only. Run
-`scripts/app_store_screenshots.sh` to refresh all six sets, then
+`scripts/app_store_screenshots.sh` to refresh all seven sets, including native Duo, then
 `scripts/check_app_store_screenshots.sh` to check dimensions
-and alpha channels before uploading them. App Store Connect takes the 6.9-inch
-and 13-inch sets and scales them for the smaller slots. The
+and alpha channels before uploading them. The 1.1 draft includes ten ordered
+screenshots for each ordinary size and nine native Duo captures. The Duo
+capture reached Projects; scrolling to the example library still needs a
+manual check when the native simulator can launch again. Its current set ends with a unit and diagnostics.
+The
 [product page header and search artwork](docs/app-store/creative-assets) use
 the same real editor capture and can be regenerated with
 `scripts/make_app_store_creative_assets.py`.
@@ -320,11 +358,12 @@ Requirements:
 - XcodeGen;
 - `zstd` on the build Mac.
 
-The Duo APIs are available in Xcode 27.1 RC, while this Mac's stable Xcode
-27.0 cannot compile them. Use `scripts/release_archive.sh --testflight` with
-27.1 RC for beta builds. App Store release archives still require a stable
-Xcode. The commands below name `DEVELOPER_DIR` explicitly so that whichever
-Xcode a Mac happens to have selected does not decide what gets built.
+Build 1.1 with Xcode 27.1 RC and its Duo SDK. Apple has enabled uploads with
+this SDK; build 17 has passed package validation and is App Store eligible.
+Use `scripts/release_archive.sh --testflight` with 27.1 RC for this preparation
+workflow. That option permits the RC toolchain; it does not submit App Review.
+The commands below name `DEVELOPER_DIR` explicitly so the selected Xcode does
+not decide what gets built.
 
 ```bash
 ./scripts/bootstrap.sh
@@ -332,6 +371,7 @@ DEVELOPER_DIR=/Applications/Xcode-27.1-RC.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForge \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
+  SWIFT_SUPPRESS_WARNINGS=NO \
   build
 ```
 
@@ -385,15 +425,16 @@ error: conflicting options '-warnings-as-errors' and '-suppress-warnings'
 
 It cannot be set in `project.yml` — package dependencies build as their own
 generated projects and do not inherit this one's settings, which was tried. On
-the invocation it reaches every target. Xcode 27 beta does not add the flag, so
-this appears only on the released Xcode, which is the one that builds releases.
+the invocation it reaches every target. Keep the flag on both RC and released
+Xcode invocations so the build does not depend on a toolchain's defaults.
 
 The normal test scheme excludes the expensive compiler gates:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+DEVELOPER_DIR=/Applications/Xcode-27.1-RC.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForge \
+  -configuration Gate \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
   SWIFT_SUPPRESS_WARNINGS=NO \
   test
@@ -412,7 +453,7 @@ Run the real bundled-toolchain gates with the dedicated scheme, which requires a
 staged toolchain and its own configuration:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+DEVELOPER_DIR=/Applications/Xcode-27.1-RC.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForgeCompilerGate \
   -configuration Gate \

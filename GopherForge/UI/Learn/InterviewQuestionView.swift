@@ -22,7 +22,7 @@ struct InterviewQuestionView: View {
                 if let question {
                     header(question)
 
-                    Text(question.prompt)
+                    Text(LearningProse.inline(question.prompt))
                         .font(.title3.weight(.medium))
                         .fixedSize(horizontal: false, vertical: true)
 
@@ -87,7 +87,7 @@ struct InterviewQuestionView: View {
                         .foregroundStyle(.white)
                         .frame(width: 18, height: 18)
                         .background(GopherForgeTheme.accentSolid, in: Circle())
-                    Text(point)
+                    Text(LearningProse.inline(point))
                         .font(.callout)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -104,7 +104,7 @@ struct InterviewQuestionView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(GopherForgeTheme.berry)
                 .textCase(.uppercase)
-            Text(question.trap)
+            Text(LearningProse.inline(question.trap))
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
         }
