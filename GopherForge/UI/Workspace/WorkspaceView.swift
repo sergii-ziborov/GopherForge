@@ -40,6 +40,8 @@ struct WorkspaceView: View {
 
     @State private var pane: WorkspacePane = .code
     @State private var dockPane: WorkspacePane = .problems
+    @State private var laptopPane: WorkspacePane = .terminal
+    @State private var laptopShowsFiles = false
     @State private var layout: WorkspaceLayout = .compact
     @State private var terminal: ProjectTerminalSession?
     /// The dock's height on iPad, dragged at the seam and remembered. 280 fits
@@ -93,7 +95,11 @@ struct WorkspaceView: View {
                         if #available(iOS 27.1, *),
                            availableLayout != .compact,
                            !geometry.reservedRegions(kind: .division).isEmpty {
-                            foldedLayout(terminal: terminal, layout: availableLayout)
+                            foldedLayout(
+                                terminal: terminal,
+                                layout: availableLayout,
+                                isLaptop: geometry.size.height > geometry.size.width
+                            )
                         } else {
                             switch availableLayout {
                             case .compact:
@@ -140,6 +146,8 @@ struct WorkspaceView: View {
         .onChange(of: workspace.projectGeneration) {
             pane = .code
             dockPane = .problems
+            laptopPane = .terminal
+            laptopShowsFiles = false
             isDrawerOpen = false
             terminal = ProjectTerminalSession(workspace: workspace)
         }
@@ -156,6 +164,8 @@ struct WorkspaceView: View {
                 if layout.showsDock {
                     dockPane = destination
                 }
+                laptopPane = destination
+                laptopShowsFiles = false
                 pane = destination
             }
         }
@@ -169,6 +179,8 @@ struct WorkspaceView: View {
                 if layout.showsDock {
                     dockPane = destination
                 }
+                laptopPane = destination
+                laptopShowsFiles = false
                 pane = destination
             }
         }
@@ -220,11 +232,12 @@ struct WorkspaceView: View {
     @available(iOS 27.1, *)
     private func foldedLayout(
         terminal: ProjectTerminalSession,
-        layout: WorkspaceLayout
+        layout: WorkspaceLayout,
+        isLaptop: Bool
     ) -> some View {
         ArrangementView {
             Group {
-                if layout.showsDock {
+                if isLaptop || layout.showsDock {
                     WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
                 } else {
                     paneStack(terminal: terminal)
@@ -232,17 +245,65 @@ struct WorkspaceView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } secondary: {
-            VStack(spacing: 0) {
-                ProjectNavigatorView(onOpenFile: revealCode)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                if layout.showsDock {
-                    Divider()
-                    dockContent(terminal: terminal)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+            Group {
+                if isLaptop {
+                    laptopPanel(terminal: terminal)
+                } else {
+                    VStack(spacing: 0) {
+                        ProjectNavigatorView(onOpenFile: revealCode)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        if layout.showsDock {
+                            Divider()
+                            dockContent(terminal: terminal)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                    }
                 }
             }
         }
-        .arrangementViewStyle(.split.axes(.horizontal))
+        // Let the arrangement follow the hinge in both orientations. Limiting
+        // it to the horizontal axis hid the secondary pane in laptop posture.
+        .arrangementViewStyle(.split)
+    }
+
+    /// With the hinge horizontal, keep code above it and the active console or
+    /// result below it. Files remain one tap away in the lower pane.
+    private func laptopPanel(terminal: ProjectTerminalSession) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Button {
+                    laptopShowsFiles = true
+                } label: {
+                    Label("Files", systemImage: "folder")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("Files")
+                .accessibilityIdentifier("laptop.files")
+                Divider().frame(height: 24)
+                WorkspacePanePicker(
+                    selection: Binding(
+                        get: { laptopPane },
+                        set: { laptopPane = $0; laptopShowsFiles = false }
+                    ),
+                    panes: WorkspacePane.dockPanes
+                )
+            }
+            .background(Color(.secondarySystemBackground))
+            Divider()
+            if laptopShowsFiles {
+                ProjectNavigatorView(onOpenFile: {
+                    laptopShowsFiles = false
+                    revealCode()
+                })
+            } else {
+                WorkspacePaneContent(
+                    pane: laptopPane,
+                    terminal: terminal,
+                    fontSize: fontSize
+                )
+            }
+        }
     }
 
     private func tabletLayout(terminal: ProjectTerminalSession, width: CGFloat) -> some View {

@@ -129,8 +129,8 @@ final class NavigatorFlowUITests: XCTestCase {
         attachScreenshot(named: "05-gomod")
     }
 
-    /// A narrow window uses one drawer; a wide window keeps one visible tree.
-    /// A folding phone can use either layout without changing its device idiom.
+    /// A narrow window uses a drawer, a book posture shows a visible tree,
+    /// and a laptop posture opens Files in its lower pane.
     func testNavigatorOccupiesOnePlaceForTheWindow() {
         launch()
 
@@ -138,6 +138,7 @@ final class NavigatorFlowUITests: XCTestCase {
         XCTAssertTrue(editor.waitForExistence(timeout: 10))
 
         let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        let laptopFiles = app.buttons["laptop.files"]
         let search = app.textFields[AccessibilityIdentifier.fileSearch]
         let goMod = app.buttons["file.go.mod"]
 
@@ -147,6 +148,20 @@ final class NavigatorFlowUITests: XCTestCase {
             attachScreenshot(named: "navigator-wide-persistent")
             goMod.tap()
             XCTAssertTrue(search.exists, "choosing a file should leave the tree in place")
+        } else if laptopFiles.waitForExistence(timeout: 2) {
+            XCTAssertFalse(files.exists, "the laptop layout uses its lower pane for Files")
+            let initialEditor = editor.frame
+            laptopFiles.tap()
+            XCTAssertTrue(search.waitForExistence(timeout: 5))
+            XCTAssertGreaterThan(search.frame.minY, initialEditor.midY,
+                                 "Files should appear below the editor, across the hinge")
+            XCTAssertEqual(editor.frame.minY, initialEditor.minY, accuracy: 2,
+                           "opening Files must not move the upper editor")
+            XCTAssertEqual(editor.frame.height, initialEditor.height, accuracy: 2,
+                           "opening Files must not resize the upper editor")
+            goMod.tap()
+            XCTAssertTrue(search.waitForNonExistence(timeout: 5))
+            XCTAssertTrue((editor.value as? String ?? "").contains("module "))
         } else {
             XCTAssertTrue(files.waitForExistence(timeout: 5))
             XCTAssertFalse(search.exists, "the drawer should start closed")
@@ -183,7 +198,9 @@ final class NavigatorFlowUITests: XCTestCase {
         let search = app.textFields[AccessibilityIdentifier.fileSearch]
         guard !search.waitForExistence(timeout: 6) else { return }
 
-        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        let files = app.buttons["laptop.files"].exists
+            ? app.buttons["laptop.files"]
+            : app.buttons[AccessibilityIdentifier.filesToggle]
         XCTAssertTrue(
             files.waitForExistence(timeout: 5),
             "a layout with no visible navigator must offer a way to open one"
