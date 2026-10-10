@@ -111,7 +111,7 @@
     ],
     "summary" : "Declarations, zero values, multiple returns and the shapes Go repeats everywhere.",
     "title" : "Go core",
-    "translationNote" : "Most of this unit is not new material — it is unlearning. Go has no constructors, no exceptions and no uninitialised memory, so habits from Java, C# and Python each need one specific adjustment rather than a general rewrite."
+    "translationNote" : "Most of this unit is not new material — it is unlearning. Go has no built-in class constructors or exception-handling syntax, and declared variables start with zero values, so habits from Java, C# and Python each need one specific adjustment rather than a general rewrite."
   },
   {
     "id" : "structs",
@@ -493,7 +493,7 @@
     ],
     "summary" : "Type parameters, constraints, and the times an interface is the better answer.",
     "title" : "Generics, and when not to",
-    "translationNote" : "If you are coming from Java or C#, the shape will look familiar and the culture will not. Go got type parameters late and on purpose, and the community's default is still to reach for them last — a function that works on one concrete type is not a failure waiting to be generalised.\n\nThere is no reflection-based erasure story to learn and no covariance rules to fight. A constraint is an interface, which means the thing you already know does double duty: as a value's type, and as a bound on a type parameter."
+    "translationNote" : "If you are coming from Java or C#, the shape will look familiar and the culture will not. Go got type parameters late and on purpose, and the community's default is still to reach for them last — a function that works on one concrete type is not a failure waiting to be generalised.\n\nThere is no reflection-based erasure story to learn and no covariance rules to fight. Interfaces describe both ordinary values and type-parameter constraints. A constraint with type terms is not an ordinary value type: use it to bound a type parameter."
   },
   {
     "id" : "errors",

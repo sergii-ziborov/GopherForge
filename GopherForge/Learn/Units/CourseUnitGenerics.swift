@@ -17,9 +17,9 @@ enum CourseUnitGenerics {
         works on one concrete type is not a failure waiting to be generalised.
 
         There is no reflection-based erasure story to learn and no covariance \
-        rules to fight. A constraint is an interface, which means the thing you \
-        already know does double duty: as a value's type, and as a bound on a \
-        type parameter.
+        rules to fight. Interfaces describe both ordinary values and \
+        type-parameter constraints. A constraint with type terms is not an \
+        ordinary value type: use it to bound a type parameter.
         """,
         lessons: [
             typeParameters,

@@ -8,7 +8,8 @@ enum CourseUnitCore {
         summary: "Declarations, zero values, multiple returns and the shapes Go repeats everywhere.",
         translationNote: """
         Most of this unit is not new material — it is unlearning. Go has no \
-        constructors, no exceptions and no uninitialised memory, so habits from \
+        built-in class constructors or exception-handling syntax, and declared \
+        variables start with zero values, so habits from \
         Java, C# and Python each need one specific adjustment rather than a \
         general rewrite.
         """,
