@@ -23,10 +23,13 @@ extension XCUIApplication {
         // anyway fails somewhere else entirely.
         for _ in 0..<attempts {
             if element.exists, isOnScreen(element) { return true }
-            // Drag through the page margin, outside selectable code and text.
+            // Duo can put system navigation on the trailing edge. A drag in
+            // that edge never reaches the list. The page centre works for
+            // lists and for embedded lesson code, which yields vertical pans
+            // to the lesson's scroll view.
             let window = windows.firstMatch.frame
             let origin = windows.firstMatch.coordinate(withNormalizedOffset: .zero)
-            let x = window.width - 24
+            let x = window.width / 2
             let targetIsAbove = element.exists && element.frame.maxY < window.minY + 100
             let fromY: CGFloat = targetIsAbove ? 180 : window.height - 150
             let toY: CGFloat = targetIsAbove ? window.height - 150 : 180

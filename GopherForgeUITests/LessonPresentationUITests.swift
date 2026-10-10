@@ -10,7 +10,7 @@ final class LessonPresentationUITests: XCTestCase {
 
     func testDiagramAndPracticalNotesAreVisible() {
         launch("generics.constraints")
-        XCTAssertTrue(app.element(withIdentifier: "lesson.diagram.generics.constraints").waitForExistence(timeout: 20))
+        XCTAssertTrue(app.element(withIdentifier: "lesson.diagram.generics.constraints").firstMatch.waitForExistence(timeout: 20))
         XCTAssertTrue(app.waitForElement(app.element(withIdentifier: "lesson.practical").firstMatch, scrollingUpTo: 12))
         XCTAssertTrue(app.waitForElement(app.element(withIdentifier: "lesson.watchOut").firstMatch, scrollingUpTo: 12))
     }

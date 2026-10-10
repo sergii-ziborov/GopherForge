@@ -34,7 +34,7 @@ should reflect the app's actual App Store availability.
 
 ## Version 1.1 preview
 
-Version 1.1 (build 15) is being prepared for TestFlight. The public App Store
+Version 1.1 (build 15) is available to internal TestFlight testers. The public App Store
 version remains 1.0.1; 1.1 has not been submitted for review.
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture

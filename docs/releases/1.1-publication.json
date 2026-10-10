@@ -1,0 +1,22 @@
+{
+  "version": "1.1",
+  "build": "15",
+  "buildId": "9f219274-e010-4193-a984-21f6deeb7a08",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "internalBuildState": "IN_BETA_TESTING",
+  "appStoreState": "PREPARE_FOR_SUBMISSION",
+  "releaseType": "MANUAL",
+  "appReviewSubmitted": false,
+  "sourceCommit": "b090153",
+  "archiveValidation": "passed",
+  "lessonGuideCount": 69,
+  "lessonGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+  "website": {
+    "url": "https://gopherforge.app",
+    "publishedCommit": "8542fed191528a6d09854775012afe966902c1d5",
+    "courseEntries": 69,
+    "galleryVersion": "1.0.1"
+  },
+  "checkedAt": "2026-10-10T19:49:00Z"
+}
