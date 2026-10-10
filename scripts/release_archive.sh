@@ -3,8 +3,8 @@ set -euo pipefail
 
 # Cuts the archive that goes to App Store Connect, and exports a signed .ipa.
 #
-# Stable Xcode, not the beta: Apple takes App Store builds from a released
-# Xcode, and the binary that ships should be the one that was tested.
+# App Store releases use stable Xcode. --testflight explicitly permits a
+# prerelease Xcode/macOS for beta builds while the Duo SDK is still prerelease.
 #
 # SWIFT_SUPPRESS_WARNINGS=NO is passed on the command line, and it has to be
 # there rather than in project.yml. Xcode suppresses warnings in package
@@ -30,10 +30,12 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 
 ARCHIVE_ONLY=0
+TESTFLIGHT=0
 ARGS=()
 for argument in "$@"; do
   case "$argument" in
     --archive-only) ARCHIVE_ONLY=1 ;;
+    --testflight) TESTFLIGHT=1 ;;
     *) ARGS+=("$argument") ;;
   esac
 done
@@ -41,15 +43,16 @@ done
 OUT="${ARGS[0]:-$PROJECT_ROOT/build/release}"
 ARCHIVE="$OUT/GopherForge.xcarchive"
 
-if [[ "$DEVELOPER_DIR" == *Xcode-beta* ]]; then
-  echo "error: use a released Xcode for App Store archives" >&2
+if [[ "$DEVELOPER_DIR" == *Xcode-beta* || "$DEVELOPER_DIR" == *-RC* ]] && \
+   [[ "$ARCHIVE_ONLY" != "1" && "$TESTFLIGHT" != "1" ]]; then
+  echo "error: prerelease Xcode requires --testflight (or --archive-only)" >&2
   exit 1
 fi
 
 OS_BUILD="$(sw_vers -buildVersion)"
-if [[ "$OS_BUILD" =~ [a-z]$ && "$ARCHIVE_ONLY" != "1" ]]; then
-  echo "error: macOS build $OS_BUILD is prerelease; use stable macOS/Xcode in Xcode Cloud" >&2
-  echo "Use --archive-only for local build verification; do not upload that archive." >&2
+if [[ "$OS_BUILD" =~ [a-z]$ && "$ARCHIVE_ONLY" != "1" && "$TESTFLIGHT" != "1" ]]; then
+  echo "error: macOS build $OS_BUILD is prerelease; use --testflight for beta builds" >&2
+  echo "Use stable macOS/Xcode for App Store distribution." >&2
   exit 1
 fi
 
@@ -124,7 +127,6 @@ done
 
 cat <<'NEXT'
 
-Next, in App Store Connect:
-  1. Upload the .ipa with Transporter, or Xcode's Organizer.
-  2. Fill listing, privacy, DSA, price and rating from the live app, not from a repo guide.
+Next, upload the .ipa with Transporter, altool, or Xcode's Organizer.
+Do not submit this development build for App Store review.
 NEXT

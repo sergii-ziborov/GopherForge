@@ -36,6 +36,7 @@ enum WorkspaceLayout: Equatable {
 /// The iPad keeps its familiar resizable dock below the editor.
 struct WorkspaceView: View {
     @Environment(WorkspaceModel.self) private var workspace
+    @Environment(AppNavigation.self) private var navigation
     @AppStorage("editorFontSize") private var fontSize: Double = 14
 
     @State private var pane: WorkspacePane = .code
@@ -693,7 +694,20 @@ struct WorkspaceView: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        if !layout.hasNavigator {
+        if usesLaptopLayout {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    navigation.show(.projects)
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "chevron.left")
+                        Text("Projects")
+                    }
+                }
+                .accessibilityLabel("Back to Projects")
+                .accessibilityIdentifier(AccessibilityID.laptopProjectsBack)
+            }
+        } else if !layout.hasNavigator {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen.toggle() }

@@ -51,8 +51,8 @@ goroutine trace are what the app actually produced, not mock-ups.
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **Go code on iPhone.** A real worker pool in the editor, with the file drawer closed so the code uses the available width. |
 | <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
 | **iPhone files.** The file tree overlays the editor, and choosing a file closes it. | **iPad files.** One file tree stays beside the editor, including in a narrow iPad window. |
-| <img src="docs/screenshots/duo-laptop-code.png" width="300" alt="In the iPhone Duo laptop posture, Go code fills the upper display, workspace tabs sit at the hinge, and Go keyboard helpers sit directly above the lower keyboard"> | <img src="docs/screenshots/duo-laptop-terminal.png" width="300" alt="In the iPhone Duo laptop posture, the terminal fills the upper display, workspace tabs sit at the hinge, and terminal commands sit directly above the lower keyboard"> |
-| **Duo laptop posture: Code.** The editor stays above the hinge. Its Go symbols and completion controls appear above the keyboard and disappear with it. | **Duo laptop posture: Terminal.** The console uses the same upper display; its command shortcuts stay visible above the keyboard. Selecting Problems, Output, Tests or Idioms replaces the keyboard with that result. |
+| <img src="docs/screenshots/duo-laptop-code.png" width="300" alt="In the iPhone Duo laptop posture, the Projects back button sits beside Playground, Go code fills the upper display, workspace tabs sit at the hinge, and Go keyboard helpers sit directly above the lower keyboard"> | <img src="docs/screenshots/duo-laptop-terminal.png" width="300" alt="In the iPhone Duo laptop posture, the terminal fills the upper display, workspace tabs sit at the hinge, and terminal commands sit directly above the lower keyboard"> |
+| **Duo laptop posture: Code.** The editor stays above the hinge. Its Go symbols and completion controls appear above the keyboard and disappear with it. A visible Projects button returns to the library even while the keyboard hides the section bar. | **Duo laptop posture: Terminal.** The console uses the same upper display; its command shortcuts stay visible above the keyboard. Selecting Problems, Output, Tests or Idioms replaces the keyboard with that result. |
 
 <img src="docs/screenshots/duo-laptop-idioms.png" width="300" alt="The Duo laptop posture with code still above the hinge and the Idioms result occupying the lower display instead of the keyboard">
 
@@ -316,20 +316,19 @@ The app collects nothing. The policy is [PRIVACY.md](PRIVACY.md). Support is
 
 Requirements:
 
-- Xcode 26.6 or newer (Swift 6.3+ is required by WasmKit 0.3.1);
+- Xcode 27.1 SDK for the Duo hinge APIs (Swift 6.3+ is required by WasmKit 0.3.1);
 - XcodeGen;
 - `zstd` on the build Mac.
 
-Stable Xcode, not beta, and that distinction is the release pipeline rather
-than a preference: Swift 6.3 ships in 26.6, which is what WasmKit needs, so
-there is nothing a beta is required for. Beta Xcode is for testing the next
-iOS ahead of time, and an App Store archive should not be the place that
-happens. The commands below name `DEVELOPER_DIR` explicitly so that whichever
+The Duo APIs are available in Xcode 27.1 RC, while this Mac's stable Xcode
+27.0 cannot compile them. Use `scripts/release_archive.sh --testflight` with
+27.1 RC for beta builds. App Store release archives still require a stable
+Xcode. The commands below name `DEVELOPER_DIR` explicitly so that whichever
 Xcode a Mac happens to have selected does not decide what gets built.
 
 ```bash
 ./scripts/bootstrap.sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+DEVELOPER_DIR=/Applications/Xcode-27.1-RC.app/Contents/Developer \
   xcodebuild -project GopherForge.xcodeproj \
   -scheme GopherForge \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5' \
