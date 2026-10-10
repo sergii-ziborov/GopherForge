@@ -24,8 +24,22 @@ Version 1.0.1 is **Ready for Sale** with build 13. Apple's public iTunes lookup
 reports 1.0.1 and the US price of $6.99. The App Store web page shows the
 category under the name, but App Store Connect confirms the 1.0.1 subtitle;
 the web layout alone does not establish that the subtitle is missing. The
-separate iPhone Duo build 14 is in internal TestFlight testing and is not
-attached to the App Store version.
+new version 1.1, build 17, is in internal TestFlight testing. It is selected
+on the 1.1 draft, which remains `PREPARE_FOR_SUBMISSION` with manual release.
+
+## Version 1.1 preparation
+
+The English draft includes the subtitle, description, 100-byte keyword field,
+promotional text, What's New, support and marketing URLs, privacy policy and
+Terms of Use links. It describes Duo, all 47 lessons and 22 prediction
+challenges, highlighting, and the embedded/full-screen code behavior. Pricing
+remains a one-time paid download.
+
+The original physical-iPhone recording is attached to this draft as
+supplemental review evidence. Its notes distinguish the older recording from
+the new 1.1 and Duo interface. No new screen recording or App Review submission
+was made. Fresh screenshot and creative asset publication is recorded in
+[the release evidence](../releases/1.1-publication.json).
 
 An App Store preview video is optional and is separate from the screen
 recording already sent for App Review. The listing does not need a second copy

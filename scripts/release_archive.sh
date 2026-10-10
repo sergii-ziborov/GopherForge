@@ -42,6 +42,7 @@ done
 
 OUT="${ARGS[0]:-$PROJECT_ROOT/build/release}"
 ARCHIVE="$OUT/GopherForge.xcarchive"
+EXPORT_OPTIONS="${GOPHERFORGE_EXPORT_OPTIONS_PLIST:-$PROJECT_ROOT/ExportOptions.plist}"
 
 if [[ "$DEVELOPER_DIR" == *Xcode-beta* || "$DEVELOPER_DIR" == *-RC* ]] && \
    [[ "$ARCHIVE_ONLY" != "1" && "$TESTFLIGHT" != "1" ]]; then
@@ -114,7 +115,7 @@ echo
 echo "Exporting for App Store Connect…"
 xcodebuild -exportArchive \
   -archivePath "$ARCHIVE" \
-  -exportOptionsPlist "$PROJECT_ROOT/ExportOptions.plist" \
+  -exportOptionsPlist "$EXPORT_OPTIONS" \
   -exportPath "$OUT" \
   -allowProvisioningUpdates \
   SWIFT_SUPPRESS_WARNINGS=NO

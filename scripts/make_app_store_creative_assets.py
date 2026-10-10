@@ -89,12 +89,12 @@ def header() -> Image.Image:
     draw = ImageDraw.Draw(image)
     draw.rounded_rectangle((1970, 1035, 2835, 1460), radius=47,
                            fill=(8, 31, 43), outline=(54, 120, 137), width=3)
-    draw.text((2040, 1089), "$ go test ./...", font=ImageFont.truetype(MENLO, 61),
+    draw.text((2040, 1089), "Go 1.27.1", font=font(76, 0),
               fill=(139, 227, 238))
-    draw.text((2040, 1193), "ok  workerpool", font=ImageFont.truetype(MENLO, 55),
+    draw.text((2040, 1193), "Code · Test · Learn", font=font(61, 5),
               fill=(228, 247, 246))
     draw.ellipse((2043, 1325, 2087, 1369), fill=(76, 217, 153))
-    draw.text((2110, 1300), "Runs locally", font=font(63, 2), fill=(193, 238, 220))
+    draw.text((2110, 1300), "One-time purchase", font=font(57, 2), fill=(193, 238, 220))
     return image
 
 

@@ -40,8 +40,9 @@ to be added too. Opening a project reports what it found in a compatibility
 summary rather than failing halfway through a build.
 
 **Never happens:** no code leaves the device to be compiled. The compiler,
-linker, vet and gofmt are in the app. The network is used only when you ask for
-a package or import a repository.
+linker, vet and gofmt are in the app. Optional network use includes repository
+and package imports and external references. Local site previews run on device,
+but imported HTML or JavaScript may make its own requests to remote services.
 
 ## Privacy
 

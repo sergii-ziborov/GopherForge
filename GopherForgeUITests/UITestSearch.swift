@@ -7,6 +7,12 @@ import XCTest
 /// is really asserting that the content happens to fit this screen, which is a
 /// claim about the simulator rather than about the app.
 extension XCUIApplication {
+    /// Ordinary phones use a tab bar; Duo may use a floating section toolbar.
+    func sectionButton(_ name: String) -> XCUIElement {
+        let tab = tabBars.buttons[name]
+        return tab.exists ? tab : buttons.matching(NSPredicate(format: "label == %@", name)).firstMatch
+    }
+
     /// Waits for an element, scrolling the screen if it has not appeared.
     ///
     /// The scroll is bounded: this is a search, and a search that never gives
@@ -112,7 +118,9 @@ extension XCUIApplication {
         let frame = element.frame
         guard !frame.isEmpty else { return false }
         let window = windows.firstMatch.frame
-        let usable = CGRect(x: window.minX + 2, y: window.minY, width: window.width - 4, height: window.height - 85)
+        // SwiftUI paragraph frames can include the page's leading edge even
+        // when the text itself is inset. Do not reject those visible labels.
+        let usable = CGRect(x: window.minX, y: window.minY, width: window.width, height: window.height - 85)
         return usable.contains(frame)
     }
 

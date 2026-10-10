@@ -359,7 +359,7 @@ final class WorkspaceFlowUITests: XCTestCase {
 
         XCTAssertTrue(app.buttons[AccessibilityIdentifier.libraryEntry].waitForExistence(timeout: 10))
         XCTAssertFalse(back.exists)
-        let build = app.tabBars.buttons["Build"]
+        let build = app.sectionButton("Build")
         XCTAssertTrue(build.waitForExistence(timeout: 5))
         build.tap()
         XCTAssertTrue(back.waitForExistence(timeout: 5))
@@ -373,7 +373,7 @@ final class WorkspaceFlowUITests: XCTestCase {
         }
 
         XCTAssertFalse(app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists)
-        XCTAssertTrue(app.tabBars.buttons["Projects"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.sectionButton("Projects").waitForExistence(timeout: 5))
     }
 
     func testDetectedLaptopTerminalKeyboard() throws {

@@ -456,6 +456,7 @@
 		0F61232AACF5A3CE96012E57 /* VendoredModules */ = {isa = PBXFileReference; lastKnownFileType = folder; name = VendoredModules; path = GopherForge/Resources/VendoredModules; sourceTree = SOURCE_ROOT; };
 		0F828D3019CEC7DBBF11DFA9 /* WasiProcessRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WasiProcessRunner.swift; sourceTree = "<group>"; };
 		10490E2685601F75BA2057EF /* ExampleLibraryInvariantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleLibraryInvariantTests.swift; sourceTree = "<group>"; };
+		110F9DE78A5E4F4126B91E9F /* 01-compiler.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "01-compiler.png"; sourceTree = "<group>"; };
 		113625E88D01B6E032E2FC45 /* LessonGuides.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = LessonGuides.json; sourceTree = "<group>"; };
 		1190886B84701D01A0650C5A /* GoPackageCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPackageCatalog.swift; sourceTree = "<group>"; };
 		11A8269989A8E67FEE33AE7F /* ProjectFileRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFileRow.swift; sourceTree = "<group>"; };
@@ -486,6 +487,7 @@
 		1D9EF5D2823491374EF06F80 /* MatchingDrill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchingDrill.swift; sourceTree = "<group>"; };
 		1D9FA28C1D5D8E4C37A84482 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
 		1ED8B9EF0D0FB742FD7B238D /* GopherForgeUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GopherForgeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EEA2B089F58AA5BFC8A3144 /* 05-lab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "05-lab.png"; sourceTree = "<group>"; };
 		1F66F99C7652968163E6FA4B /* HighlightedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightedText.swift; sourceTree = "<group>"; };
 		1FCF73520646FAE9E1B42DF4 /* ConcurrencyTraceReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyTraceReader.swift; sourceTree = "<group>"; };
 		1FF7EA3BF7DBD259A65CB642 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
@@ -500,6 +502,7 @@
 		2372DD68C0847608150138A3 /* header.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header.png; sourceTree = "<group>"; };
 		237A9D408D7A69DE7326E890 /* CourseUnitTourCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitTourCollections.swift; sourceTree = "<group>"; };
 		238C5CD2BC8DC89ABFDE3083 /* LessonGuideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonGuideTests.swift; sourceTree = "<group>"; };
+		24EBF925E5140E021DCEBBDC /* 10-unit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "10-unit.png"; sourceTree = "<group>"; };
 		2565817AADFE736447599CC0 /* ConcurrencyDiagnosis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyDiagnosis.swift; sourceTree = "<group>"; };
 		25DDDB0972123E4EDE57A10F /* GopherForgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GopherForgeApp.swift; sourceTree = "<group>"; };
 		25E29641B878EBD0049F310F /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
@@ -539,6 +542,7 @@
 		34DA186C2B98A191D0719E69 /* LessonHintEachTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonHintEachTests.swift; sourceTree = "<group>"; };
 		351ADE9262011F5446942A4D /* GoSemanticVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoSemanticVersionTests.swift; sourceTree = "<group>"; };
 		35599580F956A43D91D212BC /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
+		358770D3AC2E27538D5519AD /* duo-native-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-native-lesson.png"; sourceTree = "<group>"; };
 		37892BDEF2714BEA13EE326F /* 03-course.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-course.png"; sourceTree = "<group>"; };
 		37EE545DA389C966512C64D9 /* IdiomRuleCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdiomRuleCatalog.swift; sourceTree = "<group>"; };
 		39AD49A058896CCBBCEAA5E4 /* 04-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "04-lesson.png"; sourceTree = "<group>"; };
@@ -576,6 +580,7 @@
 		4DC55D19704F32F2F7689E45 /* GoExampleLibrarySites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibrarySites.swift; sourceTree = "<group>"; };
 		4E6EDE7EE614E890C000FFA7 /* SourceFileKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFileKind.swift; sourceTree = "<group>"; };
 		4E71BCC01C74613758708EA5 /* duo-laptop-terminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-laptop-terminal.png"; sourceTree = "<group>"; };
+		50DAAC0789337809BD554479 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
 		518855253726F4B012781B60 /* GoSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		539AB09D0C0BE153266F5091 /* GoToolchainLocatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToolchainLocatorTests.swift; sourceTree = "<group>"; };
 		53B6068EA12200F7E0CA3448 /* PracticeRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeRun.swift; sourceTree = "<group>"; };
@@ -630,6 +635,7 @@
 		6E78117C16199B882B0789D6 /* WorkspacePaneContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspacePaneContent.swift; sourceTree = "<group>"; };
 		704B572906B4EAD2BD9A81DE /* JSONCoders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONCoders.swift; sourceTree = "<group>"; };
 		70E08404B3DE3980BE70B916 /* ProgrammingEnvironmentComplianceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgrammingEnvironmentComplianceUITests.swift; sourceTree = "<group>"; };
+		71320D8621271DBD4F7AC335 /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
 		718FD4E4FF1A6EF1CFEF0604 /* duo-laptop-idioms.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-laptop-idioms.png"; sourceTree = "<group>"; };
 		71C9F707DAC452A5F30A664E /* JavaScriptSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavaScriptSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		71E8B323DE01865E866AFCA5 /* navigator-ipad-persistent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigator-ipad-persistent.png"; sourceTree = "<group>"; };
@@ -655,6 +661,7 @@
 		7E97FD24CCF89E19536F4688 /* ConceptMastery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConceptMastery.swift; sourceTree = "<group>"; };
 		7EFEFC449087B51E7F1ACB8E /* ProjectArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectArchive.swift; sourceTree = "<group>"; };
 		7F05D836688B793C4B633207 /* GoExampleProjectWordCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleProjectWordCount.swift; sourceTree = "<group>"; };
+		7FDE23AED7F54C03980924DC /* site-1.1-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-1.1-lesson.png"; sourceTree = "<group>"; };
 		8140C2A77F38DA2A63DAC95A /* GoDiagnosticParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoDiagnosticParserTests.swift; sourceTree = "<group>"; };
 		827FBE2744D63FE43EDE083E /* ProjectLibraryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLibraryRow.swift; sourceTree = "<group>"; };
 		82AC360B8F46A8861ED087D0 /* GoLanguageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoLanguageTests.swift; sourceTree = "<group>"; };
@@ -719,6 +726,8 @@
 		9DC61F519CE68C1AB05CA01E /* MatchingDrillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchingDrillView.swift; sourceTree = "<group>"; };
 		9DD3A39BFB84CF5F3148F2C6 /* GoToolInvocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToolInvocationTests.swift; sourceTree = "<group>"; };
 		9E267E6D7581F5F576B0A955 /* 07-graphics.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "07-graphics.png"; sourceTree = "<group>"; };
+		9E4D623838EB289416D68C7D /* site-1.1-home.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-1.1-home.png"; sourceTree = "<group>"; };
+		9EFAD6ADAE1A289C60A7FA1B /* duo-native-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-native-code.png"; sourceTree = "<group>"; };
 		9FB568C9792A03E6E068925B /* LessonHintCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonHintCard.swift; sourceTree = "<group>"; };
 		A01AC94504F2A9FC0CB08EA4 /* GitHubRepositoryReferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubRepositoryReferenceTests.swift; sourceTree = "<group>"; };
 		A07764FDB14C6A79C2BF851F /* GoTestMainGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoTestMainGeneratorTests.swift; sourceTree = "<group>"; };
@@ -756,6 +765,7 @@
 		AE0F825675EE403BFD311B43 /* MyProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProjectsView.swift; sourceTree = "<group>"; };
 		AEEAB723D3AE6960A79505C6 /* CourseUnitCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitCollections.swift; sourceTree = "<group>"; };
 		AF008BD4432AF255ABE233A3 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
+		AF28FB9489996750B04A2E71 /* 04-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "04-lesson.png"; sourceTree = "<group>"; };
 		AF6E621B3F5AFC84B5CCC083 /* ConcurrencyTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyTimelineView.swift; sourceTree = "<group>"; };
 		B04341041BD45407C2294899 /* ProjectFileTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFileTreeView.swift; sourceTree = "<group>"; };
 		B07977C63990DE77F25513BD /* GoModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoModule.swift; sourceTree = "<group>"; };
@@ -786,8 +796,10 @@
 		BB0783C8F5F02FC5721DFAC9 /* 00-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "00-code.png"; sourceTree = "<group>"; };
 		BB63A7CBF98FDFA6C45656CD /* ProjectTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTemplateTests.swift; sourceTree = "<group>"; };
 		BBC70C2E30DF195F904FA63A /* PRIVACY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PRIVACY.md; sourceTree = "<group>"; };
+		BD577A6B84E23679619B7EC4 /* 11-problems.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "11-problems.png"; sourceTree = "<group>"; };
 		BDC40C849BEBC3FC26683E76 /* GopherForgeShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GopherForgeShare.entitlements; sourceTree = "<group>"; };
 		BDE7F042A8492141434E80CD /* WorkspaceLaptopLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceLaptopLayout.swift; sourceTree = "<group>"; };
+		BE44A5E036FE5ABAF0DD10A1 /* 03-course.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-course.png"; sourceTree = "<group>"; };
 		BEAB817E46E385B03E45BDC2 /* WorkspacePane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspacePane.swift; sourceTree = "<group>"; };
 		BF4196B265527495736B3B8D /* NewProjectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProjectView.swift; sourceTree = "<group>"; };
 		C0137E3E0EE32C0F0352F567 /* AppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigation.swift; sourceTree = "<group>"; };
@@ -884,6 +896,7 @@
 		F5582D9DA4D0CC713B154A8E /* ToolchainStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolchainStatus.swift; sourceTree = "<group>"; };
 		F60F6258170B2E516A173658 /* ConcurrencyTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyTraceTests.swift; sourceTree = "<group>"; };
 		F6991E38B3FC70579A332FA1 /* PracticeFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeFlowUITests.swift; sourceTree = "<group>"; };
+		F737CC15DF1AEF43908FE1F9 /* 00-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "00-code.png"; sourceTree = "<group>"; };
 		F7493CD6FA6B834A6D08ACF1 /* ProjectCompatibilityMoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCompatibilityMoreTests.swift; sourceTree = "<group>"; };
 		F79C8D35C867B52D52A38A54 /* 10-unit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "10-unit.png"; sourceTree = "<group>"; };
 		F86DE14F9C4D296D9205E9B6 /* AchievementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementTests.swift; sourceTree = "<group>"; };
@@ -1351,6 +1364,22 @@
 			path = GopherForgeTests;
 			sourceTree = "<group>";
 		};
+		56E508DBFD9A301B773E1577 /* iphone-duo */ = {
+			isa = PBXGroup;
+			children = (
+				F737CC15DF1AEF43908FE1F9 /* 00-code.png */,
+				110F9DE78A5E4F4126B91E9F /* 01-compiler.png */,
+				71320D8621271DBD4F7AC335 /* 02-tests.png */,
+				BE44A5E036FE5ABAF0DD10A1 /* 03-course.png */,
+				AF28FB9489996750B04A2E71 /* 04-lesson.png */,
+				1EEA2B089F58AA5BFC8A3144 /* 05-lab.png */,
+				50DAAC0789337809BD554479 /* 06-projects.png */,
+				24EBF925E5140E021DCEBBDC /* 10-unit.png */,
+				BD577A6B84E23679619B7EC4 /* 11-problems.png */,
+			);
+			path = "iphone-duo";
+			sourceTree = "<group>";
+		};
 		586305DBFE6429442B0E1B66 /* Concurrency */ = {
 			isa = PBXGroup;
 			children = (
@@ -1430,6 +1459,8 @@
 			isa = PBXGroup;
 			children = (
 				E59269859BEAA2D33BE1D9D4 /* lessons.json */,
+				9E4D623838EB289416D68C7D /* site-1.1-home.png */,
+				7FDE23AED7F54C03980924DC /* site-1.1-lesson.png */,
 			);
 			path = website;
 			sourceTree = "<group>";
@@ -1918,6 +1949,8 @@
 				C022B4889E5D2E97D2425519 /* duo-laptop-code.png */,
 				718FD4E4FF1A6EF1CFEF0604 /* duo-laptop-idioms.png */,
 				4E71BCC01C74613758708EA5 /* duo-laptop-terminal.png */,
+				9EFAD6ADAE1A289C60A7FA1B /* duo-native-code.png */,
+				358770D3AC2E27538D5519AD /* duo-native-lesson.png */,
 				311C90A963AF72D86A0CD2D8 /* graphics.png */,
 				644C7E43678377F3BAFF83AE /* iphone-workspace.png */,
 				418A81FB4389145F596D4A43 /* lab.png */,
@@ -2166,6 +2199,7 @@
 				4ACE6E881F86195DF5DFFE54 /* iphone-6.3 */,
 				A235F145534297D2514D1489 /* iphone-6.5 */,
 				791E8D838D3BC9CF2C574465 /* iphone-6.9 */,
+				56E508DBFD9A301B773E1577 /* iphone-duo */,
 			);
 			path = screenshots;
 			sourceTree = "<group>";

@@ -44,13 +44,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-# Stable Xcode, not the beta. Apple takes App Store builds from a released
-# Xcode, and a screenshot or a device build cut with a beta toolchain is not
-# the binary that ships. Override DEVELOPER_DIR to test against a beta.
+# Override DEVELOPER_DIR with the toolchain used by the uploaded build. Version
+# 1.1 uses Xcode 27.1 RC, which Apple has enabled for the Duo SDK.
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 
 OUTPUT="$PROJECT_ROOT/docs/app-store/screenshots"
-DERIVED="$PROJECT_ROOT/DerivedDataScreenshots"
+DERIVED="${GOPHERFORGE_CAPTURE_DERIVED_DATA:-$PROJECT_ROOT/DerivedDataScreenshots}"
 
 # device type : output folder : the name this script owns
 #
@@ -67,10 +66,11 @@ DEVICES=(
   "iPhone 16 Pro:iphone-6.3:GopherForge Shots iPhone 6.3"
   "iPhone 14:iphone-6.1:GopherForge Shots iPhone 6.1"
   "iPad Pro 11-inch (M4):ipad-11:GopherForge Shots iPad 11"
+  "iPhone Duo:iphone-duo:GopherForge Shots Duo"
 )
 
 # Named folders limit the run to those devices; no arguments captures them all.
-# A full pass is six simulators and the better part of an hour, and most of the
+# A full pass is seven simulators and the better part of an hour, and most of the
 # time only one size has changed.
 WANTED=("$@")
 
@@ -79,18 +79,23 @@ own_device() {
   local device_type="$1"
   local name="$2"
   local udid runtime
+  # Use a fresh owned device on an explicit runtime when an older runtime
+  # cannot boot. This leaves the older device available for later checks.
+  name="${name}${GOPHERFORGE_CAPTURE_DEVICE_SUFFIX:-}"
 
   udid="$(xcrun simctl list devices --json | python3 -c '
 import json
 import sys
 
 want = sys.argv[1]
-for entries in json.load(sys.stdin)["devices"].values():
+for runtime, entries in json.load(sys.stdin)["devices"].items():
+    if sys.argv[2] and runtime != sys.argv[2]:
+        continue
     for entry in entries:
         if entry.get("name") == want and entry.get("isAvailable"):
             print(entry["udid"])
             raise SystemExit
-' "$name")"
+' "$name" "${GOPHERFORGE_CAPTURE_RUNTIME:-}")"
 
   if [[ -z "$udid" ]]; then
     runtime="$(xcrun simctl list runtimes --json | python3 -c '
@@ -99,14 +104,18 @@ import sys
 
 runtimes = [r for r in json.load(sys.stdin)["runtimes"]
             if r.get("isAvailable")
-            and r["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.iOS")]
+            and r["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.iOS")
+            and any(t.get("name") == sys.argv[2] or t.get("identifier") == sys.argv[2]
+                    for t in r.get("supportedDeviceTypes", []))]
+if sys.argv[1]:
+    runtimes = [r for r in runtimes if r["identifier"] == sys.argv[1]]
 if not runtimes:
     raise SystemExit(1)
 # The newest iOS installed, which is what a listing should be shot on.
 runtimes.sort(key=lambda r: [int(part) for part in r["version"].split(".")])
 print(runtimes[-1]["identifier"])
-')"
-    udid="$(xcrun simctl create "$name" "$device_type" "$runtime")"
+' "${GOPHERFORGE_CAPTURE_RUNTIME:-}" "$device_type")"
+    udid="$(xcrun simctl create "$name" "$device_type" "$runtime")" || return 1
   fi
 
   printf '%s' "$udid"
@@ -137,7 +146,7 @@ for entry in "${DEVICES[@]}"; do
     xcrun simctl erase "$udid"
   fi
   xcrun simctl boot "$udid" >/dev/null 2>&1 || true
-  xcrun simctl bootstatus "$udid" -b >/dev/null 2>&1 || true
+  xcrun simctl bootstatus "$udid" -b
   xcrun simctl ui "$udid" appearance light >/dev/null 2>&1 || true
   # Long enough for a freshly erased device to finish telling its owner about
   # itself. Shorter than this and a banner lands on the first screenshot.
