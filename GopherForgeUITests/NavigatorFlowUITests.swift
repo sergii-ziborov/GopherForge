@@ -31,8 +31,15 @@ final class NavigatorFlowUITests: XCTestCase {
         let field = app.textFields[AccessibilityIdentifier.fileSearch]
         XCTAssertTrue(field.waitForExistence(timeout: 10), "the navigator should offer a search field")
 
+        // A real project can have enough files to place Packages below the
+        // viewport. SwiftUI's lazy list exposes its button after scrolling.
+        let addPackage = app.buttons[AccessibilityIdentifier.addPackage]
+        for _ in 0..<6 {
+            if addPackage.exists && addPackage.isHittable { break }
+            app.collectionViews.firstMatch.swipeUp(velocity: .slow)
+        }
         XCTAssertTrue(
-            app.buttons[AccessibilityIdentifier.addPackage].waitForExistence(timeout: 5),
+            addPackage.exists && addPackage.isHittable,
             "the navigator should offer to add a package without listing vendor files"
         )
 

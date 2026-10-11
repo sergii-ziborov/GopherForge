@@ -142,6 +142,28 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "01b-new-project")
     }
 
+    /// Uses the existing screenshot library: recent projects must not make the
+    /// examples destination unreachable below the visible part of the list.
+    func testProjectsExamplesRemainReachableAfterScrolling() {
+        launch(section: .projects)
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.newProject].waitForExistence(timeout: 30))
+        let examples = app.buttons[AccessibilityIdentifier.projectsExamples]
+        let list: XCUIElement = app.collectionViews.firstMatch.exists
+            ? app.collectionViews.firstMatch
+            : (app.tables.firstMatch.exists ? app.tables.firstMatch : app!)
+        for _ in 0..<12 {
+            if examples.exists && examples.isHittable { break }
+            list.swipeUp(velocity: .slow)
+        }
+        XCTAssertTrue(examples.exists && examples.isHittable,
+                      "Examples should remain reachable by scrolling Projects")
+        attachScreenshot(named: "projects-examples-link-after-scroll")
+        examples.tap()
+        XCTAssertTrue(app.navigationBars["Examples"].waitForExistence(timeout: 30))
+        XCTAssertTrue(app.buttons["example.site.notes"].waitForExistence(timeout: 30))
+        attachScreenshot(named: "projects-to-examples")
+    }
+
     /// The defect that made this suite worth writing: opening a project used to
     /// change state the user could not see.
     func testOpeningATemplateLandsInTheEditor() {
@@ -332,7 +354,10 @@ final class WorkspaceFlowUITests: XCTestCase {
     /// Runs against a simulator whose Duo hinge is actually horizontal. It
     /// skips ordinary phones so the same suite remains useful elsewhere.
     func testDetectedLaptopPostureOnDuo() throws {
-        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launchArguments = [
+            "-GopherForgeSection", Section.build.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
         app.launch()
         guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
             throw XCTSkip("No horizontal Duo division region is active")
@@ -344,7 +369,10 @@ final class WorkspaceFlowUITests: XCTestCase {
     /// The section bar is hidden in laptop posture. Projects must remain
     /// reachable while the software keyboard fills the lower display.
     func testLaptopProjectsBackWorksWithKeyboardOpen() throws {
-        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launchArguments = [
+            "-GopherForgeSection", Section.build.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
         app.launch()
         guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
             throw XCTSkip("No horizontal Duo division region is active")
@@ -377,7 +405,10 @@ final class WorkspaceFlowUITests: XCTestCase {
     }
 
     func testDetectedLaptopTerminalKeyboard() throws {
-        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
+        app.launchArguments = [
+            "-GopherForgeSection", Section.build.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
         app.launch()
         guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
             throw XCTSkip("No horizontal Duo division region is active")

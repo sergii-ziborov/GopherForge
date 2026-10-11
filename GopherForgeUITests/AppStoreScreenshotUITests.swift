@@ -123,6 +123,29 @@ final class AppStoreScreenshotUITests: XCTestCase {
         captureSiteScreenshot()
     }
 
+    /// The device must already have a real horizontal Duo division region.
+    /// Uses the existing example project so the photos show useful Go source.
+    func testCaptureNativeLaptopScreenshots() {
+        launch(section: "build")
+        XCTAssertTrue(app.buttons["laptop.files"].waitForExistence(timeout: 30),
+                      "native Duo laptop posture must be active")
+        expectSource()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 30))
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists)
+        captureNativeDisplayFrame("duo-laptop-code")
+
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        XCTAssertTrue(app.textFields["terminal.input"].waitForExistence(timeout: 30))
+        XCTAssertTrue(app.buttons["terminal.quick.help"].waitForExistence(timeout: 30))
+        captureNativeDisplayFrame("duo-laptop-terminal")
+
+        XCTAssertTrue(app.selectWorkspacePane("code"))
+        XCTAssertTrue(app.selectWorkspacePane("idioms"))
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.hideKeyboard].waitForNonExistence(timeout: 30))
+        XCTAssertTrue(app.textViews[AccessibilityIdentifier.editor].exists)
+        captureNativeDisplayFrame("duo-laptop-idioms")
+    }
+
     private func captureExampleScreenshots(relaunchExamples: Bool = false) {
         capture("09-examples")
 
@@ -390,6 +413,15 @@ final class AppStoreScreenshotUITests: XCTestCase {
             withVelocity: .slow,
             thenHoldForDuration: 0.3
         )
+    }
+
+    /// XCTest currently captures the inactive outer display on Duo. The host
+    /// screenshot driver uses this marker to capture the enumerated inner
+    /// display with public simctl while the verified UI remains unchanged.
+    private func captureNativeDisplayFrame(_ name: String) {
+        print("GF_NATIVE_FRAME_READY: \(name)")
+        fflush(stdout)
+        Thread.sleep(forTimeInterval: 30)
     }
 
     /// Named with a leading number so the files sort into listing order once

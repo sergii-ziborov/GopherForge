@@ -79,7 +79,7 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "AppStoreScreenshotUITests/testCaptureTheListingScreenshots()">
+                  Identifier = "AppStoreScreenshotUITests">
                </Test>
             </SkippedTests>
          </TestableReference>

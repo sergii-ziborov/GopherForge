@@ -475,6 +475,7 @@
 		166AC5424FB453A52EE3B628 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		17D63153279EAE706B877DE5 /* ConcurrencyScenarioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyScenarioView.swift; sourceTree = "<group>"; };
 		189E4BDA009F6C65F75E541B /* SpotTheBugRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotTheBugRound.swift; sourceTree = "<group>"; };
+		19CF15AFF5E6E4F70480D208 /* screenshot-order.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "screenshot-order.json"; sourceTree = "<group>"; };
 		1A76B986623B2FF427B4659F /* GoModParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoModParserTests.swift; sourceTree = "<group>"; };
 		1ABF2533B4C8A4EB45E91B7C /* GoExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExample.swift; sourceTree = "<group>"; };
 		1AE1210A80D51280CE3C0A9B /* ProjectPathNormalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectPathNormalizerTests.swift; sourceTree = "<group>"; };
@@ -559,6 +560,7 @@
 		3F4E1539F3ED8701D5072D20 /* GoTestOutputParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoTestOutputParserTests.swift; sourceTree = "<group>"; };
 		3F5B7EED444876844556D279 /* ProjectTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTemplate.swift; sourceTree = "<group>"; };
 		40D244F1E2AC43FA203D5D28 /* GoVetConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoVetConfiguration.swift; sourceTree = "<group>"; };
+		40D9DEFF963A3933324D5B6D /* example-site-source-preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "example-site-source-preview.png"; sourceTree = "<group>"; };
 		4173BAC02A4EF36D5E62E758 /* ReviewScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewScheduler.swift; sourceTree = "<group>"; };
 		418A81FB4389145F596D4A43 /* lab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lab.png; sourceTree = "<group>"; };
 		4259C30C089EEB35FBFAB85F /* navigator-iphone-files.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigator-iphone-files.png"; sourceTree = "<group>"; };
@@ -690,6 +692,7 @@
 		8BEA8411FC2782F4D0A93303 /* WasmSandboxResourceLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WasmSandboxResourceLimiter.swift; sourceTree = "<group>"; };
 		8C18A30D1D678743818A5B95 /* GoToolInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToolInvocation.swift; sourceTree = "<group>"; };
 		8C4059A8A10B39CFE204CE35 /* ProjectExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectExport.swift; sourceTree = "<group>"; };
+		8CD1691342E06D3FE20649C2 /* duo-book-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-book-code.png"; sourceTree = "<group>"; };
 		8E561213B8C7E917FCB84EBB /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		8E58297269BD6DC7DABE0A15 /* GoModParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoModParser.swift; sourceTree = "<group>"; };
 		8E76B680D483FD1B05113FA4 /* GoLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoLanguage.swift; sourceTree = "<group>"; };
@@ -709,6 +712,7 @@
 		97F5CCE218C39A0865794DE3 /* GoProgramArtifacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoProgramArtifacts.swift; sourceTree = "<group>"; };
 		98726DB1FB5CE392CB3D01B6 /* GoTestMainGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoTestMainGenerator.swift; sourceTree = "<group>"; };
 		98D54A73FB92047B10627107 /* ZipArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchiveTests.swift; sourceTree = "<group>"; };
+		98DE17B4487DBB612AB17FC4 /* duo-open-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-open-code.png"; sourceTree = "<group>"; };
 		98FF9B9266B1F4463AC6B16D /* QuizQuestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizQuestionCard.swift; sourceTree = "<group>"; };
 		99DD0CCA0160C048BAA83119 /* LessonGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonGuide.swift; sourceTree = "<group>"; };
 		99E829203974DAF72AED645D /* GoToolSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToolSession.swift; sourceTree = "<group>"; };
@@ -755,6 +759,7 @@
 		A8F0D18668A801923C4DD296 /* GoRuntimeFailureReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoRuntimeFailureReader.swift; sourceTree = "<group>"; };
 		A8F56858A21841512E93B37C /* LearningProgressStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningProgressStore.swift; sourceTree = "<group>"; };
 		A969A43CA528DB8F80A8C16D /* ResolvedModuleSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolvedModuleSection.swift; sourceTree = "<group>"; };
+		AA10E8DA2862AC258E16019E /* site-1.1-duo-gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-1.1-duo-gallery.png"; sourceTree = "<group>"; };
 		AACE515D38BCDDD526CB04D6 /* CourseUnitStandardLibraryMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitStandardLibraryMore.swift; sourceTree = "<group>"; };
 		AAF84924F6B0310EADF02067 /* GoBuildProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBuildProgressTests.swift; sourceTree = "<group>"; };
 		AB495B3168283BFD4E4B2048 /* 05-lab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "05-lab.png"; sourceTree = "<group>"; };
@@ -1454,6 +1459,7 @@
 			isa = PBXGroup;
 			children = (
 				CCBA4CA61774051C45FDFC86 /* listing.md */,
+				19CF15AFF5E6E4F70480D208 /* screenshot-order.json */,
 				F3D36F5E27908E5E9BF9039D /* creative-assets */,
 				E746E6BFD8D1BD4F496B2983 /* metadata */,
 				FC276D9C1C2A083B7A527F9C /* screenshots */,
@@ -1465,6 +1471,7 @@
 			isa = PBXGroup;
 			children = (
 				E59269859BEAA2D33BE1D9D4 /* lessons.json */,
+				AA10E8DA2862AC258E16019E /* site-1.1-duo-gallery.png */,
 				9E4D623838EB289416D68C7D /* site-1.1-home.png */,
 				7FDE23AED7F54C03980924DC /* site-1.1-lesson.png */,
 			);
@@ -1952,11 +1959,14 @@
 		C18EBFB49F6BB7C11B9E042F /* screenshots */ = {
 			isa = PBXGroup;
 			children = (
+				8CD1691342E06D3FE20649C2 /* duo-book-code.png */,
 				C022B4889E5D2E97D2425519 /* duo-laptop-code.png */,
 				718FD4E4FF1A6EF1CFEF0604 /* duo-laptop-idioms.png */,
 				4E71BCC01C74613758708EA5 /* duo-laptop-terminal.png */,
 				9EFAD6ADAE1A289C60A7FA1B /* duo-native-code.png */,
 				358770D3AC2E27538D5519AD /* duo-native-lesson.png */,
+				98DE17B4487DBB612AB17FC4 /* duo-open-code.png */,
+				40D9DEFF963A3933324D5B6D /* example-site-source-preview.png */,
 				311C90A963AF72D86A0CD2D8 /* graphics.png */,
 				644C7E43678377F3BAFF83AE /* iphone-workspace.png */,
 				418A81FB4389145F596D4A43 /* lab.png */,

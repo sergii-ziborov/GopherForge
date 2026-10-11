@@ -18,6 +18,7 @@ fileGroups:
   - docs/website
   - docs/screenshots
   - docs/app-store/listing.md
+  - docs/app-store/screenshot-order.json
   - docs/app-store/metadata
   - docs/app-store/screenshots
   - docs/app-store/creative-assets
@@ -240,12 +241,10 @@ schemes:
       targets:
         - name: GopherForgeUITests
           skippedTests:
-            # The listing capture, not a test of behaviour. It compiles Go
-            # under the interpreter twice and is budgeted 600s for it, which it
-            # cannot hold while the rest of the suite runs beside it on the
-            # same machine. `scripts/app_store_screenshots.sh` runs it alone,
-            # in Release, on a device of its own.
-            - AppStoreScreenshotUITests/testCaptureTheListingScreenshots()
+            # Media captures run separately in Release on an owned device.
+            # They compile real Go and the native laptop capture requires a
+            # real Duo hinge; neither belongs in the ordinary regression run.
+            - AppStoreScreenshotUITests
         - name: GopherForgeTests
           skippedTests:
             - BundledCompilerGateTests/testBundledGoReportsUnusedVariable()

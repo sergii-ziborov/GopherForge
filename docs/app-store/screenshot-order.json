@@ -1,0 +1,22 @@
+{
+  "version": "1.1",
+  "default": [
+    "00-code.png", "04-lesson.png", "03-course.png", "02-tests.png",
+    "01-compiler.png", "05-lab.png", "06-projects.png", "07-graphics.png",
+    "08-site.png", "09-examples.png"
+  ],
+  "overrides": {
+    "iphone-duo": [
+      "docs/app-store/screenshots/iphone-duo/00-code.png",
+      "docs/app-store/screenshots/iphone-duo/04-lesson.png",
+      "docs/screenshots/duo-open-code.png",
+      "docs/app-store/screenshots/iphone-duo/02-tests.png",
+      "docs/app-store/screenshots/iphone-duo/01-compiler.png",
+      "docs/screenshots/duo-book-code.png",
+      "docs/app-store/screenshots/iphone-duo/06-projects.png",
+      "docs/screenshots/duo-laptop-code.png",
+      "docs/screenshots/duo-laptop-terminal.png",
+      "docs/screenshots/duo-laptop-idioms.png"
+    ]
+  }
+}

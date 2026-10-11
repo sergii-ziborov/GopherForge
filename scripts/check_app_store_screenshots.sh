@@ -36,12 +36,9 @@ EXPECTED=(
   "iphone-duo:1398:2034"
 )
 
-# Ten feature captures for every display group. Unit and diagnostic images
-# are supplementary README material, not replacements for the example shots.
-LISTING=(
-  00-code 04-lesson 03-course 02-tests 01-compiler 05-lab 06-projects
-  07-graphics 08-site 09-examples
-)
+# The Duo gallery also demonstrates its actual open, book and laptop layouts.
+# Read the same ordered source paths used for the App Store draft.
+ORDER="$PROJECT_ROOT/docs/app-store/screenshot-order.json"
 
 failures=0
 
@@ -56,7 +53,24 @@ for entry in "${EXPECTED[@]}"; do
   want_width="${rest%%:*}"
   want_height="${rest##*:}"
   directory="$SHOTS/$folder"
-  listing=("${LISTING[@]}")
+  listing=()
+  while IFS= read -r relative; do
+    listing+=("$PROJECT_ROOT/$relative")
+  done < <(python3 - "$ORDER" "$folder" <<'PY'
+import json, sys
+order = json.load(open(sys.argv[1]))
+folder = sys.argv[2]
+paths = order['overrides'].get(folder)
+if paths is None:
+    paths = ['docs/app-store/screenshots/' + folder + '/' + name for name in order['default']]
+assert len(paths) == 10 and paths[0].endswith('/00-code.png')
+print('\n'.join(paths))
+PY
+  )
+  if [[ "${#listing[@]}" != "10" ]]; then
+    fail "invalid screenshot order for $folder"
+    continue
+  fi
   echo "$folder:"
 
   if [[ ! -d "$directory" ]]; then
@@ -64,11 +78,11 @@ for entry in "${EXPECTED[@]}"; do
     continue
   fi
 
-  for name in "${listing[@]}"; do
-    file="$directory/$name.png"
+  for file in "${listing[@]}"; do
+    name="$(basename "$file")"
 
     if [[ ! -f "$file" ]]; then
-      fail "$name.png is missing"
+      fail "$name is missing"
       continue
     fi
 
@@ -77,16 +91,25 @@ for entry in "${EXPECTED[@]}"; do
     if [[ "$folder" == "iphone-duo" ]]; then
       case "${width}x${height}" in
         1398x2034|2034x1398|2007x2853|2853x2007) ;;
-        *) fail "$name.png is ${width}x${height}, not a native Duo size" ;;
+        *) fail "$name is ${width}x${height}, not a native Duo size" ;;
       esac
     elif [[ "$width" != "$want_width" || "$height" != "$want_height" ]]; then
-      fail "$name.png is ${width}x${height}, expected ${want_width}x${want_height}"
+      fail "$name is ${width}x${height}, expected ${want_width}x${want_height}"
     fi
 
     # `hasAlpha` is absent from the output for images that have none, so the
     # test is for the string rather than for a value.
     if sips -g hasAlpha "$file" | grep -q "hasAlpha: yes"; then
-      fail "$name.png carries an alpha channel, which App Store Connect rejects"
+      fail "$name carries an alpha channel, which App Store Connect rejects"
+    fi
+    if ! python3 - "$file" <<'PY'
+import sys
+from PIL import Image
+with Image.open(sys.argv[1]) as image:
+    assert any(high - low > 100 for low, high in image.convert('RGB').getextrema())
+PY
+    then
+      fail "$name is blank or has insufficient rendered contrast"
     fi
   done
 
@@ -99,4 +122,4 @@ if [[ "$failures" -gt 0 ]]; then
   echo "$failures problem(s). Fix these before uploading." >&2
   exit 1
 fi
-echo "Screenshots are the right size, complete, and free of alpha."
+echo "Screenshots are complete, rendered, the right size, and free of alpha."

@@ -34,7 +34,7 @@ should reflect the app's actual App Store availability.
 
 ## Version 1.1 preview
 
-Version 1.1 (build 17) is available to internal TestFlight testers. The public App Store
+Version 1.1 (build 18) is available to internal TestFlight testers. The public App Store
 version remains 1.0.1; 1.1 has not been submitted for review.
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
@@ -76,7 +76,7 @@ goroutine trace are what the app actually produced, not mock-ups.
 | **Your projects, filed.** Search by name, folder, tag or file name — a project is often remembered as "the one with `parser.go`". Folders, tags, a star and a note, and nothing is ever evicted. | **Go code on iPhone.** A real worker pool in the editor, with the file drawer closed so the code uses the available width. |
 | <img src="docs/screenshots/navigator-iphone-files.png" width="300" alt="The iPhone Files drawer opened once over the code editor, showing one searchable file tree"> | <img src="docs/screenshots/navigator-ipad-persistent.png" alt="The iPad Build workspace with one persistent, searchable file tree beside the editor"> |
 | **iPhone files.** The file tree overlays the editor, and choosing a file closes it. | **iPad files.** One file tree stays beside the editor, including in a narrow iPad window. |
-| <img src="docs/screenshots/duo-laptop-code.png" width="300" alt="In the iPhone Duo laptop posture, the Projects back button sits beside Playground, Go code fills the upper display, workspace tabs sit at the hinge, and Go keyboard helpers sit directly above the lower keyboard"> | <img src="docs/screenshots/duo-laptop-terminal.png" width="300" alt="In the iPhone Duo laptop posture, the terminal fills the upper display, workspace tabs sit at the hinge, and terminal commands sit directly above the lower keyboard"> |
+| <img src="docs/screenshots/duo-laptop-code.png" width="300" alt="In the iPhone Duo laptop posture, the Projects back button sits beside the project title, Go code fills the upper display, workspace tabs sit at the hinge, and Go keyboard helpers sit directly above the lower keyboard"> | <img src="docs/screenshots/duo-laptop-terminal.png" width="300" alt="In the iPhone Duo laptop posture, the terminal fills the upper display, workspace tabs sit at the hinge, and terminal commands sit directly above the lower keyboard"> |
 | **Duo laptop posture: Code.** The editor stays above the hinge. Its Go symbols and completion controls appear above the keyboard and disappear with it. A visible Projects button returns to the library even while the keyboard hides the section bar. | **Duo laptop posture: Terminal.** The console uses the same upper display; its command shortcuts stay visible above the keyboard. Selecting Problems, Output, Tests or Idioms replaces the keyboard with that result. |
 
 <img src="docs/screenshots/duo-laptop-idioms.png" width="300" alt="The Duo laptop posture with code still above the hinge and the Idioms result occupying the lower display instead of the keyboard">
@@ -86,11 +86,18 @@ fills the lower display.
 
 The navigator images come from the UI regression in
 `NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
-The laptop images above were captured on 8 October with build 14 and the
-native iPhone Duo horizontal hinge active. Fresh build 17 posture checks are
-pending. CoreSimulator was recovered without rebooting the Mac after a stalled
-runtime-image service, and the native Duo boots again. Device Hub became accessible again, but input remains intermittent; the new
-physical-posture checks have not been verified.
+The five native posture images use the running Release build 1.1 (18).
+Device Hub's real Open and Partially Open controls select the posture; no
+forced layout is used. Four native laptop UI checks passed without failures
+or skips, including lower-pane replacement and Projects exit with the keyboard
+open. The dedicated capture run also passed. Capture reads the enumerated inner
+LCD with public simctl; XCTest's inactive-display black frames were rejected.
+CoreSimulator recovered without rebooting the Mac.
+
+| **Native Duo open** | **Native Duo book** |
+| --- | --- |
+| <img src="docs/screenshots/duo-open-code.png" width="450" alt="Build 18 native Duo open display with highlighted Go code and searchable Files"> | <img src="docs/screenshots/duo-book-code.png" width="450" alt="Build 18 native Duo book posture with code and Files on opposite sides of the vertical hinge"> |
+
 Version 1.1 has not been submitted for App Store review.
 
 | **Native Duo code capture** | **Native Duo visual lesson** |
@@ -98,29 +105,42 @@ Version 1.1 has not been submitted for App Store review.
 | <img src="docs/screenshots/duo-native-code.png" width="300" alt="Fresh build 17 native iPhone Duo capture showing real worker-pool Go source"> | <img src="docs/screenshots/duo-native-lesson.png" width="300" alt="Fresh build 17 native Duo lesson capture showing Produce, Finish and Drain in the channel ownership diagram"> |
 
 These two build 17 captures use the simulator's current native display. They
-verify the running app and guide presentation; they do not replace the pending
-open, book and laptop posture checks.
+verify the running app and guide presentation. The five build 18 posture
+captures above additionally show the native open, book and laptop layouts.
 
 The [App Store screenshot sets](docs/app-store/screenshots) are captured from
 the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones, native iPhone
-Duo and 11 and 13-inch iPads. Each set opens with Go code in the editor, followed by a real
-visual lesson and the course, followed by a real test run and a real Go run,
-the Concurrency Lab and project library, then graphics, a site previewed from
-127.0.0.1 and the example library. The unit and diagnostic captures (`10-unit`,
-`11-problems`) supply README images only. Run
-`scripts/app_store_screenshots.sh` to refresh all seven sets, including native Duo, then
-`scripts/check_app_store_screenshots.sh` to check dimensions
-and alpha channels before uploading them. The 1.1 draft includes ten ordered
-screenshots in each of the seven display groups. The focused native Duo
-example capture and its site-paint recapture both passed with build 17, and
-all three images passed visual inspection. All 72 Apple placements match the
-local source hashes, with code first. The direct Projects-to-Examples scroll
-and fresh open, book and laptop posture checks remain pending Device Hub
-input recovery.
+Duo and 11 and 13-inch iPads. Each set opens with real Go code. The standard
+six sets then show a visual lesson, course, tests, compiler run, Concurrency Lab,
+Projects, graphics, live localhost site and example library. The ten-image Duo
+set additionally prioritizes native open, book and laptop states; the exact
+order is recorded in [screenshot-order.json](docs/app-store/screenshot-order.json).
+The unit and diagnostic captures (`10-unit`, `11-problems`) supply README images.
+Run `scripts/app_store_screenshots.sh` to refresh feature captures. To capture
+native laptop states, select the owned Duo in Device Hub, choose Partially Open
+with a horizontal hinge, build GopherForgeScreenshots for testing in Release,
+then run `scripts/capture_native_duo_laptop.py --device <owned-device-UUID>` with
+`DEVELOPER_DIR` set to Xcode 27.1 RC. The open and book frames use the enumerated
+inner display too. Run `scripts/check_app_store_screenshots.sh` to verify the
+complete ordered sets, native dimensions, opaque pixels and rendered contrast
+before uploading.
+
+The draft holds ten ordered screenshots in each of seven display groups,
+plus code-based header and search artwork. Native example captures with build
+17 passed visual inspection; its site capture waits for painted pixels, rather
+than accessibility text alone. All 69 guide records and compiler inputs are
+unchanged in build 18. Final build 18 Projects navigation and source-preview
+checks are recorded in the release evidence.
 
 | **Native Duo graphics** | **Native Duo examples** |
 | --- | --- |
 | <img src="docs/app-store/screenshots/iphone-duo/07-graphics.png" width="300" alt="Build 17 on native Duo showing the Mandelbrot image generated by Go"> | <img src="docs/app-store/screenshots/iphone-duo/09-examples.png" width="300" alt="Build 17 native Duo example library with site and graphics programs"> |
+
+<img src="docs/screenshots/example-site-source-preview.png" width="300" alt="Build 18 on native Duo showing highlighted Go source in the Sticky notes example preview">
+
+**Example source preview.** The read-only source uses the same syntax colors
+as the workspace. Build 18 also highlights diagnostic lines and navigator
+search matches, and styles inline code in quiz choices.
 
 The
 [product page header and search artwork](docs/app-store/creative-assets) use
@@ -368,9 +388,12 @@ Requirements:
 - `zstd` on the build Mac.
 
 Build 1.1 with Xcode 27.1 RC and its Duo SDK. Apple has enabled uploads with
-this SDK; build 17 has passed package validation and is App Store eligible.
+this SDK; build 18 has passed package validation and is App Store eligible.
 Use `scripts/release_archive.sh --testflight` with 27.1 RC for this preparation
 workflow. That option permits the RC toolchain; it does not submit App Review.
+When exporting with saved App Store profiles, pass their manual export options
+through `GOPHERFORGE_EXPORT_OPTIONS_PLIST`. The build 18 export used that path;
+automatic export requires an Xcode account with access to the team.
 The commands below name `DEVELOPER_DIR` explicitly so the selected Xcode does
 not decide what gets built.
 

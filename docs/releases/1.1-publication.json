@@ -1,29 +1,29 @@
 {
   "version": "1.1",
-  "build": "17",
-  "buildId": "29b247dd-0648-4d8d-bab1-576fe2f4cdb8",
+  "build": "18",
+  "buildId": "abc71706-59fa-435d-8e23-f2f4b564d6a2",
   "processingState": "VALID",
   "buildAudienceType": "APP_STORE_ELIGIBLE",
   "internalBuildState": "IN_BETA_TESTING",
   "appStoreState": "PREPARE_FOR_SUBMISSION",
   "releaseType": "MANUAL",
   "appReviewSubmitted": false,
-  "sourceCommit": "e1aef66",
+  "sourceCommit": "c7e052b",
   "archiveValidation": "passed",
   "lessonGuideCount": 69,
   "lessonGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
   "website": {
     "url": "https://gopherforge.app",
-    "publishedCommit": "dbf5b8738344d0350b6a520031321cf22537e3c4",
+    "publishedCommit": "c7ad8e07595e86154744a9b1a8ab915db9bb5376",
     "courseEntries": 69,
     "galleryVersion": "1.1 preview",
     "nativeLessonContentMatch": "all 9 unit records, 69 lesson records and 69 guide records match by ID",
     "hiddenTestsOrSolutionsPublished": false,
-    "galleryImageCount": 13,
-    "previewCommit": "dbf5b8738344d0350b6a520031321cf22537e3c4",
+    "galleryImageCount": 21,
+    "previewCommit": "c7ad8e07595e86154744a9b1a8ab915db9bb5376",
     "courseConsistencyChecksPassed": 989,
-    "deploymentId": "1c20fd85-4678-43d3-94af-3f9411d820a6",
-    "publicGalleryImages": 13,
+    "deploymentId": "71e8736a-7c3d-40f7-91f9-20b0e6520ce7",
+    "publicGalleryImages": 21,
     "publicLessonLinks": 69,
     "publicCodeHero": "loaded",
     "publicChannelGuideNodes": [
@@ -37,35 +37,48 @@
       {
         "url": "https://gopherforge.app/support",
         "status": 200,
-        "title": "Support — GopherForge"
+        "title": "Support \u2014 GopherForge"
       },
       {
         "url": "https://gopherforge.app/privacy",
         "status": 200,
-        "title": "Privacy Policy — GopherForge"
+        "title": "Privacy Policy \u2014 GopherForge"
       },
       {
         "url": "https://gopherforge.app/terms",
         "status": 200,
-        "title": "Terms of Use — GopherForge"
+        "title": "Terms of Use \u2014 GopherForge"
       },
       {
         "url": "https://gopherforge.app/updates",
         "status": 200,
-        "title": "Version 1.1 preview — GopherForge"
+        "title": "Version 1.1 preview \u2014 GopherForge"
       }
     ],
-    "checkedAt": "2026-10-10T21:57:22.362252+00:00",
-    "networkFAQMatchesSupport": true
+    "checkedAt": "2026-10-11T00:31:22.066870+00:00",
+    "networkFAQMatchesSupport": true,
+    "newDuoImages": [
+      "Mandelbrot graphics in Output",
+      "Painted live Sticky notes localhost page",
+      "Example library"
+    ],
+    "publicGalleryAllImagesLoaded": true,
+    "previewResponsiveWidthsVerified": [
+      390,
+      1280
+    ],
+    "previewResponsiveOverflow": false,
+    "nativeDuoModeImages": 5,
+    "publicationProof": "docs/website/site-1.1-duo-gallery.png"
   },
-  "checkedAt": "2026-10-10T22:57:27.930135+00:00",
+  "checkedAt": "2026-10-11T00:31:22.066870+00:00",
   "existingReviewRecording": {
     "fileName": "GopherForge-physical-iPhone-original-review.mp4",
     "fileSize": 25500411,
     "sha256": "2316067a49bb3c07e075c67f9e096e32bfcee387248834c5c69a6dae5294ce8a",
     "attachmentId": "ee745ece-ed63-4325-9e8d-6835d8f84658",
     "deliveryState": "COMPLETE",
-    "recording": "Existing original physical-iPhone recording; no new recording made"
+    "recording": "Existing original physical-iPhone recording; no replacement recording uploaded"
   },
   "nativeLessonVerification": {
     "goVersion": "go version go1.27.1 darwin/arm64",
@@ -81,7 +94,7 @@
     "solutionsPassed": 44,
     "startersRequireChanges": 44,
     "solutionAfterFailedCheck": "passed",
-    "build": "15; compiler inputs unchanged in 17"
+    "build": "15; compiler inputs unchanged in 17 and 18"
   },
   "lessonUIVerification": {
     "platform": "native iPhone Duo iOS 27.1 simulator",
@@ -90,11 +103,11 @@
     "embeddedCodeScrollsPage": "passed",
     "fullscreenCodeScrollsInternally": "passed",
     "fullscreenEditsRetained": "passed",
-    "nativeLaptopPosture": "pending Device Hub UI recovery: owned native Duo boots after runtime-image service recovery without Mac reboot; posture-control access times out",
-    "nativeDisplayCaptures": "build 17 native Duo code and visual lesson",
-    "nativeProjectsListScroll": "automated screenshot walk did not reach example library; manual check pending native simulator recovery",
+    "nativeLaptopPosture": "Build 18: four native UI checks passed, no failures or skips. Real Device Hub posture, no forced layout.",
+    "nativeDisplayCaptures": "Five build 18 inner-display captures visually inspected: open code, book code, laptop code, terminal, Idioms. Inactive-display XCTest black captures rejected.",
+    "nativeProjectsListScroll": "Build 18: actual Projects list scrolled to Examples, example library opened and Sticky notes present. Passed, no skips.",
     "nativeExampleRecapture": "Verified cached Release build 17 runs: example captures 1 passed/0 failed/0 skipped; site paint recapture 1 passed/0 failed/0 skipped. All three images visually verified and uploaded.",
-    "hostRecovery": "Owned Duo boot and bootstatus recovered without Mac reboot after runtime-image service recovery. Device Hub became accessible and selected the owned device; input remains intermittent under host load.",
+    "hostRecovery": "Owned Duo and Device Hub recovered without rebooting the Mac. Native posture controls and UI tests completed.",
     "recoveryWithoutHostReboot": {
       "checkedAt": "2026-10-10T22:45:09.446923+00:00",
       "hostRebooted": false,
@@ -105,11 +118,13 @@
       "cachedGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
       "focusedRecaptureSelectorPresent": true,
       "nativeLaptopSelectorsPresent": true,
-      "postureChecksVerified": false,
+      "postureChecksVerified": true,
       "deviceHubSelectionVerified": true,
-      "subsequentBootStatus": "Second boot reported Data Migration Failed, but the subsequent site-only UI test ran successfully. No host reboot or device erase was needed."
+      "subsequentBootStatus": "Second boot reported Data Migration Failed, but the subsequent site-only UI test ran successfully. No host reboot or device erase was needed.",
+      "finalCheckedBuild": "18"
     },
-    "nativeSiteScreenshot": "Painted live localhost page visually verified; native 1398x2034 RGB image uploaded and ordered."
+    "nativeSiteScreenshot": "Painted live localhost page visually verified; native 1398x2034 RGB image uploaded and ordered.",
+    "nativeExampleSourcePreview": "Build 18 site flow passed. Go source preview visually inspected with syntax colors; live WebView painted before capture."
   },
   "officialGuideReferences": {
     "guideCount": 69,
@@ -133,7 +148,7 @@
   },
   "metadataVerification": {
     "version": "1.1",
-    "build": "17",
+    "build": "18",
     "metadataMatches": [
       "description",
       "keywords",
@@ -167,7 +182,8 @@
     "guideChecksPassed": 3,
     "projectsBackAbsentOutsideLaptopPosture": "passed",
     "failures": 0,
-    "skipped": 0
+    "skipped": 0,
+    "note": "Catalog checks ran on build 17; the exact 69-guide catalog is unchanged in build 18. Final build 18 UI checks are recorded separately."
   },
   "appStoreMedia": {
     "screenshotCount": 70,
@@ -303,8 +319,8 @@
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/03-course.png",
-            "sha256": "8e47c6d95e98157e2540c214c2b75f467feffa67b8e8caefb0be9d2722f640ce",
+            "file": "docs/screenshots/duo-open-code.png",
+            "sha256": "d438ba15918355989337eecf859a566bb1acbecfc3d16dded3542ea87d4b0433",
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
@@ -318,8 +334,8 @@
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/05-lab.png",
-            "sha256": "a2245135c282b73e8057f3eff90ba406379243c89163b741c5082513cf7ee224",
+            "file": "docs/screenshots/duo-book-code.png",
+            "sha256": "d2738f528db9ef20dc11bb5f9c6116625fd503d09348c5a23ee7842c6be93a91",
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
@@ -328,18 +344,18 @@
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/07-graphics.png",
-            "sha256": "f11a82873ef84eae92bd5dc56a386769a952307ccaec1faccc78a307e3d022cb",
+            "file": "docs/screenshots/duo-laptop-code.png",
+            "sha256": "fc4223124469891672f96849e76ce4a7ddeebb3f6efece8d9c03abb2806a1950",
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/08-site.png",
-            "sha256": "939a551adef78f883972abb94eaa2c9484d82f3a1608af78a603aaa7c7f6d76a",
+            "file": "docs/screenshots/duo-laptop-terminal.png",
+            "sha256": "27ffaa3daf219022c4c0d80a95de54730c3e061da8265ac2f89d2613c53f9931",
             "imageState": "PREPARE_FOR_SUBMISSION"
           },
           {
-            "file": "docs/app-store/screenshots/iphone-duo/09-examples.png",
-            "sha256": "875fb2c1d0a104f00483ebe931dc55a49f20a815224c8f6cf4cb2bbadaad9702",
+            "file": "docs/screenshots/duo-laptop-idioms.png",
+            "sha256": "3db7df46472c7107fbbc4e2b7bfb0540a12512b77b890531e26cb6df8eb4f197",
             "imageState": "PREPARE_FOR_SUBMISSION"
           }
         ]
@@ -599,8 +615,17 @@
     ],
     "fileHashesMatchSource": true,
     "firstScreenshot": "00-code.png",
-    "checkedAt": "2026-10-10T23:33:15.423743+00:00",
-    "nativeSiteCapturePending": false
+    "checkedAt": "2026-10-11T00:23:39.674054+00:00",
+    "nativeSiteCapturePending": false,
+    "duoNativeModesIncluded": [
+      "closed",
+      "open",
+      "book",
+      "laptop-code",
+      "laptop-terminal",
+      "laptop-idioms"
+    ],
+    "orderedSourceManifest": "docs/app-store/screenshot-order.json"
   },
   "repository": {
     "branch": "main",
@@ -610,14 +635,22 @@
   },
   "nextBuild": {
     "build": "18",
-    "state": "in preparation; not uploaded",
+    "state": "Upload, native verification and media publication complete. Awaiting owner TestFlight testing; no App Review submission.",
     "changes": [
       "syntax highlighting in example source previews",
       "syntax highlighting in diagnostic source lines",
       "syntax highlighting and search marks in navigator matches",
       "inline code styling in quiz choices"
     ],
-    "guideCatalogUnchanged": true
+    "guideCatalogUnchanged": true,
+    "archive": "passed; 1.1 (18), app and Share extension, source c7e052b",
+    "archiveGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+    "export": "passed using the existing manual App Store provisioning profiles",
+    "sourceCommit": "c7e052b",
+    "appleValidation": "passed",
+    "appleUpload": "passed",
+    "buildId": "abc71706-59fa-435d-8e23-f2f4b564d6a2",
+    "whatToTestSaved": true
   },
   "nativeSitePaintVerification": {
     "build": "17",
@@ -626,5 +659,53 @@
     "skippedTests": 0,
     "visualInspection": "passed",
     "sha256": "939a551adef78f883972abb94eaa2c9484d82f3a1608af78a603aaa7c7f6d76a"
+  },
+  "nativeDuoPostureVerification": {
+    "build": "18",
+    "platform": "native iPhone Duo iOS 27.1 simulator",
+    "hostRebooted": false,
+    "forcedLayout": false,
+    "uiTestsPassed": 4,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "captureRunPassed": 1,
+    "captureMethod": "public simctl screenshot, enumerated primary-1 inner LCD; native Device Hub posture controls",
+    "inactiveDisplayBlackFramesRejected": true,
+    "images": [
+      {
+        "file": "docs/screenshots/duo-open-code.png",
+        "sha256": "d438ba15918355989337eecf859a566bb1acbecfc3d16dded3542ea87d4b0433"
+      },
+      {
+        "file": "docs/screenshots/duo-book-code.png",
+        "sha256": "d2738f528db9ef20dc11bb5f9c6116625fd503d09348c5a23ee7842c6be93a91"
+      },
+      {
+        "file": "docs/screenshots/duo-laptop-code.png",
+        "sha256": "fc4223124469891672f96849e76ce4a7ddeebb3f6efece8d9c03abb2806a1950"
+      },
+      {
+        "file": "docs/screenshots/duo-laptop-terminal.png",
+        "sha256": "27ffaa3daf219022c4c0d80a95de54730c3e061da8265ac2f89d2613c53f9931"
+      },
+      {
+        "file": "docs/screenshots/duo-laptop-idioms.png",
+        "sha256": "3db7df46472c7107fbbc4e2b7bfb0540a12512b77b890531e26cb6df8eb4f197"
+      }
+    ],
+    "checkedAt": "2026-10-11T00:22:40.005077+00:00"
+  },
+  "nativeSourceAndNavigationVerification": {
+    "build": "18",
+    "platform": "native iPhone Duo iOS 27.1 simulator, closed display",
+    "sitePaintAndSourcePreview": "passed",
+    "projectsExamplesScroll": "passed",
+    "navigatorNameAndContentSearch": "passed on focused repeat",
+    "initialNavigatorFailure": "Add Package lazy list row was outside viewport in the larger site project; the test now scrolls the file list before checking it. App source unchanged.",
+    "navigatorRepeatPassed": 1,
+    "navigatorRepeatFailed": 0,
+    "navigatorRepeatSkipped": 0,
+    "sourcePreviewImage": "docs/screenshots/example-site-source-preview.png",
+    "checkedAt": "2026-10-11T00:31:22.066870+00:00"
   }
 }

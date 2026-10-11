@@ -26,4 +26,5 @@ build/
 /docs/RELEASE-AUDIT-*.md
 /docs/GAME-CENTER.md
 /docs/app-store/*.json
+!/docs/app-store/screenshot-order.json
 /release-evidence/
