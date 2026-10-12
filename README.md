@@ -34,13 +34,21 @@ should reflect the app's actual App Store availability.
 
 ## Version 1.1 preview
 
-Version 1.1 (build 18) is available to internal TestFlight testers. The public App Store
-version remains 1.0.1. Version 1.1 was submitted to App Review on 12 October
-2026 and is waiting for review, with automatic release after Apple approval.
+Version 1.1 (build 20) is available to internal TestFlight testers. The public
+App Store version remains 1.0.1. The earlier build 18 is still selected for
+App Review, with automatic release after approval. Build 20 has not replaced
+that submission yet: the remaining native Duo posture and hardware-keyboard
+checks are recorded in [the layout evidence](docs/releases/1.1-layout-checks.md).
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
   keeps code or terminal above the hinge and puts keyboard or result panes below.
   Projects remains reachable while the keyboard is open.
+- Files stays on the left, with a working toggle and adjustable width. The
+  ordinary iPhone landscape column remains collapsible. Keyboard helpers appear
+  only with the touch keyboard; without it, Duo Code and Terminal use the
+  available display height.
+- Build 20 fixes the Terminal-to-Code keyboard spacing and gives ordinary phone
+  landscape panels a consistent background and rounded edges.
 - All 47 lessons and 22 prediction challenges have an authored visual guide,
   practical notes, common pitfalls and a link to the official Go reference.
 - Explanations, quizzes, matching drills and examples use consistent Go highlighting.
@@ -55,6 +63,14 @@ without publishing the exercises' hidden tests or verified solutions.
 ## What it looks like
 
 <img src="docs/app-store/screenshots/iphone-6.9/00-code.png" width="330" alt="Real Go code in the GopherForge editor on iPhone">
+
+| **iPhone landscape: Files open** | **iPhone landscape: Files closed** |
+| --- | --- |
+| <img src="docs/screenshots/iphone-landscape-files.png" alt="Build 20 on iPhone 13 in landscape with an open left Files column and a shared background around the rounded code panel"> | <img src="docs/screenshots/iphone-landscape-code.png" alt="The same build 20 landscape workspace after Files is closed, giving the code the available width"> |
+
+The Files button closes and restores this column. These are native build 20
+captures from the same check that opens the actual software keyboard; the
+[keyboard frame](docs/screenshots/iphone-landscape-keyboard.png) is retained too.
 
 Every compiler result below is a real run of the bundled toolchain in the
 Simulator — the test counts, the diagnostics, the program output and the
@@ -87,28 +103,25 @@ fills the lower display.
 
 The navigator images come from the UI regression in
 `NavigatorFlowUITests`, captured with `scripts/navigator_screenshots.sh`.
-The five native posture images use the running Release build 1.1 (18).
-Device Hub's real Open and Partially Open controls select the posture; no
-forced layout is used. Four native laptop UI checks passed without failures
-or skips, including lower-pane replacement and Projects exit with the keyboard
-open. The dedicated capture run also passed. Capture reads the enumerated inner
-LCD with public simctl; XCTest's inactive-display black frames were rejected.
-CoreSimulator recovered without rebooting the Mac.
+The three laptop posture images use the running Release build 1.1 (20), with
+Device Hub's actual horizontal partial fold and a visible system keyboard.
+Four native checks passed: left Files navigation and resizing, Code and result
+replacement, Terminal input, and full-height Code after hiding the keys.
+The header Files and Projects controls also passed their tap checks. The final
+three-frame capture run passed. Public simctl reads the inner display;
+XCTest's inactive-display black frames were rejected.
 
-| **Native Duo open** | **Native Duo book** |
-| --- | --- |
-| <img src="docs/screenshots/duo-open-code.png" width="450" alt="Build 18 native Duo open display with highlighted Go code and searchable Files"> | <img src="docs/screenshots/duo-book-code.png" width="450" alt="Build 18 native Duo book posture with code and Files on opposite sides of the vertical hinge"> |
-
-Version 1.1 (18) is waiting for App Store review. All 72 placed media assets
-are included in that submission; release is automatic after approval.
+Version 1.1 (18) remains in review with its original 72 media placements.
+The three corrected build 20 images are uploaded to the Asset Library and
+published on the website; they are not yet assigned to the review version.
 
 | **Native Duo code capture** | **Native Duo visual lesson** |
 | --- | --- |
 | <img src="docs/screenshots/duo-native-code.png" width="300" alt="Fresh build 17 native iPhone Duo capture showing real worker-pool Go source"> | <img src="docs/screenshots/duo-native-lesson.png" width="300" alt="Fresh build 17 native Duo lesson capture showing Produce, Finish and Drain in the channel ownership diagram"> |
 
 These two build 17 captures use the simulator's current native display. They
-verify the running app and guide presentation. The five build 18 posture
-captures above additionally show the native open, book and laptop layouts.
+verify the guide presentation, whose authored content is unchanged in build 20.
+The three build 20 images above show the corrected laptop workspace.
 
 The [App Store screenshot sets](docs/app-store/screenshots) are captured from
 the running Release app for 6.1, 6.3, 6.5 and 6.9-inch iPhones, native iPhone
@@ -127,7 +140,7 @@ inner display too. Run `scripts/check_app_store_screenshots.sh` to verify the
 complete ordered sets, native dimensions, opaque pixels and rendered contrast
 before uploading.
 
-The draft holds ten ordered screenshots in each of seven display groups,
+The build 18 submission holds ten ordered screenshots in each of seven display groups,
 plus code-based header and search artwork. Native example captures with build
 17 passed visual inspection; its site capture waits for painted pixels, rather
 than accessibility text alone. All 69 guide records and compiler inputs are

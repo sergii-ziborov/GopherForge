@@ -1,0 +1,72 @@
+{
+  "build": "20",
+  "buildId": "b3976327-c1dc-4189-be8a-38a93f673f38",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "internalBuildState": "IN_BETA_TESTING",
+  "whatToTest": "Version 1.1 (20): keyboard and workspace corrections.\n\nOn iPhone, check Terminal input \u2192 Code \u2192 tap inside the source. Hide/reopen the keyboard and rotate the phone. Files remains a collapsible, adjustable side column in landscape, with consistent panel styling.\n\nOn Duo, Files opens on the left in every posture; select a file, resize/collapse the drawer and use Projects while typing. Code and Terminal use the upper display with a touch keyboard; Problems, Output, Tests and Idioms replace the lower keys. With no touch keyboard, Code and Terminal reclaim the available display height and the helper strip disappears. Header controls respect the system status area.\n\nAll 47 lessons and 22 prediction challenges retain their diagrams, practical notes, highlighting and official references. Embedded source scrolls with the lesson; full-screen source scrolls internally. Also check compilation, tests, formatting and local site previews.",
+  "sourceCommit": "d8c3455",
+  "checkedAt": "2026-10-12T15:19:50.704675+00:00",
+  "version": "1.1",
+  "ipaSHA256": "2bc1258375832e47409ee9f582a21af3e233cfcc3e87ad7a3d07d32e6d979bba",
+  "lessonGuideSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+  "lessonGuidesMatchSource": true,
+  "exportSigningCertificateType": "Apple Distribution",
+  "shareExtensionBuild": "20",
+  "validation": "passed",
+  "upload": "passed",
+  "appReviewSelected": false,
+  "currentReview": {
+    "version": "1.1",
+    "build": "18",
+    "state": "WAITING_FOR_REVIEW",
+    "releaseType": "AFTER_APPROVAL",
+    "checkedAt": "2026-10-12T15:30:35.545070+00:00"
+  },
+  "remainingChecks": [
+    "Native Open/Book and closed landscape Duo",
+    "Hardware-keyboard simulation",
+    "Updated posture media assignment",
+    "Visible Header in editable 1.1 UI"
+  ],
+  "nativeLaptopScreenshots": [
+    {
+      "path": "docs/screenshots/duo-laptop-code.png",
+      "sha256": "cc3e11516c3b5f4da20545badd5a043a97fe9819232e4eb1bea18322b14fd9ef"
+    },
+    {
+      "path": "docs/screenshots/duo-laptop-terminal.png",
+      "sha256": "55735c6d2d5806bf13ad5fb2afa263ee9d0592eac21af970ae3e060d8d7e20c6"
+    },
+    {
+      "path": "docs/screenshots/duo-laptop-idioms.png",
+      "sha256": "456477d1c548381b482ca24e04bb66a5385b8f36bda6f713dd6da38a22a0a802"
+    }
+  ],
+  "website": {
+    "url": "https://gopherforge.app/updates",
+    "publishedCommit": "8eb714b3609cc6a1f5d0be61bd65daac787bb821",
+    "deploymentId": "42bfa665-767a-474c-80dd-028e259d092d",
+    "galleryImageCount": 19,
+    "updatesRealImageCount": 3,
+    "courseContentChanged": false,
+    "legalContentChanged": false,
+    "proof": "docs/website/site-1.1-build20-duo.jpg"
+  },
+  "ordinaryLandscapeCapture": "passed",
+  "ordinaryLandscapeScreenshots": [
+    {
+      "path": "docs/screenshots/iphone-landscape-files.png",
+      "sha256": "fd2039e23e96c21b2b845a8d2f5bed59ca0b2c40b20e5814c1eacaea51c006c2"
+    },
+    {
+      "path": "docs/screenshots/iphone-landscape-code.png",
+      "sha256": "706fff6c00379cce5c9c2c9123edccb467d822dbd2fcd10836d00ef57e8ccca1"
+    },
+    {
+      "path": "docs/screenshots/iphone-landscape-keyboard.png",
+      "sha256": "9b71a1877ec4fb3bcbbacddbe205f3beee8dc19700eeae3123b76bfee83d8e6e"
+    }
+  ],
+  "nativeLaptopCapture": "passed"
+}
