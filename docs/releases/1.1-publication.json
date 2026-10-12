@@ -73,7 +73,7 @@
     "releaseStatusCopyUpdated": "Published: 1.1 build 18 submitted to App Review, waiting for review, automatic release after approval. Public App Store remains 1.0.1.",
     "releaseStatusPublicationProof": "docs/website/site-1.1-review.png"
   },
-  "checkedAt": "2026-10-12T00:26:55.386304+00:00",
+  "checkedAt": "2026-10-12T11:16:15.888712+00:00",
   "existingReviewRecording": {
     "fileName": "GopherForge-physical-iPhone-original-review.mp4",
     "fileSize": 25500411,
@@ -714,13 +714,16 @@
     "checkedAt": "2026-10-11T00:31:22.066870+00:00"
   },
   "appReviewSubmission": {
-    "submissionId": "331cddad-d1bc-402a-bb43-0a55fbecf9b9",
+    "submissionId": "3d79b528-c6a5-4738-be2d-04ee9eb8c88e",
     "submissionState": "WAITING_FOR_REVIEW",
-    "submittedDate": "2026-10-12T00:20:38.234Z",
-    "checkedAt": "2026-10-12T00:26:55.386304+00:00",
+    "submittedDate": "2026-10-12T11:12:45.659Z",
+    "checkedAt": "2026-10-12T11:16:15.888712+00:00",
     "authorizedByOwner": true,
     "placedAssetsInReview": {
       "WAITING_FOR_REVIEW": 72
-    }
+    },
+    "restoredAfterWithdrawal": true,
+    "withdrawnSubmissionId": "331cddad-d1bc-402a-bb43-0a55fbecf9b9",
+    "restorationNote": "Original build 18 resubmitted at the owner request; preserve automatic release. Build 19 was not uploaded."
   }
 }
