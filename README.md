@@ -35,7 +35,8 @@ should reflect the app's actual App Store availability.
 ## Version 1.1 preview
 
 Version 1.1 (build 18) is available to internal TestFlight testers. The public App Store
-version remains 1.0.1; 1.1 has not been submitted for review.
+version remains 1.0.1. Version 1.1 was submitted to App Review on 12 October
+2026 and is waiting for review, with automatic release after Apple approval.
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
   keeps code or terminal above the hinge and puts keyboard or result panes below.
@@ -98,7 +99,8 @@ CoreSimulator recovered without rebooting the Mac.
 | --- | --- |
 | <img src="docs/screenshots/duo-open-code.png" width="450" alt="Build 18 native Duo open display with highlighted Go code and searchable Files"> | <img src="docs/screenshots/duo-book-code.png" width="450" alt="Build 18 native Duo book posture with code and Files on opposite sides of the vertical hinge"> |
 
-Version 1.1 has not been submitted for App Store review.
+Version 1.1 (18) is waiting for App Store review. All 72 placed media assets
+are included in that submission; release is automatic after approval.
 
 | **Native Duo code capture** | **Native Duo visual lesson** |
 | --- | --- |

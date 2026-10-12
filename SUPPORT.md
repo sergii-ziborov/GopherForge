@@ -67,8 +67,9 @@ a way back while the keyboard hides the section bar.
 
 If reporting a layout problem, include the device, system version, posture
 (closed, open, or laptop), selected pane and whether the keyboard was visible.
-Version 1.1 is being prepared for TestFlight verification and is not yet
-available as an App Store update.
+Version 1.1 (build 18) was submitted to App Review on 12 October 2026 and is
+waiting for review, with automatic release after approval. Internal TestFlight
+remains available. Version 1.1 is not yet available as a public App Store update.
 
 ## Terms of Use
 

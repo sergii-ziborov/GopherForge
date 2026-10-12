@@ -583,6 +583,7 @@
 		4D017598D42D8E05691210BF /* ListingCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCopyTests.swift; sourceTree = "<group>"; };
 		4D4B87B6F16E50E00B36FDEC /* GoBuildConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBuildConstraint.swift; sourceTree = "<group>"; };
 		4DC55D19704F32F2F7689E45 /* GoExampleLibrarySites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibrarySites.swift; sourceTree = "<group>"; };
+		4DE75D43C6982C2179B1506D /* site-1.1-review.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-1.1-review.png"; sourceTree = "<group>"; };
 		4E6EDE7EE614E890C000FFA7 /* SourceFileKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFileKind.swift; sourceTree = "<group>"; };
 		4E71BCC01C74613758708EA5 /* duo-laptop-terminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-laptop-terminal.png"; sourceTree = "<group>"; };
 		50DAAC0789337809BD554479 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
@@ -1474,6 +1475,7 @@
 				AA10E8DA2862AC258E16019E /* site-1.1-duo-gallery.png */,
 				9E4D623838EB289416D68C7D /* site-1.1-home.png */,
 				7FDE23AED7F54C03980924DC /* site-1.1-lesson.png */,
+				4DE75D43C6982C2179B1506D /* site-1.1-review.png */,
 			);
 			path = website;
 			sourceTree = "<group>";
