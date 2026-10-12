@@ -115,7 +115,10 @@ struct WorkspaceView: View {
         .navigationTitle(workspace.project?.name ?? "Workspace")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
-        .toolbar(usesLaptopLayout ? .hidden : .visible, for: .tabBar)
+        // Release the tab bar's safe-area reservation while the keyboard owns
+        // the bottom edge. Relying on its automatic visual dismissal can leave
+        // an empty strip between the editor and its input accessory.
+        .toolbar(usesLaptopLayout || keyboardVisible ? .hidden : .visible, for: .tabBar)
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
                 PackageBrowserView(allowsProjectChoice: false) {

@@ -295,6 +295,38 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "06-keyboard-dismissed")
     }
 
+    /// The editor must reach the accessory row, including after the system
+    /// hides the phone tab bar and the caret scrolls to the end of the file.
+    func testPhoneEditorMeetsKeyboardAccessoryAtEndOfFile() throws {
+        app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
+        app.launch()
+        guard !app.buttons["laptop.files"].exists else {
+            throw XCTSkip("This check requires the compact phone layout")
+        }
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 20))
+        editor.tap()
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        XCTAssertTrue(hide.waitForExistence(timeout: 10))
+        editor.swipeUp()
+        editor.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.9)).tap()
+        editor.typeText(String(repeating: "\n", count: 40))
+        XCTAssertTrue(app.descendants(matching: .any)["Unsaved changes"].waitForNonExistence(timeout: 10))
+        let gap = hide.frame.minY - editor.frame.maxY
+        print("PHONE_KEYBOARD_GAP editor=\(editor.frame) helper=\(hide.frame) gap=\(gap)")
+        attachScreenshot(named: "phone-editor-keyboard-at-eof")
+        XCTAssertGreaterThanOrEqual(gap, 0, "the editor must not extend under keyboard controls")
+        XCTAssertLessThanOrEqual(gap, 12, "there must be no blank reserved tab-bar space above the accessory")
+        hide.tap()
+        XCTAssertTrue(hide.waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.tabBars.buttons["Projects"].waitForExistence(timeout: 10))
+        editor.tap()
+        XCTAssertTrue(hide.waitForExistence(timeout: 10))
+        XCTAssertLessThanOrEqual(hide.frame.minY - editor.frame.maxY, 12,
+                                 "reopening the keyboard must not restore the blank strip")
+        XCTAssertFalse(app.tabBars.buttons["Projects"].isHittable)
+    }
+
     func testAccessoryRowOffersGoSymbols() {
         launch(section: .build)
 

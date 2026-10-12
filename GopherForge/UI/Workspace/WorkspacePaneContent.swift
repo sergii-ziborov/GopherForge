@@ -60,6 +60,7 @@ struct WorkspacePaneContent: View {
                     externalKeyboardAccessory: keyboardCommandsOnly,
                     onTextViewReady: onEditorReady
                 )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         case .problems:
             DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [], onReveal: onRevealCode)
