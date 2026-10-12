@@ -28,10 +28,10 @@ final class GoKeyboardAccessoryView: UIView {
         self.onInsert = onInsert
         self.onDismiss = onDismiss
         self.suggestions = suggestions
-        super.init(frame: .zero)
+        super.init(frame: CGRect(x: 0, y: 0, width: 320, height: 46))
 
         backgroundColor = .secondarySystemBackground
-        autoresizingMask = .flexibleHeight
+        autoresizingMask = .flexibleWidth
 
         let completeButton = makeCompletionButton()
         let dismissButton = makeDismissButton()
@@ -59,6 +59,10 @@ final class GoKeyboardAccessoryView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: 46)
     }
 
     // MARK: - Controls

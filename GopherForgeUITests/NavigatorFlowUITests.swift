@@ -137,7 +137,7 @@ final class NavigatorFlowUITests: XCTestCase {
     }
 
     /// A narrow window uses a drawer, a book posture shows a visible tree,
-    /// and a laptop posture opens Files below the work tabs.
+    /// and a laptop posture overlays Files on the leading side.
     func testNavigatorOccupiesOnePlaceForTheWindow() {
         launch()
 
@@ -145,28 +145,38 @@ final class NavigatorFlowUITests: XCTestCase {
         XCTAssertTrue(editor.waitForExistence(timeout: 10))
 
         let files = app.buttons[AccessibilityIdentifier.filesToggle]
-        let laptopFiles = app.buttons["laptop.files"]
+        let laptopBack = app.buttons[AccessibilityIdentifier.laptopProjectsBack]
         let search = app.textFields[AccessibilityIdentifier.fileSearch]
         let goMod = app.buttons["file.go.mod"]
 
         if search.waitForExistence(timeout: 3) {
-            XCTAssertFalse(files.exists, "a visible tree must not have a second Files button")
+            XCTAssertTrue(files.exists, "a visible tree must offer a way to collapse it")
             XCTAssertTrue(goMod.waitForExistence(timeout: 5))
             attachScreenshot(named: "navigator-wide-persistent")
             goMod.tap()
             XCTAssertTrue(search.exists, "choosing a file should leave the tree in place")
-        } else if laptopFiles.waitForExistence(timeout: 2) {
-            XCTAssertFalse(files.exists, "the laptop layout uses its lower pane for Files")
-            let initialEditor = editor.frame
-            laptopFiles.tap()
+        } else if laptopBack.waitForExistence(timeout: 2) {
+            XCTAssertTrue(files.exists, "Files belongs in the leading header")
+            XCTAssertEqual(app.buttons.matching(identifier: AccessibilityIdentifier.filesToggle).count, 1)
+            XCTAssertFalse(app.buttons["laptop.files"].exists, "there must be no duplicate lower Files pane")
+            XCTAssertTrue(files.isHittable)
+            XCTAssertGreaterThanOrEqual(files.frame.width, 44)
+            XCTAssertGreaterThanOrEqual(files.frame.height, 44)
+            files.tap()
+            print("DUO_FILES_AFTER_TAP value=\(String(describing: files.value)) frame=\(files.frame)")
             XCTAssertTrue(search.waitForExistence(timeout: 5))
-            XCTAssertGreaterThan(search.frame.minY, laptopFiles.frame.midY,
-                                 "Files should replace the keyboard below the tabs")
-            XCTAssertEqual(editor.frame.minY, initialEditor.minY, accuracy: 2,
-                           "opening Files must not move the upper editor")
-            XCTAssertLessThan(editor.frame.maxY, search.frame.minY,
-                              "Files should not cover the upper editor")
-            goMod.tap()
+            XCTAssertLessThan(search.frame.minY, app.buttons["pane.more"].frame.minY,
+                              "Files belongs beside the upper editor, not below the hinge")
+            XCTAssertLessThan(search.frame.minX, app.windows.firstMatch.frame.midX)
+            let handle = app.otherElements["workspace.navigatorResize"]
+            XCTAssertTrue(handle.waitForExistence(timeout: 5))
+            let before = handle.frame.midX
+            let resizeStart = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            resizeStart.press(forDuration: 0.25, thenDragTo: resizeStart.withOffset(CGVector(dx: 60, dy: 0)))
+            XCTAssertGreaterThan(handle.frame.midX, before + 40, "the leading Duo Files pane must resize")
+            attachScreenshot(named: "navigator-duo-leading-drawer")
+            XCTAssertTrue(goMod.waitForExistence(timeout: 5))
+            goMod.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).tap()
             XCTAssertTrue(search.waitForNonExistence(timeout: 5))
             XCTAssertTrue((editor.value as? String ?? "").contains("module "))
         } else {
@@ -207,9 +217,7 @@ final class NavigatorFlowUITests: XCTestCase {
         let search = app.textFields[AccessibilityIdentifier.fileSearch]
         guard !search.waitForExistence(timeout: 6) else { return }
 
-        let files = app.buttons["laptop.files"].exists
-            ? app.buttons["laptop.files"]
-            : app.buttons[AccessibilityIdentifier.filesToggle]
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
         XCTAssertTrue(
             files.waitForExistence(timeout: 5),
             "a layout with no visible navigator must offer a way to open one"

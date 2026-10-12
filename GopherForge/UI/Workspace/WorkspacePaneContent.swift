@@ -60,6 +60,7 @@ struct WorkspacePaneContent: View {
                     externalKeyboardAccessory: keyboardCommandsOnly,
                     onTextViewReady: onEditorReady
                 )
+                .background(Color(.systemBackground))
             }
         case .problems:
             DiagnosticListView(diagnostics: workspace.lastResult?.diagnostics ?? [], onReveal: onRevealCode)
@@ -138,7 +139,10 @@ struct WorkspacePanePicker: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.dockPicker)
                 .onChange(of: selection) { _, pane in
-                    withAnimation { proxy.scrollTo(pane, anchor: .center) }
+                    withAnimation { proxy.scrollTo(pane, anchor: .leading) }
+                }
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { _ in
+                    proxy.scrollTo(selection, anchor: .leading)
                 }
             }
         }

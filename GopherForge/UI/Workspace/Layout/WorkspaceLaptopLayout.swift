@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension WorkspaceView {
-    /// Book keeps the adjustable Files pane and the active work pane. A default
+    /// Book keeps Files beside the active work pane. A default
     /// ArrangementView added a second strip of padding around the crease.
     @available(iOS 27.1, *)
     func foldedLayout(
@@ -10,7 +10,17 @@ extension WorkspaceView {
         division: CGRect,
         width: CGFloat
     ) -> some View {
-        columnsLayout(terminal: terminal, width: width)
+        HStack(spacing: 0) {
+            if !navigatorCollapsed {
+                ProjectNavigatorView(onOpenFile: revealCode)
+                    .frame(width: max(170, min(division.minX, width - 280)))
+                // Only the physical crease separates the two book panels.
+                // This follows Crabrix without adding arrangement padding.
+                Color.clear.frame(width: division.width)
+            }
+            paneStack(terminal: terminal)
+                .frame(minWidth: 0, maxWidth: .infinity)
+        }
     }
 
     /// The upper display is the active work surface. With Code or Terminal
@@ -20,6 +30,7 @@ extension WorkspaceView {
     func laptopLayout(terminal: ProjectTerminalSession, division: CGRect?) -> some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
+                ZStack(alignment: .leading) {
                 WorkspacePaneContent(
                     pane: laptopWorkPane,
                     terminal: terminal,
@@ -32,14 +43,41 @@ extension WorkspaceView {
                         }
                     }
                 )
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                if isDrawerOpen {
+                    Color.black.opacity(0.25)
+                        .onTapGesture { withAnimation { isDrawerOpen = false } }
+                        .accessibilityLabel("Close files")
+                        .accessibilityAddTraits(.isButton)
+                    HStack(spacing: 0) {
+                    ProjectNavigatorView(onSelect: {
+                        withAnimation { isDrawerOpen = false }
+                    }, onOpenFile: {
+                        selectLaptopPane(.code)
+                        revealCode()
+                    })
+                    .frame(width: navigatorWidth(for: geometry.size.width))
+                    .simultaneousGesture(DragGesture(minimumDistance: 12).onEnded { value in
+                        if FilesDrawerGesture.shouldClose(translation: value.translation) {
+                            withAnimation { isDrawerOpen = false }
+                        }
+                    })
+                    navigatorResizeHandle(availableWidth: geometry.size.width)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .padding(8)
+                    .shadow(radius: 8)
+                    .transition(.move(edge: .leading))
+                }
+                }
                 .frame(height: laptopWorkHeight(in: geometry, division: division))
+                .clipped()
 
                 Divider()
                 laptopTabs
                 Divider()
 
-                if keyboardVisible && !laptopShowsFiles {
+                if softwareKeyboardVisible && !isDrawerOpen {
                     if laptopPane == .code, let laptopEditor {
                         GoKeyboardHelperBar(textView: laptopEditor, fileKind: workspace.fileKind)
                             .frame(height: 46)
@@ -48,13 +86,7 @@ extension WorkspaceView {
                     }
                 }
 
-                if laptopShowsFiles {
-                    ProjectNavigatorView(onOpenFile: {
-                        selectLaptopPane(.code)
-                        revealCode()
-                    })
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if laptopPane != .code && laptopPane != .terminal {
+                if laptopPane != .code && laptopPane != .terminal {
                     WorkspacePaneContent(
                         pane: laptopPane,
                         terminal: terminal,
@@ -62,7 +94,7 @@ extension WorkspaceView {
                         onRevealCode: { selectLaptopPane(.code) }
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if !keyboardVisible {
+                } else if !softwareKeyboardVisible {
                     Spacer(minLength: 0)
                 }
             }
@@ -75,27 +107,13 @@ extension WorkspaceView {
     }
 
     var laptopTabs: some View {
-        HStack(spacing: 0) {
-            Button {
-                laptopShowsFiles = true
-                laptopShouldFocus = false
-                dismissLaptopKeyboard()
-            } label: {
-                Label("Files", systemImage: "folder")
-                    .labelStyle(.iconOnly)
-                    .frame(width: 44, height: 44)
-            }
-            .accessibilityLabel("Files")
-            .accessibilityIdentifier("laptop.files")
-            Divider().frame(height: 24)
-            WorkspacePanePicker(
+        WorkspacePanePicker(
                 selection: Binding(
                     get: { laptopPane },
                     set: { selectLaptopPane($0) }
                 ),
                 panes: WorkspacePane.workPanes
             )
-        }
         .background(Color(.secondarySystemBackground))
     }
 
@@ -130,7 +148,6 @@ extension WorkspaceView {
     func selectLaptopPane(_ destination: WorkspacePane) {
         laptopPane = destination
         pane = destination
-        laptopShowsFiles = false
         if destination == .code || destination == .terminal {
             laptopWorkPane = destination
             if destination == .terminal { laptopEditor = nil }
@@ -161,10 +178,29 @@ extension WorkspaceView {
     }
 
     func laptopWorkHeight(in geometry: GeometryProxy, division: CGRect?) -> CGFloat {
+        let workPaneSelected = laptopPane == .code || laptopPane == .terminal
+        if workPaneSelected && !softwareKeyboardVisible && !forceLaptopLayout {
+            // An external keyboard leaves no lower touch surface to reserve,
+            // including when the inner display is bent. Results still split
+            // at the hinge; Code and Terminal reclaim the empty lower half.
+            return max(0, geometry.size.height - 46)
+        }
+        if !duoPartiallyOpen && !forceLaptopLayout {
+            if workPaneSelected {
+                // On a flat inner display there is no physical separation:
+                // fill the space above the real keys, or the whole viewport
+                // when a hardware keyboard is in use. Keep the same editor
+                // mounted so moving this boundary cannot drop its focus.
+                let availableHeight = softwareKeyboardVisible
+                    ? keyboardViewportHeight(in: geometry) - 46
+                    : geometry.size.height
+                return max(0, availableHeight - 46)
+            }
+        }
         let hingeHeight = min(division?.maxY ?? geometry.size.height * 0.5, geometry.size.height)
         // The Duo keyboard's rounded upper edge covers 21 points of the
         // helper row at the division. Leave five more points for separation.
-        return max(0, hingeHeight - (keyboardVisible ? 26 : 0))
+        return max(0, hingeHeight - (softwareKeyboardVisible ? 26 : 0))
     }
 
     func scheduleInitialLaptopFocus() {

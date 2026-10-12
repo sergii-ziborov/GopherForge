@@ -126,17 +126,25 @@ final class AppStoreScreenshotUITests: XCTestCase {
     /// The device must already have a real horizontal Duo division region.
     /// Uses the existing example project so the photos show useful Go source.
     func testCaptureNativeLaptopScreenshots() {
-        launch(section: "build")
-        XCTAssertTrue(app.buttons["laptop.files"].waitForExistence(timeout: 30),
+        launch(section: "learn", screen: "examples")
+        XCTAssertTrue(app.navigationBars["Examples"].waitForExistence(timeout: 30))
+        openExample("site.notes")
+        XCTAssertTrue(app.selectWorkspacePane("code"))
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.laptopProjectsBack].waitForExistence(timeout: 30),
                       "native Duo laptop posture must be active")
         expectSource()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 30))
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 30))
+        XCTAssertTrue(keyboard.isHittable)
+        XCTAssertGreaterThan(keyboard.frame.height, 150, "capture must include software keys")
         XCTAssertTrue(app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists)
         captureNativeDisplayFrame("duo-laptop-code")
 
         XCTAssertTrue(app.selectWorkspacePane("terminal"))
         XCTAssertTrue(app.textFields["terminal.input"].waitForExistence(timeout: 30))
         XCTAssertTrue(app.buttons["terminal.quick.help"].waitForExistence(timeout: 30))
+        XCTAssertTrue(keyboard.isHittable)
+        XCTAssertGreaterThan(keyboard.frame.height, 150, "capture must include software keys")
         captureNativeDisplayFrame("duo-laptop-terminal")
 
         XCTAssertTrue(app.selectWorkspacePane("code"))
@@ -144,6 +152,51 @@ final class AppStoreScreenshotUITests: XCTestCase {
         XCTAssertTrue(app.buttons[AccessibilityIdentifier.hideKeyboard].waitForNonExistence(timeout: 30))
         XCTAssertTrue(app.textViews[AccessibilityIdentifier.editor].exists)
         captureNativeDisplayFrame("duo-laptop-idioms")
+    }
+
+    func testCapturePhoneLandscapeScreenshots() {
+        launch(section: "projects")
+        openTemplate("cli")
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        let search = app.textFields[AccessibilityIdentifier.fileSearch]
+        XCTAssertTrue(files.waitForExistence(timeout: 10))
+        if !search.waitForExistence(timeout: 2) { files.tap() }
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        captureNativeDisplayFrame("iphone-landscape-files")
+        files.tap()
+        XCTAssertTrue(search.waitForNonExistence(timeout: 10))
+        captureNativeDisplayFrame("iphone-landscape-code")
+        app.textViews[AccessibilityIdentifier.editor].tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.keyboards.firstMatch.isHittable)
+        captureNativeDisplayFrame("iphone-landscape-keyboard")
+    }
+
+    func testCaptureNativeExpandedDuoScreenshots() throws {
+        launch(section: "learn", screen: "examples")
+        XCTAssertTrue(app.buttons["example.site.notes"].waitForExistence(timeout: 30))
+        openExample("site.notes")
+        guard app.windows.firstMatch.frame.width >= 600,
+              !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
+            throw XCTSkip("Select the native Open or Book Duo posture before capture")
+        }
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        let search = app.textFields[AccessibilityIdentifier.fileSearch]
+        XCTAssertTrue(files.waitForExistence(timeout: 10))
+        if search.exists { files.tap() }
+        XCTAssertTrue(search.waitForNonExistence(timeout: 10))
+        captureNativeDisplayFrame("duo-expanded-code")
+        files.tap()
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        captureNativeDisplayFrame("duo-expanded-files")
+        files.tap()
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        editor.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.keyboards.firstMatch.isHittable)
+        captureNativeDisplayFrame("duo-expanded-keyboard")
     }
 
     private func captureExampleScreenshots(relaunchExamples: Bool = false) {

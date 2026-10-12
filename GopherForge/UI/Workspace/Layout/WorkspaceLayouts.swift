@@ -72,7 +72,7 @@ extension WorkspaceView {
         if newLayout.showsDock && !layout.showsDock && pane != .code {
             dockPane = pane
         }
-        if newLayout.hasNavigator { isDrawerOpen = false }
+        if newLayout.hasNavigator && !usesLaptopLayout { isDrawerOpen = false }
         layout = newLayout
     }
 
@@ -84,11 +84,18 @@ extension WorkspaceView {
             if !navigatorCollapsed {
                 ProjectNavigatorView(onOpenFile: revealCode)
                     .frame(width: navigatorWidth(for: width))
+                    .clipShape(RoundedRectangle(cornerRadius: roundsLandscapePanels ? 20 : 0))
+                    .padding(.vertical, roundsLandscapePanels ? 8 : 0)
+                    .padding(.leading, roundsLandscapePanels ? 8 : 0)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                 navigatorResizeHandle(availableWidth: width)
             }
             paneStack(terminal: terminal)
                 .frame(minWidth: 0, maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: roundsLandscapePanels ? 20 : 0))
+                .padding(.vertical, roundsLandscapePanels ? 8 : 0)
+                .padding(.trailing, roundsLandscapePanels ? 8 : 0)
+                .padding(.leading, roundsLandscapePanels && navigatorCollapsed ? 8 : 0)
         }
     }
 
@@ -179,6 +186,8 @@ extension WorkspaceView {
                     onOpenFile: revealCode
                 )
                     .frame(maxWidth: 320)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .padding(8)
                     .shadow(radius: 12)
                     .transition(.move(edge: .leading))
                     .gesture(

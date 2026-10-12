@@ -8,6 +8,7 @@ import UIKit
 /// losing the selection, a caret position the app can read, and a keyboard
 /// accessory with the characters Go needs most.
 struct SyntaxCodeEditor: UIViewRepresentable {
+    @Environment(\.softwareKeyboardAccessoryEnabled) private var softwareKeyboardAccessoryEnabled
     /// A container wide enough that nothing reaches its edge.
     ///
     /// Large and finite rather than `greatestFiniteMagnitude` because TextKit
@@ -55,9 +56,12 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         textView.smartInsertDeleteType = .no
         textView.backgroundColor = .clear
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 24, right: 8)
-        textView.inputAccessoryView = externalKeyboardAccessory
+        let usesPresentationAccessory = externalKeyboardAccessory || !softwareKeyboardAccessoryEnabled
+        textView.inputAssistantItem.leadingBarButtonGroups = []
+        textView.inputAssistantItem.trailingBarButtonGroups = []
+        textView.inputAccessoryView = usesPresentationAccessory
             ? KeyboardPresentationAccessoryView() : context.coordinator.makeAccessoryView(for: textView)
-        context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
+        context.coordinator.appliedPresentationAccessory = usesPresentationAccessory
 
         // Code does not wrap. A wrapped Go line hides its own indentation and
         // makes every line below it start in a different place, which is worse
@@ -109,9 +113,10 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         context.coordinator.editor = editor
         editor.gutter.setNeedsDisplay()
 
-        if context.coordinator.appliedExternalKeyboardAccessory != externalKeyboardAccessory {
-            context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
-            textView.inputAccessoryView = externalKeyboardAccessory
+        let usesPresentationAccessory = externalKeyboardAccessory || !softwareKeyboardAccessoryEnabled
+        if context.coordinator.appliedPresentationAccessory != usesPresentationAccessory {
+            context.coordinator.appliedPresentationAccessory = usesPresentationAccessory
+            textView.inputAccessoryView = usesPresentationAccessory
                 ? KeyboardPresentationAccessoryView() : context.coordinator.makeAccessoryView(for: textView)
             if textView.isFirstResponder { textView.reloadInputViews() }
         }
@@ -176,7 +181,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         var appliedSearchQuery = ""
         var appliedMarkedLines: Set<Int> = []
         var appliedFocusRequest = 0
-        var appliedExternalKeyboardAccessory = false
+        var appliedPresentationAccessory = false
         /// Redrawn whenever the text or the scroll position changes, because
         /// the numbers are painted rather than laid out.
         weak var gutter: LineNumberGutterView?

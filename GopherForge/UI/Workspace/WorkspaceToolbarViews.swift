@@ -16,19 +16,24 @@ struct PhaseButton: View {
 
     @Environment(WorkspaceModel.self) private var workspace
     let phase: CompilationResult.Phase
+    var minimumHitTarget: CGFloat = 0
 
     var body: some View {
         Button {
             Task { await workspace.run(phase) }
         } label: {
-            if workspace.runningPhase == phase {
-                ProgressView()
-            } else {
-                Label(
-                    GopherForgeTheme.label(for: phase),
-                    systemImage: GopherForgeTheme.systemImage(for: phase)
-                )
+            Group {
+                if workspace.runningPhase == phase {
+                    ProgressView()
+                } else {
+                    Label(
+                        GopherForgeTheme.label(for: phase),
+                        systemImage: GopherForgeTheme.systemImage(for: phase)
+                    )
+                }
             }
+            .frame(minWidth: minimumHitTarget, minHeight: minimumHitTarget)
+            .contentShape(Rectangle())
         }
         .disabled(!workspace.canRun)
         .accessibilityIdentifier(AccessibilityID.phase(phase))

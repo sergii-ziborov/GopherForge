@@ -300,7 +300,7 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testPhoneEditorMeetsKeyboardAccessoryAtEndOfFile() throws {
         app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
         app.launch()
-        guard !app.buttons["laptop.files"].exists else {
+        guard !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
             throw XCTSkip("This check requires the compact phone layout")
         }
         let editor = app.textViews[AccessibilityIdentifier.editor]
@@ -328,10 +328,35 @@ final class WorkspaceFlowUITests: XCTestCase {
     }
 
     @MainActor
+    func testPhoneLandscapeFilesCanCloseAndReturn() throws {
+        app.launchArguments = ["-GopherForgeSection", Section.build.rawValue, "-GopherForgeEmptyLibrary"]
+        app.launch()
+        guard app.windows.firstMatch.frame.width < 600 else {
+            throw XCTSkip("This check is for a conventional phone")
+        }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        let search = app.textFields[AccessibilityIdentifier.fileSearch]
+        XCTAssertTrue(files.waitForExistence(timeout: 5))
+        if !search.waitForExistence(timeout: 2) { files.tap() }
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        let withFiles = editor.frame.minX
+        attachScreenshot(named: "phone-landscape-files-column")
+        files.tap()
+        XCTAssertTrue(search.waitForNonExistence(timeout: 5))
+        XCTAssertLessThan(editor.frame.minX, withFiles - 120)
+        attachScreenshot(named: "phone-landscape-code")
+        files.tap()
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+    }
+
+    @MainActor
     func testPhoneTerminalToCodeKeepsKeyboardAccessoryAgainstEditor() throws {
         app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
         app.launch()
-        guard !app.buttons["laptop.files"].exists else {
+        guard !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
             throw XCTSkip("This check requires the compact phone layout")
         }
         let terminalTab = app.buttons["pane.terminal"]
@@ -436,23 +461,36 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testWideFilesCanResizeCollapseAndReturn() throws {
         app.launchArguments = [
             "-GopherForgeSection", "build", "-GopherForgeEmptyLibrary",
-            "-workspaceNavigatorCollapsed", "NO", "-workspaceNavigatorWidth", "220",
         ]
         app.launch()
         let handle = app.otherElements["workspace.navigatorResize"]
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        if !handle.waitForExistence(timeout: 3), files.exists,
+           !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists {
+            files.tap()
+        }
         guard handle.waitForExistence(timeout: 10) else {
             throw XCTSkip("This check requires a wide layout with a side navigator")
         }
         let editor = app.textViews[AccessibilityIdentifier.editor]
         XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        // A previous run may have saved the maximum width. Leave room for
+        // this run's expansion without clearing the user's other preferences.
+        if handle.frame.midX > 300 {
+            let normalization = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            normalization.press(forDuration: 0.25, thenDragTo: normalization.withOffset(CGVector(dx: -140, dy: 0)))
+        }
         let originalX = handle.frame.midX
+        print("NAVIGATOR_RESIZE_BEFORE handle=\(handle.frame) value=\(String(describing: handle.value)) editor=\(editor.frame)")
+        attachScreenshot(named: "wide-files-before-resize")
         let start = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-        start.press(forDuration: 0.1, thenDragTo: start.withOffset(CGVector(dx: 80, dy: 0)))
+        start.press(forDuration: 0.25, thenDragTo: start.withOffset(CGVector(dx: 80, dy: 0)))
+        print("NAVIGATOR_RESIZE_AFTER handle=\(handle.frame) value=\(String(describing: handle.value)) editor=\(editor.frame)")
+        attachScreenshot(named: "wide-files-after-resize")
         XCTAssertGreaterThan(handle.frame.midX - originalX, 50)
         XCTAssertLessThan(handle.frame.midX - originalX, 100)
 
         let resizedEditorWidth = editor.frame.width
-        let files = app.buttons[AccessibilityIdentifier.filesToggle]
         XCTAssertTrue(files.waitForExistence(timeout: 5))
         files.tap()
         XCTAssertTrue(handle.waitForNonExistence(timeout: 5))
@@ -491,7 +529,7 @@ final class WorkspaceFlowUITests: XCTestCase {
             "-GopherForgeEmptyLibrary",
         ]
         app.launch()
-        guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
+        guard app.buttons[AccessibilityIdentifier.laptopProjectsBack].waitForExistence(timeout: 5) else {
             throw XCTSkip("No horizontal Duo division region is active")
         }
 
@@ -506,7 +544,7 @@ final class WorkspaceFlowUITests: XCTestCase {
             "-GopherForgeEmptyLibrary",
         ]
         app.launch()
-        guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
+        guard app.buttons[AccessibilityIdentifier.laptopProjectsBack].waitForExistence(timeout: 5) else {
             throw XCTSkip("No horizontal Duo division region is active")
         }
 
@@ -528,7 +566,7 @@ final class WorkspaceFlowUITests: XCTestCase {
     func testProjectsBackIsAbsentOutsideLaptopPosture() throws {
         app.launchArguments = ["-GopherForgeSection", Section.build.rawValue]
         app.launch()
-        guard !app.buttons["laptop.files"].waitForExistence(timeout: 3) else {
+        guard !app.buttons[AccessibilityIdentifier.laptopProjectsBack].waitForExistence(timeout: 3) else {
             throw XCTSkip("Laptop posture is active")
         }
 
@@ -542,7 +580,7 @@ final class WorkspaceFlowUITests: XCTestCase {
             "-GopherForgeEmptyLibrary",
         ]
         app.launch()
-        guard app.buttons["laptop.files"].waitForExistence(timeout: 5) else {
+        guard app.buttons[AccessibilityIdentifier.laptopProjectsBack].waitForExistence(timeout: 5) else {
             throw XCTSkip("No horizontal Duo division region is active")
         }
 
@@ -563,8 +601,38 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertTrue(helper.waitForExistence(timeout: 5))
     }
 
+    /// Hiding the touch keyboard must reclaim the lower half for Code, with
+    /// no leftover helper strip. Hardware-keyboard presentation uses the same
+    /// layout boundary; its connection is checked separately in Device Hub.
+    func testDuoCodeReclaimsDisplayWhenTouchKeyboardIsHidden() throws {
+        app.launchArguments = [
+            "-GopherForgeSection", Section.build.rawValue,
+            "-GopherForgeEmptyLibrary",
+        ]
+        app.launch()
+        guard app.buttons[AccessibilityIdentifier.laptopProjectsBack].waitForExistence(timeout: 5) else {
+            throw XCTSkip("No inner portrait Duo workspace is active")
+        }
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        XCTAssertTrue(hide.waitForExistence(timeout: 5))
+        hide.tap()
+        XCTAssertTrue(hide.waitForNonExistence(timeout: 5))
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        let tabs = app.buttons["pane.more"]
+        let window = app.windows.firstMatch.frame
+        XCTAssertGreaterThan(editor.frame.height, window.height * 0.7,
+                             "Code must reclaim the unused lower display")
+        XCTAssertLessThan(abs(window.maxY - tabs.frame.maxY), 4,
+                          "a hidden keyboard must not leave a blank bottom shelf")
+        XCTAssertFalse(app.keyboards.firstMatch.isHittable)
+        attachScreenshot(named: "duo-code-full-height-without-touch-keyboard")
+        editor.tap()
+        XCTAssertTrue(hide.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.keyboards.firstMatch.isHittable)
+    }
+
     private func assertLaptopTabsSwapKeyboardForResults() {
-        let filesTab = app.buttons["laptop.files"]
+        let filesTab = app.buttons["pane.more"]
         XCTAssertTrue(filesTab.waitForExistence(timeout: 5))
 
         let editor = app.textViews[AccessibilityIdentifier.editor]

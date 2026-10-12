@@ -101,6 +101,7 @@ struct TerminalPaneView: View {
 /// is replaced by Code and its UIKit input accessory takes over.
 /// Duo supplies its own commands below the hinge, so it needs no accessory here.
 private struct TerminalCommandField: UIViewRepresentable {
+    @Environment(\.softwareKeyboardAccessoryEnabled) private var softwareKeyboardAccessoryEnabled
     @Binding var text: String
     let focusRequest: Int
     let externalKeyboardAccessory: Bool
@@ -124,8 +125,10 @@ private struct TerminalCommandField: UIViewRepresentable {
         field.accessibilityIdentifier = "terminal.input"
         field.delegate = context.coordinator
         field.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .editingChanged)
-        field.inputAccessoryView = externalKeyboardAccessory ? KeyboardPresentationAccessoryView() : Self.makeAccessory(for: field)
+        let usesPresentationAccessory = externalKeyboardAccessory || !softwareKeyboardAccessoryEnabled
+        field.inputAccessoryView = usesPresentationAccessory ? KeyboardPresentationAccessoryView() : Self.makeAccessory(for: field)
         context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
+        context.coordinator.appliedPresentationAccessory = usesPresentationAccessory
         return field
     }
 
@@ -135,7 +138,11 @@ private struct TerminalCommandField: UIViewRepresentable {
         if context.coordinator.appliedExternalKeyboardAccessory != externalKeyboardAccessory {
             context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
             field.keyboardType = externalKeyboardAccessory ? .asciiCapable : .default
-            field.inputAccessoryView = externalKeyboardAccessory ? KeyboardPresentationAccessoryView() : Self.makeAccessory(for: field)
+        }
+        let usesPresentationAccessory = externalKeyboardAccessory || !softwareKeyboardAccessoryEnabled
+        if context.coordinator.appliedPresentationAccessory != usesPresentationAccessory {
+            context.coordinator.appliedPresentationAccessory = usesPresentationAccessory
+            field.inputAccessoryView = usesPresentationAccessory ? KeyboardPresentationAccessoryView() : Self.makeAccessory(for: field)
             if field.isFirstResponder { field.reloadInputViews() }
         }
         if focusRequest < 0 && context.coordinator.lastFocusRequest != focusRequest {
@@ -182,6 +189,7 @@ private struct TerminalCommandField: UIViewRepresentable {
         var parent: TerminalCommandField
         var lastFocusRequest = 0
         var appliedExternalKeyboardAccessory = false
+        var appliedPresentationAccessory = false
 
         init(_ parent: TerminalCommandField) { self.parent = parent }
 

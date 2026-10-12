@@ -19,7 +19,7 @@ from PIL import Image
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--device", required=True)
-    parser.add_argument("--output-prefix", default="build/release-1.1/native-duo-laptop-frames-build18")
+    parser.add_argument("--output-prefix", default="build/release-1.1/native-duo-laptop-frames-build20")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     output = root / args.output_prefix
@@ -37,6 +37,12 @@ def main():
     inner = next((block for block in enumeration.split("    (")
                   if "Pixel Size: {2007, 2853}" in block), None)
     match = re.search(r"Device Name: ([^\n]+)", inner or "")
+    if not match:
+        # Current simctl enumerates display ports by UUID instead of name.
+        inner = next((block for block in enumeration.split("Port:")
+                      if "Default width: 2007" in block
+                      and "Default height: 2853" in block), None)
+        match = re.search(r"UUID: ([^\n]+)", inner or "")
     if not match:
         raise SystemExit("The native Duo inner display was not enumerated")
     display = match.group(1).strip()

@@ -10,6 +10,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var workspace = WorkspaceModel()
     @State private var navigation = AppNavigation()
+    @State private var duoPresentation = DuoPresentation()
     /// Above the navigation stacks on purpose. A pushed screen inherits the
     /// environment of the stack that presents it, so progress owned inside the
     /// course screen would not reach the unit and lesson screens pushed from
@@ -17,7 +18,24 @@ struct ContentView: View {
     /// nothing.
     @State private var learnProgress = LearnProgress()
 
-    var body: some View {
+    @ViewBuilder var body: some View {
+        if #available(iOS 27.1, *) {
+            shell.onHingeChange { _, context in
+                if let hinge = context.hinge {
+                    // Keyboard and section transitions can momentarily have
+                    // no hinge context. Hardware capability stays stable,
+                    // preserving the workspace and its open Files drawer.
+                    duoPresentation = DuoPresentation(
+                        isDuo: true, isPartiallyOpen: hinge.status == .partiallyOpen
+                    )
+                }
+            }
+        } else {
+            shell
+        }
+    }
+
+    private var shell: some View {
         // One layout, both devices.
         //
         // iPad had a split view whose sidebar held the same four sections the
@@ -33,6 +51,7 @@ struct ContentView: View {
             .environment(workspace)
             .environment(navigation)
             .environment(learnProgress)
+            .environment(\.duoPresentation, duoPresentation)
             .task { await workspace.prepare() }
             // Editor text lives in the model and is written back on a debounce,
             // and a debounce that has not fired does not survive the process
@@ -46,12 +65,18 @@ struct ContentView: View {
     private var tabLayout: some View {
         TabView(selection: tabSelection) {
             ForEach(AppSection.allCases) { item in
-                NavigationStack {
-                    destination(for: item)
+                Group {
+                    if item == .build && duoPresentation.isDuo {
+                        // Duo owns its compact header. Keeping an invisible
+                        // navigation toolbar above it intercepts header taps.
+                        destination(for: item)
+                    } else {
+                        NavigationStack { destination(for: item) }
+                            .accessibilityIdentifier(AccessibilityID.section(item))
+                    }
                 }
                 .tabItem { Label(item.title, systemImage: item.systemImage) }
                 .tag(item)
-                .accessibilityIdentifier(AccessibilityID.section(item))
             }
         }
         .tabViewStyle(.tabBarOnly)

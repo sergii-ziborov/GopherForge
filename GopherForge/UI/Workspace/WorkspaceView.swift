@@ -1,4 +1,21 @@
 import SwiftUI
+import GameController
+
+struct DuoPresentation: Equatable {
+    var isDuo = false
+    var isPartiallyOpen = false
+}
+
+private struct DuoPresentationKey: EnvironmentKey {
+    static let defaultValue = DuoPresentation()
+}
+
+extension EnvironmentValues {
+    var duoPresentation: DuoPresentation {
+        get { self[DuoPresentationKey.self] }
+        set { self[DuoPresentationKey.self] = newValue }
+    }
+}
 
 /// Widths are measured inside the workspace, after the system has accounted
 /// for window size and safe areas. The phone may switch among these layouts
@@ -37,20 +54,26 @@ enum WorkspaceLayout: Equatable {
 struct WorkspaceView: View {
     @Environment(WorkspaceModel.self) var workspace
     @Environment(AppNavigation.self) var navigation
+    @Environment(\.duoPresentation) private var duoPresentation
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AppStorage("editorFontSize") var fontSize: Double = 14
 
     @State var pane: WorkspacePane = .code
     @State var dockPane: WorkspacePane = .problems
     @State var laptopPane: WorkspacePane = .code
     @State var laptopWorkPane: WorkspacePane = .code
-    @State var laptopShowsFiles = false
     @State var laptopFocusGeneration = 0
     @State var laptopShouldFocus = false
     @State var keyboardVisible = false
     @State var keyboardFrame = CGRect.null
+    @State var keyboardAccessoryEnabled = GCKeyboard.coalesced == nil
     @State var laptopEditor: UITextView?
-    @State var duoPartiallyOpen = false
-    @State var duoHingePresent = false
+    var duoPartiallyOpen: Bool { duoPresentation.isPartiallyOpen }
+    var duoHingePresent: Bool { duoPresentation.isDuo }
+    var isCompactPhoneLandscape: Bool {
+        !duoHingePresent && UIDevice.current.userInterfaceIdiom == .phone && verticalSizeClass == .compact
+    }
+    var roundsLandscapePanels: Bool { isCompactPhoneLandscape && !keyboardVisible }
     @AppStorage("workspaceNavigatorWidth") var navigatorWidth: Double = 220
     @AppStorage("workspaceNavigatorCollapsed") var navigatorCollapsed = false
     @State var navigatorDragStart: Double?
@@ -72,13 +95,13 @@ struct WorkspaceView: View {
     @State var filingItem: ProjectLibraryItem?
 
     @ViewBuilder var body: some View {
-        if #available(iOS 27.1, *) {
-            workspaceRoot.onHingeChange { _, context in
-                duoHingePresent = context.hinge != nil
-                duoPartiallyOpen = context.hinge?.status == .partiallyOpen
-            }
+        if duoHingePresent {
+            workspaceRoot
         } else {
             workspaceRoot
+                .navigationTitle(workspace.project?.name ?? "Workspace")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { toolbar }
         }
     }
 
@@ -120,13 +143,11 @@ struct WorkspaceView: View {
         }
         // The keyboard's actual frame owns this boundary. SwiftUI can retain
         // the previous responder's accessory height when Terminal becomes Code.
-        .padding(.top, duoHingePresent ? 30 : 0)
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .ignoresSafeArea(duoHingePresent ? .container : [], edges: .top)
-        .navigationTitle(workspace.project?.name ?? "Workspace")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar { toolbar }
-        .toolbar(duoHingePresent ? .hidden : .visible, for: .navigationBar)
+        .ignoresSafeArea(duoHingePresent && usesLaptopLayout && !softwareKeyboardVisible ? .container : [], edges: .bottom)
+        .environment(\.softwareKeyboardAccessoryEnabled, keyboardAccessoryEnabled)
+        .background(Color(.secondarySystemBackground).ignoresSafeArea(.container))
         .toolbar(usesLaptopLayout || keyboardVisible ? .hidden : .visible, for: .tabBar)
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
@@ -153,7 +174,6 @@ struct WorkspaceView: View {
             dockPane = .problems
             laptopPane = .code
             laptopWorkPane = .code
-            laptopShowsFiles = false
             laptopShouldFocus = false
             laptopEditor = nil
             isDrawerOpen = false
@@ -210,6 +230,12 @@ struct WorkspaceView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { _ in
             keyboardVisible = keyboardIntersectsWindow
         }
+        .onReceive(NotificationCenter.default.publisher(for: .GCKeyboardDidConnect)) { _ in
+            keyboardAccessoryEnabled = softwareKeyboardVisible
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .GCKeyboardDidDisconnect)) { _ in
+            keyboardAccessoryEnabled = true
+        }
     }
 
     func updateKeyboardFrame(_ notification: Notification) {
@@ -217,6 +243,12 @@ struct WorkspaceView: View {
         let window = activeWorkspaceWindow
         keyboardFrame = window.map { $0.convert(frame, from: $0.screen.coordinateSpace) } ?? frame
         keyboardVisible = keyboardIntersectsWindow
+        if keyboardVisible {
+            // The hardware-keyboard shelf is only the accessory's height.
+            // A software keyboard includes its rows of keys. Off-screen and
+            // hide frames leave the last presentation choice intact.
+            keyboardAccessoryEnabled = softwareKeyboardVisible
+        }
     }
 
     var activeWorkspaceWindow: UIWindow? {
@@ -230,6 +262,10 @@ struct WorkspaceView: View {
         guard let window = activeWorkspaceWindow, !keyboardFrame.isNull,
               keyboardFrame.height > 1 else { return false }
         return window.bounds.intersects(keyboardFrame)
+    }
+
+    var softwareKeyboardVisible: Bool {
+        keyboardIntersectsWindow && keyboardFrame.height > 120
     }
 
     func keyboardViewportHeight(in geometry: GeometryProxy) -> CGFloat {
@@ -264,13 +300,10 @@ struct WorkspaceView: View {
     /// Device Hub can report a half-open hinge without a division region.
     /// The window midpoint still marks the horizontal hinge in that posture.
     func fallbackLaptopDivision(in geometry: GeometryProxy) -> CGRect? {
-        guard geometry.size.height > geometry.size.width,
-              duoPartiallyOpen || (duoHingePresent && geometry.size.width >= 600) else { return nil }
-        let hingeGlobalY = UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap(\.windows)
-            .first(where: \.isKeyWindow)?
-            .bounds.midY ?? geometry.frame(in: .global).midY
+        let windowBounds = activeWorkspaceWindow?.bounds ?? geometry.frame(in: .global)
+        guard windowBounds.height > windowBounds.width,
+              duoHingePresent, geometry.size.width >= 600 else { return nil }
+        let hingeGlobalY = windowBounds.midY
         let hingeY = hingeGlobalY - geometry.frame(in: .global).minY
         guard hingeY > 80, hingeY < geometry.size.height - 80 else { return nil }
         return CGRect(x: 0, y: hingeY, width: geometry.size.width, height: 12)
@@ -313,7 +346,17 @@ struct WorkspaceView: View {
     }
 
     var projectMenu: some View {
+        workspaceMenu(includingPrimaryActions: false)
+    }
+
+    func workspaceMenu(includingPrimaryActions: Bool, minimumHitTarget: CGFloat = 0) -> some View {
             Menu {
+                if includingPrimaryActions {
+                    ForEach(WorkspaceToolbarActions.primaryPhases, id: \.self) { phase in
+                        PhaseButton(phase: phase).labelStyle(.titleAndIcon)
+                    }
+                    Divider()
+                }
                 Button {
                     Task { await openOrganizer() }
                 } label: {
@@ -345,6 +388,8 @@ struct WorkspaceView: View {
                 .accessibilityIdentifier(AccessibilityID.phase(.build))
             } label: {
                 Label("Project", systemImage: "ellipsis.circle")
+                    .frame(minWidth: minimumHitTarget, minHeight: minimumHitTarget)
+                    .contentShape(Rectangle())
             }
             .accessibilityIdentifier(AccessibilityID.projectMenu)
     }
