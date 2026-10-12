@@ -1,39 +1,16 @@
 import SwiftUI
 
 extension WorkspaceView {
-    /// When the inner display is partly folded, its center becomes a reserved
-    /// region. ArrangementView places each side around that region instead of
-    /// allowing a code line or a terminal control to cross the hinge.
+    /// Book keeps the adjustable Files pane and the active work pane. A default
+    /// ArrangementView added a second strip of padding around the crease.
     @available(iOS 27.1, *)
     func foldedLayout(
         terminal: ProjectTerminalSession,
-        layout: WorkspaceLayout
+        layout: WorkspaceLayout,
+        division: CGRect,
+        width: CGFloat
     ) -> some View {
-        ArrangementView {
-            Group {
-                if layout.showsDock {
-                    WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
-                } else {
-                    paneStack(terminal: terminal)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } secondary: {
-            Group {
-                VStack(spacing: 0) {
-                    ProjectNavigatorView(onOpenFile: revealCode)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    if layout.showsDock {
-                        Divider()
-                        dockContent(terminal: terminal)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                }
-            }
-        }
-        // Let the arrangement follow the hinge in both orientations. Limiting
-        // it to the horizontal axis hid the secondary pane in laptop posture.
-        .arrangementViewStyle(.split)
+        columnsLayout(terminal: terminal, width: width)
     }
 
     /// The upper display is the active work surface. With Code or Terminal

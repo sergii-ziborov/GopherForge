@@ -327,6 +327,66 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertFalse(app.tabBars.buttons["Projects"].isHittable)
     }
 
+    @MainActor
+    func testPhoneTerminalToCodeKeepsKeyboardAccessoryAgainstEditor() throws {
+        app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
+        app.launch()
+        guard !app.buttons["laptop.files"].exists else {
+            throw XCTSkip("This check requires the compact phone layout")
+        }
+        let terminalTab = app.buttons["pane.terminal"]
+        XCTAssertTrue(terminalTab.waitForExistence(timeout: 10))
+        terminalTab.tap()
+        let command = app.textFields["terminal.input"]
+        XCTAssertTrue(command.waitForExistence(timeout: 10))
+        command.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10))
+        // Use the visible chips directly. The pane menu dismisses the
+        // keyboard and would accidentally exercise the reported workaround.
+        app.buttons["pane.code"].tap()
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 20))
+        // Tap an existing source line, rather than the blank space below EOF.
+        editor.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: 90, dy: 140)).tap()
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        XCTAssertTrue(hide.waitForExistence(timeout: 10))
+        let gap = hide.frame.minY - editor.frame.maxY
+        print("PHONE_TERMINAL_TO_CODE_GAP editor=\(editor.frame) helper=\(hide.frame) gap=\(gap)")
+        attachScreenshot(named: "phone-editor-keyboard-after-terminal")
+        XCTAssertGreaterThanOrEqual(gap, 0)
+        XCTAssertLessThanOrEqual(gap, 12, "tapping inside code must not leave a blank keyboard strip")
+        editor.typeText(" ")
+        XCTAssertTrue(app.descendants(matching: .any)["Unsaved changes"].waitForNonExistence(timeout: 10))
+        XCTAssertLessThanOrEqual(hide.frame.minY - editor.frame.maxY, 12)
+        hide.tap()
+        XCTAssertTrue(hide.waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.tabBars.buttons["Projects"].waitForExistence(timeout: 10))
+        // The same pane switch must remain clean after dismissing and showing
+        // both responders again, rather than working only on first launch.
+        terminalTab.tap()
+        XCTAssertTrue(command.waitForExistence(timeout: 10))
+        command.tap()
+        let terminalHide = app.buttons["terminal.hideKeyboard"]
+        XCTAssertTrue(terminalHide.waitForExistence(timeout: 10))
+        command.typeText("help\n")
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "go build")).firstMatch
+            .waitForExistence(timeout: 10), "Return should submit the terminal command")
+        terminalHide.tap()
+        XCTAssertTrue(terminalHide.waitForNonExistence(timeout: 10))
+        command.tap()
+        XCTAssertTrue(terminalHide.waitForExistence(timeout: 10))
+        app.buttons["pane.code"].tap()
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: 90, dy: 140)).tap()
+        XCTAssertTrue(hide.waitForExistence(timeout: 10))
+        let repeatedGap = hide.frame.minY - editor.frame.maxY
+        XCTAssertGreaterThanOrEqual(repeatedGap, 0)
+        XCTAssertLessThanOrEqual(repeatedGap, 12)
+        attachScreenshot(named: "phone-editor-keyboard-after-repeated-terminal")
+    }
+
     func testAccessoryRowOffersGoSymbols() {
         launch(section: .build)
 
@@ -368,6 +428,46 @@ final class WorkspaceFlowUITests: XCTestCase {
             )
         }
         attachScreenshot(named: "04-panes")
+    }
+
+    /// Files must give space back to the editor, and the divider must follow
+    /// a finger in screen coordinates even while its own position changes.
+    @MainActor
+    func testWideFilesCanResizeCollapseAndReturn() throws {
+        app.launchArguments = [
+            "-GopherForgeSection", "build", "-GopherForgeEmptyLibrary",
+            "-workspaceNavigatorCollapsed", "NO", "-workspaceNavigatorWidth", "220",
+        ]
+        app.launch()
+        let handle = app.otherElements["workspace.navigatorResize"]
+        guard handle.waitForExistence(timeout: 10) else {
+            throw XCTSkip("This check requires a wide layout with a side navigator")
+        }
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        let originalX = handle.frame.midX
+        let start = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        start.press(forDuration: 0.1, thenDragTo: start.withOffset(CGVector(dx: 80, dy: 0)))
+        XCTAssertGreaterThan(handle.frame.midX - originalX, 50)
+        XCTAssertLessThan(handle.frame.midX - originalX, 100)
+
+        let resizedEditorWidth = editor.frame.width
+        let files = app.buttons[AccessibilityIdentifier.filesToggle]
+        XCTAssertTrue(files.waitForExistence(timeout: 5))
+        files.tap()
+        XCTAssertTrue(handle.waitForNonExistence(timeout: 5))
+        XCTAssertGreaterThan(editor.frame.width, resizedEditorWidth + 150)
+        files.tap()
+        XCTAssertTrue(handle.waitForExistence(timeout: 5))
+        XCTAssertEqual(editor.frame.width, resizedEditorWidth, accuracy: 4)
+
+        let edge = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        edge.press(forDuration: 0.1, thenDragTo: edge.withOffset(CGVector(dx: -250, dy: 0)))
+        XCTAssertTrue(handle.waitForNonExistence(timeout: 5), "dragging Files aside must collapse it")
+        files.tap()
+        XCTAssertTrue(handle.waitForExistence(timeout: 5))
+        XCTAssertTrue(editor.isHittable)
+        attachScreenshot(named: "wide-files-resized-and-restored")
     }
 
     /// On a half-open Duo the editor and terminal belong above the hinge.

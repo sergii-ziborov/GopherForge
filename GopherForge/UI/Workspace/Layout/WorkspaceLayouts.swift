@@ -20,6 +20,10 @@ extension WorkspaceView {
                 laptopDivision: laptopDivision,
                 showsLaptop: showsLaptop
             )
+            .frame(width: geometry.size.width,
+                   height: showsLaptop ? geometry.size.height : keyboardViewportHeight(in: geometry),
+                   alignment: .topLeading)
+            .clipped()
             .onAppear {
                 adoptLayout(availableLayout)
                 usesLaptopLayout = showsLaptop
@@ -50,7 +54,9 @@ extension WorkspaceView {
         if showsLaptop {
             laptopLayout(terminal: terminal, division: forceLaptopLayout ? nil : laptopDivision)
         } else if #available(iOS 27.1, *), layout != .compact, division != nil {
-            foldedLayout(terminal: terminal, layout: layout)
+            foldedLayout(terminal: terminal, layout: layout, division: division!, width: width)
+        } else if duoHingePresent && layout != .compact {
+            columnsLayout(terminal: terminal, width: width)
         } else {
             switch layout {
             case .compact: compactLayout(terminal: terminal)
@@ -75,9 +81,12 @@ extension WorkspaceView {
     /// used by Crabrix, rather than a shallow editor over a shallow terminal.
     func columnsLayout(terminal: ProjectTerminalSession, width: CGFloat) -> some View {
         HStack(spacing: 0) {
-            ProjectNavigatorView(onOpenFile: revealCode)
-                .frame(width: WorkspaceLayout.navigatorWidth(for: width))
-            Divider()
+            if !navigatorCollapsed {
+                ProjectNavigatorView(onOpenFile: revealCode)
+                    .frame(width: navigatorWidth(for: width))
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                navigatorResizeHandle(availableWidth: width)
+            }
             paneStack(terminal: terminal)
                 .frame(minWidth: 0, maxWidth: .infinity)
         }
@@ -88,9 +97,12 @@ extension WorkspaceView {
     /// window, leaving a useful minimum width for the editor.
     func canvasLayout(terminal: ProjectTerminalSession, width: CGFloat) -> some View {
         HStack(spacing: 0) {
-            ProjectNavigatorView(onOpenFile: revealCode)
-                .frame(width: WorkspaceLayout.navigatorWidth(for: width))
-            Divider()
+            if !navigatorCollapsed {
+                ProjectNavigatorView(onOpenFile: revealCode)
+                    .frame(width: navigatorWidth(for: width))
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                navigatorResizeHandle(availableWidth: width)
+            }
             WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
                 .frame(minWidth: 0, maxWidth: .infinity)
             Divider()
@@ -102,9 +114,12 @@ extension WorkspaceView {
     func tabletLayout(terminal: ProjectTerminalSession, width: CGFloat) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                ProjectNavigatorView(onOpenFile: revealCode)
-                    .frame(width: WorkspaceLayout.navigatorWidth(for: width))
-                Divider()
+                if !navigatorCollapsed {
+                    ProjectNavigatorView(onOpenFile: revealCode)
+                        .frame(width: navigatorWidth(for: width))
+                        .transition(.move(edge: .leading).combined(with: .opacity))
+                    navigatorResizeHandle(availableWidth: width)
+                }
                 WorkspacePaneContent(pane: .code, terminal: terminal, fontSize: fontSize)
             }
 

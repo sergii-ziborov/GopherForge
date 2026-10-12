@@ -47,8 +47,13 @@ struct WorkspaceView: View {
     @State var laptopFocusGeneration = 0
     @State var laptopShouldFocus = false
     @State var keyboardVisible = false
+    @State var keyboardFrame = CGRect.null
     @State var laptopEditor: UITextView?
     @State var duoPartiallyOpen = false
+    @State var duoHingePresent = false
+    @AppStorage("workspaceNavigatorWidth") var navigatorWidth: Double = 220
+    @AppStorage("workspaceNavigatorCollapsed") var navigatorCollapsed = false
+    @State var navigatorDragStart: Double?
     @State var usesLaptopLayout = ProcessInfo.processInfo.arguments.contains(
         "-GopherForgeDuoLaptopUITest"
     )
@@ -69,6 +74,7 @@ struct WorkspaceView: View {
     @ViewBuilder var body: some View {
         if #available(iOS 27.1, *) {
             workspaceRoot.onHingeChange { _, context in
+                duoHingePresent = context.hinge != nil
                 duoPartiallyOpen = context.hinge?.status == .partiallyOpen
             }
         } else {
@@ -78,6 +84,7 @@ struct WorkspaceView: View {
 
     var workspaceRoot: some View {
         VStack(spacing: 0) {
+            if duoHingePresent { duoWorkspaceHeader }
             WorkspaceStatusStrip(status: workspace.toolchain)
             if workspace.hasUnsavedChanges || workspace.saveError != nil {
                 HStack(spacing: 8) {
@@ -111,13 +118,15 @@ struct WorkspaceView: View {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .ignoresSafeArea(usesLaptopLayout ? .keyboard : [], edges: .bottom)
+        // The keyboard's actual frame owns this boundary. SwiftUI can retain
+        // the previous responder's accessory height when Terminal becomes Code.
+        .padding(.top, duoHingePresent ? 30 : 0)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .ignoresSafeArea(duoHingePresent ? .container : [], edges: .top)
         .navigationTitle(workspace.project?.name ?? "Workspace")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
-        // Release the tab bar's safe-area reservation while the keyboard owns
-        // the bottom edge. Relying on its automatic visual dismissal can leave
-        // an empty strip between the editor and its input accessory.
+        .toolbar(duoHingePresent ? .hidden : .visible, for: .navigationBar)
         .toolbar(usesLaptopLayout || keyboardVisible ? .hidden : .visible, for: .tabBar)
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
@@ -182,18 +191,54 @@ struct WorkspaceView: View {
                 pane = destination
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-            keyboardVisible = true
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) {
+            updateKeyboardFrame($0)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
+            updateKeyboardFrame(notification)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
-            keyboardVisible = true
+            keyboardVisible = keyboardIntersectsWindow
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            // Some keyboards retain the accessory's old on-screen rectangle
+            // in frameEnd while dismissing. A subsequent WillShow owns a new
+            // responder; otherwise hiding must restore the section bar.
+            keyboardFrame = .null
             keyboardVisible = false
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { _ in
-            keyboardVisible = false
+            keyboardVisible = keyboardIntersectsWindow
         }
+    }
+
+    func updateKeyboardFrame(_ notification: Notification) {
+        guard let frame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        let window = activeWorkspaceWindow
+        keyboardFrame = window.map { $0.convert(frame, from: $0.screen.coordinateSpace) } ?? frame
+        keyboardVisible = keyboardIntersectsWindow
+    }
+
+    var activeWorkspaceWindow: UIWindow? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive }
+            .flatMap(\.windows).first(where: \.isKeyWindow)
+    }
+
+    var keyboardIntersectsWindow: Bool {
+        guard let window = activeWorkspaceWindow, !keyboardFrame.isNull,
+              keyboardFrame.height > 1 else { return false }
+        return window.bounds.intersects(keyboardFrame)
+    }
+
+    func keyboardViewportHeight(in geometry: GeometryProxy) -> CGFloat {
+        let content = geometry.frame(in: .global)
+        // A floating iPad keyboard doesn't take the entire bottom edge.
+        guard !keyboardFrame.isNull,
+              keyboardFrame.width >= content.width * 0.8,
+              keyboardFrame.maxY >= content.maxY - 1 else { return geometry.size.height }
+        return min(geometry.size.height, max(0, keyboardFrame.minY - content.minY))
     }
 
     // MARK: - Layouts
@@ -219,7 +264,8 @@ struct WorkspaceView: View {
     /// Device Hub can report a half-open hinge without a division region.
     /// The window midpoint still marks the horizontal hinge in that posture.
     func fallbackLaptopDivision(in geometry: GeometryProxy) -> CGRect? {
-        guard duoPartiallyOpen, geometry.size.height > geometry.size.width else { return nil }
+        guard geometry.size.height > geometry.size.width,
+              duoPartiallyOpen || (duoHingePresent && geometry.size.width >= 600) else { return nil }
         let hingeGlobalY = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap(\.windows)
@@ -247,10 +293,10 @@ struct WorkspaceView: View {
                 .accessibilityLabel("Back to Projects")
                 .accessibilityIdentifier(AccessibilityID.laptopProjectsBack)
             }
-        } else if !layout.hasNavigator {
+        } else {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    withAnimation(.easeOut(duration: 0.2)) { isDrawerOpen.toggle() }
+                    toggleFiles()
                 } label: {
                     Label("Files", systemImage: "sidebar.leading")
                 }
@@ -262,6 +308,11 @@ struct WorkspaceView: View {
             ForEach(WorkspaceToolbarActions.primaryPhases, id: \.self) { phase in
                 PhaseButton(phase: phase)
             }
+            projectMenu
+        }
+    }
+
+    var projectMenu: some View {
             Menu {
                 Button {
                     Task { await openOrganizer() }
@@ -296,7 +347,6 @@ struct WorkspaceView: View {
                 Label("Project", systemImage: "ellipsis.circle")
             }
             .accessibilityIdentifier(AccessibilityID.projectMenu)
-        }
     }
 
     func openOrganizer() async {

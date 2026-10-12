@@ -56,7 +56,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         textView.backgroundColor = .clear
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 24, right: 8)
         textView.inputAccessoryView = externalKeyboardAccessory
-            ? nil : context.coordinator.makeAccessoryView(for: textView)
+            ? KeyboardPresentationAccessoryView() : context.coordinator.makeAccessoryView(for: textView)
         context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
 
         // Code does not wrap. A wrapped Go line hides its own indentation and
@@ -112,7 +112,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         if context.coordinator.appliedExternalKeyboardAccessory != externalKeyboardAccessory {
             context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
             textView.inputAccessoryView = externalKeyboardAccessory
-                ? nil : context.coordinator.makeAccessoryView(for: textView)
+                ? KeyboardPresentationAccessoryView() : context.coordinator.makeAccessoryView(for: textView)
             if textView.isFirstResponder { textView.reloadInputViews() }
         }
         if externalKeyboardAccessory, let onTextViewReady {

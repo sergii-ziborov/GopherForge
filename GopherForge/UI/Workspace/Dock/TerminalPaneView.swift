@@ -6,26 +6,11 @@ struct TerminalPaneView: View {
     @Bindable var session: ProjectTerminalSession
     var focusRequest = 0
     var keyboardCommandsOnly = false
-    @FocusState private var commandIsFocused: Bool
 
     static let quickCommands = ["help", "ls", "go build", "go test", "go run", "clear"]
 
     var body: some View {
-        Group {
-            if keyboardCommandsOnly {
-                content
-            } else {
-                content.toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Hide keyboard", systemImage: "keyboard.chevron.compact.down") {
-                            commandIsFocused = false
-                        }
-                        .labelStyle(.iconOnly)
-                    }
-                }
-            }
-        }
+        content
     }
 
     private var content: some View {
@@ -83,21 +68,14 @@ struct TerminalPaneView: View {
                     .font(.caption.monospaced())
                     .foregroundStyle(GopherForgeTheme.accent)
                     .lineLimit(1)
-                if keyboardCommandsOnly {
-                    TerminalCommandField(text: $session.input, focusRequest: focusRequest) {
-                        Task { await session.submit() }
-                    }
-                    .frame(height: 24)
-                } else {
-                    TextField("go build", text: $session.input)
-                        .font(.caption.monospaced())
-                        .focused($commandIsFocused)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                        .submitLabel(.go)
-                        .onSubmit { Task { await session.submit() } }
-                        .accessibilityIdentifier("terminal.input")
+                TerminalCommandField(
+                    text: $session.input,
+                    focusRequest: focusRequest,
+                    externalKeyboardAccessory: keyboardCommandsOnly
+                ) {
+                    Task { await session.submit() }
                 }
+                .frame(height: 24)
                 if session.isBusy {
                     ProgressView().controlSize(.small)
                 } else {
@@ -114,22 +92,18 @@ struct TerminalPaneView: View {
             .padding(.vertical, 8)
             .background(Color(.tertiarySystemBackground))
         }
-        .onAppear {
-            if focusRequest > 0 { commandIsFocused = true }
-        }
-        .onChange(of: focusRequest) { _, request in
-            if request < 0 { commandIsFocused = false }
-            else if request > 0 { commandIsFocused = true }
-        }
     }
 
 }
 
-/// A plain text field keeps the Duo keyboard's suggestion shelf out of the
-/// space reserved for the terminal's own commands below the work tabs.
+/// The accessory belongs to the input responder, just like the code editor's.
+/// A SwiftUI keyboard toolbar can retain an empty safe-area shelf when Terminal
+/// is replaced by Code and its UIKit input accessory takes over.
+/// Duo supplies its own commands below the hinge, so it needs no accessory here.
 private struct TerminalCommandField: UIViewRepresentable {
     @Binding var text: String
     let focusRequest: Int
+    let externalKeyboardAccessory: Bool
     let onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -143,19 +117,27 @@ private struct TerminalCommandField: UIViewRepresentable {
         field.spellCheckingType = .no
         field.smartQuotesType = .no
         field.smartDashesType = .no
-        field.keyboardType = .asciiCapable
+        field.keyboardType = externalKeyboardAccessory ? .asciiCapable : .default
         field.returnKeyType = .go
         field.inputAssistantItem.leadingBarButtonGroups = []
         field.inputAssistantItem.trailingBarButtonGroups = []
         field.accessibilityIdentifier = "terminal.input"
         field.delegate = context.coordinator
         field.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .editingChanged)
+        field.inputAccessoryView = externalKeyboardAccessory ? KeyboardPresentationAccessoryView() : Self.makeAccessory(for: field)
+        context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
         return field
     }
 
     func updateUIView(_ field: UITextField, context: Context) {
         context.coordinator.parent = self
         if field.text != text { field.text = text }
+        if context.coordinator.appliedExternalKeyboardAccessory != externalKeyboardAccessory {
+            context.coordinator.appliedExternalKeyboardAccessory = externalKeyboardAccessory
+            field.keyboardType = externalKeyboardAccessory ? .asciiCapable : .default
+            field.inputAccessoryView = externalKeyboardAccessory ? KeyboardPresentationAccessoryView() : Self.makeAccessory(for: field)
+            if field.isFirstResponder { field.reloadInputViews() }
+        }
         if focusRequest < 0 && context.coordinator.lastFocusRequest != focusRequest {
             context.coordinator.lastFocusRequest = focusRequest
             if field.isFirstResponder { field.resignFirstResponder() }
@@ -171,9 +153,35 @@ private struct TerminalCommandField: UIViewRepresentable {
         }
     }
 
+    static func dismantleUIView(_ field: UITextField, coordinator: Coordinator) {
+        field.resignFirstResponder()
+    }
+
+    private static func makeAccessory(for field: UITextField) -> UIView {
+        let row = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 46))
+        row.autoresizingMask = .flexibleWidth
+        row.backgroundColor = .secondarySystemBackground
+        let hide = UIButton(type: .system)
+        hide.setImage(UIImage(systemName: "keyboard.chevron.compact.down"), for: .normal)
+        hide.tintColor = .systemOrange
+        hide.accessibilityLabel = "Hide keyboard"
+        hide.accessibilityIdentifier = "terminal.hideKeyboard"
+        hide.translatesAutoresizingMaskIntoConstraints = false
+        hide.addAction(UIAction { [weak field] _ in field?.resignFirstResponder() }, for: .touchUpInside)
+        row.addSubview(hide)
+        NSLayoutConstraint.activate([
+            hide.trailingAnchor.constraint(equalTo: row.trailingAnchor, constant: -8),
+            hide.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+            hide.widthAnchor.constraint(equalToConstant: 42),
+            hide.heightAnchor.constraint(equalToConstant: 36),
+        ])
+        return row
+    }
+
     final class Coordinator: NSObject, UITextFieldDelegate {
         var parent: TerminalCommandField
         var lastFocusRequest = 0
+        var appliedExternalKeyboardAccessory = false
 
         init(_ parent: TerminalCommandField) { self.parent = parent }
 
