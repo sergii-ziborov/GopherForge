@@ -35,9 +35,9 @@ should reflect the app's actual App Store availability.
 ## Version 1.1 preview
 
 Version 1.1 (build 20) is available to internal TestFlight testers. The public
-App Store version remains 1.0.1. The earlier build 18 is still selected for
-App Review, with automatic release after approval. Build 20 has not replaced
-that submission yet: the remaining native Duo posture and hardware-keyboard
+App Store version remains 1.0.1. Build 20 is selected in the editable 1.1 draft,
+with automatic release after approval. The earlier build 18 submission was
+withdrawn for this replacement. Remaining native Duo posture and hardware-keyboard
 checks are recorded in [the layout evidence](docs/releases/1.1-layout-checks.md).
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
@@ -111,9 +111,12 @@ The header Files and Projects controls also passed their tap checks. The final
 three-frame capture run passed. Public simctl reads the inner display;
 XCTest's inactive-display black frames were rejected.
 
-Version 1.1 (18) remains in review with its original 72 media placements.
-The three corrected build 20 images are uploaded to the Asset Library and
-published on the website; they are not yet assigned to the review version.
+Version 1.1 (20) is being prepared for review. Its Header and Search Results
+assets are now visibly assigned in the version page; see the
+[Header confirmation](docs/app-store/header-filled-1.1-build20.png) and
+[Search Results confirmation](docs/app-store/search-results-filled-1.1-build20.png).
+The three corrected Duo laptop images are uploaded to the Asset Library and
+published on the website; the remaining posture media is being refreshed.
 
 | **Native Duo code capture** | **Native Duo visual lesson** |
 | --- | --- |

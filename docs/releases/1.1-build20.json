@@ -15,19 +15,11 @@
   "shareExtensionBuild": "20",
   "validation": "passed",
   "upload": "passed",
-  "appReviewSelected": false,
-  "currentReview": {
-    "version": "1.1",
-    "build": "18",
-    "state": "WAITING_FOR_REVIEW",
-    "releaseType": "AFTER_APPROVAL",
-    "checkedAt": "2026-10-12T15:30:35.545070+00:00"
-  },
+  "appReviewSelected": true,
   "remainingChecks": [
     "Native Open/Book and closed landscape Duo",
     "Hardware-keyboard simulation",
-    "Updated posture media assignment",
-    "Visible Header in editable 1.1 UI"
+    "Updated posture media assignment"
   ],
   "nativeLaptopScreenshots": [
     {
@@ -68,5 +60,34 @@
       "sha256": "9b71a1877ec4fb3bcbbacddbe205f3beee8dc19700eeae3123b76bfee83d8e6e"
     }
   ],
-  "nativeLaptopCapture": "passed"
+  "nativeLaptopCapture": "passed",
+  "appReviewSubmitted": false,
+  "previousReview": {
+    "version": "1.1",
+    "build": "18",
+    "state": "CANCELED_FOR_BUILD_20_REPLACEMENT",
+    "releaseType": "AFTER_APPROVAL",
+    "checkedAt": "2026-10-12T15:30:35.545070+00:00"
+  },
+  "currentDraft": {
+    "version": "1.1",
+    "build": "20",
+    "state": "PREPARE_FOR_SUBMISSION",
+    "releaseType": "AFTER_APPROVAL"
+  },
+  "creativeAssets": {
+    "header": {
+      "placementId": "28800019-5e3c-8faf-8f2a-736216f3a1f6",
+      "imageId": "3b000019-5e3c-8faf-8035-adf670e77669",
+      "uiVerified": true,
+      "proof": "docs/app-store/header-filled-1.1-build20.png"
+    },
+    "searchResults": {
+      "placementId": "c3400019-5e3c-8faf-8f28-f0e6d264dd54",
+      "imageId": "3e400019-5e3c-8faf-8031-f04df2f58ebc",
+      "uiVerified": true,
+      "proof": "docs/app-store/search-results-filled-1.1-build20.png"
+    }
+  },
+  "originalReviewVideoRetained": true
 }

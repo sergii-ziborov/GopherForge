@@ -175,6 +175,9 @@ final class AppStoreScreenshotUITests: XCTestCase {
     }
 
     func testCaptureNativeExpandedDuoScreenshots() throws {
+        // Rotate the real simulator display; retain Device Hub's actual fold.
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
         launch(section: "learn", screen: "examples")
         XCTAssertTrue(app.buttons["example.site.notes"].waitForExistence(timeout: 30))
         openExample("site.notes")
@@ -472,6 +475,9 @@ final class AppStoreScreenshotUITests: XCTestCase {
     /// screenshot driver uses this marker to capture the enumerated inner
     /// display with public simctl while the verified UI remains unchanged.
     private func captureNativeDisplayFrame(_ name: String) {
+        // A view can exist while its navigation/rotation animation is still
+        // committing to the native framebuffer.
+        Thread.sleep(forTimeInterval: 2)
         print("GF_NATIVE_FRAME_READY: \(name)")
         fflush(stdout)
         Thread.sleep(forTimeInterval: 30)
