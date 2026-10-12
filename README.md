@@ -35,9 +35,9 @@ should reflect the app's actual App Store availability.
 ## Version 1.1 preview
 
 Version 1.1 (build 20) is available to internal TestFlight testers. The public
-App Store version remains 1.0.1. Build 20 is selected in the editable 1.1 draft,
-with automatic release after approval. The earlier build 18 submission was
-withdrawn for this replacement. Remaining native Duo posture and hardware-keyboard
+App Store version remains 1.0.1. Build 20 was submitted on 12 October 2026 and
+is Waiting for Review, with automatic release after approval. The earlier build
+18 submission was withdrawn for this replacement. Remaining native Duo posture and hardware-keyboard
 checks are recorded in [the layout evidence](docs/releases/1.1-layout-checks.md).
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
@@ -111,12 +111,14 @@ The header Files and Projects controls also passed their tap checks. The final
 three-frame capture run passed. Public simctl reads the inner display;
 XCTest's inactive-display black frames were rejected.
 
-Version 1.1 (20) is being prepared for review. Its Header and Search Results
-assets are now visibly assigned in the version page; see the
-[Header confirmation](docs/app-store/header-filled-1.1-build20.png) and
-[Search Results confirmation](docs/app-store/search-results-filled-1.1-build20.png).
-The three corrected Duo laptop images are uploaded to the Asset Library and
-published on the website; the remaining posture media is being refreshed.
+Version 1.1 (20) is Waiting for Review. All 70 screenshots and the Header and
+Search Results placements were verified against their uploaded source files.
+Both creative placements use the processed
+[universal code artwork](docs/app-store/creative-assets/universal-code-1.1.png),
+which also entered Waiting for Review. The three corrected Duo laptop images
+are assigned to this submission and published on the website. Outdated Open/Book
+images were removed from the listing; refreshed captures of those poses remain
+pending. See [the publication receipt](docs/releases/1.1-publication20.json).
 
 | **Native Duo code capture** | **Native Duo visual lesson** |
 | --- | --- |

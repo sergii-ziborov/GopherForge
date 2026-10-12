@@ -113,9 +113,27 @@ def search_results() -> Image.Image:
     return image
 
 
+def universal() -> Image.Image:
+    """One opaque 16:9 PNG compatible with Header and Search Results."""
+    image = background((5244, 2950))
+    draw = ImageDraw.Draw(image)
+    rounded_icon(image, 430, 600, 190)
+    draw.text((670, 650), "GOPHERFORGE", font=font(102, 0), fill=(224, 248, 250))
+    draw.rounded_rectangle((430, 1020, 590, 1044), radius=12, fill=(11, 195, 218))
+    draw.text((410, 1140), "Real Go.", font=font(250, 0), fill=(248, 252, 252))
+    draw.text((410, 1450), "On your device.", font=font(215, 0), fill=(248, 252, 252))
+    draw.text((430, 1860), "Write, build, test, and learn offline.",
+              font=font(97, 5), fill=(179, 223, 232))
+    draw.text((430, 2160), "Go 1.27.1  ·  Code · Test · Learn", font=font(81, 5),
+              fill=(139, 227, 238))
+    phone(image, 3690, 580, 810)
+    return image
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for filename, render in (("header.png", header), ("search-results.png", search_results)):
+    for filename, render in (("header.png", header), ("search-results.png", search_results),
+                             ("universal-code-1.1.png", universal)):
         path = OUT / filename
         render().save(path, format="PNG", optimize=True)
         print(path)

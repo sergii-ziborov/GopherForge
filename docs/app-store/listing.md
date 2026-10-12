@@ -1,6 +1,6 @@
 # App Store listing audit
 
-Checked against App Store Connect and the US App Store on 10 October 2026.
+Live version checked on 10 October; build 20 submission checked on 12 October 2026.
 This records the English (US) listing for app `6809702319`; it is not an
 instruction to submit a build for review.
 
@@ -24,24 +24,35 @@ Version 1.0.1 is **Ready for Sale** with build 13. Apple's public iTunes lookup
 reports 1.0.1 and the US price of $6.99. The App Store web page shows the
 category under the name, but App Store Connect confirms the 1.0.1 subtitle;
 the web layout alone does not establish that the subtitle is missing. The
-new version 1.1, build 18, remains in internal TestFlight testing and was
+new version 1.1, build 20, is available in Internal QA TestFlight and was
 submitted to App Review on 12 October 2026. It is `WAITING_FOR_REVIEW`,
 with automatic `AFTER_APPROVAL` release.
 
 ## Version 1.1 submission
 
-The English draft includes the subtitle, description, 100-byte keyword field,
-promotional text, What's New, support and marketing URLs, privacy policy and
-Terms of Use links. It describes Duo, all 47 lessons and 22 prediction
-challenges, highlighting, and the embedded/full-screen code behavior. Pricing
-remains a one-time paid download.
+Version 1.1 (20) uses **Offline compiler & code editor** as its 30-character
+subtitle. The 97-character keyword field is:
+`golang,programming,learn,tutorial,goroutines,concurrency,backend,module,package,terminal,ide,wasi`.
+It avoids repeating exact words already covered by the name and subtitle.
+The description opens with an offline Go compiler and code editor for iPhone and
+iPad, then explains compilation, lessons, Duo, privacy and limits. The 142-character
+promotional text describes the benefits; it is not used as a keyword list.
+All saved localization fields and the privacy policy URL were read back from Apple.
 
-The original physical-iPhone recording is attached to this draft as
-supplemental review evidence. Its notes distinguish the older recording from
-the new 1.1 and Duo interface. No replacement review video was uploaded.
-All 70 screenshots and both creative assets entered review with version 1.1.
-Fresh screenshot and creative asset publication is recorded in
-[the release evidence](../releases/1.1-publication.json).
+The original physical-iPhone recording is attached to the submitted version.
+Its notes distinguish the earlier recording from the new 1.1 and Duo interface.
+All 70 screenshots are assigned across seven display groups, with code first.
+Three are new build 20 laptop captures; the other feature captures retain the
+unchanged 1.1 lesson and compiler content. Outdated Open/Book captures were removed.
+A new opaque 5244 × 2950 universal PNG passed processing and is used for both
+Header and Search Results. The image and build entered Waiting for Review together.
+Publication is recorded in [the build 20 receipt](../releases/1.1-publication20.json).
+Pricing remains a one-time paid download.
+
+Apple's [product page guidance](https://developer.apple.com/app-store/product-page/)
+and [search guidance](https://developer.apple.com/app-store/search/) support the
+field limits and relevant keyword selection. These changes do not establish an
+increase in rankings or conversion; the observed traffic sample is too small.
 
 An App Store preview video is optional and is separate from the screen
 recording already sent for App Review. The listing does not need a second copy
@@ -53,5 +64,7 @@ app's common tasks and each supported device; code identifiers alone do not
 establish VoiceOver or Larger Text support.
 
 The header and search creative placements are for App Store experiences on
-iOS and iPadOS 27 or later; their `ACTIVE` status is the reliable confirmation
-of publication in App Store Connect.
+iOS and iPadOS 27 or later. An active placement alone does not establish that
+the browser displayed it. Version 1.1's universal image was verified as processed
+and then waiting for review with the submitted version; public release still
+requires Apple approval.

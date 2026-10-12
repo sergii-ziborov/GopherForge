@@ -1,0 +1,605 @@
+{
+  "version": "1.1",
+  "build": "20",
+  "buildId": "b3976327-c1dc-4189-be8a-38a93f673f38",
+  "appStoreState": "WAITING_FOR_REVIEW",
+  "releaseType": "AFTER_APPROVAL",
+  "placements": [
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPAD_11_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "7f000019-5e3c-8faf-8f11-9631453c1f74",
+          "imageId": "51c00019-5e3c-8faf-8022-e515e30eb411",
+          "file": "docs/app-store/screenshots/ipad-11/00-code.png",
+          "sha256": "e4b5838cc00182da1546fd1ee2b7603ffb88c96fe077bc21ff7ce52883730c29",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "6c800019-5e3c-8faf-8f19-4e1fd0458299",
+          "imageId": "b7800019-5e3c-8faf-800c-a5b3dbf53eb8",
+          "file": "docs/app-store/screenshots/ipad-11/04-lesson.png",
+          "sha256": "5aca50687178ed5304bc1f06ab057dc664d45c5f186fc579d3e45119c1ba5a5a",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "46800019-5e3c-8faf-8f05-6087ba593159",
+          "imageId": "45000019-5e3c-8faf-8035-1678c204a708",
+          "file": "docs/app-store/screenshots/ipad-11/03-course.png",
+          "sha256": "e5c54ae0e2314179b2dbeaee6525b66632e9b7ee46fd4d9b033b327033c25dd3",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "0b000019-5e3c-8faf-8f1b-54395e8c7972",
+          "imageId": "3f000019-5e3c-8faf-803b-2c683d7c944b",
+          "file": "docs/app-store/screenshots/ipad-11/02-tests.png",
+          "sha256": "e39afff97f9771c241290780dbd955de930cb188181295d8d3e3541076d2d387",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "75000019-5e3c-8faf-8f2c-4efedb275ac2",
+          "imageId": "a9c00019-5e3c-8faf-8028-23dace8ab453",
+          "file": "docs/app-store/screenshots/ipad-11/01-compiler.png",
+          "sha256": "710a58f5a329e198f32e62a2d9d32635a22cfb214c39ef81232927d4b366bd0b",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "85400019-5e3c-8faf-8f26-af4e9df3fce2",
+          "imageId": "0d400019-5e3c-8faf-8000-7a634a082710",
+          "file": "docs/app-store/screenshots/ipad-11/05-lab.png",
+          "sha256": "bc59e66d804ada6b36b075c2e277ddc5e45d6cd90af9e6da0403dbb497068dee",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "7ec00019-5e3c-8faf-8f10-2c92a0eec285",
+          "imageId": "02800019-5e3c-8faf-800e-82526bfe7e08",
+          "file": "docs/app-store/screenshots/ipad-11/06-projects.png",
+          "sha256": "ac0a93af90987ca472ca5e189de9a6e9e05de092a4f73ce0de448759b53d99c5",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "02000019-5e3c-8faf-8f37-c4fcbfc39568",
+          "imageId": "99400019-5e3c-8faf-8018-4d6a1fb79a73",
+          "file": "docs/app-store/screenshots/ipad-11/07-graphics.png",
+          "sha256": "a92f12b2efaaff10aeef45ac204cc50968222bb736d19fa0ea54288182149ec6",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "1a000019-5e3c-8faf-8f36-54b190cf6378",
+          "imageId": "d7000019-5e3c-8faf-8015-06db92e3be8c",
+          "file": "docs/app-store/screenshots/ipad-11/08-site.png",
+          "sha256": "fe7804a098737f2a22c3fd7fbd9c646953e36847465555b9ac6e6674bcad4758",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "b4000019-5e3c-8faf-8f2b-0f813709180d",
+          "imageId": "c4400019-5e3c-8faf-8001-566d3ee83941",
+          "file": "docs/app-store/screenshots/ipad-11/09-examples.png",
+          "sha256": "30c3a0600cd26c5ee99361e07fca2ebae62e7e36d5dfc893ccbab01def67d546",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPAD_13_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "a6400019-5e3c-8faf-8f24-922ed09c3bb6",
+          "imageId": "3b800019-5e3c-8faf-8004-7433809a9ba0",
+          "file": "docs/app-store/screenshots/ipad-13/00-code.png",
+          "sha256": "c937b08be1c9b5c7441d2113eec2464fea0e071208bf5cfcd3f7be7d3fe3d314",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "3dc00019-5e3c-8faf-8f10-0987244228f7",
+          "imageId": "af000019-5e3c-8faf-803f-33fd1b3f8cd5",
+          "file": "docs/app-store/screenshots/ipad-13/04-lesson.png",
+          "sha256": "f4b080990567fca3248ba71bc93a9d17cc6bb23f796f4c2e3483b9db36620f1b",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "f1400019-5e3c-8faf-8f16-a3f6568479aa",
+          "imageId": "19800019-5e3c-8faf-8012-79e098a1d39b",
+          "file": "docs/app-store/screenshots/ipad-13/03-course.png",
+          "sha256": "a855a4228b4748fb78a9a1b41df97e0289ad69b9fc30faf41b2043aedf0de883",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "4e000019-5e3c-8faf-8f3b-ec2f43d96825",
+          "imageId": "6cc00019-5e3c-8faf-8004-d1e22c402c10",
+          "file": "docs/app-store/screenshots/ipad-13/02-tests.png",
+          "sha256": "eb974836bc64ef308f1f775a58eb83ab862e505ae56d8e01e22cbb3a390c4c73",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "87000019-5e3c-8faf-8f3f-f58f005a7307",
+          "imageId": "35800019-5e3c-8faf-8021-a7fc33956972",
+          "file": "docs/app-store/screenshots/ipad-13/01-compiler.png",
+          "sha256": "4fcda825d1a0be68c8c41540f8359e35709889d64deadb02320811ac1235680d",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "dc800019-5e3c-8faf-8f32-9b1d32680827",
+          "imageId": "e4c00019-5e3c-8faf-801d-f9007a8b71a9",
+          "file": "docs/app-store/screenshots/ipad-13/05-lab.png",
+          "sha256": "a75714f9f5a14d3ddb3219ffa25f52e797ece0d023c1f8d2b84ef6b661e0148f",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "81400019-5e3c-8faf-8f36-349a323690fb",
+          "imageId": "73000019-5e3c-8faf-801e-c5492d2e2185",
+          "file": "docs/app-store/screenshots/ipad-13/06-projects.png",
+          "sha256": "53cecf59c17515e134a50a43151b1e3faca5e9fa75c158f64fa6ca2aeca8c3fd",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "34000019-5e3c-8faf-8f0b-f205a1958778",
+          "imageId": "0a400019-5e3c-8faf-8019-a8f66efd2db5",
+          "file": "docs/app-store/screenshots/ipad-13/07-graphics.png",
+          "sha256": "a025c78e94e1a7396fde661aee446fb52af75614d8ea574f938f4856de202e42",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "e0400019-5e3c-8faf-8f35-9f008dbae8d3",
+          "imageId": "90800019-5e3c-8faf-8001-fda2d512fbdc",
+          "file": "docs/app-store/screenshots/ipad-13/08-site.png",
+          "sha256": "894f178cb0403d79577d06d5b064a3fbb96169573eb3c5b639daee3df3249bb7",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "2c000019-5e3c-8faf-8f39-d151f5f81139",
+          "imageId": "a8800019-5e3c-8faf-8027-4f8013afe8fd",
+          "file": "docs/app-store/screenshots/ipad-13/09-examples.png",
+          "sha256": "f8622da8aa429286b975d9eb4c5b70fabb50de70f6fb553cebe9380a9c926d6a",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPHONE_DUO_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "45800019-5e3c-8faf-8f2e-d0596d35e863",
+          "imageId": "7cc00019-5e3c-8faf-8021-0db359a3c5f0",
+          "file": "docs/app-store/screenshots/iphone-duo/00-code.png",
+          "sha256": "a29bb1e38070f68d4fcf61bd3060372c2ce3878db4c7ae677c97bd3e86bb3d25",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "10400019-5e3c-8faf-8f22-9ee2286bceb5",
+          "imageId": "1a400019-5e3c-8faf-8014-c0911d5efcd3",
+          "file": "docs/app-store/screenshots/iphone-duo/04-lesson.png",
+          "sha256": "89adc953fcbbc0753732e5134590a01b74991da190a166d6839aa61ad921e307",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "7e000019-5e3c-8faf-8f1c-70c2668ee5fe",
+          "imageId": "f8400019-5e3c-8faf-8010-3fd48e47c2b0",
+          "file": "docs/app-store/screenshots/iphone-duo/03-course.png",
+          "sha256": "8e47c6d95e98157e2540c214c2b75f467feffa67b8e8caefb0be9d2722f640ce",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "84000019-5e3c-8faf-8f2c-3f1d00b92bdd",
+          "imageId": "a8800019-5e3c-8faf-8029-bde05bc818c6",
+          "file": "docs/app-store/screenshots/iphone-duo/02-tests.png",
+          "sha256": "4d2209c2e2249ab4276e11893e9fde9472315c41ada8e89865f2e4eb674feea1",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "47000019-5e3c-8faf-8f16-e80da0425c9c",
+          "imageId": "3e400019-5e3c-8faf-801e-53bf7e8cdf29",
+          "file": "docs/app-store/screenshots/iphone-duo/01-compiler.png",
+          "sha256": "9e625b482d67f5e72c1c8759d319bd7e26cc771fe338b9153d0c990614f8840e",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "94000019-5e3c-8faf-8f2c-a0221400c4b7",
+          "imageId": "4a400019-5e3c-8faf-800c-48cfdb212b2a",
+          "file": "docs/app-store/screenshots/iphone-duo/07-graphics.png",
+          "sha256": "f11a82873ef84eae92bd5dc56a386769a952307ccaec1faccc78a307e3d022cb",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "84400019-5e3c-8faf-8f38-6a6465d1f992",
+          "imageId": "63000019-5e3c-8faf-8033-fbeb7a574b30",
+          "file": "docs/app-store/screenshots/iphone-duo/06-projects.png",
+          "sha256": "c4e191d1b05310e0b83eb586481a803bd5e2972482fcad570b09d8dad92f9926",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "e2000019-5e3c-8faf-8f3b-cc6e10a67870",
+          "imageId": "13800019-5e3c-8faf-8019-200aba7e18d1",
+          "file": "docs/screenshots/duo-laptop-code.png",
+          "sha256": "cc3e11516c3b5f4da20545badd5a043a97fe9819232e4eb1bea18322b14fd9ef",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "87000019-5e3c-8faf-8f32-ac2ca3fd2530",
+          "imageId": "cfc00019-5e3c-8faf-801a-a7016232eb3c",
+          "file": "docs/screenshots/duo-laptop-terminal.png",
+          "sha256": "55735c6d2d5806bf13ad5fb2afa263ee9d0592eac21af970ae3e060d8d7e20c6",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "4d000019-5e3c-8faf-8f0a-d62bcd38cf37",
+          "imageId": "37800019-5e3c-8faf-8011-6f7e87da5fef",
+          "file": "docs/screenshots/duo-laptop-idioms.png",
+          "sha256": "456477d1c548381b482ca24e04bb66a5385b8f36bda6f713dd6da38a22a0a802",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "ad400019-5e3c-8faf-8f0d-77e4b8047d02",
+          "imageId": "c7400019-5e3c-8faf-801e-66d7f8490d3c",
+          "file": "docs/app-store/screenshots/iphone-6.9/00-code.png",
+          "sha256": "d5e0f3f0cc680143941176d96c91e18c67632c4427b9c8c0c68ad8c358e4f466",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "ce400019-5e3c-8faf-8f3e-65ca0cf8e8ce",
+          "imageId": "b6000019-5e3c-8faf-8030-354a43a85686",
+          "file": "docs/app-store/screenshots/iphone-6.9/04-lesson.png",
+          "sha256": "ca262eb028ebce2740f0943fb8745d89417a8e7ce42f567cc578e742e69fed12",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "de800019-5e3c-8faf-8f37-d481772b2423",
+          "imageId": "b9800019-5e3c-8faf-8025-238ae265e15d",
+          "file": "docs/app-store/screenshots/iphone-6.9/03-course.png",
+          "sha256": "ed413f9a62d468cff3b981ccd99d332a76c09ab3d763c944527478bb7049fdb2",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "33c00019-5e3c-8faf-8f34-b58f5fe8011a",
+          "imageId": "f3000019-5e3c-8faf-8010-1e37f41891e3",
+          "file": "docs/app-store/screenshots/iphone-6.9/02-tests.png",
+          "sha256": "98c342c7eef580b2460118a18a81a669c0b5e751537b7502fdacde525ea03468",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "a4000019-5e3c-8faf-8f07-3dacb7670c04",
+          "imageId": "d0400019-5e3c-8faf-801a-8be3c6f599fd",
+          "file": "docs/app-store/screenshots/iphone-6.9/01-compiler.png",
+          "sha256": "f1f1c9e08e2c0ccb931c6237514218c70e04c2c5f94ac54c4deab8fa91202710",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "85800019-5e3c-8faf-8f03-a22f1844f9f9",
+          "imageId": "9d400019-5e3c-8faf-802d-938bb0109eff",
+          "file": "docs/app-store/screenshots/iphone-6.9/05-lab.png",
+          "sha256": "f57727b53a80caafb78b11eabe3417b402d2f1d49041974ecfc133cd0e3f7937",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "28800019-5e3c-8faf-8f29-2892c757fa5c",
+          "imageId": "c9800019-5e3c-8faf-8002-3217498fe0ae",
+          "file": "docs/app-store/screenshots/iphone-6.9/06-projects.png",
+          "sha256": "8555590d125fa24bbc039b21950716881b5b0f6ef2b7264532d960c7f6a15d59",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "13800019-5e3c-8faf-8f1c-10b246bca5d5",
+          "imageId": "c0c00019-5e3c-8faf-8005-c7dbc8f56955",
+          "file": "docs/app-store/screenshots/iphone-6.9/07-graphics.png",
+          "sha256": "3347c7f5f77ac86512839de0c48b50efa8a98de641952ddabceca797aa8f4881",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "ca800019-5e3c-8faf-8f30-d38d1de986b4",
+          "imageId": "01800019-5e3c-8faf-8013-13233e9a66e5",
+          "file": "docs/app-store/screenshots/iphone-6.9/08-site.png",
+          "sha256": "350cb3739dae0981ccca889453694929701bc29a8ebde1e0ffd12a9605dc9126",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "92c00019-5e3c-8faf-8f05-63f79f099a85",
+          "imageId": "6ec00019-5e3c-8faf-8033-8bba4f48146e",
+          "file": "docs/app-store/screenshots/iphone-6.9/09-examples.png",
+          "sha256": "4aecc996601f76becd5a12683fa8ab0707d59aeac875fb4493021afbd4363566",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "a5c00019-5e3c-8faf-8f07-fe06df7767d6",
+          "imageId": "a3000019-5e3c-8faf-8015-ff8f1869055f",
+          "file": "docs/app-store/screenshots/iphone-6.3/00-code.png",
+          "sha256": "82ce12e763f31fab6b758d5841185a5e3817d4e97fe7e6f37d60af16028ba821",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "5b800019-5e3c-8faf-8f36-f4a1db4b6066",
+          "imageId": "a8800019-5e3c-8faf-8001-823f47ee9f3e",
+          "file": "docs/app-store/screenshots/iphone-6.3/04-lesson.png",
+          "sha256": "daac7afe632b2de10ac4b698de354524ce3018c73458715c8a8b6d7b9ff5b32a",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "1b800019-5e3c-8faf-8f05-3ed19bd95cc5",
+          "imageId": "a6400019-5e3c-8faf-8005-5925995b260c",
+          "file": "docs/app-store/screenshots/iphone-6.3/03-course.png",
+          "sha256": "b31d3604d7c42cbe99aa0124d68024bbf188742ca396f34303ed89495d3be9cc",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "8dc00019-5e3c-8faf-8f3a-31e3bdcbd3ef",
+          "imageId": "45800019-5e3c-8faf-8002-1d1a4eb3db0e",
+          "file": "docs/app-store/screenshots/iphone-6.3/02-tests.png",
+          "sha256": "caddb39614da342bf35764415a41f2869801a3416395071dc08269f0dad62e7d",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "45c00019-5e3c-8faf-8f03-0191587887b0",
+          "imageId": "48400019-5e3c-8faf-8008-c90fae998727",
+          "file": "docs/app-store/screenshots/iphone-6.3/01-compiler.png",
+          "sha256": "9a16fc9ca116171f381e7a7cac35d48fac382e3de7b001eda6b0e51f644170f2",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "00400019-5e3c-8faf-8f08-778bd30a3c94",
+          "imageId": "d1400019-5e3c-8faf-803c-ea8c9025a583",
+          "file": "docs/app-store/screenshots/iphone-6.3/05-lab.png",
+          "sha256": "c07a0319fb41bd5131323b22c1e2dddb9f09f355cb0bf702eb2e4afa6c4a5321",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "80800019-5e3c-8faf-8f18-4e348d43f9f5",
+          "imageId": "4d800019-5e3c-8faf-802e-ed7f479a7d2a",
+          "file": "docs/app-store/screenshots/iphone-6.3/06-projects.png",
+          "sha256": "0ae5d46d9ec83d3470634375a91d94f045d509e3d3db4f947168cb5921f8d17a",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "fc000019-5e3c-8faf-8f1a-60bad2721d07",
+          "imageId": "b2000019-5e3c-8faf-801c-9e8d4777a460",
+          "file": "docs/app-store/screenshots/iphone-6.3/07-graphics.png",
+          "sha256": "98638825f95fe88df3d0acd0b6df59cb8d68420708d9fb151a942c880b4301ab",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "a4800019-5e3c-8faf-8f19-2f3f96a02ab1",
+          "imageId": "96800019-5e3c-8faf-803d-93ea04b65a02",
+          "file": "docs/app-store/screenshots/iphone-6.3/08-site.png",
+          "sha256": "a9e3af6aca82cd3b35488fe0e1b1bf89b747eb50684ea2cbe45c8f8afd4da713",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "d8c00019-5e3c-8faf-8f3b-1aa2bfa9d44a",
+          "imageId": "70800019-5e3c-8faf-800e-e97494eb2bff",
+          "file": "docs/app-store/screenshots/iphone-6.3/09-examples.png",
+          "sha256": "231e518dd68f099278dcf3d5789ed5bc73835f020f1c18eb4f1db315d31257e8",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "85800019-5e3c-8faf-8f0e-df5ca40569f2",
+          "imageId": "c0800019-5e3c-8faf-8006-0ce7b25cf020",
+          "file": "docs/app-store/screenshots/iphone-6.5/00-code.png",
+          "sha256": "22c86fc0f69031e9b5f6d6d4b804c0c6781d1afb098476579a09a7f695296a38",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "8d400019-5e3c-8faf-8f3d-b3f6fc52db85",
+          "imageId": "28c00019-5e3c-8faf-8012-6386714cb357",
+          "file": "docs/app-store/screenshots/iphone-6.5/04-lesson.png",
+          "sha256": "13fffef1c68064d69d5faf09827636d091af835910e8cf7ba5d20f18f0071acd",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "81400019-5e3c-8faf-8f3a-a88842e62dff",
+          "imageId": "07400019-5e3c-8faf-8028-710030b9ba10",
+          "file": "docs/app-store/screenshots/iphone-6.5/03-course.png",
+          "sha256": "4b98a784006708e917a611a4fcb16306a824d910eaaf3b941a26976e24799ad0",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "42800019-5e3c-8faf-8f26-d564fddbb08f",
+          "imageId": "4c800019-5e3c-8faf-8039-d476e1aedb58",
+          "file": "docs/app-store/screenshots/iphone-6.5/02-tests.png",
+          "sha256": "209a60930a17a6dbc0d09851aa64c7bf912ae5b3a086c4b43ea83642bad65d0b",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "11400019-5e3c-8faf-8f06-cf2f88fafda2",
+          "imageId": "eec00019-5e3c-8faf-8030-3cbfb7764942",
+          "file": "docs/app-store/screenshots/iphone-6.5/01-compiler.png",
+          "sha256": "f8ba9d71f29081e718080e4fe5f930ae43a7e3a1ff83272230756707c71c01ef",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "c0000019-5e3c-8faf-8f39-7511fdccb37c",
+          "imageId": "4fc00019-5e3c-8faf-801a-8ecd3617b1a9",
+          "file": "docs/app-store/screenshots/iphone-6.5/05-lab.png",
+          "sha256": "40754f0a2a6efbbe98d17d546045f97a4e4ae4e40a710ea1fe93e15efd8d27c3",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "ec400019-5e3c-8faf-8f27-126148743a31",
+          "imageId": "81000019-5e3c-8faf-8025-0e8dc97727d8",
+          "file": "docs/app-store/screenshots/iphone-6.5/06-projects.png",
+          "sha256": "1e3d12ec087e51e670798c4ccd3ea40fb7283073e4f1d08debb9e35dd916fc9c",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "25c00019-5e3c-8faf-8f01-c7e3c7055b01",
+          "imageId": "7e000019-5e3c-8faf-801e-778b04aaa0fa",
+          "file": "docs/app-store/screenshots/iphone-6.5/07-graphics.png",
+          "sha256": "17206311036d208d4fe81afb07d7486160ba004507ea872e0a17aaed87cba66b",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "7a400019-5e3c-8faf-8f35-3dbc0d1aee6e",
+          "imageId": "95800019-5e3c-8faf-8013-52dd85af0686",
+          "file": "docs/app-store/screenshots/iphone-6.5/08-site.png",
+          "sha256": "da8dd8f9dbba09a977cf695e4e9a992dfe51a8e3ab04c0343484402374bfca87",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "cc000019-5e3c-8faf-8f2b-96f56b6f5db1",
+          "imageId": "29800019-5e3c-8faf-8037-8a76baa0d9be",
+          "file": "docs/app-store/screenshots/iphone-6.5/09-examples.png",
+          "sha256": "a63f2f5228e0e9f8dd026c9e1c079cec8f46d7911f237b12aae8869126fb5e01",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_SCREENSHOT",
+      "group": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "count": 10,
+      "orderedAssets": [
+        {
+          "placementId": "a2000019-5e3c-8faf-8f20-61b2a45ece3e",
+          "imageId": "fb800019-5e3c-8faf-800d-849ea0670842",
+          "file": "docs/app-store/screenshots/iphone-6.1/00-code.png",
+          "sha256": "1f0faaef1699ae545cc44a13a3c9d12a189cea3915e941cc3a8be9d0b32b0556",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "91c00019-5e3c-8faf-8f00-d6938b4e0fc1",
+          "imageId": "f0000019-5e3c-8faf-8012-f1949a0dd117",
+          "file": "docs/app-store/screenshots/iphone-6.1/04-lesson.png",
+          "sha256": "f27b67b3106b0dc57d9f547f4392fab02232fbda44cda24aeff553d84df69620",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "7e400019-5e3c-8faf-8f36-9e484f9543b6",
+          "imageId": "8e800019-5e3c-8faf-800e-d0a309b0f3f4",
+          "file": "docs/app-store/screenshots/iphone-6.1/03-course.png",
+          "sha256": "6b7fdb863d5542164b2daca9328b83f1581524e46d22b576d792da46f629fde5",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "a5800019-5e3c-8faf-8f2f-b47f523e7099",
+          "imageId": "bf400019-5e3c-8faf-800b-555fa86080fe",
+          "file": "docs/app-store/screenshots/iphone-6.1/02-tests.png",
+          "sha256": "587bcfcf5192379a349309f2b638fbca86053e22080dfe4200a28086051e668a",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "9f000019-5e3c-8faf-8f3b-1eca4b523957",
+          "imageId": "5b000019-5e3c-8faf-8036-33d642b35d7e",
+          "file": "docs/app-store/screenshots/iphone-6.1/01-compiler.png",
+          "sha256": "7e44bc771bd2d48759cc560ff7d96a6968743be59c9c340fce4087bbde6454d2",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "ed400019-5e3c-8faf-8f07-806a501cacf9",
+          "imageId": "85400019-5e3c-8faf-800f-e429982fae48",
+          "file": "docs/app-store/screenshots/iphone-6.1/05-lab.png",
+          "sha256": "aa52b2bf5f66799b6237eaa897c003bb37d5db8b9ee5020f1bd7051c02493cb0",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "1cc00019-5e3c-8faf-8f1d-9f1cfbf98221",
+          "imageId": "b0000019-5e3c-8faf-803c-e1a45540a467",
+          "file": "docs/app-store/screenshots/iphone-6.1/06-projects.png",
+          "sha256": "05fca4b65f06815bddd8d087840d0e86b050bae745fd8c5b340460643bcf6de3",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "87000019-5e3c-8faf-8f3a-a140a0419412",
+          "imageId": "43400019-5e3c-8faf-8018-4e36832724ef",
+          "file": "docs/app-store/screenshots/iphone-6.1/07-graphics.png",
+          "sha256": "db3f8dca5452a2f9a24a033d7c0509c1f59277ad9bbd31393fc8185cb89cf4f2",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "c0000019-5e3c-8faf-8f31-8b22d4d5589e",
+          "imageId": "80000019-5e3c-8faf-800f-f76cbd846505",
+          "file": "docs/app-store/screenshots/iphone-6.1/08-site.png",
+          "sha256": "2bf18f92f4d634bb72296b4c5edc6083587f01c6d5385466dd6838a02995a242",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        },
+        {
+          "placementId": "6a000019-5e3c-8faf-8f12-7f5ec9ef4ec8",
+          "imageId": "a5800019-5e3c-8faf-8023-1d614f18884f",
+          "file": "docs/app-store/screenshots/iphone-6.1/09-examples.png",
+          "sha256": "fef9c02a11485cd3274929f85ae13ad8ae75a10eee01163e621e9d0f017ff2ab",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+      "group": "DEFAULT_PROFILE",
+      "count": 1,
+      "orderedAssets": [
+        {
+          "placementId": "16000019-5e3c-8faf-8f3f-bb735017e1de",
+          "imageId": "8a800019-5e3c-8faf-8022-c8fddd67e097",
+          "file": "docs/app-store/creative-assets/universal-code-1.1.png",
+          "sha256": "0609030523c9bc39f6610c573abd300407ea0834d32b40c18231e01c3c60fa23",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    },
+    {
+      "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+      "group": "DEFAULT_PROFILE",
+      "count": 1,
+      "orderedAssets": [
+        {
+          "placementId": "a4400019-5e3c-8faf-8f0d-6ba1d6dc9b48",
+          "imageId": "8a800019-5e3c-8faf-8022-c8fddd67e097",
+          "file": "docs/app-store/creative-assets/universal-code-1.1.png",
+          "sha256": "0609030523c9bc39f6610c573abd300407ea0834d32b40c18231e01c3c60fa23",
+          "imageState": "PREPARE_FOR_SUBMISSION"
+        }
+      ]
+    }
+  ],
+  "metadataMatches": true,
+  "originalReviewVideoRetained": true,
+  "submissionId": "41ee807b-090a-46bd-ad81-c1080ff72231",
+  "submittedDate": "2026-10-12T16:43:41.356Z",
+  "creativeState": "WAITING_FOR_REVIEW",
+  "placementsCheckedAt": "2026-10-12T16:42:55.187917+00:00",
+  "finalReadback": {
+    "checkedAt": "2026-10-12T16:54:47.107376+00:00",
+    "version": "1.1",
+    "build": "20",
+    "versionState": "WAITING_FOR_REVIEW",
+    "reviewState": "WAITING_FOR_REVIEW",
+    "releaseType": "AFTER_APPROVAL",
+    "creativeState": "WAITING_FOR_REVIEW",
+    "fileName": "universal-code-1.1.png",
+    "placements": [
+      {
+        "type": "PRODUCT_PAGE_HEADER_ASSET",
+        "imageId": "8a800019-5e3c-8faf-8022-c8fddd67e097",
+        "state": "ACTIVE"
+      },
+      {
+        "type": "APP_STORE_SEARCH_RESULTS_ASSET",
+        "imageId": "8a800019-5e3c-8faf-8022-c8fddd67e097",
+        "state": "ACTIVE"
+      }
+    ],
+    "placementCount": 72
+  }
+}

@@ -4,7 +4,7 @@
   "processingState": "VALID",
   "buildAudienceType": "APP_STORE_ELIGIBLE",
   "internalBuildState": "IN_BETA_TESTING",
-  "whatToTest": "Version 1.1 (20): keyboard and workspace corrections.\n\nOn iPhone, check Terminal input \u2192 Code \u2192 tap inside the source. Hide/reopen the keyboard and rotate the phone. Files remains a collapsible, adjustable side column in landscape, with consistent panel styling.\n\nOn Duo, Files opens on the left in every posture; select a file, resize/collapse the drawer and use Projects while typing. Code and Terminal use the upper display with a touch keyboard; Problems, Output, Tests and Idioms replace the lower keys. With no touch keyboard, Code and Terminal reclaim the available display height and the helper strip disappears. Header controls respect the system status area.\n\nAll 47 lessons and 22 prediction challenges retain their diagrams, practical notes, highlighting and official references. Embedded source scrolls with the lesson; full-screen source scrolls internally. Also check compilation, tests, formatting and local site previews.",
+  "whatToTest": "Version 1.1 (20): keyboard and workspace corrections.\n\nOn iPhone, check Terminal input → Code → tap inside the source. Hide/reopen the keyboard and rotate the phone. Files remains a collapsible, adjustable side column in landscape, with consistent panel styling.\n\nOn Duo, Files opens on the left in every posture; select a file, resize/collapse the drawer and use Projects while typing. Code and Terminal use the upper display with a touch keyboard; Problems, Output, Tests and Idioms replace the lower keys. With no touch keyboard, Code and Terminal reclaim the available display height and the helper strip disappears. Header controls respect the system status area.\n\nAll 47 lessons and 22 prediction challenges retain their diagrams, practical notes, highlighting and official references. Embedded source scrolls with the lesson; full-screen source scrolls internally. Also check compilation, tests, formatting and local site previews.",
   "sourceCommit": "d8c3455",
   "checkedAt": "2026-10-12T15:19:50.704675+00:00",
   "version": "1.1",
@@ -18,8 +18,7 @@
   "appReviewSelected": true,
   "remainingChecks": [
     "Native Open/Book and closed landscape Duo",
-    "Hardware-keyboard simulation",
-    "Updated posture media assignment"
+    "Hardware-keyboard simulation"
   ],
   "nativeLaptopScreenshots": [
     {
@@ -61,7 +60,7 @@
     }
   ],
   "nativeLaptopCapture": "passed",
-  "appReviewSubmitted": false,
+  "appReviewSubmitted": true,
   "previousReview": {
     "version": "1.1",
     "build": "18",
@@ -69,25 +68,55 @@
     "releaseType": "AFTER_APPROVAL",
     "checkedAt": "2026-10-12T15:30:35.545070+00:00"
   },
-  "currentDraft": {
+  "creativeAssets": {
+    "source": "docs/app-store/creative-assets/universal-code-1.1.png",
+    "imageId": "8a800019-5e3c-8faf-8022-c8fddd67e097",
+    "state": "WAITING_FOR_REVIEW",
+    "placements": [
+      {
+        "type": "PRODUCT_PAGE_HEADER_ASSET",
+        "id": "a4400019-5e3c-8faf-8f0d-6ba1d6dc9b48"
+      },
+      {
+        "type": "APP_STORE_SEARCH_RESULTS_ASSET",
+        "id": "16000019-5e3c-8faf-8f3f-bb735017e1de"
+      }
+    ],
+    "processingVerified": true,
+    "uiPersistenceVerified": false,
+    "checkedAt": "2026-10-12T16:54:47.107376+00:00"
+  },
+  "originalReviewVideoRetained": true,
+  "currentReview": {
     "version": "1.1",
     "build": "20",
-    "state": "PREPARE_FOR_SUBMISSION",
-    "releaseType": "AFTER_APPROVAL"
+    "submissionId": "41ee807b-090a-46bd-ad81-c1080ff72231",
+    "appStoreState": "WAITING_FOR_REVIEW",
+    "releaseType": "AFTER_APPROVAL",
+    "submittedDate": "2026-10-12T16:43:41.356Z",
+    "checkedAt": "2026-10-12T16:54:47.107376+00:00"
   },
-  "creativeAssets": {
-    "header": {
-      "placementId": "28800019-5e3c-8faf-8f2a-736216f3a1f6",
-      "imageId": "3b000019-5e3c-8faf-8035-adf670e77669",
-      "uiVerified": true,
-      "proof": "docs/app-store/header-filled-1.1-build20.png"
-    },
-    "searchResults": {
-      "placementId": "c3400019-5e3c-8faf-8f28-f0e6d264dd54",
-      "imageId": "3e400019-5e3c-8faf-8031-f04df2f58ebc",
-      "uiVerified": true,
-      "proof": "docs/app-store/search-results-filled-1.1-build20.png"
-    }
+  "submissionPriority": "Owner explicitly requested saving and submitting build 20 before completing the remaining Device Hub checks.",
+  "screenshotsPlaced": 70,
+  "placementsPlaced": 72,
+  "duoListing": {
+    "count": 10,
+    "newBuild20LaptopCaptures": 3,
+    "unchangedFeatureCaptures": 7,
+    "outdatedOpenBookCapturesRemoved": true
   },
-  "originalReviewVideoRetained": true
+  "listingAudit": {
+    "name": "GopherForge: Go Workbench",
+    "subtitle": "Offline compiler & code editor",
+    "subtitleCharacters": 30,
+    "keywordCharacters": 97,
+    "promotionalCharacters": 142,
+    "primaryCategory": "DEVELOPER_TOOLS",
+    "secondaryCategory": "EDUCATION",
+    "privacyUrl": "https://gopherforge.app/privacy",
+    "termsUrl": "https://gopherforge.app/terms",
+    "supportUrl": "https://gopherforge.app/support",
+    "metadataReadBackVerified": true,
+    "paidPricingChanged": false
+  }
 }
