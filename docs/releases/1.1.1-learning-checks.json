@@ -1,7 +1,7 @@
 {
   "version": "1.1.1",
   "build": "21",
-  "status": "TESTFLIGHT_PREPARATION",
+  "status": "IN_BETA_TESTING",
   "currentAppStoreVersion": "1.1",
   "currentAppStoreState": "READY_FOR_SALE",
   "modelAndUIValidation": {
@@ -29,12 +29,43 @@
   "screenshots": [
     "docs/screenshots/review-matching-21.png",
     "docs/screenshots/mistake-explanation-21.png",
-    "docs/screenshots/mistake-next-question-21.png"
+    "docs/screenshots/mistake-next-question-21.png",
+    "docs/screenshots/review-matching-dark-21.png"
   ],
   "appReviewSubmitted": false,
   "matchingCodeHighlightingCheck": {
     "result": "Passed",
     "testCount": 1,
     "resultBundle": "build/learning-fix-20261014/matching-style.xcresult"
+  },
+  "sourceCommit": "acb9717",
+  "validation": "passed",
+  "upload": "passed",
+  "darkMatchingVisuallyChecked": true,
+  "archive": {
+    "version": "1.1.1",
+    "build": "21",
+    "sourceCommit": "acb9717",
+    "ipaSHA256": "7c1b9e7d80af11cbaf7a1f7da6de5d403b572b4442278923b01f927cb2763d04",
+    "lessonGuidesSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+    "shareExtensionBuild": "21"
+  },
+  "testFlight": {
+    "version": "1.1.1",
+    "build": "21",
+    "sourceCommit": "acb9717",
+    "ipaSHA256": "7c1b9e7d80af11cbaf7a1f7da6de5d403b572b4442278923b01f927cb2763d04",
+    "lessonGuidesSHA256": "2c3678373f4947203c53189ecebd4a0be70280d940493026026b59c37d1d6fac",
+    "shareExtensionBuild": "21",
+    "buildId": "bb562c30-d2e0-4e00-968d-b604a1cb5c75",
+    "processingState": "VALID",
+    "buildAudienceType": "APP_STORE_ELIGIBLE",
+    "internalBuildState": "IN_BETA_TESTING",
+    "betaGroupId": "8bb1ef54-e467-44dd-8678-f6702de1e59a",
+    "whatToTest": "1.1.1 (21): Review and mistake correction.\n\nReview now builds matching boards from completed lessons and correctly answered concepts. It starts before five pairs are available, covers every course lesson and prediction, refreshes when progress changes, and highlights code tiles.\n\nFix mistakes replaces the locked Practice list. Each question offers exactly three answers. A wrong answer shows the rule and stays on the same question; a correct answer is saved before automatically advancing. Mistakes from code, lessons, matching and earlier quizzes share one queue. Correcting a concept removes only that concept; a new error brings it back.\n\nPlease check: finish one reading lesson, go back to Learn and open Review. Then start a knowledge check, answer incorrectly, leave and reopen the app, and work through that same mistake. Answer correctly and confirm the queue clears and Review includes the learned concept. Existing lesson completion is preserved and a quiz answer does not claim that the compiler passed a lesson.\n",
+    "checkedAt": "2026-10-14T17:48:56.762145+00:00",
+    "validation": "passed",
+    "upload": "passed",
+    "appReviewSubmitted": false
   }
 }

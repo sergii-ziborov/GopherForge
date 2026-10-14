@@ -40,7 +40,7 @@ waiting for five pairs, and **Fix mistakes** replaces the locked Practice list
 with three-answer questions, immediate corrections and saved progress.
 
 The learning changes passed 52 model and UI checks on iPhone 13 (iOS 26.5).
-The new build is being prepared for internal TestFlight. Existing Duo posture
+Version 1.1.1 (21) is available in Internal QA TestFlight; it has not been submitted to App Review. Existing Duo posture
 verification limits remain recorded in [the layout evidence](docs/releases/1.1-layout-checks.md).
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture

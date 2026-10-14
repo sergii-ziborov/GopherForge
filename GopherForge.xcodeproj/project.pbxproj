@@ -803,6 +803,7 @@
 		B0C30ADBF4A97F7E3AA35FE9 /* LearnProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnProgress.swift; sourceTree = "<group>"; };
 		B196F2D0442C97A720D09B47 /* WasmGoCompilerFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WasmGoCompilerFailureTests.swift; sourceTree = "<group>"; };
 		B1B2B8E86C42946F589A91BF /* PackageBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageBrowserView.swift; sourceTree = "<group>"; };
+		B1FC6230E2E14E1328533D38 /* review-matching-dark-21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "review-matching-dark-21.png"; sourceTree = "<group>"; };
 		B2D91C605815E3A922E669B5 /* HTMLSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		B32C5411505EA09972CEB0F4 /* InterviewQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewQuestionView.swift; sourceTree = "<group>"; };
 		B340E0D90DD1CE64CD9AE984 /* GoStepArtifactCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoStepArtifactCache.swift; sourceTree = "<group>"; };
@@ -2043,6 +2044,7 @@
 				4259C30C089EEB35FBFAB85F /* navigator-iphone-files.png */,
 				45D0E4D1CCBF3913FA586C1D /* problems.png */,
 				B6EB89D20EB8653F24D9FEC0 /* review-matching-21.png */,
+				B1FC6230E2E14E1328533D38 /* review-matching-dark-21.png */,
 				58286B5823B29F243EB3F224 /* run-output.png */,
 				3224AE7EAD387C726E705613 /* site-preview.png */,
 				26D0355473F262D6D50FDE90 /* unit-path.png */,
