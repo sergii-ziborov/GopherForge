@@ -18,12 +18,12 @@ enum QuizCatalogTypes {
                     "It is faster to compile",
                     "It is the only form vet accepts",
                     "It survives a field being added",
-                    "It allows fields to be omitted",
+                    "Positional literals can leave any fields out",
                 ],
                 correctIndex: 2,
-                explanation: "The positional form depends on declaration order, so inserting "
-                    + "a field silently reassigns every value after it. Both forms let you "
-                    + "omit fields; the omitted ones take their zero value.",
+                explanation: "A keyed literal names the fields it supplies, so adding a field "
+                    + "does not change those names. Omitted fields take their zero values. "
+                    + "A positional literal must supply every field in declaration order.",
                 conceptTag: GoConcept.structLiteral
             ),
             QuizQuestion(

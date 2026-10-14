@@ -2,9 +2,8 @@ import Foundation
 
 /// One question with one right answer.
 ///
-/// Four options rather than two, because a coin flip is not evidence of
-/// anything, and an explanation on every question rather than only the wrong
-/// ones: knowing *why* the right answer is right is the part that transfers.
+/// Unit quizzes author four alternatives. Fix mistakes keeps the right answer
+/// and two distractors. Every question includes the rule behind its answer.
 struct QuizQuestion: Identifiable, Equatable, Sendable {
     let id: String
     /// The question, in plain words.

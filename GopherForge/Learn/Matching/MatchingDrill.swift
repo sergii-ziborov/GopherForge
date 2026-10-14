@@ -12,8 +12,8 @@ struct MatchingPair: Identifiable, Equatable, Sendable {
     /// and the review scheduler use, so a drill mistake reaches the same queue
     /// as a compiler mistake.
     let conceptTag: String
-    /// The lesson that teaches this pair. Review only deals a tile after that
-    /// lesson is done, so the board never asks for something not yet taught.
+    /// The lesson that teaches this pair. Review unlocks it through completion
+    /// or a correctly answered knowledge check about the same concept.
     let requiredLessonID: String?
 
     init(

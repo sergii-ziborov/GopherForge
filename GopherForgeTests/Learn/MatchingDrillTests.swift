@@ -107,6 +107,10 @@ final class MatchingDrillTests: XCTestCase {
                 )
             }
         }
+        for pair in ReviewMatchCatalog.allPairs {
+            XCTAssertLessThanOrEqual(pair.prompt.count, MatchingDrill.maximumPromptCharacters, pair.id)
+            XCTAssertLessThanOrEqual(pair.answer.count, MatchingDrill.maximumAnswerCharacters, pair.id)
+        }
     }
 
     func testDrillIdentifiersAndPairsAreUnique() {
@@ -114,7 +118,8 @@ final class MatchingDrillTests: XCTestCase {
         let drillIDs = drills.map(\.id)
         XCTAssertEqual(Set(drillIDs).count, drillIDs.count)
 
-        let pairIDs = drills.flatMap { $0.pairs.map(\.id) }
+        let pairIDs = MatchingDrillCatalog.drills.flatMap(\.pairs).map(\.id)
+            + ReviewMatchCatalog.allPairs.map(\.id)
         XCTAssertEqual(Set(pairIDs).count, pairIDs.count, "pair ids must be unique across drills")
     }
 
@@ -163,14 +168,14 @@ final class MatchingDrillTests: XCTestCase {
         XCTAssertTrue(ReviewMatchCatalog.unlocked(completed: []).isEmpty)
     }
 
-    func testReviewDealsABoardOnlyAfterItsFiveLessonsAreDone() {
+    func testReviewStartsBeforeFiveLessonsAreDone() {
         let coreLessons = Set(ReviewMatchCatalog.core.pairs.compactMap(\.requiredLessonID))
         XCTAssertEqual(coreLessons.count, 5)
         XCTAssertTrue(ReviewMatchCatalog.unlocked(completed: []).isEmpty)
         let four = Set(coreLessons.dropLast())
-        XCTAssertTrue(ReviewMatchCatalog.unlocked(completed: four).isEmpty)
+        XCTAssertFalse(ReviewMatchCatalog.unlocked(completed: four).isEmpty)
         let boards = ReviewMatchCatalog.unlocked(completed: coreLessons)
-        XCTAssertEqual(boards.map(\.id), ["review.core"])
+        XCTAssertEqual(boards.first?.id, "review.core")
     }
 
     func testReviewNeverDealsAPairFromAnUnfinishedLesson() throws {
@@ -200,18 +205,59 @@ final class MatchingDrillTests: XCTestCase {
         let fourCore = Set(core.dropLast())
         let ready = fourCore.union(collections)
         let boards = ReviewMatchCatalog.unlocked(completed: ready)
-        XCTAssertEqual(boards.map(\.id), ["review.collections"])
+        XCTAssertEqual(boards.first?.id, "review.collections")
+        XCTAssertGreaterThan(boards.count, 1, "partial learned boards should not be discarded")
         for pair in boards.flatMap(\.pairs) {
             XCTAssertNotEqual(pair.requiredLessonID, core.subtracting(fourCore).first)
         }
     }
 
     func testEveryReviewLessonIsATeachingOrChallengeLesson() {
-        for pair in ReviewMatchCatalog.rounds.flatMap(\.pairs) {
+        for pair in ReviewMatchCatalog.allPairs {
             guard let id = pair.requiredLessonID else {
                 return XCTFail(pair.id)
             }
             XCTAssertNotNil(GoCourseCatalog.lesson(id: id), id)
+        }
+    }
+
+    func testEveryCompletedLessonCanContributeToReview() {
+        for lesson in GoCourseCatalog.lessons {
+            let boards = ReviewMatchCatalog.unlocked(completed: [lesson.id])
+            XCTAssertFalse(boards.isEmpty, "\(lesson.id) leaves Review empty")
+            XCTAssertTrue(boards.flatMap(\.pairs).allSatisfy { $0.requiredLessonID == lesson.id })
+        }
+    }
+
+    func testFirstFiveTeachingLessonsFillReviewWithoutDoingHiddenChallenges() {
+        let completed = Set(GoCourseCatalog.teachingLessons.prefix(5).map(\.id))
+        let pairs = ReviewMatchCatalog.unlocked(completed: completed).flatMap(\.pairs)
+        XCTAssertGreaterThanOrEqual(pairs.count, 5)
+        XCTAssertTrue(pairs.allSatisfy { completed.contains($0.requiredLessonID ?? "") })
+    }
+
+    func testFirstTeachingLessonOffersTwoDifferentPairs() throws {
+        let first = try XCTUnwrap(GoCourseCatalog.teachingLessons.first)
+        let pairs = ReviewMatchCatalog.unlocked(completed: [first.id]).flatMap(\.pairs)
+        XCTAssertGreaterThanOrEqual(pairs.count, 2)
+        XCTAssertEqual(Set(pairs.map(\.answer)).count, pairs.count)
+    }
+
+    func testGeneratedBoardsHaveDistinctAnswersAndRespectTileBudget() {
+        for unit in GoCourseCatalog.units {
+            for board in ReviewMatchCatalog.unlocked(completed: Set(unit.lessons.map(\.id))) {
+                XCTAssertEqual(Set(board.pairs.map(\.answer)).count, board.pairs.count, board.id)
+                XCTAssertLessThanOrEqual(board.pairs.count, ReviewMatchCatalog.pairsPerRound)
+                XCTAssertFalse(board.pairs.isEmpty)
+            }
+        }
+    }
+
+    func testEveryCorrectlyAnsweredConceptCanFillMatching() {
+        for tag in GoConcept.all {
+            let boards = ReviewMatchCatalog.unlocked(completed: [], confirmedConcepts: [tag])
+            XCTAssertFalse(boards.isEmpty, tag)
+            XCTAssertTrue(boards.flatMap(\.pairs).allSatisfy { $0.conceptTag == tag }, tag)
         }
     }
 }

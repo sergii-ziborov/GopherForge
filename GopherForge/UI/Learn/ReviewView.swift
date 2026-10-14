@@ -1,18 +1,14 @@
 import SwiftUI
 
-/// A short run of match boards, earned by finishing lessons.
-///
-/// Review used to be a list of lessons the scheduler thought were weak. That
-/// is a queue, not practice. This is the opposite: five terms on the left,
-/// five meanings on the right, up to five boards, and only pairs from lessons
-/// already done — so the board never asks for something the course has not
-/// taught yet.
+/// Match terms and meanings from lessons already finished.
 struct ReviewView: View {
     @Environment(LearnProgress.self) private var progress
     @State private var boards: [MatchingDrill] = []
     @State private var index = 0
     @State private var canAdvance = false
     @State private var hasLoaded = false
+    @State private var loadedCompletion: Set<String>?
+    @State private var loadedConcepts: Set<String> = []
 
     var body: some View {
         Group {
@@ -28,9 +24,12 @@ struct ReviewView: View {
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            boards = ReviewMatchCatalog.unlocked(completed: progress.completed)
+            await progress.refresh()
+            loadBoards()
             hasLoaded = true
         }
+        .onChange(of: progress.completed) { _, _ in loadBoards() }
+        .onChange(of: progress.confirmedConcepts) { _, _ in loadBoards() }
     }
 
     private var empty: some View {
@@ -38,8 +37,8 @@ struct ReviewView: View {
             "Nothing to match yet",
             systemImage: "link",
             description: Text(
-                "Finish five lessons and Review deals a board of five pairs "
-                    + "from what you already know. Achievements stay on Learn."
+                "Finish a lesson or answer a knowledge-check question correctly to match its Go concepts here. "
+                    + "Your board grows as you learn."
             )
         )
         .accessibilityIdentifier(AccessibilityID.reviewEmpty)
@@ -68,7 +67,7 @@ struct ReviewView: View {
                         .buttonStyle(.borderedProminent)
                         .accessibilityIdentifier(AccessibilityID.reviewNext)
                     } else if canAdvance {
-                        Text("Session complete. Those wrong connections come back here.")
+                        Text("Session complete. Wrong connections are saved in Fix mistakes.")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -84,5 +83,17 @@ struct ReviewView: View {
     private func finished(_ result: MatchingDrillResult) {
         canAdvance = true
         Task { await progress.record(result) }
+    }
+
+    private func loadBoards() {
+        guard loadedCompletion != progress.completed || loadedConcepts != progress.confirmedConcepts else { return }
+        loadedCompletion = progress.completed
+        loadedConcepts = progress.confirmedConcepts
+        boards = ReviewMatchCatalog.unlocked(
+            completed: progress.completed, confirmedConcepts: progress.confirmedConcepts,
+            shuffle: { $0.shuffled() }
+        )
+        index = 0
+        canAdvance = false
     }
 }

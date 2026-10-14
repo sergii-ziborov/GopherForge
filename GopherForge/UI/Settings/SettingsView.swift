@@ -88,7 +88,7 @@ struct SettingsView: View {
             } header: {
                 Text("Progress")
             } footer: {
-                Text("Forgets every lesson, drill and quiz, and locks practice again. "
+                Text("Forgets every lesson, drill, quiz and mistake correction. "
                     + "Projects and their files are untouched.")
             }
 
@@ -145,7 +145,7 @@ struct SettingsView: View {
             }
             Button("Keep it", role: .cancel) {}
         } message: {
-            Text("Every lesson, drill and quiz is forgotten, and practice locks again.")
+            Text("Every lesson, drill, quiz and mistake correction is forgotten.")
         }
     }
 

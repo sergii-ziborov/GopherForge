@@ -1,10 +1,6 @@
 import XCTest
 
-/// The practice side: drills, achievements and the example library.
-///
-/// The drill board carries a promise a unit test cannot check — that every tile
-/// is the same height and none of them move — so it is measured here, on the
-/// real thing.
+@MainActor
 final class PracticeFlowUITests: XCTestCase {
     private var app: XCUIApplication!
 
@@ -13,243 +9,142 @@ final class PracticeFlowUITests: XCTestCase {
         app = XCUIApplication()
     }
 
-    override func tearDownWithError() throws {
-        app = nil
+    override func tearDownWithError() throws { app = nil }
+
+    func testCompletingOneLessonPopulatesMatchingWithoutRelaunching() {
+        resetProgress()
+        completeShortDeclaration()
+        app.buttons["BackButton"].tap()
+        XCTAssertTrue(app.buttons["lesson.core.short-declaration"].waitForExistence(timeout: 10))
+        app.buttons["BackButton"].tap()
+        let review = app.buttons[AccessibilityIdentifier.reviewEntry]
+        XCTAssertTrue(app.waitForElement(review))
+        review.tap()
+        XCTAssertTrue(app.buttons["drill.tile.review.core.short#prompt"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["drill.tile.review.core.assignment#answer"].exists)
+        XCTAssertFalse(app.element(withIdentifier: "learn.review.empty").exists)
+        attachScreenshot(named: "review-after-one-lesson")
     }
 
-    func testADrillBoardOffersBothSidesToConnect() {
-        launch(screen: "drills")
-
-        let drill = app.buttons["practice.drill.drill.concurrency"]
-        XCTAssertTrue(app.waitForElement(drill), "practice should offer the concurrency drill")
-        drill.tap()
-
-        XCTAssertTrue(
-            app.buttons["drill.tile.conc.close#prompt"].waitForExistence(timeout: 10),
-            "the board should appear with both sides addressable"
-        )
-        XCTAssertTrue(app.buttons["drill.tile.conc.close#answer"].exists)
-        attachScreenshot(named: "16-drill")
-    }
-
-    /// The whole reason the board is playable with a thumb: nothing changes
-    /// size, so the tile you are reaching for stays where it was.
-    func testEveryTileOnABoardIsTheSameHeight() {
-        launch(screen: "drills")
-
-        let drill = app.buttons["practice.drill.drill.errors"]
-        XCTAssertTrue(app.waitForElement(drill))
-        drill.tap()
-
-        let tiles = app.buttons.matching(
-            NSPredicate(format: "identifier BEGINSWITH 'drill.tile.'")
-        )
-        XCTAssertTrue(tiles.firstMatch.waitForExistence(timeout: 10))
-        XCTAssertGreaterThanOrEqual(tiles.count, 4, "a drill should show both sides")
-
-        // Compared with a tolerance rather than for exact equality. Frames are
-        // measured in floating point, and the same 78-point tile can come back
-        // as 78.0, 78.00001 and 78.00003 depending on where the layout rounded
-        // — which put three "different" heights in a set and failed a test
-        // about tiles that are visibly identical. What this is really asserting
-        // is that no tile is a different size to the eye.
+    func testEveryMatchingTileKeepsItsHeightAndACompletedPairStaysVisible() {
+        resetProgress()
+        completeShortDeclaration()
+        launch(screen: "review")
+        let prompt = app.buttons["drill.tile.review.core.short#prompt"]
+        XCTAssertTrue(prompt.waitForExistence(timeout: 10))
+        let tiles = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'drill.tile.'"))
+        XCTAssertEqual(tiles.count, 4)
         let heights = (0..<tiles.count).map { tiles.element(boundBy: $0).frame.height }
-        let spread = (heights.max() ?? 0) - (heights.min() ?? 0)
-        XCTAssertLessThan(spread, 0.5, "tiles differ in height: \(heights.sorted())")
-    }
-
-    /// Connecting the right pair must not remove the tiles, because a row that
-    /// disappears moves everything under it.
-    func testAMatchedPairStaysOnTheBoard() {
-        launch(screen: "drills")
-
-        let drill = app.buttons["practice.drill.drill.errors"]
-        XCTAssertTrue(app.waitForElement(drill))
-        drill.tap()
-
-        let tiles = app.buttons.matching(
-            NSPredicate(format: "identifier BEGINSWITH 'drill.tile.'")
-        )
-        XCTAssertTrue(tiles.firstMatch.waitForExistence(timeout: 10))
-        let before = tiles.count
-
-        let prompt = app.buttons["drill.tile.errors.wrap#prompt"]
-        let answer = app.buttons["drill.tile.errors.wrap#answer"]
-        XCTAssertTrue(prompt.exists && answer.exists)
+        XCTAssertLessThan((heights.max() ?? 0) - (heights.min() ?? 0), 0.5)
         prompt.tap()
-        answer.tap()
-
-        XCTAssertEqual(tiles.count, before, "a matched pair should stay put, not vanish")
+        app.buttons["drill.tile.review.core.short#answer"].tap()
+        XCTAssertEqual(tiles.count, 4)
     }
 
-    /// Asserted by shape rather than by badge name: identifiers are content and
-    /// content is renamed, but "every badge is listed and says what is left"
-    /// is the promise the screen makes.
-    func testAchievementsShowWhatIsLeftRatherThanHidingIt() {
+    func testWrongAnswerExplainsAndPersistsThenCorrectAnswerMovesForward() {
+        resetProgress()
+        launch(screen: "drills")
+        app.buttons["practice.start"].tap()
+        XCTAssertTrue(app.staticTexts["mistakes.question"].waitForExistence(timeout: 10))
+        let options = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'mistakes.option.'"))
+        XCTAssertEqual(options.count, 3)
+        let firstQuestion = app.staticTexts["mistakes.question"].label
+        // The authored first question asks where count := 0 can appear.
+        app.buttons["mistakes.option.1"].tap()
+        XCTAssertTrue(app.element(withIdentifier: "mistakes.explanation").waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["mistakes.question"].label, firstQuestion)
+        attachScreenshot(named: "mistake-explanation-three-options")
+
+        app.terminate()
+        launch(screen: "drills")
+        XCTAssertTrue(app.buttons["mistakes.start"].waitForExistence(timeout: 10), "the unfinished mistake must survive a relaunch")
+        app.buttons["mistakes.start"].tap()
+        XCTAssertTrue(app.staticTexts["mistakes.question"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["mistakes.question"].label, firstQuestion)
+        app.buttons["mistakes.option.0"].tap()
+        XCTAssertTrue(app.buttons["mistakes.done"].waitForExistence(timeout: 10), "one corrected concept should finish the run")
+        app.buttons["mistakes.done"].tap()
+        XCTAssertTrue(app.buttons["practice.start"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["mistakes.start"].exists, "the corrected mistake must leave the queue")
+
+        app.terminate()
+        launch(screen: "drills")
+        XCTAssertFalse(app.buttons["mistakes.start"].exists)
+        app.buttons["practice.start"].tap()
+        XCTAssertTrue(app.staticTexts["mistakes.question"].waitForExistence(timeout: 10))
+        XCTAssertNotEqual(app.staticTexts["mistakes.question"].label, firstQuestion, "the next check should continue past the saved answer")
+        attachScreenshot(named: "mistake-cleared-next-question")
+
+        launch(screen: "review")
+        XCTAssertTrue(app.buttons["drill.tile.review.core.short#prompt"].waitForExistence(timeout: 10),
+                      "the correctly answered concept should fill matching without a lesson tick")
+        attachScreenshot(named: "review-from-correct-answer")
+    }
+
+    func testCorrectKnowledgeAnswerImmediatelyOpensTheNextQuestion() {
+        resetProgress()
+        launch(screen: "drills")
+        app.buttons["practice.start"].tap()
+        let first = app.staticTexts["mistakes.question"]
+        XCTAssertTrue(first.waitForExistence(timeout: 10))
+        let text = first.label
+        app.buttons["mistakes.option.0"].tap()
+        let changed = NSPredicate(format: "exists == true AND label != %@", text)
+        expectation(for: changed, evaluatedWith: first)
+        waitForExpectations(timeout: 10)
+        XCTAssertFalse(app.element(withIdentifier: "mistakes.explanation").exists)
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'mistakes.option.'")).count, 3)
+    }
+
+    func testAchievementsStillShowTheEarnedProgress() {
         launch(screen: "achievements")
-
-        let badges = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "identifier BEGINSWITH 'achievement.'"))
-        XCTAssertTrue(
-            badges.firstMatch.waitForExistence(timeout: 10),
-            "the screen should list badges"
-        )
-        XCTAssertGreaterThanOrEqual(
-            badges.count, 5,
-            "every badge should be listed, earned or not — got \(badges.count)"
-        )
-
-        // The counter that keeps going up. Progress survives between runs, so
-        // the number itself is not assertable; that it is being counted in
-        // levels is.
-        XCTAssertTrue(
-            app.staticTexts.matching(
-                // Case-insensitive: a section header is uppercased by the
-                // list style, so the label is not what the source says.
-                NSPredicate(format: "label CONTAINS[c] 'levels earned'")
-            ).firstMatch.waitForExistence(timeout: 5),
-            "the screen should count the rungs earned, not just the badges"
-        )
-        attachScreenshot(named: "17-achievements")
+        let badges = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'achievement.'"))
+        XCTAssertTrue(badges.firstMatch.waitForExistence(timeout: 10))
+        XCTAssertGreaterThanOrEqual(badges.count, 5)
     }
 
-    func testTheExampleLibraryShowsCodeAndItsOutput() {
+    func testTheExampleLibraryShowsCodeAndOutput() {
         launch(screen: "examples")
-
         let example = app.buttons["example.conc.waitgroup"]
-        XCTAssertTrue(app.waitForElement(example), "the library should list its examples")
+        XCTAssertTrue(app.waitForElement(example))
         example.tap()
-
-        XCTAssertTrue(
-            app.staticTexts["Output"].waitForExistence(timeout: 10),
-            "an example should show what it prints"
-        )
+        XCTAssertTrue(app.staticTexts["Output"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons[AccessibilityIdentifier.exampleOpen].exists)
-        attachScreenshot(named: "18-example")
     }
 
-    /// A quiz answers, explains, and only then moves on.
-    func testAQuizExplainsBeforeItMovesOn() {
-        // The quiz opens once its unit has been started, so start it.
-        complete(lesson: "errors.is-and-as", inUnit: "errors")
-        launch(screen: "drills")
-
-        let quiz = app.buttons["practice.quiz.errors"]
-        XCTAssertTrue(app.waitForElement(quiz), "practice should offer the unit's quiz")
-        quiz.tap()
-
-        let firstOption = app.buttons["quiz.option.0"]
-        XCTAssertTrue(firstOption.waitForExistence(timeout: 10), "the quiz should show its options")
-
-        let continueButton = app.buttons[AccessibilityIdentifier.quizContinue]
-        XCTAssertFalse(continueButton.exists, "there is nothing to continue to before answering")
-
-        firstOption.tap()
-        XCTAssertTrue(
-            continueButton.waitForExistence(timeout: 5),
-            "answering should explain and offer the next question"
-        )
-        attachScreenshot(named: "19-quiz")
-
-        continueButton.tap()
-        XCTAssertTrue(
-            app.buttons["quiz.option.0"].waitForExistence(timeout: 5),
-            "continuing should show the next question"
-        )
+    private func resetProgress() {
+        app.launchArguments = ["-GopherForgeSection", "settings"]
+        app.launch()
+        let reset = app.buttons["settings.resetProgress"]
+        XCTAssertTrue(app.waitForElement(reset))
+        reset.tap()
+        let confirm = app.buttons["Reset everything"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        confirm.tap()
+        XCTAssertTrue(confirm.waitForNonExistence(timeout: 5))
+        // Navigate to Learn before terminating so its refresh observes the
+        // reset, rather than killing an asynchronous disk write mid-flight.
+        app.sectionButton("Learn").tap()
+        XCTAssertTrue(app.buttons["learn.continue"].waitForExistence(timeout: 10))
     }
 
-    /// Answering every question ends on a score, and the score is reachable.
-    func testAQuizEndsOnAScore() {
-        complete(lesson: "core.short-declaration", inUnit: "core")
-        // `complete` leaves the app on the lesson; the quiz is reached from
-        // Practice, which the launch below opens.
-
-        launch(screen: "drills")
-
-        let quiz = app.buttons["practice.quiz.core"]
-        XCTAssertTrue(app.waitForElement(quiz))
-        quiz.tap()
-
-        let summary = app.otherElements[AccessibilityIdentifier.quizSummary]
-        for _ in 0..<12 {
-            if summary.exists || app.buttons[AccessibilityIdentifier.quizRestart].exists { break }
-            let option = app.buttons["quiz.option.0"]
-            guard option.waitForExistence(timeout: 5) else { break }
-            option.tap()
-            let next = app.buttons[AccessibilityIdentifier.quizContinue]
-            guard next.waitForExistence(timeout: 5) else { break }
-            next.tap()
-        }
-
-        XCTAssertTrue(
-            app.buttons[AccessibilityIdentifier.quizRestart].waitForExistence(timeout: 10),
-            "the quiz should end on a result with a way to try again"
-        )
-        attachScreenshot(named: "20-quiz-score")
-    }
-
-    /// Practice fills up as the course is worked through.
-    ///
-    /// The quiz for a unit is locked until that unit has been started, so this
-    /// completes a lesson the way a person would and watches the quiz open.
-    func testCompletingALessonOpensThatUnitsQuiz() {
-        // A unit no other test touches, because progress persists between
-        // launches and a shared one would make this depend on test order.
-        launch(screen: "drills")
-
-        // Progress persists on the device, so a run on a simulator that has
-        // been used before may find this unit already started. The locking rule
-        // itself is pinned in PracticeCatalogTests, where no state can drift;
-        // what matters here is that finishing a lesson reaches the quiz.
-        let row = app.element(withIdentifier: "practice.quiz.modules")
-        XCTAssertTrue(app.waitForElement(row), "a locked item should be listed, not hidden")
-
-        complete(lesson: "modules.exported-by-case", inUnit: "modules")
-
-        launch(screen: "drills")
-        XCTAssertTrue(
-            app.waitForElement(app.buttons["practice.quiz.modules"]),
-            "finishing a lesson should open the unit's quiz"
-        )
-        attachScreenshot(named: "22-practice")
-    }
-
-    /// Finishes a lesson with nothing to run: the learner marks it done and the
-    /// app believes them, which is the only honest signal available.
-    private func complete(lesson lessonID: String, inUnit unitID: String) {
+    private func completeShortDeclaration() {
         app.launchArguments = ["-GopherForgeSection", "learn"]
         app.launch()
-
-        let unit = app.buttons["unit.\(unitID)"]
+        let unit = app.buttons["unit.core"]
         XCTAssertTrue(app.waitForElement(unit))
         unit.tap()
-
-        let lesson = app.buttons["lesson.\(lessonID)"]
-        XCTAssertTrue(app.waitForElement(lesson))
+        let lesson = app.buttons["lesson.core.short-declaration"]
+        XCTAssertTrue(lesson.waitForExistence(timeout: 10))
         lesson.tap()
-
-        // Progress persists across launches, so a lesson another test already
-        // finished is a normal state rather than a failure.
         let done = app.buttons[AccessibilityIdentifier.lessonComplete]
-        let already = app.element(withIdentifier: AccessibilityIdentifier.lessonCompleted)
-        if app.waitForElement(done, timeout: 4) {
-            done.tap()
-        }
-
-        XCTAssertTrue(
-            app.waitForElement(already),
-            "the lesson should say it is completed, whether it just was or already had been"
-        )
+        XCTAssertTrue(done.waitForExistence(timeout: 10))
+        done.tap()
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.lessonUncomplete].waitForExistence(timeout: 5))
     }
 
-    // MARK: - Helpers
-
     private func launch(screen: String) {
-        // "course" means the Learn list itself: the units are there, and a
-        // quiz is reached through the unit it closes.
-        app.launchArguments = screen == "course"
-            ? ["-GopherForgeSection", "learn"]
-            : ["-GopherForgeSection", "learn", "-GopherForgeScreen", screen]
+        app.launchArguments = ["-GopherForgeSection", "learn", "-GopherForgeScreen", screen]
         app.launch()
     }
 

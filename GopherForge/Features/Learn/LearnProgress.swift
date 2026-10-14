@@ -19,6 +19,11 @@ final class LearnProgress {
     private(set) var compilerVerified: Set<String> = []
     private(set) var mastery: [ConceptMastery] = []
     private(set) var stats: LearnerStats = .empty
+    private(set) var pendingMistakeConcepts: [String] = []
+    private(set) var correctionAttempts: [MistakeReviewAttempt] = []
+    var confirmedConcepts: Set<String> {
+        Set(correctionAttempts.filter(\.succeeded).map(\.conceptTag))
+    }
 
     private let store: LearningProgressStore
 
@@ -31,6 +36,8 @@ final class LearnProgress {
         compilerVerified = (try? await store.compilerVerifiedLessonIDs()) ?? []
         mastery = (try? await store.mastery()) ?? []
         stats = (try? await store.learnerStats()) ?? .empty
+        pendingMistakeConcepts = (try? await store.pendingMistakeConcepts()) ?? []
+        correctionAttempts = (try? await store.correctionAttempts()) ?? []
     }
 
     func isCompleted(_ lessonID: String) -> Bool { completed.contains(lessonID) }
@@ -71,6 +78,13 @@ final class LearnProgress {
 
     func record(_ result: MatchingDrillResult) async {
         try? await store.record(result)
+        await refresh()
+    }
+
+    /// Return only after the answer is durable; a dismissed question must not
+    /// look corrected on the next launch if the write failed.
+    func record(_ attempt: MistakeReviewAttempt) async throws {
+        try await store.record(attempt)
         await refresh()
     }
 }

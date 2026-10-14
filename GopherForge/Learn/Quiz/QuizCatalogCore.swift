@@ -66,7 +66,7 @@ enum QuizCatalogCore {
                     "To make the function faster",
                 ],
                 correctIndex: 0,
-                explanation: "Go has no exceptions. A function that can fail returns an error "
+                explanation: "Ordinary Go failures are returned as error values. A fallible function returns an error "
                     + "beside its result, and the caller decides what to do about it.",
                 conceptTag: GoConcept.explicitErrorCheck
             ),

@@ -89,16 +89,12 @@ private struct HeroMetric: View {
     }
 }
 
-/// Review, Practice and Achievements. The matching boards live in Review;
+/// Review, mistakes and achievements. The matching boards live in Review;
 /// badges stay here so a finished run still has somewhere to land.
 struct LearnToolRow: View {
-    let practiceUnlocked: Int
-    let practiceTotal: Int
+    let mistakesCount: Int
     let badgesEarned: Int
     let badgesTotal: Int
-    let onQuizFinished: (QuizResult) -> Void
-    let onDrillFinished: (MatchingDrillResult) -> Void
-    let completed: Set<String>
     let stats: LearnerStats
 
     private let columns = [GridItem(.adaptive(minimum: 172), spacing: 10)]
@@ -119,16 +115,12 @@ struct LearnToolRow: View {
             .accessibilityIdentifier(AccessibilityID.reviewEntry)
 
             NavigationLink {
-                PracticeHomeView(
-                    completed: completed,
-                    onQuizFinished: onQuizFinished,
-                    onDrillFinished: onDrillFinished
-                )
+                PracticeHomeView()
             } label: {
                 ToolCard(
                     symbol: "figure.mind.and.body",
-                    title: "Practice",
-                    detail: "\(practiceUnlocked) / \(practiceTotal) open",
+                    title: "Fix mistakes",
+                    detail: mistakesCount == 0 ? "Check what you know" : "\(mistakesCount) concepts to revisit",
                     tint: GopherForgeTheme.aqua
                 )
             }

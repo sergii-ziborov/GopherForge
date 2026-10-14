@@ -114,7 +114,7 @@ struct MatchingDrillView: View {
                 session.isPerfect
                     ? "Every pair on the first try."
                     : "\(session.mistakes) wrong connection\(session.mistakes == 1 ? "" : "s"). "
-                        + "Those concepts will come back in Review."
+                        + "Find those concepts in Fix mistakes."
             )
             .font(.footnote)
             .foregroundStyle(.secondary)

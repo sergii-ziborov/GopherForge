@@ -14,6 +14,7 @@ actor LearningProgressStore {
         var drills: [MatchingDrillResult]?
         var runs: [PracticeRun]?
         var quizzes: [QuizResult]?
+        var corrections: [MistakeReviewAttempt]?
     }
 
     private let storageURL: URL
@@ -62,20 +63,57 @@ actor LearningProgressStore {
 
     func mastery() throws -> [ConceptMastery] {
         var byTag: [String: ConceptMastery] = [:]
-        for attempt in try state().attempts.sorted(by: { $0.attemptedAt < $1.attemptedAt }) {
-            let lessonTags = GoCourseCatalog.lesson(id: attempt.lessonID)?.conceptTags ?? []
-            let mistaken = Set(attempt.mistakeTags)
-
-            for tag in Set(lessonTags).union(mistaken) {
-                var mastery = byTag[tag] ?? .empty(tag)
-                // A tag is a mistake when it was observed as one; otherwise the
-                // attempt's own outcome decides.
-                let succeeded = mistaken.contains(tag) ? false : attempt.succeeded
-                mastery.record(succeeded: succeeded, at: attempt.attemptedAt)
-                byTag[tag] = mastery
-            }
+        for event in try evidence() {
+            var mastery = byTag[event.tag] ?? .empty(event.tag)
+            mastery.record(succeeded: event.succeeded, at: event.date)
+            byTag[event.tag] = mastery
         }
         return byTag.values.sorted { $0.conceptTag < $1.conceptTag }
+    }
+
+    func pendingMistakeConcepts() throws -> [String] {
+        LearningEvidence.pendingConcepts(in: try evidence())
+    }
+
+    func correctionAttempts() throws -> [MistakeReviewAttempt] { try state().corrections ?? [] }
+
+    func record(_ attempt: MistakeReviewAttempt) throws {
+        var current = try state()
+        current.corrections = retainedCorrections((current.corrections ?? []) + [attempt])
+        try persist(current)
+    }
+
+    func recordMistakes(conceptTags: [String], at date: Date = Date()) throws {
+        guard !conceptTags.isEmpty else { return }
+        var current = try state()
+        let mistakes = Set(conceptTags).sorted().map {
+            MistakeReviewAttempt(conceptTag: $0, succeeded: false, attemptedAt: date)
+        }
+        current.corrections = retainedCorrections((current.corrections ?? []) + mistakes)
+        try persist(current)
+    }
+
+    private func evidence() throws -> [LearningEvidence.Event] {
+        let current = try state()
+        return LearningEvidence.events(
+            attempts: current.attempts, drills: current.drills ?? [],
+            quizzes: current.quizzes ?? [], corrections: current.corrections ?? []
+        )
+    }
+
+    /// Keep the latest state of every concept and question when trimming the
+    /// recent history. Otherwise an old quiz error could reappear merely
+    /// because its correction fell off the end of the bounded log.
+    private func retainedCorrections(_ attempts: [MistakeReviewAttempt]) -> [MistakeReviewAttempt] {
+        guard attempts.count > maximumRuns else { return attempts }
+        var latest: [String: Int] = [:]
+        for (index, attempt) in attempts.enumerated() {
+            latest["concept." + attempt.conceptTag] = index
+            if let id = attempt.questionID { latest["question." + id] = index }
+        }
+        var keep = Set(latest.values)
+        for index in attempts.indices.reversed() where keep.count < maximumRuns { keep.insert(index) }
+        return keep.sorted().map { attempts[$0] }
     }
 
     func completedLessonIDs() throws -> Set<String> {

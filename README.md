@@ -32,13 +32,16 @@ subscription. App features,
 limitations, privacy and support are shared with this repository; the website
 should reflect the app's actual App Store availability.
 
-## Version 1.1 preview
+## App Store release and next preview
 
-Version 1.1 (build 20) is available to internal TestFlight testers. The public
-App Store version remains 1.0.1. Build 20 was submitted on 12 October 2026 and
-is Waiting for Review, with automatic release after approval. The earlier build
-18 submission was withdrawn for this replacement. Remaining native Duo posture and hardware-keyboard
-checks are recorded in [the layout evidence](docs/releases/1.1-layout-checks.md).
+Version 1.1 (build 20) is published on the App Store. The next update,
+1.1.1 (21), fixes learning progress: Review matches learned concepts without
+waiting for five pairs, and **Fix mistakes** replaces the locked Practice list
+with three-answer questions, immediate corrections and saved progress.
+
+The learning changes passed 52 model and UI checks on iPhone 13 (iOS 26.5).
+The new build is being prepared for internal TestFlight. Existing Duo posture
+verification limits remain recorded in [the layout evidence](docs/releases/1.1-layout-checks.md).
 
 - iPhone Duo adapts to closed, open and partially folded screens. Laptop posture
   keeps code or terminal above the hinge and puts keyboard or result panes below.
@@ -111,7 +114,7 @@ The header Files and Projects controls also passed their tap checks. The final
 three-frame capture run passed. Public simctl reads the inner display;
 XCTest's inactive-display black frames were rejected.
 
-Version 1.1 (20) is Waiting for Review. All 70 screenshots and the Header and
+Version 1.1 (20) is published on the App Store. Its submission was verified before approval. All 70 screenshots and the Header and
 Search Results placements were verified against their uploaded source files.
 Both creative placements use the processed
 [universal code artwork](docs/app-store/creative-assets/universal-code-1.1.png),
@@ -220,8 +223,8 @@ Concretely, the app currently contains:
   `go fmt`, `go mod`, `ls`, `cat`, `pwd` and `clear` to the app's own
   operations — app-scoped, never a shell;
 - a course of 47 lessons across nine units. Another
-  22 question-and-answer challenges are gathered into Practice rather than
-  counted as course steps. The extra steps come from A Tour of Go
+  22 question-and-answer challenges supply additional concepts for matching
+  and mistake correction rather than being counted as course steps. The extra steps come from A Tour of Go
   and Effective Go — named results, make versus new, arrays, Stringer, any,
   function values, buffered channels, range-and-close, select default,
   directional channels, sync.Once, recover, http.Handler, strconv, image.Image —
@@ -250,11 +253,16 @@ Concretely, the app currently contains:
   how many, whether the toolchain judges this one, and the next lesson by name
   at the end. Check runs the hidden test and records a passing compile lesson;
   Next moves on without a tick. Reading lessons can be marked done;
-- a quiz closing each unit: one question at a time, four options, and the
-  explanation the moment an answer is committed rather than at the end;
-- a matching drill — terms on the left, meanings on the right, tiles of one
-  fixed height so nothing moves while your thumb is reaching — whose wrong
-  connections feed the same review queue a failed compile does;
+- **Fix mistakes** replaces the locked Practice list: one question and three
+  answers. A wrong answer explains the rule and stays on that question; a
+  correct answer is saved before moving on. Mistakes from lessons, project
+  diagnostics, matching and historical quizzes reach the same queue. A
+  correction clears only its concept, survives relaunch and returns after a
+  new mistake. A knowledge check stays available when there are no mistakes;
+- **Review** matches terms on the left with meanings on the right. Every
+  completed lesson, prediction or correctly answered concept contributes content; shorter boards are
+  playable before five pairs are ready. Progress changes update the screen
+  immediately. Tiles keep one fixed height and remain visible after a match;
 - achievements earned by compiling, running, testing and fixing — eleven badges
   of four ranks each, where the bar measures the rung being climbed rather than
   the whole badge, so passing silver does not read as almost-gold;

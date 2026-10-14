@@ -95,39 +95,14 @@ final class LearnFlowUITests: XCTestCase {
         attachScreenshot(named: "11b-lesson-marked")
     }
 
-    /// A prediction keeps its answer hidden until the learner commits.
-    ///
-    /// These live in Practice now rather than in the middle of a unit: a
-    /// question with an answer is not the same thing as a lesson with something
-    /// to build.
-    func testAPredictionKeepsItsAnswerHiddenUntilAsked() {
+    func testKnowledgeCheckOpensWithThreeAnswers() {
         launch(arguments: ["-GopherForgeSection", "learn", "-GopherForgeScreen", "drills"])
-
-        let challenge = app.buttons["practice.challenge.concurrency.unbuffered-rendezvous"]
-        XCTAssertTrue(app.waitForElement(challenge), "practice should offer the prediction")
-        challenge.tap()
-
-        XCTAssertTrue(
-            app.staticTexts["Show the answer"].waitForExistence(timeout: 10),
-            "a prediction lesson should keep its answer behind a disclosure"
-        )
-        // The explanation itself discusses deadlock, so the assertion keys on
-        // wording only the hidden answer uses.
-        XCTAssertFalse(
-            app.staticTexts
-                .containing(NSPredicate(format: "label CONTAINS 'all goroutines are asleep'"))
-                .element.exists,
-            "the answer should not be visible before it is opened"
-        )
-
-        app.staticTexts["Show the answer"].tap()
-        XCTAssertTrue(
-            app.staticTexts
-                .containing(NSPredicate(format: "label CONTAINS 'all goroutines are asleep'"))
-                .element.waitForExistence(timeout: 5),
-            "opening the disclosure should reveal the answer"
-        )
-        attachScreenshot(named: "12-lesson")
+        let start = app.buttons["practice.start"]
+        XCTAssertTrue(start.waitForExistence(timeout: 10))
+        start.tap()
+        XCTAssertTrue(app.staticTexts["mistakes.question"].waitForExistence(timeout: 10))
+        let choices = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'mistakes.option.'"))
+        XCTAssertEqual(choices.count, 3)
     }
 
     /// The lab compiles and runs real code, so Run is offered exactly when a

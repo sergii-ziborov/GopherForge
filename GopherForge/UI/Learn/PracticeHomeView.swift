@@ -1,128 +1,106 @@
 import SwiftUI
 
-/// Practice, gathered in one place and filling up as the course is worked
-/// through.
-///
-/// A locked item is shown rather than hidden, with what opens it. Hiding it
-/// would make the screen look finished when it is not, and "two more lessons in
-/// Errors" is a reason to go back to the unit.
+/// Actual mistakes, with a separate knowledge check when there are none.
+/// There are no lesson-count locks and no self-reported challenge passes.
 struct PracticeHomeView: View {
-    let completed: Set<String>
-    let onQuizFinished: (QuizResult) -> Void
-    let onDrillFinished: (MatchingDrillResult) -> Void
+    @Environment(LearnProgress.self) private var progress
+    @State private var questions: [MistakeReviewQuestion] = []
+    @State private var isCorrecting = true
+    @State private var showsSession = false
 
-    private var groups: [(unit: CourseUnit, items: [PracticeCatalog.Item])] {
-        GoCourseCatalog.units.compactMap { unit in
-            let items = PracticeCatalog.items(forUnit: unit.id)
-            return items.isEmpty ? nil : (unit, items)
-        }
+    private var pending: [MistakeReviewQuestion] {
+        MistakeReviewCatalog.pendingQuestions(
+            concepts: progress.pendingMistakeConcepts, history: progress.correctionAttempts
+        )
     }
 
-    private var unlockedCount: Int {
-        PracticeCatalog.unlockedItems(completed: completed).count
+    private var answeredCount: Int {
+        Set(progress.correctionAttempts.filter { $0.succeeded }.compactMap(\.questionID)).count
     }
 
     var body: some View {
-        List {
-            Section {
-                PracticeSummaryRow(unlocked: unlockedCount, total: PracticeCatalog.items.count)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-            }
-
-            ForEach(groups, id: \.unit.id) { group in
-                Section(group.unit.title) {
-                    ForEach(group.items) { item in
-                        row(
-                            for: item,
-                            done: PracticeCatalog.completedCount(
-                                inUnit: group.unit.id,
-                                completed: completed
-                            )
-                        )
+        ScrollView {
+            VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label(pending.isEmpty ? "No mistakes to revisit" : "\(pending.count) concepts to revisit",
+                          systemImage: pending.isEmpty ? "checkmark.circle" : "arrow.counterclockwise")
+                        .font(.title3.bold())
+                    Text("Mistakes from your code, quizzes and matching boards appear here. Answer correctly to clear a concept; a new mistake brings it back.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    if !pending.isEmpty {
+                        Button("Work through mistakes", systemImage: "arrow.right") {
+                            open(pending, correcting: true)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("mistakes.start")
                     }
                 }
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(GopherForgeTheme.aqua.opacity(0.12), in: RoundedRectangle(cornerRadius: 20))
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("mistakes.summary")
+
+                ForEach(GoCourseCatalog.units) { unit in
+                    let count = pending.count { $0.unitID == unit.id }
+                    if count > 0 {
+                        Button {
+                            open(pending.filter { $0.unitID == unit.id }, correcting: true)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: CourseUnitStyle.symbol(for: unit.id))
+                                    .foregroundStyle(CourseUnitStyle.tint(for: unit.id))
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(unit.title).font(.callout.bold())
+                                    Text("\(count) concept\(count == 1 ? "" : "s") to fix")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                            }
+                            .padding(16)
+                            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 16))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("mistakes.unit.\(unit.id)")
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Check what you know").font(.headline)
+                    Text("One question, three answers. Start with Go core or revisit concepts from completed lessons.")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                    if answeredCount > 0 {
+                        Text("\(answeredCount) questions answered correctly")
+                            .font(.caption).foregroundStyle(.secondary)
+                            .accessibilityIdentifier("mistakes.answeredCount")
+                    }
+                    Button("Start a knowledge check", systemImage: "questionmark.circle") {
+                        open(MistakeReviewCatalog.practiceQuestions(
+                            completed: progress.completed, history: progress.correctionAttempts
+                        ), correcting: false)
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("practice.start")
+                }
             }
+            .padding(18)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
         }
-        .navigationTitle("Practice")
+        .navigationTitle("Work on mistakes")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(isPresented: $showsSession) {
+            MistakeReviewView(questions: questions, correcting: isCorrecting)
+        }
+        .task { await progress.refresh() }
     }
 
-    @ViewBuilder
-    private func row(for item: PracticeCatalog.Item, done: Int) -> some View {
-        if item.isUnlocked(completedInUnit: done) {
-            NavigationLink {
-                destination(for: item)
-            } label: {
-                PracticeItemRow(item: item, locked: false, remaining: 0)
-            }
-            .accessibilityIdentifier("practice.\(item.id)")
-        } else {
-            // Combined into one element before it is named. An identifier on a
-            // container is inherited by every label inside it, so the locked
-            // row answered a search for it three times and a test asking where
-            // it is on screen got "multiple matching elements" instead of a
-            // frame. The unlocked branch is a link, which is already one.
-            PracticeItemRow(item: item, locked: true, remaining: item.unlocksAfter - done)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("practice.\(item.id)")
-        }
-    }
-
-    @ViewBuilder
-    private func destination(for item: PracticeCatalog.Item) -> some View {
-        switch item.kind {
-        case let .challenge(lesson): LessonDetailView(lesson: lesson)
-        case let .drill(drill): MatchingDrillView(drill: drill, onFinish: onDrillFinished)
-        case let .quiz(quiz): QuizView(quiz: quiz, onFinish: onQuizFinished)
-        case let .spotTheBug(rounds): SpotTheBugView(rounds: rounds, onFinish: onDrillFinished)
-        case let .interview(questions): InterviewQuestionView(questions: questions)
-        }
-    }
-}
-
-/// How much of the practice is open, as a bar rather than a fraction alone.
-private struct PracticeSummaryRow: View {
-    let unlocked: Int
-    let total: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("\(unlocked) of \(total) open")
-                .font(.headline)
-            ProgressView(value: total == 0 ? 0 : Double(unlocked) / Double(total))
-            Text("Challenges, drills and quizzes open as you finish the lessons "
-                + "they belong to.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(16)
-    }
-}
-
-private struct PracticeItemRow: View {
-    let item: PracticeCatalog.Item
-    let locked: Bool
-    let remaining: Int
-
-    var body: some View {
-        HStack(spacing: 11) {
-            Image(systemName: locked ? "lock.fill" : item.symbol)
-                .font(.body)
-                .foregroundStyle(locked ? Color.secondary : CourseUnitStyle.tint(for: item.unitID))
-                .frame(width: 26)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(item.title).font(.callout.weight(.medium))
-                Text(locked
-                    ? "Finish \(remaining) more lesson\(remaining == 1 ? "" : "s") in this unit"
-                    : item.detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .padding(.vertical, 2)
-        .opacity(locked ? 0.55 : 1)
+    private func open(_ snapshot: [MistakeReviewQuestion], correcting: Bool) {
+        guard !snapshot.isEmpty else { return }
+        questions = snapshot
+        isCorrecting = correcting
+        showsSession = true
     }
 }

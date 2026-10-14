@@ -1,0 +1,40 @@
+{
+  "version": "1.1.1",
+  "build": "21",
+  "status": "TESTFLIGHT_PREPARATION",
+  "currentAppStoreVersion": "1.1",
+  "currentAppStoreState": "READY_FOR_SALE",
+  "modelAndUIValidation": {
+    "result": "Passed",
+    "totalTestCount": 52,
+    "passedTests": 52,
+    "failedTests": 0,
+    "device": "iPhone 13",
+    "runtime": "iOS 26.5",
+    "resultBundle": "build/learning-fix-20261014/final-tests.xcresult"
+  },
+  "behaviors": [
+    "All 69 completed lessons and predictions can contribute matching pairs",
+    "Every correctly answered Go concept can contribute matching without a false lesson completion",
+    "Partial matching boards are playable before five pairs are ready",
+    "Review refreshes when completion or confirmed concepts change",
+    "Exactly three distinct options per correction question",
+    "Wrong answers explain and stay on the current question",
+    "Correct answers save before automatically advancing",
+    "Leaving an unanswered mistake restores that exact question",
+    "Corrections clear only their concept and survive relaunch",
+    "A later mistake reopens the concept",
+    "Legacy progress files load without resetting completion"
+  ],
+  "screenshots": [
+    "docs/screenshots/review-matching-21.png",
+    "docs/screenshots/mistake-explanation-21.png",
+    "docs/screenshots/mistake-next-question-21.png"
+  ],
+  "appReviewSubmitted": false,
+  "matchingCodeHighlightingCheck": {
+    "result": "Passed",
+    "testCount": 1,
+    "resultBundle": "build/learning-fix-20261014/matching-style.xcresult"
+  }
+}

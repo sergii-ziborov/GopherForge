@@ -329,6 +329,7 @@ final class WorkspaceModel {
         // "how much have you actually run". This is the counted record the
         // badges read.
         try? await progress.record(PracticeRun(result: result))
+        try? await progress.recordMistakes(conceptTags: result.diagnostics.compactMap(\.conceptTag))
     }
 
     /// What the built-artifact cache occupies on this device.

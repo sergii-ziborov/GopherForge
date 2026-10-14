@@ -64,13 +64,9 @@ struct LearnHomeView: View {
                 )
 
                 LearnToolRow(
-                    practiceUnlocked: PracticeCatalog.unlockedItems(completed: completed).count,
-                    practiceTotal: PracticeCatalog.items.count,
+                    mistakesCount: progress.pendingMistakeConcepts.count,
                     badgesEarned: AchievementCatalog.earnedLevelCount(by: stats),
                     badgesTotal: AchievementCatalog.totalLevelCount,
-                    onQuizFinished: record,
-                    onDrillFinished: record,
-                    completed: completed,
                     stats: stats
                 )
 
@@ -98,11 +94,7 @@ struct LearnHomeView: View {
             case .lab: ConcurrencyLabView()
             case .review: ReviewView()
             case .drills:
-                PracticeHomeView(
-                    completed: completed,
-                    onQuizFinished: record,
-                    onDrillFinished: record
-                )
+                PracticeHomeView()
             case .achievements: AchievementsView(stats: stats)
             case .examples: ExampleLibraryView()
             // Packages live on the Projects side; opening Learn at one would
