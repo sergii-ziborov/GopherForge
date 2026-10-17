@@ -84,7 +84,7 @@ struct GitHubImportView: View {
         guard let reference = model.reference else { return }
         model.note("Downloading \(reference.displayName)…")
         do {
-            let project = try await workspace.importGitHub(reference) { model.note($0) }
+            let project = try await workspace.importGitHub(reference)
             model.finish()
             onImport(project)
             dismiss()

@@ -83,7 +83,38 @@ enum ProjectNavigatorListing {
         return nodes(in: "")
     }
 
-    static func rows(in files: [String: String]) -> [ProjectNavigatorRow] {
+    /// Directories from the project root down to the file, not including the file.
+    static func ancestors(of path: String) -> Set<String> {
+        let parts = path.split(separator: "/").dropLast().map(String.init)
+        var ancestors: Set<String> = []
+        var current = ""
+        for part in parts {
+            current = current.isEmpty ? part : current + "/" + part
+            ancestors.insert(current)
+        }
+        return ancestors
+    }
+
+    /// A folder is open when it leads to the file on screen, or the reader opened
+    /// it, and they have not closed it since.
+    static func isOpen(
+        _ folder: String,
+        revealing path: String?,
+        expanded: Set<String>,
+        collapsed: Set<String>
+    ) -> Bool {
+        if collapsed.contains(folder) { return false }
+        if expanded.contains(folder) { return true }
+        guard let path else { return false }
+        return ancestors(of: path).contains(folder)
+    }
+
+    static func rows(
+        in files: [String: String],
+        revealing path: String? = nil,
+        expanded: Set<String> = [],
+        collapsed: Set<String> = []
+    ) -> [ProjectNavigatorRow] {
         var rows: [ProjectNavigatorRow] = []
         func walk(_ nodes: [ProjectFileNode], depth: Int) {
             for node in nodes {
@@ -95,7 +126,10 @@ enum ProjectNavigatorListing {
                         depth: depth
                     )
                 )
-                if node.isFolder { walk(node.children, depth: depth + 1) }
+                guard node.isFolder,
+                      isOpen(node.path, revealing: path, expanded: expanded, collapsed: collapsed)
+                else { continue }
+                walk(node.children, depth: depth + 1)
             }
         }
         walk(tree(in: files), depth: 0)

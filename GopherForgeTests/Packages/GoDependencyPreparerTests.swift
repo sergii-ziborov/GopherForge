@@ -84,7 +84,7 @@ final class GoDependencyPreparerTests: XCTestCase {
 
     func testANamedModuleIsVendoredUntilTheImportResolves() async throws {
         let preparer = GoDependencyPreparer(
-            planError: { files in
+            planError: { files, _ in
                 files.keys.contains { $0.hasPrefix("vendor/github.com/pkg/errors/") }
                     ? nil
                     : .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
@@ -109,7 +109,7 @@ final class GoDependencyPreparerTests: XCTestCase {
 
     func testAnImportTheModuleDoesNotRequireIsLeftForTheCompiler() async throws {
         let preparer = GoDependencyPreparer(
-            planError: { _ in
+            planError: { _, _ in
                 .unresolvedImport("github.com/google/uuid", importedBy: "example.com/app")
             },
             install: { _, _, _ in
@@ -126,7 +126,7 @@ final class GoDependencyPreparerTests: XCTestCase {
 
     func testInstallingTheSameModuleTwiceStops() async {
         let preparer = GoDependencyPreparer(
-            planError: { _ in
+            planError: { _, _ in
                 .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
             },
             install: { _, _, files in
@@ -148,5 +148,52 @@ final class GoDependencyPreparerTests: XCTestCase {
         } catch {
             XCTFail("unexpected \(error)")
         }
+    }
+
+    func testAFailedDownloadIsClassifiedAndDoesNotHideTheNextModule() async throws {
+        let goMod = """
+        module example.com/app
+
+        go 1.27
+
+        require (
+        \tgithub.com/pkg/errors v0.9.1
+        \tgolang.org/x/sync v0.24.0
+        )
+        """
+        let preparer = GoDependencyPreparer(
+            planError: { files, skipping in
+                if !skipping.contains("github.com/pkg/errors"),
+                   !files.keys.contains(where: { $0.hasPrefix("vendor/github.com/pkg/errors/") }) {
+                    return .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
+                }
+                if !files.keys.contains(where: { $0.hasPrefix("vendor/golang.org/x/sync/") }) {
+                    return .unresolvedImport("golang.org/x/sync/semaphore", importedBy: "example.com/app")
+                }
+                return nil
+            },
+            install: { path, _, files in
+                if path == "github.com/pkg/errors" {
+                    throw GoModuleProxyClient.ProxyError.tooLarge(40_000_000)
+                }
+                var next = files
+                next["vendor/\(path)/sync.go"] = "package sync\n"
+                return next
+            }
+        )
+
+        let prepared = try await preparer.prepare(files: ["go.mod": goMod, "main.go": "package main\n"])
+
+        XCTAssertEqual(prepared.problems.map(\.reason), [.noSpace])
+        XCTAssertTrue(prepared.problems[0].outputLine.contains("isn't enough space"))
+        XCTAssertEqual(prepared.installed, ["golang.org/x/sync"])
+        XCTAssertEqual(
+            GoDependencyPreparer.reason(for: GoPackageInstaller.InstallError.invalidModulePath("x@nope")),
+            .unsupportedVersion
+        )
+        XCTAssertEqual(
+            GoDependencyPreparer.reason(for: GoModuleProxyClient.ProxyError.notFound("x")),
+            .notLoaded
+        )
     }
 }

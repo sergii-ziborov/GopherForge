@@ -94,6 +94,48 @@ struct GoPackageGraph {
         return GoPackageGraph(modulePath: modulePath, packages: try ordered(selected, byPath: byPath))
     }
 
+    /// Import paths the selected build cannot resolve, without failing the plan.
+    ///
+    /// Used while packages are downloading: one module can fail and the next
+    /// import still has to be tried.
+    static func missingImportPaths(
+        files: [String: String],
+        modulePath: String,
+        standardLibrary: some Collection<String>,
+        constraint: GoBuildConstraint? = nil,
+        includeTestImports: Bool = true,
+        targetDirectory: String? = nil
+    ) -> [String] {
+        guard let grouped = try? group(files: files, modulePath: modulePath, constraint: constraint),
+              !grouped.isEmpty
+        else { return [] }
+
+        let byPath = Dictionary(uniqueKeysWithValues: grouped.map { ($0.importPath, $0) })
+        var selectedPaths: Set<String> = []
+        if let targetDirectory,
+           let target = grouped.first(where: { $0.directory == targetDirectory && $0.isMain }) {
+            func visit(_ package: GoPackage) {
+                guard selectedPaths.insert(package.importPath).inserted else { return }
+                for imported in package.imports where byPath[imported] != nil {
+                    visit(byPath[imported]!)
+                }
+            }
+            visit(target)
+        }
+        let selected = selectedPaths.isEmpty
+            ? grouped : grouped.filter { selectedPaths.contains($0.importPath) }
+        let known = Set(standardLibrary)
+        var missing: [String] = []
+        for package in selected {
+            let imports = includeTestImports
+                ? package.imports.union(package.testImports) : package.imports
+            for imported in imports.sorted() where byPath[imported] == nil && !known.contains(imported) {
+                if !missing.contains(imported) { missing.append(imported) }
+            }
+        }
+        return missing
+    }
+
     // MARK: - Grouping
 
     private static func group(

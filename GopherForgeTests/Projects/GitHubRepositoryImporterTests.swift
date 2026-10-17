@@ -122,6 +122,23 @@ final class GitHubRepositoryImporterTests: XCTestCase {
 
     /// Documentation sorts before `cmd/`, and a budget spent on it used to
     /// delete the program. Go files are kept first.
+    func testMissingRepositorySourceIsFilledWithoutReplacingEdits() {
+        let merged = GitHubRepositoryImporter.mergingMissingSource(
+            into: [
+                "cmd/memos/main.go": "package main\n// edited\n",
+                "go.mod": "module github.com/usememos/memos\n",
+            ],
+            from: [
+                "cmd/memos/main.go": "package main\n",
+                "server/fileserver/fileserver.go": "package fileserver\n",
+                "README.md": "# memos\n",
+            ]
+        )
+        XCTAssertEqual(merged["cmd/memos/main.go"], "package main\n// edited\n")
+        XCTAssertEqual(merged["server/fileserver/fileserver.go"], "package fileserver\n")
+        XCTAssertNil(merged["README.md"])
+    }
+
     func testGoFilesAreKeptAheadOfEarlierDocumentation() {
         let notes = (0..<5).map { "docs/note\($0).md" }
         var entries: [String: Data] = [:]

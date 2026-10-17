@@ -16,6 +16,10 @@ import SwiftUI
 struct ProjectNavigatorView: View {
     @Environment(WorkspaceModel.self) private var workspace
     @State private var query = ""
+    /// Folders the reader opened besides the path of the file on screen.
+    @State private var expandedFolders: Set<String> = []
+    /// Folders on that path which the reader closed.
+    @State private var collapsedFolders: Set<String> = []
     @State private var isShowingPackages = false
     @State private var packageSearch = ""
     @State private var creating: Creation?
@@ -176,19 +180,56 @@ struct ProjectNavigatorView: View {
             packagesSection
         }
         .listStyle(.sidebar)
+        .onChange(of: workspace.selectedFile) { _, path in
+            for folder in ProjectNavigatorListing.ancestors(of: path) {
+                collapsedFolders.remove(folder)
+            }
+        }
+    }
+
+    private func folderIsOpen(_ path: String) -> Bool {
+        ProjectNavigatorListing.isOpen(
+            path,
+            revealing: workspace.selectedFile,
+            expanded: expandedFolders,
+            collapsed: collapsedFolders
+        )
+    }
+
+    private func toggleFolder(_ path: String) {
+        if folderIsOpen(path) {
+            expandedFolders.remove(path)
+            collapsedFolders.insert(path)
+        } else {
+            collapsedFolders.remove(path)
+            expandedFolders.insert(path)
+        }
     }
 
     private func folderRow(_ row: ProjectNavigatorRow) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: "folder")
-                .font(.callout)
-                .frame(width: 20, alignment: .center)
-                .accessibilityHidden(true)
-            Text(row.name)
-                .font(.callout.weight(.medium))
-                .lineLimit(1)
-                .truncationMode(.middle)
-            Spacer(minLength: 0)
+            Button {
+                toggleFolder(row.path)
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: folderIsOpen(row.path) ? "chevron.down" : "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 12, alignment: .center)
+                    Image(systemName: "folder")
+                        .font(.callout)
+                        .frame(width: 20, alignment: .center)
+                    Text(row.name)
+                        .font(.callout.weight(.medium))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .foregroundStyle(.primary)
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(row.name), \(folderIsOpen(row.path) ? "expanded" : "collapsed")")
             Menu {
                 Button { beginCreating(.file, in: row.path) } label: {
                     Label("New file here", systemImage: "doc.badge.plus")
@@ -388,7 +429,12 @@ struct ProjectNavigatorView: View {
     }
 
     private var rows: [ProjectNavigatorRow] {
-        ProjectNavigatorListing.rows(in: workspace.project?.files ?? [:])
+        ProjectNavigatorListing.rows(
+            in: workspace.project?.files ?? [:],
+            revealing: workspace.selectedFile,
+            expanded: expandedFolders,
+            collapsed: collapsedFolders
+        )
     }
 }
 

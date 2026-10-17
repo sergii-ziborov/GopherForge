@@ -52,10 +52,40 @@ enum GoRequirementMatch {
 /// The compiler itself stays offline. This runs once, before planning is
 /// handed to it, and only for an import `go.mod` already names. What it writes
 /// is vendored source, so the next build does not ask the network again.
+/// One module the download window tried and could not keep.
+struct PackageDownloadProblem: Equatable, Identifiable, Sendable {
+    enum Reason: Equatable, Sendable {
+        /// The bytes never arrived: the network, the proxy, or a check failed.
+        case notLoaded
+        /// The phone or the download limit refused the size.
+        case noSpace
+        /// The version in go.mod is not one this app can install.
+        case unsupportedVersion
+    }
+
+    let module: String
+    let reason: Reason
+    let detail: String
+
+    var id: String { module }
+
+    var outputLine: String {
+        switch reason {
+        case .notLoaded:
+            "\(module) was not loaded. \(detail)"
+        case .noSpace:
+            "\(module) was not loaded: there isn't enough space. \(detail)"
+        case .unsupportedVersion:
+            "\(module) was not loaded: this version isn't supported. \(detail)"
+        }
+    }
+}
+
 struct GoDependencyPreparer {
     struct Prepared: Equatable, Sendable {
         let files: [String: String]
         let installed: [String]
+        var problems: [PackageDownloadProblem] = []
     }
 
     enum Failure: LocalizedError, Equatable {
@@ -97,23 +127,28 @@ struct GoDependencyPreparer {
     }
 
     var maximumModules = 80
-    var planError: ([String: String]) -> GoPackageGraph.GraphError?
+    /// `skipping` is the set of module paths that already failed. The next
+    /// import should be one that is not in that set, so one failure does not
+    /// hide the rest.
+    var planError: (_ files: [String: String], _ skipping: Set<String>) -> GoPackageGraph.GraphError?
     var install: (String, String, [String: String]) async throws -> [String: String]
 
     @MainActor
     func prepare(files: [String: String]) async throws -> Prepared {
         var files = files
         var installed: [String] = []
+        var problems: [PackageDownloadProblem] = []
+        var failed: Set<String> = []
         var seen: Set<String> = []
 
         for _ in 0..<maximumModules {
-            guard let error = planError(files),
+            guard let error = planError(files, failed),
                   case let .unresolvedImport(importPath, _) = error
             else {
-                return Prepared(files: files, installed: installed)
+                return Prepared(files: files, installed: installed, problems: problems)
             }
             guard let module = GoModParser.parse(files["go.mod"] ?? "") else {
-                return Prepared(files: files, installed: installed)
+                return Prepared(files: files, installed: installed, problems: problems)
             }
 
             let resolved: GoRequirementMatch.Resolved
@@ -123,28 +158,62 @@ struct GoDependencyPreparer {
             case let .failure(.missingFromProject(importPath)):
                 throw Failure.missingFromProject(importPath: importPath, files: files)
             case .failure(.notRequired):
-                return Prepared(files: files, installed: installed)
+                return Prepared(files: files, installed: installed, problems: problems)
             case let .failure(.localReplacement(module, path)):
                 throw Failure.localReplacement(module: module, path: path, files: files)
             }
 
+            if failed.contains(resolved.path) {
+                return Prepared(files: files, installed: installed, problems: problems)
+            }
             guard seen.insert(resolved.path).inserted else {
                 throw Failure.repeated(module: resolved.path, files: files)
             }
 
             do {
                 files = try await install(resolved.path, resolved.version, files)
+                installed.append(resolved.path)
             } catch {
-                throw Failure.installFailed(
-                    module: "\(resolved.path)@\(resolved.version)",
-                    detail: Self.describe(error, path: resolved.path),
-                    files: files
-                )
+                let problem = Self.problem(for: error, module: "\(resolved.path)@\(resolved.version)")
+                problems.append(problem)
+                failed.insert(resolved.path)
             }
-            installed.append(resolved.path)
         }
 
         throw Failure.tooManyModules(maximumModules, files: files)
+    }
+
+    static func problem(for error: any Error, module: String) -> PackageDownloadProblem {
+        PackageDownloadProblem(module: module, reason: reason(for: error), detail: describe(error, path: module))
+    }
+
+    static func reason(for error: any Error) -> PackageDownloadProblem.Reason {
+        if isOutOfSpace(error) { return .noSpace }
+        if isUnsupportedVersion(error) { return .unsupportedVersion }
+        return .notLoaded
+    }
+
+    private static func isOutOfSpace(_ error: any Error) -> Bool {
+        if case GoModuleProxyClient.ProxyError.tooLarge = error { return true }
+        if case GoModuleArchive.ArchiveError.tooLarge = error { return true }
+        if case GoHTTPTransportError.tooLarge = error { return true }
+        let nsError = error as NSError
+        if nsError.domain == NSCocoaErrorDomain,
+           CocoaError.Code(rawValue: nsError.code) == .fileWriteOutOfSpace {
+            return true
+        }
+        if nsError.domain == NSPOSIXErrorDomain, nsError.code == 28 { return true }
+        let text = nsError.localizedDescription.lowercased()
+        return text.contains("no space") || text.contains("not enough space")
+    }
+
+    private static func isUnsupportedVersion(_ error: any Error) -> Bool {
+        switch error {
+        case GoPackageInstaller.InstallError.invalidModulePath:
+            return true
+        default:
+            return false
+        }
     }
 
     /// The same sentences the package installer shows, so a failed download

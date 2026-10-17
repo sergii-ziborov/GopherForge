@@ -158,16 +158,27 @@ final class ProjectNavigatorListingTests: XCTestCase {
         let notes = release?.children.first { $0.name == "references" }?.children.map(\.name)
         XCTAssertEqual(notes, ["release-notes.md"])
 
-        let names = ProjectNavigatorListing.rows(in: [
+        let files = [
             ".agents/skills/release/SKILL.md": "",
-        ]).map(\.name)
-        XCTAssertFalse(names.contains { $0.contains("/") })
+            "cmd/memos/main.go": "package main\n",
+        ]
+        let revealed = ProjectNavigatorListing.rows(in: files, revealing: "cmd/memos/main.go")
         XCTAssertEqual(
-            ProjectNavigatorListing.rows(in: [
-                ".agents/skills/release/SKILL.md": "",
-            ]).map(\.depth),
-            [0, 1, 2, 3]
+            revealed.filter(\.isFolder).map(\.path),
+            [".agents", "cmd", "cmd/memos"],
+            "closed folders stay visible, and only the open file's path is expanded"
         )
+        XCTAssertEqual(revealed.first { $0.path == ".agents" }?.isFolder, true)
+        XCTAssertFalse(revealed.contains { $0.path == ".agents/skills" })
+        XCTAssertTrue(revealed.contains { $0.path == "cmd/memos/main.go" })
+
+        let opened = ProjectNavigatorListing.rows(
+            in: files,
+            revealing: "cmd/memos/main.go",
+            expanded: [".agents", ".agents/skills", ".agents/skills/release"]
+        )
+        XCTAssertTrue(opened.contains { $0.path == ".agents/skills/release/SKILL.md" })
+        XCTAssertFalse(opened.map(\.name).contains { $0.contains("/") })
     }
 
     func testVendorFilesAreNotGroupedInTheTree() {

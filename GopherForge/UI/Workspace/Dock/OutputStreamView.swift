@@ -7,13 +7,15 @@ import SwiftUI
 struct OutputStreamView: View {
     let result: CompilationResult?
     var progress: GoBuildProgress?
+    var packageProblems: [PackageDownloadProblem] = []
+    var onRetryPackages: () -> Void = {}
     var siteURL: URL?
     var siteGeneration: Int = 0
 
     var body: some View {
         if let progress {
             progressPanel(progress)
-        } else if result != nil || siteURL != nil {
+        } else if result != nil || !packageProblems.isEmpty || siteURL != nil {
             resultPanel(result)
         } else {
             EmptyDockMessage(
@@ -48,6 +50,9 @@ struct OutputStreamView: View {
     private func resultPanel(_ result: CompilationResult?) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
+                if !packageProblems.isEmpty {
+                    PackageProblemSection(problems: packageProblems, onRetry: onRetryPackages)
+                }
                 if let result {
                     ResultSummaryRow(result: result)
                     if !result.artifacts.isEmpty {
@@ -72,6 +77,33 @@ struct OutputStreamView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
+        }
+    }
+}
+
+private struct PackageProblemSection: View {
+    let problems: [PackageDownloadProblem]
+    let onRetry: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(problems) { problem in
+                Label(problem.outputLine, systemImage: icon(for: problem.reason))
+                    .font(.callout)
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Button("Retry", action: onRetry)
+                .buttonStyle(.bordered)
+                .accessibilityIdentifier("output.retryPackages")
+        }
+    }
+
+    private func icon(for reason: PackageDownloadProblem.Reason) -> String {
+        switch reason {
+        case .notLoaded: "arrow.down.circle"
+        case .noSpace: "externaldrive.badge.exclamationmark"
+        case .unsupportedVersion: "exclamationmark.triangle"
         }
     }
 }

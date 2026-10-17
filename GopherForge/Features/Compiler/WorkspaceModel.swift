@@ -27,6 +27,11 @@ final class WorkspaceModel {
     /// phone takes seconds, and a spinner that says nothing for that long reads
     /// as a button that does not work.
     private(set) var runningStep: GoBuildProgress?
+    /// Set while repository modules are downloading. Nil once they are all in,
+    /// or still set with a failure so the window can stay until it is closed.
+    private(set) var moduleDownload: ModuleDownload?
+    /// Packages the last download could not keep. Shown in Output, with Retry.
+    private(set) var packageProblems: [PackageDownloadProblem] = []
 
     var selectedFile: String = "main.go"
     /// Read-only from outside so the only way in is `updateEditorText`.
@@ -296,33 +301,15 @@ final class WorkspaceModel {
         }
 
         let pattern = phase == .run || phase == .build ? selectedTargetPattern : "./..."
-        let ready: GopherForgeProject
-        do {
-            let vendored = try await addingMissingModules(to: project, phase: phase, pattern: pattern) { module in
-                self.runningStep = GoBuildProgress(label: "Add \(module)", step: 1, totalSteps: 1)
-            }
-            if vendored.files != project.files {
-                replaceFiles(with: vendored.files)
-            }
-            ready = self.project ?? vendored
-        } catch let failure as GoDependencyPreparer.Failure {
-            if failure.files != project.files {
-                replaceFiles(with: failure.files)
-            }
-            await record(
-                .failure(phase: .setup, detail: failure.detail),
-                phase: phase,
-                projectID: projectID
-            )
-            return
-        } catch {
-            await record(
-                .failure(phase: .setup, detail: error.localizedDescription),
-                phase: phase,
-                projectID: projectID
-            )
-            return
+        if phase != .format, phase != .setup, needsModuleDownload(project, phase: phase, pattern: pattern) {
+            beginModuleDownload(title: project.name, status: "Preparing packages…")
         }
+        let vendored = await addingMissingModules(to: project, phase: phase, pattern: pattern)
+        moduleDownload = nil
+        if vendored.files != project.files {
+            replaceFiles(with: vendored.files)
+        }
+        let ready = self.project ?? vendored
 
         let revision = sourceRevision
         let opening = projectGeneration
@@ -347,68 +334,251 @@ final class WorkspaceModel {
     /// The snapshot alone is not a buildable project: `go.mod` names modules
     /// that are not in the archive. They are vendored here, before the editor
     /// opens, so Run is not the first moment the absence shows up.
-    func importGitHub(
-        _ reference: GitHubRepositoryReference,
-        onStatus: @escaping (String) -> Void = { _ in }
-    ) async throws -> GopherForgeProject {
-        onStatus("Downloading \(reference.displayName)…")
-        let downloaded = try await GitHubRepositoryImporter().importRepository(reference)
-        onStatus("Adding packages…")
-        let directory = GoPackageGraph.directory(of: downloaded.entryFile)
-        let pattern = directory.isEmpty ? "." : "./\(directory)"
+    func dismissModuleDownload() {
+        moduleDownload = nil
+    }
+
+    func importGitHub(_ reference: GitHubRepositoryReference) async throws -> GopherForgeProject {
+        beginModuleDownload(
+            title: reference.displayName,
+            status: "Downloading \(reference.displayName)…"
+        )
         do {
-            return try await addingMissingModules(to: downloaded, phase: .build, pattern: pattern) {
-                onStatus("Adding \($0)…")
+            let downloaded = try await GitHubRepositoryImporter().importRepository(reference)
+            let directory = GoPackageGraph.directory(of: downloaded.entryFile)
+            let pattern = directory.isEmpty ? "." : "./\(directory)"
+            noteDownload("Adding packages…")
+            let ready = await addingMissingModules(to: downloaded, phase: .build, pattern: pattern)
+            moduleDownload = nil
+            if !packageProblems.isEmpty {
+                lastResult = .failure(
+                    phase: .setup,
+                    detail: packageProblems.map(\.outputLine).joined(separator: "\n")
+                )
             }
-        } catch let failure as GoDependencyPreparer.Failure {
-            let partial = downloaded.replacingFiles(failure.files)
-            if partial.files == downloaded.files { throw failure }
-            return partial
+            return ready
+        } catch {
+            failModuleDownload((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
+            throw error
+        }
+    }
+
+    /// Tries the packages Output reported, then leaves the project open either way.
+    func retryPackageDownloads() async {
+        guard let project, !isRunning else { return }
+        isRunning = true
+        runningPhase = .setup
+        defer {
+            isRunning = false
+            runningPhase = nil
+            runningStep = nil
+            moduleDownload = nil
+        }
+        beginModuleDownload(title: project.name, status: "Retrying packages…")
+        let directory = GoPackageGraph.directory(of: project.entryFile)
+        let pattern = directory.isEmpty ? "." : "./\(directory)"
+        let vendored = await addingMissingModules(to: project, phase: .build, pattern: pattern)
+        if vendored.files != project.files {
+            replaceFiles(with: vendored.files)
+        }
+        if packageProblems.isEmpty {
+            lastResult = nil
+        } else {
+            lastResult = .failure(
+                phase: .setup,
+                detail: packageProblems.map(\.outputLine).joined(separator: "\n")
+            )
         }
     }
 
     /// Vendors modules named in `go.mod` that the selected build imports and
-    /// does not yet have. The compiler never sees the network; this does,
-    /// once, and then the source is part of the project.
+    /// does not yet have. A GitHub project that is missing its own source is
+    /// filled from the repository first. Nothing is returned until that work
+    /// finishes; a failure leaves the project unopened.
     private func addingMissingModules(
         to project: GopherForgeProject,
         phase: CompilationResult.Phase,
-        pattern: String,
-        onModule: @escaping (String) -> Void = { _ in }
-    ) async throws -> GopherForgeProject {
+        pattern: String
+    ) async -> GopherForgeProject {
         guard phase != .format, phase != .setup else { return project }
-        guard let parsed = GoModParser.parse(project.files["go.mod"] ?? ""),
-              !parsed.requirements.isEmpty
-        else {
-            return project
-        }
+        guard GoModParser.parse(project.files["go.mod"] ?? "") != nil else { return project }
         if toolchain == .missing {
             toolchain = compiler.probe()
         }
 
-        let preparer = GoDependencyPreparer(
-            planError: { [compiler] files in
-                compiler.graphError(
-                    phase: phase,
-                    project: GoSourceSnapshot(
+        var project = project
+        var restoredSource = false
+        packageProblems = []
+        while true {
+            let preparer = GoDependencyPreparer(
+                maximumModules: 160,
+                planError: { [compiler] files, skipping in
+                    let snapshot = GoSourceSnapshot(
                         files: files,
                         packagePattern: pattern,
                         entryFile: project.entryFile
                     )
+                    let missing = compiler.missingImportPaths(phase: phase, project: snapshot)
+                    guard let parsed = GoModParser.parse(files["go.mod"] ?? "") else {
+                        return missing.first.map { .unresolvedImport($0, importedBy: project.entryFile) }
+                    }
+                    let ordered = missing.sorted { lhs, rhs in
+                        let lhsExternal = Self.isDownloadable(lhs, module: parsed, skipping: skipping)
+                        let rhsExternal = Self.isDownloadable(rhs, module: parsed, skipping: skipping)
+                        if lhsExternal != rhsExternal { return lhsExternal }
+                        return lhs < rhs
+                    }
+                    for path in ordered {
+                        if case let .success(resolved) = GoRequirementMatch.resolve(
+                            importPath: path, module: parsed
+                        ), skipping.contains(resolved.path) {
+                            continue
+                        }
+                        return .unresolvedImport(path, importedBy: parsed.modulePath)
+                    }
+                    return nil
+                },
+                install: { path, version, files in
+                    self.noteDownload("Adding \(path)…", module: path)
+                    let result = try await GoPackageInstaller().install(
+                        path: path,
+                        version: version,
+                        into: files
+                    )
+                    return result.files
+                }
+            )
+            do {
+                let prepared = try await preparer.prepare(files: project.files)
+                packageProblems.append(contentsOf: prepared.problems)
+                return project.replacingFiles(prepared.files)
+            } catch let failure as GoDependencyPreparer.Failure {
+                if case .missingFromProject = failure, !restoredSource,
+                   let restored = try? await restoringRepositorySource(
+                    of: project.replacingFiles(failure.files)
+                   ), restored.files != project.files {
+                    restoredSource = true
+                    project = restored
+                    continue
+                }
+                packageProblems.append(Self.problem(from: failure))
+                return project.replacingFiles(failure.files)
+            } catch {
+                packageProblems.append(
+                    PackageDownloadProblem(
+                        module: project.name,
+                        reason: .notLoaded,
+                        detail: error.localizedDescription
+                    )
                 )
-            },
-            install: { path, version, files in
-                onModule(path)
-                let result = try await GoPackageInstaller().install(
-                    path: path,
-                    version: version,
-                    into: files
-                )
-                return result.files
+                return project
             }
+        }
+    }
+
+    /// True when Run has to fetch something before the compiler can start.
+    private func needsModuleDownload(
+        _ project: GopherForgeProject,
+        phase: CompilationResult.Phase,
+        pattern: String
+    ) -> Bool {
+        guard let module = GoModParser.parse(project.files["go.mod"] ?? "") else { return false }
+        if toolchain == .missing { toolchain = compiler.probe() }
+        guard let error = compiler.graphError(
+            phase: phase,
+            project: GoSourceSnapshot(
+                files: project.files,
+                packagePattern: pattern,
+                entryFile: project.entryFile
+            )
+        ), case let .unresolvedImport(importPath, _) = error else { return false }
+        switch GoRequirementMatch.resolve(importPath: importPath, module: module) {
+        case .success: return true
+        case .failure(.missingFromProject): return githubReference(of: project) != nil
+        default: return false
+        }
+    }
+
+    /// Downloads the GitHub snapshot again and copies in Go files this project
+    /// does not have. An earlier import stopped at a line budget and left out
+    /// packages the program still imports, such as `server/fileserver`.
+    private func restoringRepositorySource(of project: GopherForgeProject) async throws -> GopherForgeProject? {
+        guard let reference = githubReference(of: project) else { return nil }
+        noteDownload("Loading repository source…")
+        let fresh = try await GitHubRepositoryImporter().importRepository(reference)
+        let merged = GitHubRepositoryImporter.mergingMissingSource(into: project.files, from: fresh.files)
+        return project.replacingFiles(merged)
+    }
+
+    private func githubReference(of project: GopherForgeProject) -> GitHubRepositoryReference? {
+        guard project.provenance?.source == .github,
+              let owner = project.provenance?.owner,
+              let repository = project.provenance?.repository,
+              !owner.isEmpty, !repository.isEmpty
+        else { return nil }
+        return GitHubRepositoryReference(
+            owner: owner,
+            repository: repository,
+            reference: project.provenance?.reference
         )
-        let prepared = try await preparer.prepare(files: project.files)
-        return project.replacingFiles(prepared.files)
+    }
+
+    private func beginModuleDownload(title: String, status: String) {
+        moduleDownload = ModuleDownload(title: title, status: status, installed: [], failure: nil)
+    }
+
+    private func noteDownload(_ status: String, module: String? = nil) {
+        runningStep = GoBuildProgress(label: status, step: 1, totalSteps: 1)
+        guard moduleDownload != nil else { return }
+        moduleDownload?.status = status
+        if let module, moduleDownload?.installed.contains(module) == false {
+            moduleDownload?.installed.append(module)
+        }
+    }
+
+    private static func problem(from failure: GoDependencyPreparer.Failure) -> PackageDownloadProblem {
+        switch failure {
+        case let .missingFromProject(importPath, _):
+            PackageDownloadProblem(
+                module: importPath,
+                reason: .notLoaded,
+                detail: failure.detail
+            )
+        case let .localReplacement(module, _, _):
+            PackageDownloadProblem(
+                module: module,
+                reason: .unsupportedVersion,
+                detail: failure.detail
+            )
+        case let .installFailed(module, _, _), let .repeated(module, _):
+            PackageDownloadProblem(
+                module: module,
+                reason: .notLoaded,
+                detail: failure.detail
+            )
+        case .tooManyModules:
+            PackageDownloadProblem(
+                module: "packages",
+                reason: .notLoaded,
+                detail: failure.detail
+            )
+        }
+    }
+
+    private static func isDownloadable(
+        _ importPath: String,
+        module: GoModule,
+        skipping: Set<String>
+    ) -> Bool {
+        guard case let .success(resolved) = GoRequirementMatch.resolve(importPath: importPath, module: module)
+        else { return false }
+        return !skipping.contains(resolved.path)
+    }
+
+    private func failModuleDownload(_ message: String) {
+        guard moduleDownload != nil else { return }
+        moduleDownload?.status = "Couldn't finish"
+        moduleDownload?.failure = message
     }
 
     private func record(

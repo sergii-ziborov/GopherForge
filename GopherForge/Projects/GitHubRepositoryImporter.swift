@@ -167,6 +167,19 @@ struct GitHubRepositoryImporter: Sendable {
         return files
     }
 
+    /// Fills in Go source a previous import left out, without replacing files
+    /// the reader may already have edited.
+    static func mergingMissingSource(
+        into files: [String: String],
+        from fresh: [String: String]
+    ) -> [String: String] {
+        var merged = files
+        for (path, text) in fresh where SourceFileLimit.isBuildEssential(path) && merged[path] == nil {
+            merged[path] = text
+        }
+        return merged
+    }
+
     static func isWorthKeeping(path: String) -> Bool {
         let name = path.split(separator: "/").last.map(String.init) ?? path
         // Repository furniture that is not the code and only adds noise to the

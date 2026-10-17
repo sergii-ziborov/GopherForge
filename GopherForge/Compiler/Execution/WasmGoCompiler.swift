@@ -217,6 +217,22 @@ final class WasmGoCompiler: @unchecked Sendable {
     /// Used to decide whether a missing import should be vendored before the
     /// real build. A missing toolchain returns nil so the build itself can
     /// report that, rather than this check pretending the project is fine.
+    func missingImportPaths(phase: CompilationResult.Phase, project: GoSourceSnapshot) -> [String] {
+        guard let layout = locator.resolve() else { return [] }
+        let planner = planner(for: layout, project: project)
+        let targetDirectory = project.packagePattern == "."
+            ? ""
+            : String(project.packagePattern.dropFirst(project.packagePattern.hasPrefix("./") ? 2 : 0))
+        return GoPackageGraph.missingImportPaths(
+            files: project.files,
+            modulePath: planner.modulePath,
+            standardLibrary: planner.standardLibrary,
+            constraint: planner.constraint,
+            includeTestImports: phase == .test || phase == .vet,
+            targetDirectory: phase == .run || phase == .build ? targetDirectory : nil
+        )
+    }
+
     func graphError(phase: CompilationResult.Phase, project: GoSourceSnapshot) -> GoPackageGraph.GraphError? {
         guard let layout = locator.resolve() else { return nil }
         do {

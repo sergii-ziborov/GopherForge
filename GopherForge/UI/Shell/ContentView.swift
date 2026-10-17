@@ -59,6 +59,17 @@ struct ContentView: View {
             .onOpenURL { url in
                 Task { await consumeSharedImports(opened: url) }
             }
+            .sheet(isPresented: Binding(
+                get: { workspace.moduleDownload != nil },
+                set: { showing in
+                    if !showing, workspace.moduleDownload?.failure != nil {
+                        workspace.dismissModuleDownload()
+                    }
+                }
+            )) {
+                ModuleDownloadSheet()
+                    .environment(workspace)
+            }
             .overlay(alignment: .top) {
                 if let shareStatus {
                     Text(shareStatus)
@@ -105,9 +116,9 @@ struct ContentView: View {
         guard !pending.isEmpty else { return }
 
         for item in pending {
-            shareStatus = "Opening \(item.reference.displayName)…"
+            shareStatus = nil
             do {
-                let project = try await workspace.importGitHub(item.reference) { shareStatus = $0 }
+                let project = try await workspace.importGitHub(item.reference)
                 if workspace.open(project) {
                     navigation.show(.build)
                     shareStatus = nil
