@@ -168,7 +168,7 @@ final class GoDependencyPreparerTests: XCTestCase {
             },
             install: { path, _, files in
                 if path == "github.com/pkg/errors" {
-                    throw GoModuleProxyClient.ProxyError.tooLarge(40_000_000)
+                    throw NSError(domain: NSPOSIXErrorDomain, code: 28)
                 }
                 var next = files
                 next["vendor/\(path)/sync.go"] = "package sync\n"
@@ -180,6 +180,7 @@ final class GoDependencyPreparerTests: XCTestCase {
 
         XCTAssertEqual(prepared.problems.map(\.reason), [.noSpace])
         XCTAssertTrue(prepared.problems[0].outputLine.contains("isn't enough space"))
+        XCTAssertFalse(prepared.problems[0].outputLine.contains("proxy"))
         XCTAssertEqual(prepared.installed, ["golang.org/x/sync"])
         XCTAssertEqual(
             GoDependencyPreparer.reason(for: GoPackageInstaller.InstallError.invalidModulePath("x@nope")),
@@ -188,6 +189,26 @@ final class GoDependencyPreparerTests: XCTestCase {
         XCTAssertEqual(
             GoDependencyPreparer.reason(for: GoModuleProxyClient.ProxyError.notFound("x")),
             .notLoaded
+        )
+    }
+
+    func testAPackageOverTheSizeCapIsNotAFullDisk() {
+        let download = GoHTTPTransportError.tooLarge(bytes: 49_468_580, declared: true)
+        let unpacked = GoModuleArchive.ArchiveError.tooLarge(152_999_400)
+        for error in [download as any Error, unpacked] {
+            let problem = GoDependencyPreparer.problem(for: error, module: "example.com/big@v1.0.0")
+            XCTAssertEqual(problem.reason, .notLoaded)
+            XCTAssertTrue(problem.outputLine.contains("MB"))
+            XCTAssertFalse(problem.outputLine.contains("enough space"))
+            XCTAssertFalse(problem.outputLine.contains("proxy"))
+        }
+        XCTAssertTrue(
+            GoDependencyPreparer.describe(download, path: "google.golang.org/api@v0.293.0")
+                .contains("48 MB")
+        )
+        XCTAssertTrue(
+            GoDependencyPreparer.describe(unpacked, path: "modernc.org/sqlite@v1.56.0")
+                .contains("146 MB")
         )
     }
 }

@@ -20,9 +20,16 @@ enum ZipArchive {
 
     /// Regular files only, names as they appear in the archive.
     static func files(from data: Data, limit: Int) throws -> [String: Data] {
+        let entries = try catalog(in: data).filter { !$0.isDirectory }
+        // The catalog already knows the unpacked size. Refusing here reports
+        // that size and skips inflating tens of megabytes that will be thrown
+        // away. Extraction still counts bytes, because a declared size can lie.
+        let declared = entries.reduce(0) { $0 + $1.uncompressedSize }
+        guard declared <= limit else { throw ZipError.tooLarge(declared) }
+
         var files: [String: Data] = [:]
         var total = 0
-        for entry in try catalog(in: data) where !entry.isDirectory {
+        for entry in entries {
             let bytes = try extract(entry, from: data, remaining: limit - total)
             total += bytes.count
             guard total <= limit else { throw ZipError.tooLarge(total) }

@@ -216,10 +216,10 @@ struct GoDependencyPreparer {
         return .notLoaded
     }
 
+    /// A full phone, and nothing else. A module that is larger than the
+    /// download ceiling is still a package this app refused, which is a
+    /// different fact from the device having nowhere to write.
     private static func isOutOfSpace(_ error: any Error) -> Bool {
-        if case GoModuleProxyClient.ProxyError.tooLarge = error { return true }
-        if case GoModuleArchive.ArchiveError.tooLarge = error { return true }
-        if case GoHTTPTransportError.tooLarge = error { return true }
         let nsError = error as NSError
         if nsError.domain == NSCocoaErrorDomain,
            CocoaError.Code(rawValue: nsError.code) == .fileWriteOutOfSpace {
@@ -241,7 +241,7 @@ struct GoDependencyPreparer {
 
     /// The same sentences the package installer shows, so a failed download
     /// reads the same whether the user added the module or the build did.
-    private static func describe(_ error: any Error, path: String) -> String {
+    static func describe(_ error: any Error, path: String) -> String {
         switch error {
         case GoPackageInstaller.InstallError.checksumMismatch:
             "The download did not match the official checksum database. Nothing was installed."
@@ -252,13 +252,35 @@ struct GoDependencyPreparer {
         case GoModuleProxyClient.ProxyError.notFound:
             "The proxy has no module at \(path)."
         case let GoModuleProxyClient.ProxyError.tooLarge(bytes):
-            "That module is \(bytes / 1_048_576) MB, larger than this app will vendor."
+            downloadTooLarge(bytes)
+        case let GoHTTPTransportError.tooLarge(bytes, _):
+            downloadTooLarge(bytes)
+        case let GoModuleArchive.ArchiveError.tooLarge(bytes):
+            unpackedTooLarge(bytes)
         case GoChecksumDatabase.ChecksumError.notFound:
             "\(path) is not in the Go checksum database, so it cannot be verified."
         case let GoModuleArchive.ArchiveError.entryOutsideModule(name):
             "The archive contains a file outside the module: \(name). Nothing was installed."
         default:
-            "Could not reach the Go module proxy. Installing a package needs a network."
+            if isOutOfSpace(error) {
+                "The phone could not save the package. Free some space and use Retry."
+            } else {
+                "Could not reach the Go module proxy. Installing a package needs a network."
+            }
         }
+    }
+
+    private static func downloadTooLarge(_ bytes: Int) -> String {
+        "The download is \(megabytes(bytes)) MB. This app downloads at most "
+            + "\(megabytes(GoModuleProxyClient.maximumArchiveBytes)) MB of one package."
+    }
+
+    private static func unpackedTooLarge(_ bytes: Int) -> String {
+        "Unpacked, that module is \(megabytes(bytes)) MB. This app keeps at most "
+            + "\(megabytes(GoModuleArchive.maximumUncompressedBytes)) MB of one package."
+    }
+
+    private static func megabytes(_ bytes: Int) -> Int {
+        max(1, (bytes + 1_048_575) / 1_048_576)
     }
 }

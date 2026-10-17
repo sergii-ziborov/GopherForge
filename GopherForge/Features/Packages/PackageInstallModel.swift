@@ -144,26 +144,9 @@ final class PackageInstallModel {
         phase = .idle
     }
 
-    /// Errors people can act on. A checksum mismatch in particular is stated
-    /// as what it is rather than as a network problem.
+    /// Errors people can act on. The wording is the same one a build uses when
+    /// it downloads a package itself.
     static func describe(_ error: any Error, path: String) -> String {
-        switch error {
-        case GoPackageInstaller.InstallError.checksumMismatch:
-            "The download did not match the official checksum database. Nothing was installed."
-        case GoPackageInstaller.InstallError.noGoPackages:
-            "\(path) has no Go packages to vendor."
-        case GoPackageInstaller.InstallError.invalidModulePath:
-            "\(path) is not a module path the proxy can resolve."
-        case GoModuleProxyClient.ProxyError.notFound:
-            "The proxy has no module at \(path)."
-        case let GoModuleProxyClient.ProxyError.tooLarge(bytes):
-            "That module is \(bytes / 1_048_576) MB, larger than this app will vendor."
-        case GoChecksumDatabase.ChecksumError.notFound:
-            "\(path) is not in the Go checksum database, so it cannot be verified."
-        case let GoModuleArchive.ArchiveError.entryOutsideModule(name):
-            "The archive contains a file outside the module: \(name). Nothing was installed."
-        default:
-            "Could not reach the Go module proxy. Installing a package needs a network."
-        }
+        GoDependencyPreparer.describe(error, path: path)
     }
 }
