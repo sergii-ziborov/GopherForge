@@ -10,9 +10,6 @@ struct ProjectsHomeView: View {
     @Environment(AppNavigation.self) private var navigation
     @State private var filePick: FilePick?
     @State private var recents: [ProjectLibraryItem] = []
-    @State private var pendingImports: [PendingImportDrain.Pending] = []
-    /// The pending import currently downloading, so its row can show it.
-    @State private var importingShared: String?
     @State private var importFailure: String?
     private let library = ProjectLibrary.shared
 
@@ -27,31 +24,6 @@ struct ProjectsHomeView: View {
                 Section {
                     WelcomeCard()
                         .accessibilityIdentifier(AccessibilityID.welcomeCard)
-                }
-            }
-
-            if !pendingImports.isEmpty {
-                Section {
-                    ForEach(pendingImports) { pending in
-                        Button {
-                            importShared(pending)
-                        } label: {
-                            HStack(spacing: 10) {
-                                Label(pending.reference.displayName, systemImage: "square.and.arrow.down")
-                                    .font(.callout)
-                                Spacer(minLength: 0)
-                                if importingShared == pending.id {
-                                    ProgressView()
-                                }
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(importingShared != nil)
-                    }
-                } header: {
-                    Text("Shared with GopherForge")
-                } footer: {
-                    Text("Sent here from another app. Tap to download the repository.")
                 }
             }
 
@@ -270,25 +242,6 @@ struct ProjectsHomeView: View {
         }
     }
 
-    /// Downloads a repository the share extension queued while the app was
-    /// not running.
-    private func importShared(_ pending: PendingImportDrain.Pending) {
-        importingShared = pending.id
-        importFailure = nil
-        Task {
-            defer { importingShared = nil }
-            do {
-                let project = try await GitHubRepositoryImporter()
-                    .importRepository(pending.reference)
-                pendingImports.removeAll { $0.id == pending.id }
-                open(project)
-            } catch {
-                importFailure = (error as? LocalizedError)?.errorDescription
-                    ?? error.localizedDescription
-            }
-        }
-    }
-
     private func toggleFavorite(_ item: ProjectLibraryItem) {
         Task {
             _ = try? await library.setFavorite(id: item.id, !item.favorite)
@@ -341,9 +294,6 @@ struct ProjectsHomeView: View {
 
     private func reload() async {
         recents = (try? await library.items()) ?? []
-        if pendingImports.isEmpty {
-            pendingImports = PendingImportDrain().drain()
-        }
     }
 }
 

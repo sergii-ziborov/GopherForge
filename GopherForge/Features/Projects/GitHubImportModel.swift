@@ -10,7 +10,7 @@ import Foundation
 final class GitHubImportModel {
     enum Phase: Equatable {
         case idle
-        case downloading
+        case downloading(String)
         case failed(String)
     }
 
@@ -29,7 +29,21 @@ final class GitHubImportModel {
         try? GitHubRepositoryReference.parse(rawURL)
     }
 
-    var isDownloading: Bool { phase == .downloading }
+    var isDownloading: Bool {
+        if case .downloading = phase { return true }
+        return false
+    }
+
+    var statusText: String {
+        if case let .downloading(status) = phase { return status }
+        return "Downloading…"
+    }
+
+    func note(_ status: String) { phase = .downloading(status) }
+
+    func fail(_ message: String) { phase = .failed(message) }
+
+    func finish() { phase = .idle }
 
     var canImport: Bool { reference != nil && !isDownloading }
 
@@ -48,7 +62,7 @@ final class GitHubImportModel {
 
     func importRepository() async -> GopherForgeProject? {
         guard let reference else { return nil }
-        phase = .downloading
+        phase = .downloading("Downloading \(reference.displayName)…")
         do {
             let project = try await importer.importRepository(reference)
             phase = .idle

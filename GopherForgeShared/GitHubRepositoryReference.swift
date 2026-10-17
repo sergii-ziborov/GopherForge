@@ -34,7 +34,10 @@ struct GitHubRepositoryReference: Equatable, Sendable {
 
     static func parse(_ rawURL: String) throws -> GitHubRepositoryReference {
         let trimmed = rawURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let components = URLComponents(string: trimmed), let host = components.host else {
+        // A share sheet often wraps the link in a sentence. The repository is
+        // the GitHub URL inside that sentence, not the sentence itself.
+        let candidate = embeddedGitHubURL(in: trimmed) ?? trimmed
+        guard let components = URLComponents(string: candidate), let host = components.host?.lowercased() else {
             throw ParseError.notAURL
         }
         guard host == "github.com" || host == "www.github.com" else {
@@ -61,5 +64,24 @@ struct GitHubRepositoryReference: Equatable, Sendable {
             repository: repository,
             reference: reference
         )
+    }
+
+    /// The first `github.com` link in a shared message, if the text is not
+    /// itself that URL.
+    private static func embeddedGitHubURL(in text: String) -> String? {
+        guard text.contains("github.com") else { return nil }
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+            return nil
+        }
+        let range = NSRange(text.startIndex..., in: text)
+        for match in detector.matches(in: text, range: range) {
+            guard let url = match.url, let host = url.host?.lowercased(),
+                  host == "github.com" || host == "www.github.com"
+            else { continue }
+            let parts = url.path.split(separator: "/").filter { !$0.isEmpty }
+            guard parts.count >= 2 else { continue }
+            return url.absoluteString
+        }
+        return nil
     }
 }

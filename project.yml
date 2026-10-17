@@ -109,6 +109,11 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.sergiiziborov.GopherForge
+            CFBundleURLSchemes:
+              - gopherforge
         CFBundleDocumentTypes:
           - CFBundleTypeName: GopherForge Project
             CFBundleTypeRole: Editor
@@ -153,7 +158,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge
         PRODUCT_NAME: GopherForge
         MARKETING_VERSION: "1.1.1"
-        CURRENT_PROJECT_VERSION: 22
+        CURRENT_PROJECT_VERSION: 23
         CODE_SIGN_ENTITLEMENTS: GopherForge/GopherForge.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
@@ -184,9 +189,7 @@ targets:
         NSHumanReadableCopyright: "© 2026 Serhii Ziborov. All rights reserved."
         NSExtension:
           NSExtensionAttributes:
-            NSExtensionActivationRule:
-              NSExtensionActivationSupportsText: true
-              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+            NSExtensionActivationRule: 'SUBQUERY(extensionItems, $extensionItem, SUBQUERY($extensionItem.attachments, $attachment, ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url" OR ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.plain-text" OR ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.text").@count >= 1).@count >= 1'
           NSExtensionPointIdentifier: com.apple.share-services
           NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
     settings:
@@ -194,7 +197,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge.Share
         PRODUCT_NAME: GopherForgeShare
         MARKETING_VERSION: "1.1.1"
-        CURRENT_PROJECT_VERSION: 22
+        CURRENT_PROJECT_VERSION: 23
         CODE_SIGN_ENTITLEMENTS: GopherForgeShare/GopherForgeShare.entitlements
         CODE_SIGN_STYLE: Automatic
         APPLICATION_EXTENSION_API_ONLY: YES

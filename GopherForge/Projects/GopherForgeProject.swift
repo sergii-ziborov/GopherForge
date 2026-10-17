@@ -63,6 +63,15 @@ struct GopherForgeProject: Codable, Equatable, Sendable {
         )
     }
 
+    func replacingFiles(_ files: [String: String]) -> GopherForgeProject {
+        GopherForgeProject(
+            name: name,
+            files: files,
+            entryFile: entryFile,
+            provenance: provenance
+        )
+    }
+
     var module: GoModule? {
         files["go.mod"].flatMap(GoModParser.parse)
     }

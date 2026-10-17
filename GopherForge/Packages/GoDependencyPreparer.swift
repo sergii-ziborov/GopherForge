@@ -58,7 +58,7 @@ struct GoDependencyPreparer {
         let installed: [String]
     }
 
-    enum Failure: Error, Equatable {
+    enum Failure: LocalizedError, Equatable {
         case missingFromProject(importPath: String, files: [String: String])
         case localReplacement(module: String, path: String, files: [String: String])
         case repeated(module: String, files: [String: String])
@@ -75,6 +75,8 @@ struct GoDependencyPreparer {
                 files
             }
         }
+
+        var errorDescription: String? { detail }
 
         var detail: String {
             switch self {

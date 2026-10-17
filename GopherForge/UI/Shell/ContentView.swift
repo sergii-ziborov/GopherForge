@@ -17,6 +17,9 @@ struct ContentView: View {
     /// it — which is how a lesson could be marked complete and the course show
     /// nothing.
     @State private var learnProgress = LearnProgress()
+    @State private var shareStatus: String?
+    @State private var isImportingShare = false
+    @State private var importedShareKeys: Set<String> = []
 
     @ViewBuilder var body: some View {
         if #available(iOS 27.1, *) {
@@ -53,13 +56,69 @@ struct ContentView: View {
             .environment(learnProgress)
             .environment(\.duoPresentation, duoPresentation)
             .task { await workspace.prepare() }
+            .onOpenURL { url in
+                Task { await consumeSharedImports(opened: url) }
+            }
+            .overlay(alignment: .top) {
+                if let shareStatus {
+                    Text(shareStatus)
+                        .font(.callout)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .padding(.top, 8)
+                        .padding(.horizontal, 16)
+                        .accessibilityIdentifier("share.import.status")
+                }
+            }
             // Editor text lives in the model and is written back on a debounce,
             // and a debounce that has not fired does not survive the process
             // being suspended or killed — so leaving the foreground writes now.
             .onChange(of: scenePhase) { _, phase in
-                guard phase != .active else { return }
-                Task { await workspace.flush() }
+                if phase == .active {
+                    Task { await consumeSharedImports(opened: nil) }
+                } else {
+                    Task { await workspace.flush() }
+                }
             }
+    }
+
+    /// A GitHub link shared into the app is downloaded, including the modules
+    /// `go.mod` requires, and opened. The share extension can only queue and
+    /// foreground; this is the step that turns the link into a project.
+    private func consumeSharedImports(opened url: URL?) async {
+        guard !isImportingShare else { return }
+        isImportingShare = true
+        defer { isImportingShare = false }
+        var raws: [String] = []
+        if let url, let raw = GopherForgeLink.repositoryURL(from: url) {
+            raws.append(raw)
+        }
+        while let queued = SharedImportQueue.dequeue() {
+            raws.append(queued)
+        }
+        let pending = raws.compactMap { raw -> (key: String, reference: GitHubRepositoryReference)? in
+            guard let reference = try? GitHubRepositoryReference.parse(raw) else { return nil }
+            return (reference.displayName, reference)
+        }.filter { importedShareKeys.insert($0.key).inserted }
+        guard !pending.isEmpty else { return }
+
+        for item in pending {
+            shareStatus = "Opening \(item.reference.displayName)…"
+            do {
+                let project = try await workspace.importGitHub(item.reference) { shareStatus = $0 }
+                if workspace.open(project) {
+                    navigation.show(.build)
+                    shareStatus = nil
+                } else {
+                    shareStatus = "\(item.reference.displayName) was downloaded, but the open project could not be replaced."
+                }
+            } catch {
+                importedShareKeys.remove(item.key)
+                shareStatus = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            }
+        }
     }
 
     private var tabLayout: some View {

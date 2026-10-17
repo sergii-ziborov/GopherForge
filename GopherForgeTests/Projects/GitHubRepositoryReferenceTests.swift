@@ -25,6 +25,35 @@ final class GitHubRepositoryReferenceTests: XCTestCase {
         }
     }
 
+    func testFindsARepositoryLinkInsideSharedText() throws {
+        let reference = try GitHubRepositoryReference.parse(
+            "Look at this https://github.com/usememos/memos and tell me what you think"
+        )
+        XCTAssertEqual(reference.displayName, "usememos/memos")
+        XCTAssertNil(reference.reference)
+    }
+
+    func testATreeLinkInsideTextKeepsTheBranch() throws {
+        let reference = try GitHubRepositoryReference.parse(
+            "Branch: https://github.com/golang/tools/tree/master/cmd"
+        )
+        XCTAssertEqual(reference.owner, "golang")
+        XCTAssertEqual(reference.repository, "tools")
+        XCTAssertEqual(reference.reference, "master/cmd")
+    }
+
+    func testAnImportLinkCarriesTheRepositoryURL() throws {
+        let url = try XCTUnwrap(
+            GopherForgeLink.importURL(repository: "https://github.com/usememos/memos")
+        )
+        XCTAssertEqual(url.scheme, "gopherforge")
+        XCTAssertEqual(
+            GopherForgeLink.repositoryURL(from: url),
+            "https://github.com/usememos/memos"
+        )
+        XCTAssertNil(GopherForgeLink.repositoryURL(from: URL(string: "https://github.com/usememos/memos")!))
+    }
+
     func testRejectsAUserPageWithNoRepository() {
         XCTAssertThrowsError(try GitHubRepositoryReference.parse("https://github.com/golang")) { error in
             XCTAssertEqual(error as? GitHubRepositoryReference.ParseError, .missingRepository)

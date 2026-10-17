@@ -79,6 +79,17 @@ fi
 mkdir -p "$OUT"
 rm -rf "$ARCHIVE"
 
+# Optional App Store Connect API key. Without an account signed in to
+# Xcode, -allowProvisioningUpdates cannot download a distribution profile.
+AUTH=()
+if [[ -n "${ASC_KEY_PATH:-}" && -n "${ASC_KEY_ID:-}" && -n "${ASC_ISSUER_ID:-}" ]]; then
+  AUTH=(
+    -authenticationKeyPath "$ASC_KEY_PATH"
+    -authenticationKeyID "$ASC_KEY_ID"
+    -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+  )
+fi
+
 echo "Archiving with $("$DEVELOPER_DIR/usr/bin/xcodebuild" -version | head -1)…"
 xcodebuild -project "$PROJECT_ROOT/GopherForge.xcodeproj" \
   -scheme GopherForge \
@@ -87,6 +98,7 @@ xcodebuild -project "$PROJECT_ROOT/GopherForge.xcodeproj" \
   -archivePath "$ARCHIVE" \
   -jobs "${GOPHERFORGE_BUILD_JOBS:-4}" \
   -allowProvisioningUpdates \
+  "${AUTH[@]}" \
   SWIFT_SUPPRESS_WARNINGS=NO \
   archive
 
@@ -118,6 +130,7 @@ xcodebuild -exportArchive \
   -exportOptionsPlist "$EXPORT_OPTIONS" \
   -exportPath "$OUT" \
   -allowProvisioningUpdates \
+  "${AUTH[@]}" \
   SWIFT_SUPPRESS_WARNINGS=NO
 
 echo

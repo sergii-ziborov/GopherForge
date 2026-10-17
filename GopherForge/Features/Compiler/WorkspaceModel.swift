@@ -298,7 +298,13 @@ final class WorkspaceModel {
         let pattern = phase == .run || phase == .build ? selectedTargetPattern : "./..."
         let ready: GopherForgeProject
         do {
-            ready = try await addingMissingModules(to: project, phase: phase, pattern: pattern)
+            let vendored = try await addingMissingModules(to: project, phase: phase, pattern: pattern) { module in
+                self.runningStep = GoBuildProgress(label: "Add \(module)", step: 1, totalSteps: 1)
+            }
+            if vendored.files != project.files {
+                replaceFiles(with: vendored.files)
+            }
+            ready = self.project ?? vendored
         } catch let failure as GoDependencyPreparer.Failure {
             if failure.files != project.files {
                 replaceFiles(with: failure.files)
@@ -336,19 +342,48 @@ final class WorkspaceModel {
         )
     }
 
+    /// Downloads a GitHub repository and the modules its entry package imports.
+    ///
+    /// The snapshot alone is not a buildable project: `go.mod` names modules
+    /// that are not in the archive. They are vendored here, before the editor
+    /// opens, so Run is not the first moment the absence shows up.
+    func importGitHub(
+        _ reference: GitHubRepositoryReference,
+        onStatus: @escaping (String) -> Void = { _ in }
+    ) async throws -> GopherForgeProject {
+        onStatus("Downloading \(reference.displayName)…")
+        let downloaded = try await GitHubRepositoryImporter().importRepository(reference)
+        onStatus("Adding packages…")
+        let directory = GoPackageGraph.directory(of: downloaded.entryFile)
+        let pattern = directory.isEmpty ? "." : "./\(directory)"
+        do {
+            return try await addingMissingModules(to: downloaded, phase: .build, pattern: pattern) {
+                onStatus("Adding \($0)…")
+            }
+        } catch let failure as GoDependencyPreparer.Failure {
+            let partial = downloaded.replacingFiles(failure.files)
+            if partial.files == downloaded.files { throw failure }
+            return partial
+        }
+    }
+
     /// Vendors modules named in `go.mod` that the selected build imports and
     /// does not yet have. The compiler never sees the network; this does,
     /// once, and then the source is part of the project.
     private func addingMissingModules(
         to project: GopherForgeProject,
         phase: CompilationResult.Phase,
-        pattern: String
+        pattern: String,
+        onModule: @escaping (String) -> Void = { _ in }
     ) async throws -> GopherForgeProject {
         guard phase != .format, phase != .setup else { return project }
         guard let parsed = GoModParser.parse(project.files["go.mod"] ?? ""),
               !parsed.requirements.isEmpty
         else {
             return project
+        }
+        if toolchain == .missing {
+            toolchain = compiler.probe()
         }
 
         let preparer = GoDependencyPreparer(
@@ -362,10 +397,8 @@ final class WorkspaceModel {
                     )
                 )
             },
-            install: { [weak self] path, version, files in
-                await MainActor.run {
-                    self?.runningStep = GoBuildProgress(label: "Add \(path)", step: 1, totalSteps: 1)
-                }
+            install: { path, version, files in
+                onModule(path)
                 let result = try await GoPackageInstaller().install(
                     path: path,
                     version: version,
@@ -375,9 +408,7 @@ final class WorkspaceModel {
             }
         )
         let prepared = try await preparer.prepare(files: project.files)
-        guard prepared.files != project.files else { return project }
-        replaceFiles(with: prepared.files)
-        return self.project ?? project
+        return project.replacingFiles(prepared.files)
     }
 
     private func record(

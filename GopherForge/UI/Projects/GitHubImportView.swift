@@ -3,6 +3,7 @@ import SwiftUI
 /// Paste a repository URL, get the code.
 struct GitHubImportView: View {
     @State private var model = GitHubImportModel()
+    @Environment(WorkspaceModel.self) private var workspace
     @Environment(\.dismiss) private var dismiss
     /// Called with the imported project, so the caller decides what opening
     /// means — this screen only knows how to fetch one.
@@ -50,17 +51,12 @@ struct GitHubImportView: View {
 
                 Section {
                     Button {
-                        Task {
-                            if let project = await model.importRepository() {
-                                onImport(project)
-                                dismiss()
-                            }
-                        }
+                        Task { await importRepository() }
                     } label: {
                         if model.isDownloading {
                             HStack(spacing: 8) {
                                 ProgressView()
-                                Text("Downloading…")
+                                Text(model.statusText)
                             }
                         } else {
                             Label("Import repository", systemImage: "arrow.down.circle")
@@ -69,9 +65,9 @@ struct GitHubImportView: View {
                     .disabled(!model.canImport)
                     .accessibilityIdentifier(AccessibilityID.githubImportButton)
                 } footer: {
-                    Text("Only text files are brought across, and binaries, `.git` and "
-                        + "`testdata` are left behind. Everything imported is source you "
-                        + "can read and edit here.")
+                    Text("The repository snapshot is downloaded, then the modules in "
+                        + "go.mod that the program imports are added so it can build offline. "
+                        + "Binaries, `.git` and `testdata` are left behind.")
                 }
             }
             .navigationTitle("Import from GitHub")
@@ -81,6 +77,19 @@ struct GitHubImportView: View {
                     Button("Cancel") { dismiss() }
                 }
             }
+        }
+    }
+
+    private func importRepository() async {
+        guard let reference = model.reference else { return }
+        model.note("Downloading \(reference.displayName)…")
+        do {
+            let project = try await workspace.importGitHub(reference) { model.note($0) }
+            model.finish()
+            onImport(project)
+            dismiss()
+        } catch {
+            model.fail((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
         }
     }
 }
