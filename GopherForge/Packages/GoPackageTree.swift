@@ -111,7 +111,8 @@ enum GoPackageTree {
 
         func isRoot(_ path: String) -> Bool {
             if usedByProject.contains(path) { return true }
-            if modules[path]?.isIndirect == false { return true }
+            // Nested when some other package imports it and the project does not,
+            // whether or not go.mod still says // indirect.
             return importers(of: path).isEmpty
         }
 

@@ -55,7 +55,8 @@ enum GoVendorWriter {
         var lines = source.isEmpty ? [] : source.components(separatedBy: "\n")
 
         if let index = lines.firstIndex(where: { requireLineModulePath($0) == reference.path }) {
-            lines[index] = requirement
+            let indirect = lines[index].contains("// indirect") ? " // indirect" : ""
+            lines[index] = requirement + indirect
             return lines.joined(separator: "\n")
         }
 

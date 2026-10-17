@@ -62,9 +62,7 @@ struct ContentView: View {
             .sheet(isPresented: Binding(
                 get: { workspace.moduleDownload != nil },
                 set: { showing in
-                    if !showing, workspace.moduleDownload?.failure != nil {
-                        workspace.dismissModuleDownload()
-                    }
+                    if !showing { workspace.dismissModuleDownload() }
                 }
             )) {
                 ModuleDownloadSheet()
@@ -88,6 +86,7 @@ struct ContentView: View {
             // being suspended or killed — so leaving the foreground writes now.
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
+                    workspace.interruptStalledDownload()
                     Task { await consumeSharedImports(opened: nil) }
                 } else {
                     Task { await workspace.flush() }

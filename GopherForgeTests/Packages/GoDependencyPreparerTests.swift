@@ -124,10 +124,12 @@ final class GoDependencyPreparerTests: XCTestCase {
         XCTAssertNil(prepared.files["vendor/github.com/google/uuid/uuid.go"])
     }
 
-    func testInstallingTheSameModuleTwiceStops() async {
+    func testAModuleThatDoesNotContainTheImportIsReportedAndSkipped() async throws {
         let preparer = GoDependencyPreparer(
-            planError: { _, _ in
-                .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
+            planError: { _, skipping in
+                skipping.contains("github.com/pkg/errors")
+                    ? nil
+                    : .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
             },
             install: { _, _, files in
                 var next = files
@@ -136,18 +138,10 @@ final class GoDependencyPreparerTests: XCTestCase {
             }
         )
 
-        do {
-            _ = try await preparer.prepare(files: ["go.mod": goMod])
-            XCTFail("a module that does not provide the import has to stop the loop")
-        } catch let failure as GoDependencyPreparer.Failure {
-            guard case let .repeated(module, _) = failure else {
-                return XCTFail("unexpected \(failure)")
-            }
-            XCTAssertEqual(module, "github.com/pkg/errors")
-            XCTAssertTrue(failure.detail.contains("github.com/pkg/errors"))
-        } catch {
-            XCTFail("unexpected \(error)")
-        }
+        let prepared = try await preparer.prepare(files: ["go.mod": goMod])
+
+        XCTAssertEqual(prepared.problems.map(\.reason), [.notLoaded])
+        XCTAssertTrue(prepared.problems[0].outputLine.contains("does not contain that package"))
     }
 
     func testAFailedDownloadIsClassifiedAndDoesNotHideTheNextModule() async throws {

@@ -9,66 +9,61 @@ struct ModuleDownload: Identifiable, Equatable {
     var failure: String?
 }
 
-/// Shown while packages are downloading. It closes when that pass finishes.
-/// A package that could not be fetched is reported in Output, and the project
-/// still opens.
+/// Progress for the packages being fetched. Swipe down to keep what has
+/// already been saved and leave the rest for Output. The list scrolls, and
+/// the layout is just a list so turning the phone does not tear it.
 struct ModuleDownloadSheet: View {
     @Environment(WorkspaceModel.self) private var workspace
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 16) {
+            Group {
                 if let download = workspace.moduleDownload {
-                    Text(download.title)
-                        .font(.title3.weight(.semibold))
-                    HStack(spacing: 10) {
-                        if download.failure == nil {
-                            ProgressView()
-                        } else {
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundStyle(.red)
+                    List {
+                        Section {
+                            HStack(spacing: 10) {
+                                if download.failure == nil {
+                                    ProgressView()
+                                } else {
+                                    Image(systemName: "exclamationmark.triangle")
+                                        .foregroundStyle(.red)
+                                }
+                                Text(download.status)
+                                    .font(.callout)
+                            }
+                            if let failure = download.failure {
+                                Text(failure)
+                                    .font(.callout)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } header: {
+                            Text(download.title)
+                        } footer: {
+                            Text("Already saved. You can close this and keep going.")
                         }
-                        Text(download.status)
-                            .font(.callout)
-                            .foregroundStyle(download.failure == nil ? Color.primary : Color.red)
-                    }
-                    if let failure = download.failure {
-                        Text(failure)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    if !download.installed.isEmpty {
-                        Text("\(download.installed.count) added")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 6) {
+                        if !download.installed.isEmpty {
+                            Section("\(download.installed.count) added") {
                                 ForEach(download.installed, id: \.self) { module in
                                     Label(module, systemImage: "shippingbox")
                                         .font(.callout)
-                                        .lineLimit(1)
+                                        .lineLimit(2)
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    Spacer(minLength: 0)
+                    .listStyle(.insetGrouped)
                 }
             }
-            .padding(20)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .navigationTitle("Downloading packages")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if workspace.moduleDownload?.failure != nil {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Close") { workspace.dismissModuleDownload() }
-                    }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { workspace.dismissModuleDownload() }
                 }
             }
         }
-        .interactiveDismissDisabled(workspace.moduleDownload?.failure == nil)
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .presentationContentInteraction(.scrolls)
     }
 }

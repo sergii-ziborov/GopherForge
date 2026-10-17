@@ -132,6 +132,7 @@ struct GoDependencyPreparer {
     /// hide the rest.
     var planError: (_ files: [String: String], _ skipping: Set<String>) -> GoPackageGraph.GraphError?
     var install: (String, String, [String: String]) async throws -> [String: String]
+    var shouldStop: () -> Bool = { false }
 
     @MainActor
     func prepare(files: [String: String]) async throws -> Prepared {
@@ -142,6 +143,9 @@ struct GoDependencyPreparer {
         var seen: Set<String> = []
 
         for _ in 0..<maximumModules {
+            if shouldStop() {
+                return Prepared(files: files, installed: installed, problems: problems)
+            }
             guard let error = planError(files, failed),
                   case let .unresolvedImport(importPath, _) = error
             else {
@@ -167,12 +171,23 @@ struct GoDependencyPreparer {
                 return Prepared(files: files, installed: installed, problems: problems)
             }
             guard seen.insert(resolved.path).inserted else {
-                throw Failure.repeated(module: resolved.path, files: files)
+                problems.append(
+                    PackageDownloadProblem(
+                        module: resolved.path,
+                        reason: .notLoaded,
+                        detail: "\(resolved.path) was added, but the import still does not resolve. "
+                            + "The module does not contain that package."
+                    )
+                )
+                failed.insert(resolved.path)
+                continue
             }
 
             do {
                 files = try await install(resolved.path, resolved.version, files)
                 installed.append(resolved.path)
+            } catch is CancellationError {
+                return Prepared(files: files, installed: installed, problems: problems)
             } catch {
                 let problem = Self.problem(for: error, module: "\(resolved.path)@\(resolved.version)")
                 problems.append(problem)

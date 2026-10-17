@@ -27,9 +27,13 @@ final class WorkspaceModel {
     /// phone takes seconds, and a spinner that says nothing for that long reads
     /// as a button that does not work.
     private(set) var runningStep: GoBuildProgress?
-    /// Set while repository modules are downloading. Nil once they are all in,
-    /// or still set with a failure so the window can stay until it is closed.
+    /// Set while repository modules are downloading. Closing it keeps every
+    /// package already written and stops the one in flight.
     private(set) var moduleDownload: ModuleDownload?
+    private var moduleDownloadCancelled = false
+    private var moduleAttemptName: String?
+    private var moduleAttemptStarted: Date?
+    private var currentModuleTask: Task<GoPackageInstaller.Result, Error>?
     /// Packages the last download could not keep. Shown in Output, with Retry.
     private(set) var packageProblems: [PackageDownloadProblem] = []
 
@@ -304,8 +308,13 @@ final class WorkspaceModel {
         if phase != .format, phase != .setup, needsModuleDownload(project, phase: phase, pattern: pattern) {
             beginModuleDownload(title: project.name, status: "Preparing packages…")
         }
+        moduleDownloadCancelled = false
         let vendored = await addingMissingModules(to: project, phase: phase, pattern: pattern)
         moduleDownload = nil
+        if moduleDownloadCancelled {
+            moduleDownloadCancelled = false
+            return
+        }
         if vendored.files != project.files {
             replaceFiles(with: vendored.files)
         }
@@ -335,7 +344,18 @@ final class WorkspaceModel {
     /// that are not in the archive. They are vendored here, before the editor
     /// opens, so Run is not the first moment the absence shows up.
     func dismissModuleDownload() {
+        moduleDownloadCancelled = true
+        currentModuleTask?.cancel()
         moduleDownload = nil
+    }
+
+    /// A download that was alive when the screen slept often never resumes.
+    /// If the same package has been the current one for a while of real time,
+    /// drop it and move on. What already landed stays in the project.
+    func interruptStalledDownload() {
+        guard isRunning, let started = moduleAttemptStarted else { return }
+        guard Date().timeIntervalSince(started) > 45 else { return }
+        currentModuleTask?.cancel()
     }
 
     func importGitHub(_ reference: GitHubRepositoryReference) async throws -> GopherForgeProject {
@@ -439,14 +459,26 @@ final class WorkspaceModel {
                     return nil
                 },
                 install: { path, version, files in
+                    if self.moduleDownloadCancelled { throw CancellationError() }
                     self.noteDownload("Adding \(path)…", module: path)
-                    let result = try await GoPackageInstaller().install(
+                    let task = Task { try await GoPackageInstaller().install(
                         path: path,
                         version: version,
                         into: files
-                    )
+                    ) }
+                    self.currentModuleTask = task
+                    let result: GoPackageInstaller.Result
+                    do {
+                        result = try await task.value
+                    } catch {
+                        if self.currentModuleTask == task { self.currentModuleTask = nil }
+                        throw error
+                    }
+                    if self.currentModuleTask == task { self.currentModuleTask = nil }
+                    self.persistDownloaded(result.files)
                     return result.files
-                }
+                },
+                shouldStop: { self.moduleDownloadCancelled }
             )
             do {
                 let prepared = try await preparer.prepare(files: project.files)
@@ -529,11 +561,22 @@ final class WorkspaceModel {
 
     private func noteDownload(_ status: String, module: String? = nil) {
         runningStep = GoBuildProgress(label: status, step: 1, totalSteps: 1)
+        if let module, module != moduleAttemptName {
+            moduleAttemptName = module
+            moduleAttemptStarted = Date()
+        }
         guard moduleDownload != nil else { return }
         moduleDownload?.status = status
         if let module, moduleDownload?.installed.contains(module) == false {
             moduleDownload?.installed.append(module)
         }
+    }
+
+    /// Writes each module as it arrives, so closing the window, locking the
+    /// phone, or leaving the app does not throw away what already downloaded.
+    private func persistDownloaded(_ files: [String: String]) {
+        guard project != nil else { return }
+        replaceFiles(with: files)
     }
 
     private static func problem(from failure: GoDependencyPreparer.Failure) -> PackageDownloadProblem {
