@@ -38,7 +38,8 @@ enum GoPackageStorage {
         // Older imported vendor trees can list a dependency only in modules.txt.
         // Preserve its pin before removing its source so the next build can fetch it.
         for reference in plan.references where !required.contains(reference.path) {
-            files["go.mod"] = GoVendorWriter.updatedGoMod(files["go.mod"] ?? "", adding: reference)
+            files["go.mod"] = (files["go.mod"] ?? "").trimmingCharacters(in: .newlines)
+                + "\n\nrequire \(reference.path) \(reference.version)\n"
         }
         if let text = files[GoVendorWriter.modulesFile] {
             let removed = Set(plan.references.map(\.path))

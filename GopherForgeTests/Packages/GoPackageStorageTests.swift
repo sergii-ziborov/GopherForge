@@ -42,6 +42,29 @@ final class GoPackageStorageTests: XCTestCase {
         }
     }
 
+    func testVendorOnlyDependencyIsPinnedWithoutChangingReplaceBlocks() {
+        let originalMod = """
+        module example.com/mine
+        go 1.18
+        replace (
+            example.com/old => example.com/new v1.0.0
+        )
+        """
+        let original = project("mine").replacingFiles([
+            "go.mod": originalMod,
+            "main.go": "package main\n",
+            "vendor/modules.txt": "# example.com/dep v1.2.3\n## explicit\nexample.com/dep\n",
+            "vendor/example.com/dep/dep.go": "package dep\n",
+        ])
+        let cleaned = GoPackageStorage.clearingDownloadedPackages(from: original)
+        let goMod = cleaned.project.files["go.mod"] ?? ""
+        XCTAssertTrue(goMod.hasPrefix(originalMod))
+        XCTAssertTrue(goMod.contains(")\n\nrequire example.com/dep v1.2.3\n"))
+        XCTAssertEqual(cleaned.project.module?.requirements.first?.version, "v1.2.3")
+        XCTAssertEqual(cleaned.project.module?.replacements.first?.path, "example.com/old")
+        XCTAssertNil(cleaned.project.files["vendor/example.com/dep/dep.go"])
+    }
+
     func testCleanupPersistsForEveryUserProjectAndRejectsAStaleSave() async throws {
         let url = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
             .appending(path: "projects.json")
