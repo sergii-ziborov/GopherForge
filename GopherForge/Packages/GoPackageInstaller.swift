@@ -48,14 +48,15 @@ struct GoPackageInstaller: Sendable {
     func install(
         path: String,
         version: String,
-        into files: [String: String]
+        into files: [String: String],
+        neededImport: String? = nil
     ) async throws -> Result {
         guard let reference = GoModuleReference.validated(path: path, version: version) else {
             throw InstallError.invalidModulePath("\(path)@\(version)")
         }
 
         let data = try await proxy.archive(for: reference)
-        let archive = try GoModuleArchive(data: data, reference: reference)
+        let archive = try GoModuleArchive(data: data, reference: reference, neededImport: neededImport)
 
         // Verify before anything is written. The order matters: a project must
         // never contain bytes that failed this check, not even briefly.
@@ -65,7 +66,7 @@ struct GoPackageInstaller: Sendable {
             throw InstallError.checksumMismatch(expected: record.moduleHash, actual: actual)
         }
 
-        let vendored = archive.vendoredFiles()
+        let vendored = archive.vendoredFiles(neededImport: neededImport)
         let packages = Self.packages(in: vendored, modulePath: reference.path)
         guard !packages.isEmpty else { throw InstallError.noGoPackages(reference.id) }
 

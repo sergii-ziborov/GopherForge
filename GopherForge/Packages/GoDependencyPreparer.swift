@@ -131,7 +131,8 @@ struct GoDependencyPreparer {
     /// import should be one that is not in that set, so one failure does not
     /// hide the rest.
     var planError: (_ files: [String: String], _ skipping: Set<String>) async -> GoPackageGraph.GraphError?
-    var install: (String, String, [String: String]) async throws -> [String: String]
+    /// Module path, version, the import that asked for it, and the project files.
+    var install: (String, String, String, [String: String]) async throws -> [String: String]
     var shouldStop: () -> Bool = { false }
 
     @MainActor
@@ -184,7 +185,7 @@ struct GoDependencyPreparer {
             }
 
             do {
-                files = try await install(resolved.path, resolved.version, files)
+                files = try await install(resolved.path, resolved.version, importPath, files)
                 installed.append(resolved.path)
             } catch is CancellationError {
                 if shouldStop() {

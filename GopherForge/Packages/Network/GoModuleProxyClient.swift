@@ -10,7 +10,9 @@ struct GoModuleProxyClient: Sendable {
     /// The published limits, enforced before a download rather than after: a
     /// phone should not spend a hundred megabytes finding out a module is too
     /// big to be worth vendoring.
-    static let maximumArchiveBytes = 24 * 1024 * 1024
+    /// A published module zip. `google.golang.org/api` is about 47 MB; the old
+    /// 24 MB ceiling refused it and called that a full disk.
+    static let maximumArchiveBytes = 96 * 1024 * 1024
     static let maximumMetadataBytes = 512 * 1024
 
     enum ProxyError: Error, Equatable {

@@ -89,7 +89,7 @@ final class GoDependencyPreparerTests: XCTestCase {
                     ? nil
                     : .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
             },
-            install: { path, version, files in
+            install: { path, version, _, files in
                 XCTAssertEqual(path, "github.com/pkg/errors")
                 XCTAssertEqual(version, "v0.9.1")
                 var next = files
@@ -112,7 +112,7 @@ final class GoDependencyPreparerTests: XCTestCase {
             planError: { _, _ in
                 .unresolvedImport("github.com/google/uuid", importedBy: "example.com/app")
             },
-            install: { _, _, _ in
+            install: { _, _, _, _ in
                 XCTFail("nothing in go.mod provides this import")
                 return [:]
             }
@@ -131,7 +131,7 @@ final class GoDependencyPreparerTests: XCTestCase {
                     ? nil
                     : .unresolvedImport("github.com/pkg/errors", importedBy: "example.com/app")
             },
-            install: { _, _, files in
+            install: { _, _, _, files in
                 var next = files
                 next["vendor/github.com/pkg/errors/errors.go"] = "package errors\n"
                 return next
@@ -166,7 +166,7 @@ final class GoDependencyPreparerTests: XCTestCase {
                 }
                 return nil
             },
-            install: { path, _, files in
+            install: { path, _, _, files in
                 if path == "github.com/pkg/errors" {
                     throw NSError(domain: NSPOSIXErrorDomain, code: 28)
                 }

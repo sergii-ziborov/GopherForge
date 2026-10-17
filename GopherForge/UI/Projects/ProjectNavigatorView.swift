@@ -337,6 +337,14 @@ struct ProjectNavigatorView: View {
             }
             .accessibilityIdentifier(AccessibilityID.addPackage)
 
+            if packageRows.isEmpty, !workspace.navigatorTreesReady, packages.isEmpty {
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("Loading packages…")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+            }
             ForEach(packageRows) { row in
                 packageRow(row)
             }
@@ -507,7 +515,14 @@ struct ProjectNavigatorView: View {
     }
 
     private var packageRows: [GoPackageTree.Row] {
-        GoPackageTree.rows(of: workspace.navigatorPackageNodes, expanded: expandedPackages)
+        let nested = GoPackageTree.rows(of: workspace.navigatorPackageNodes, expanded: expandedPackages)
+        if !nested.isEmpty { return nested }
+        // The nested tree parses every Go file. On a first open, while a build
+        // is running, that parse has not finished and the section looked empty
+        // even though go.mod already names the packages.
+        return packages.map { module in
+            GoPackageTree.Row(module: module, depth: 0, hasChildren: false, id: module.path)
+        }
     }
 
     private var matchingPackages: [GoVendorWriter.InstalledModule] {

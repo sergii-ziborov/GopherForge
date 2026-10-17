@@ -23,6 +23,8 @@ final class WorkspaceModel {
     private(set) var navigatorFileNodes: [ProjectFileNode] = []
     private(set) var navigatorPackageNodes: [GoPackageTree.Node] = []
     private var navigatorCacheRevision: UInt64?
+    /// False while the file and package trees for this revision are still building.
+    var navigatorTreesReady: Bool { navigatorCacheRevision == navigatorRevision }
     private(set) var savedRevision: UInt64 = 0
     private(set) var hasUnsavedChanges = false
     private(set) var saveError: String?
@@ -495,12 +497,13 @@ final class WorkspaceModel {
                     }
                     return nil
                 },
-                install: { path, version, files in
+                install: { path, version, importPath, files in
                     self.noteDownload("Adding \(path)…", module: path)
                     let task = Task { try await GoPackageInstaller().install(
                         path: path,
                         version: version,
-                        into: files
+                        into: files,
+                        neededImport: importPath
                     ) }
                     self.currentModuleTask = task
                     let result: GoPackageInstaller.Result

@@ -40,6 +40,23 @@ final class ZipArchiveTests: XCTestCase {
         }
     }
 
+    func testVendoredFilesLeaveOutOtherOperatingSystems() throws {
+        let files: [String: Data] = [
+            "example.com/tiny@v1.0.0/go.mod": Data("module example.com/tiny\n".utf8),
+            "example.com/tiny@v1.0.0/tiny.go": Data("package tiny\n".utf8),
+            "example.com/tiny@v1.0.0/tiny_linux.go": Data("package tiny\nfunc Linux() {}\n".utf8),
+        ]
+        let archive = try GoModuleArchive(
+            data: ZipArchive.data(from: files),
+            reference: GoModuleReference.validated(path: "example.com/tiny", version: "v1.0.0")!
+        )
+        let vendored = archive.vendoredFiles()
+        XCTAssertEqual(vendored["tiny.go"], "package tiny\n")
+        XCTAssertNil(vendored["tiny_linux.go"])
+        XCTAssertGreaterThanOrEqual(GoModuleProxyClient.maximumArchiveBytes, 50 * 1024 * 1024)
+        XCTAssertGreaterThanOrEqual(GoModuleArchive.maximumUncompressedBytes, 160 * 1024 * 1024)
+    }
+
     func testAModuleZipFeedsTheSameHashGoWould() throws {
         let files: [String: Data] = [
             "example.com/tiny@v1.0.0/go.mod": Data("module example.com/tiny\n\ngo 1.24\n".utf8),

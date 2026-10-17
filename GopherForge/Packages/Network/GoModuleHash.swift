@@ -20,14 +20,22 @@ enum GoModuleHash {
         case nameContainsNewline(String)
     }
 
+    static func sha256Hex(_ data: Data) -> String {
+        SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    }
+
     /// `files` maps the name inside the archive to its bytes.
     static func hash1(files: [String: Data]) throws -> String {
+        try hash1(lines: files.map { (name: $0.key, sha256Hex: sha256Hex($0.value)) })
+    }
+
+    /// Same summary as `hash1(files:)`, when the bytes were hashed and dropped
+    /// one file at a time so a large module is not held whole.
+    static func hash1(lines: [(name: String, sha256Hex: String)]) throws -> String {
         var summary = Data()
-        for name in files.keys.sorted() {
-            guard !name.contains("\n") else { throw HashError.nameContainsNewline(name) }
-            let digest = SHA256.hash(data: files[name] ?? Data())
-            let hex = digest.map { String(format: "%02x", $0) }.joined()
-            summary.append(Data("\(hex)  \(name)\n".utf8))
+        for line in lines.sorted(by: { $0.name < $1.name }) {
+            guard !line.name.contains("\n") else { throw HashError.nameContainsNewline(line.name) }
+            summary.append(Data("\(line.sha256Hex)  \(line.name)\n".utf8))
         }
         return "h1:" + Data(SHA256.hash(data: summary)).base64EncodedString()
     }
