@@ -1,6 +1,124 @@
 import XCTest
 @testable import GopherForge
 
+final class GoModuleDownloadTests: XCTestCase {
+    func testUppercaseModuleInstallsWithVerifiedOriginalCaseSources() async throws {
+        let reference = GoModuleReference(path: "github.com/BurntSushi/toml", version: "v1.4.0")
+        let source = [
+            reference.archivePrefix + "go.mod": Data("module \(reference.path)\n\ngo 1.18\n".utf8),
+            reference.archivePrefix + "toml.go": Data("package toml\nfunc Answer() int { return 42 }\n".utf8),
+        ]
+        let hash = try GoModuleHash.hash1(files: source)
+        let transport = ModuleResponseTransport(responses: [
+            "/github.com/!burnt!sushi/toml/@v/v1.4.0.zip": try ZipArchive.data(from: source),
+            "/lookup/github.com/!burnt!sushi/toml@v1.4.0": Data("""
+            1
+            \(reference.path) \(reference.version) \(hash)
+            \(reference.path) \(reference.version)/go.mod h1:fixture=
+            """.utf8),
+        ])
+        let installer = GoPackageInstaller(
+            proxy: GoModuleProxyClient(transport: transport),
+            checksums: GoChecksumDatabase(transport: transport)
+        )
+        let result = try await installer.install(
+            path: reference.path, version: reference.version,
+            into: ["go.mod": "module example.com/app\n\ngo 1.18\n"]
+        )
+        XCTAssertEqual(result.verifiedHash, hash)
+        XCTAssertNotNil(result.files["vendor/github.com/BurntSushi/toml/toml.go"])
+        XCTAssertTrue(result.files["go.sum"]?.contains("github.com/BurntSushi/toml v1.4.0") == true)
+    }
+
+    func testUppercaseVersionIsEscapedForArchiveModAndChecksumRequests() async throws {
+        let reference = GoModuleReference(path: "example.com/module", version: "v1.0.0-RC1")
+        let transport = ModuleResponseTransport(responses: [
+            "/example.com/module/@v/v1.0.0-!r!c1.zip": Data(),
+            "/example.com/module/@v/v1.0.0-!r!c1.mod": Data("module example.com/module".utf8),
+            "/lookup/example.com/module@v1.0.0-!r!c1": Data("""
+            1
+            example.com/module v1.0.0-RC1 h1:module=
+            example.com/module v1.0.0-RC1/go.mod h1:mod=
+            """.utf8),
+        ])
+        let proxy = GoModuleProxyClient(transport: transport)
+        _ = try await proxy.archive(for: reference)
+        _ = try await proxy.goModFile(for: reference)
+        _ = try await GoChecksumDatabase(transport: transport).record(for: reference)
+    }
+
+    func testDownloadFailuresDoNotMisreportAnAvailableNetwork() {
+        let errors: [any Error] = [
+            GoModuleArchive.ArchiveError.tooManyFiles(4_001),
+            GoModuleArchive.ArchiveError.unreadable,
+            GoModuleArchive.ArchiveError.emptyModule,
+            GoModuleProxyClient.ProxyError.badStatus(400, "module"),
+            GoModuleProxyClient.ProxyError.malformedResponse("latest"),
+            GoChecksumDatabase.ChecksumError.badStatus(403),
+            GoChecksumDatabase.ChecksumError.noHashInResponse("module"),
+        ]
+        for error in errors {
+            let detail = GoDependencyPreparer.describe(error, path: "example.com/module")
+            XCTAssertFalse(detail.contains("needs a network"), "\(error): \(detail)")
+            XCTAssertFalse(detail.contains("Could not reach"), "\(error): \(detail)")
+        }
+        XCTAssertTrue(GoDependencyPreparer.describe(
+            GoChecksumDatabase.ChecksumError.badStatus(403), path: "module"
+        ).contains("403"))
+    }
+}
+
+private struct ModuleResponseTransport: GoHTTPTransport {
+    let responses: [String: Data]
+
+    func get(_ url: URL, limit: Int) async throws -> (Data, Int) {
+        guard let data = responses[url.path] else {
+            XCTFail("Unexpected module request: \(url.absoluteString)")
+            return (Data(), 400)
+        }
+        XCTAssertLessThanOrEqual(data.count, limit)
+        return (data, 200)
+    }
+}
+
+/// Opt-in integration check against the official services, run on an iPhone simulator.
+final class GoModuleLiveDownloadTests: XCTestCase {
+    @MainActor
+    func testStartupDownloadsVerifyAndReloadAfterCleanup() async throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["GOPHERFORGE_RUN_NETWORK_TESTS"] == "1")
+        let references = [
+            GoModuleReference(path: "github.com/BurntSushi/toml", version: "v1.4.0"),
+            GoModuleReference(path: "github.com/Masterminds/semver/v3", version: "v3.3.0"),
+        ]
+        let original = GopherForgeProject(name: "Network check", files: [
+            "go.mod": "module example.com/networkcheck\n\ngo 1.18\nrequire (\n"
+                + references.map { "\t\($0.path) \($0.version)\n" }.joined() + ")\n",
+            "main.go": "package main\nfunc main() {}\n",
+        ], entryFile: "main.go", provenance: .files())
+        let preparer = GoDependencyPreparer(
+            planError: { files, skipping in
+                references.first { reference in
+                    !skipping.contains(reference.path)
+                        && !files.keys.contains { $0.hasPrefix("vendor/\(reference.path)/") }
+                }.map { .unresolvedImport($0.path, importedBy: "example.com/networkcheck") }
+            },
+            install: { path, version, importPath, files in
+                try await GoPackageInstaller().install(path: path, version: version,
+                    into: files, neededImport: importPath).files
+            }
+        )
+        let first = try await preparer.prepare(files: original.files)
+        XCTAssertEqual(first.installed.count, 2)
+        XCTAssertTrue(first.problems.isEmpty, "\(first.problems)")
+        let cleaned = GoPackageStorage.clearingDownloadedPackages(from: original.replacingFiles(first.files))
+        XCTAssertGreaterThan(cleaned.summary.fileCount, 0)
+        let second = try await preparer.prepare(files: cleaned.project.files)
+        XCTAssertEqual(second.installed.count, 2)
+        XCTAssertTrue(second.problems.isEmpty, "\(second.problems)")
+        XCTAssertEqual(second.files, first.files)
+    }
+}
+
 /// The parts of installing a package that must be exactly right, checked
 /// without a network.
 ///

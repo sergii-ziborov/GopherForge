@@ -175,6 +175,18 @@ final class LearnFlowUITests: XCTestCase {
 
     // MARK: - Helpers
 
+    func testSettingsOffersSeparatePackageCleanupAndExcludesAnEmptyLibrary() {
+        launch(arguments: ["-GopherForgeSection", "settings", "-GopherForgeEmptyLibrary"])
+        let clear = app.buttons["settings.clearPackages"]
+        for _ in 0..<6 {
+            if clear.exists { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(clear.waitForExistence(timeout: 5))
+        XCTAssertFalse(clear.isEnabled, "there are no downloaded packages in the empty user library")
+        attachScreenshot(named: "30-package-storage-settings")
+    }
+
     /// The lab is a shelf now rather than a dropdown, so a scenario has to be
     /// opened before there is anything to run or predict.
     private func openFirstScenario() {

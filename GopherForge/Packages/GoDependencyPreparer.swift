@@ -252,6 +252,10 @@ struct GoDependencyPreparer {
             "\(path) is not a module path the proxy can resolve."
         case GoModuleProxyClient.ProxyError.notFound:
             "The proxy has no module at \(path)."
+        case let GoModuleProxyClient.ProxyError.badStatus(status, _):
+            "The Go module proxy returned HTTP \(status) for \(path). Use Retry, or check the module version."
+        case GoModuleProxyClient.ProxyError.malformedResponse:
+            "The Go module proxy returned an unreadable version response. Use Retry."
         case let GoModuleProxyClient.ProxyError.tooLarge(bytes):
             downloadTooLarge(bytes)
         case let GoHTTPTransportError.tooLarge(bytes, _):
@@ -260,14 +264,45 @@ struct GoDependencyPreparer {
             unpackedTooLarge(bytes)
         case GoChecksumDatabase.ChecksumError.notFound:
             "\(path) is not in the Go checksum database, so it cannot be verified."
+        case let GoChecksumDatabase.ChecksumError.badStatus(status):
+            "The Go checksum service returned HTTP \(status). Nothing was installed. Use Retry."
+        case GoChecksumDatabase.ChecksumError.noHashInResponse:
+            "The Go checksum service did not return checksums for this module version. Nothing was installed."
+        case GoChecksumDatabase.ChecksumError.mismatch:
+            "The download did not match the official checksum database. Nothing was installed."
+        case GoModuleArchive.ArchiveError.unreadable:
+            "The downloaded module archive is unreadable or damaged. Use Retry to download it again."
+        case let GoModuleArchive.ArchiveError.tooManyFiles(count):
+            "The module contains \(count) files. This app keeps at most \(GoModuleArchive.maximumFiles) files per module."
+        case GoModuleArchive.ArchiveError.emptyModule:
+            "The downloaded module archive contains no files. Nothing was installed."
         case let GoModuleArchive.ArchiveError.entryOutsideModule(name):
             "The archive contains a file outside the module: \(name). Nothing was installed."
+        case let error as URLError:
+            describeNetworkError(error)
         default:
             if isOutOfSpace(error) {
                 "The phone could not save the package. Free some space and use Retry."
             } else {
-                "Could not reach the Go module proxy. Installing a package needs a network."
+                "The package could not be installed. \(error.localizedDescription)"
             }
+        }
+    }
+
+    private static func describeNetworkError(_ error: URLError) -> String {
+        switch error.code {
+        case .notConnectedToInternet:
+            "GopherForge cannot access the internet. Check Wi-Fi or cellular data for the app, then use Retry."
+        case .dataNotAllowed:
+            "Cellular data is unavailable for this request. Allow cellular data for GopherForge in Settings or connect to Wi-Fi, then use Retry."
+        case .timedOut:
+            "The package service took too long to respond. Use Retry."
+        case .networkConnectionLost:
+            "The package connection was interrupted. Use Retry."
+        case .cancelled:
+            "The package download stopped. Use Retry."
+        default:
+            "The package request failed: \(error.localizedDescription)"
         }
     }
 

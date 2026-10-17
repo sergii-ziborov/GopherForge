@@ -42,7 +42,7 @@ struct GoChecksumDatabase: Sendable {
     }
 
     func record(for reference: GoModuleReference) async throws -> Record {
-        let url = baseURL.appendingPathComponent("lookup/\(reference.path)@\(reference.version)")
+        let url = baseURL.appendingPathComponent("lookup/\(reference.escapedPath)@\(reference.escapedVersion)")
         let (data, status) = try await transport.get(url, limit: GoModuleProxyClient.maximumMetadataBytes)
         switch status {
         case 200: break

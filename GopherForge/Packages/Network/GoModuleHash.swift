@@ -52,6 +52,23 @@ struct GoModuleReference: Equatable, Hashable, Sendable, Codable {
     /// the hash is computed over.
     var archivePrefix: String { "\(path)@\(version)/" }
 
+    var escapedPath: String { Self.escapeForURL(path) }
+    var escapedVersion: String { Self.escapeForURL(version) }
+
+    /// Both Go services escape capitals; archive names and go.sum keep them.
+    static func escapeForURL(_ value: String) -> String {
+        var escaped = ""
+        for character in value {
+            if character.isASCII && character.isUppercase {
+                escaped.append("!")
+                escaped.append(Character(character.lowercased()))
+            } else {
+                escaped.append(character)
+            }
+        }
+        return escaped
+    }
+
     /// Rejects what the proxy would reject anyway, before a request is made.
     ///
     /// The path is checked because it becomes a URL and then a directory name;

@@ -10,6 +10,9 @@ struct SettingsView: View {
     /// Read once when the screen appears rather than on every redraw: it walks
     /// a directory, and Settings redraws for every stepper tick.
     @State private var cacheByteCount: Int64 = 0
+    @State private var packageStorage = GoPackageStorage.Summary()
+    @State private var packageStorageError: String?
+    @State private var isConfirmingPackageCleanup = false
     @State private var isConfirmingReset = false
     @State private var libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder
     private let progress = LearningProgressStore.shared
@@ -117,6 +120,30 @@ struct SettingsView: View {
                     + "Projects and their files are untouched.")
             }
 
+            Section {
+                LabeledContent("Package source", value: ByteCountFormatter.string(
+                    fromByteCount: packageStorage.byteCount, countStyle: .file
+                ))
+                Text("\(packageStorage.projectCount) projects")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Button("Clear downloaded packages", role: .destructive) {
+                    isConfirmingPackageCleanup = true
+                }
+                .disabled(packageStorage.fileCount == 0 || workspace.isRunning
+                    || workspace.downloadProgress != nil || workspace.isClearingPackages)
+                .accessibilityIdentifier("settings.clearPackages")
+                if let packageStorageError {
+                    Text(packageStorageError)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+            } header: {
+                Text("Downloaded packages")
+            } footer: {
+                Text("Clears dependency source from all your saved projects. Your code and dependency versions stay. Packages download again when needed. Lessons and built-in Examples are excluded.")
+            }
+
             Section("About") {
                 NavigationLink {
                     AcknowledgementsView()
@@ -157,7 +184,29 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
         .onAppear { libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder }
-        .task { cacheByteCount = workspace.buildCacheByteCount }
+        .task {
+            cacheByteCount = workspace.buildCacheByteCount
+            await refreshPackageStorage()
+        }
+        .confirmationDialog(
+            "Clear downloaded packages from all your projects?",
+            isPresented: $isConfirmingPackageCleanup,
+            titleVisibility: .visible
+        ) {
+            Button("Clear downloaded packages", role: .destructive) {
+                Task {
+                    do {
+                        _ = try await workspace.clearDownloadedPackages()
+                        await refreshPackageStorage()
+                    } catch {
+                        packageStorageError = error.localizedDescription
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Your code, dependency versions, lessons and Examples stay. Building your projects will need the internet to download their packages again.")
+        }
         // Confirmed rather than immediate: this is the one action here that
         // destroys something a person spent time on.
         .confirmationDialog(
@@ -176,6 +225,15 @@ struct SettingsView: View {
 
     private var formattedCacheSize: String {
         ByteCountFormatter.string(fromByteCount: cacheByteCount, countStyle: .file)
+    }
+
+    private func refreshPackageStorage() async {
+        do {
+            packageStorage = try await workspace.downloadedPackageStorage()
+            packageStorageError = nil
+        } catch {
+            packageStorageError = error.localizedDescription
+        }
     }
 
     private var formattedSize: String {

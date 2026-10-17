@@ -62,7 +62,7 @@ struct GoExample: Identifiable, Equatable, Sendable {
             name: title,
             files: files,
             entryFile: "main.go",
-            provenance: .template()
+            provenance: .example(id: id)
         )
     }
 

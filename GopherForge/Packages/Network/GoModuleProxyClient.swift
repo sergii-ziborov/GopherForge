@@ -39,7 +39,7 @@ struct GoModuleProxyClient: Sendable {
     }
 
     func latestVersion(of path: String) async throws -> String {
-        let data = try await get(escaped(path) + "/@latest", limit: Self.maximumMetadataBytes)
+        let data = try await get(GoModuleReference.escapeForURL(path) + "/@latest", limit: Self.maximumMetadataBytes)
         guard let latest = try? JSONDecoder().decode(LatestVersion.self, from: data) else {
             throw ProxyError.malformedResponse("@latest for \(path)")
         }
@@ -49,7 +49,7 @@ struct GoModuleProxyClient: Sendable {
     /// Newest first. The proxy returns them unordered, and a version list that
     /// is not sorted makes the newest release hard to find in a long list.
     func versions(of path: String) async throws -> [String] {
-        let data = try await get(escaped(path) + "/@v/list", limit: Self.maximumMetadataBytes)
+        let data = try await get(GoModuleReference.escapeForURL(path) + "/@v/list", limit: Self.maximumMetadataBytes)
         let lines = String(decoding: data, as: UTF8.self)
             .split(whereSeparator: \.isNewline)
             .map(String.init)
@@ -59,7 +59,7 @@ struct GoModuleProxyClient: Sendable {
 
     func goModFile(for reference: GoModuleReference) async throws -> String {
         let data = try await get(
-            escaped(reference.path) + "/@v/\(reference.version).mod",
+            reference.escapedPath + "/@v/\(reference.escapedVersion).mod",
             limit: Self.maximumMetadataBytes
         )
         return String(decoding: data, as: UTF8.self)
@@ -67,7 +67,7 @@ struct GoModuleProxyClient: Sendable {
 
     func archive(for reference: GoModuleReference) async throws -> Data {
         try await get(
-            escaped(reference.path) + "/@v/\(reference.version).zip",
+            reference.escapedPath + "/@v/\(reference.escapedVersion).zip",
             limit: Self.maximumArchiveBytes
         )
     }
@@ -88,22 +88,6 @@ struct GoModuleProxyClient: Sendable {
         }
     }
 
-    /// Module paths are case-folded for the proxy: an upper-case letter becomes
-    /// `!` followed by its lower-case form, so `github.com/BurntSushi/toml`
-    /// is fetched as `github.com/!burnt!sushi/toml`. Without this, every module
-    /// with a capital letter in its path fails to resolve.
-    private func escaped(_ path: String) -> String {
-        var escaped = ""
-        for character in path {
-            if character.isUppercase {
-                escaped.append("!")
-                escaped.append(Character(character.lowercased()))
-            } else {
-                escaped.append(character)
-            }
-        }
-        return escaped
-    }
 }
 
 /// The one thing that touches the network, behind a protocol so every client

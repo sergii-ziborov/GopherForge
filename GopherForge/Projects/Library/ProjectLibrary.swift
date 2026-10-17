@@ -76,6 +76,34 @@ actor ProjectLibrary {
         try state().items.first { $0.id == id }
     }
 
+    func downloadedPackageStorage() throws -> GoPackageStorage.Summary {
+        var summary = GoPackageStorage.Summary()
+        for item in try state().items {
+            summary.include(GoPackageStorage.summary(in: item.project))
+        }
+        return summary
+    }
+
+    struct PackageCleanup: Sendable {
+        let items: [ProjectLibraryItem]
+        let summary: GoPackageStorage.Summary
+    }
+
+    /// One atomic library write; older queued autosaves cannot restore packages.
+    func clearDownloadedPackages() throws -> PackageCleanup {
+        var current = try state()
+        var summary = GoPackageStorage.Summary()
+        for index in current.items.indices {
+            let cleaned = GoPackageStorage.clearingDownloadedPackages(from: current.items[index].project)
+            guard cleaned.summary.fileCount > 0 else { continue }
+            current.items[index].project = cleaned.project
+            current.items[index].sourceRevision = (current.items[index].sourceRevision ?? 0) &+ 1
+            summary.include(cleaned.summary)
+        }
+        if summary.fileCount > 0 { try persist(current) }
+        return PackageCleanup(items: current.items, summary: summary)
+    }
+
     @discardableResult
     func record(
         project: GopherForgeProject,

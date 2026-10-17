@@ -42,6 +42,13 @@ struct GopherForgeProject: Codable, Equatable, Sendable {
                 importedAt: date
             )
         }
+
+        static func example(id: String, at date: Date = Date()) -> Provenance {
+            Provenance(
+                source: .template, owner: nil, repository: nil,
+                reference: "example:\(id)", commit: nil, importedAt: date
+            )
+        }
     }
 
     let name: String

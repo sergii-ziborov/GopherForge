@@ -33,6 +33,7 @@ final class WorkspaceModel {
     private(set) var lastResult: CompilationResult?
     private(set) var idiomFindings: [IdiomFinding] = []
     private(set) var isRunning = false
+    private(set) var isClearingPackages = false
     private(set) var runningPhase: CompilationResult.Phase?
     /// What the toolchain is doing right now, or nil between runs. A build on a
     /// phone takes seconds, and a spinner that says nothing for that long reads
@@ -110,7 +111,7 @@ final class WorkspaceModel {
     }
 
     var canRun: Bool {
-        toolchain.isReady && !isRunning && project != nil
+        toolchain.isReady && !isRunning && !isClearingPackages && project != nil
     }
 
     /// Choosing a main.go in the file tree selects that command for Run/Build.
@@ -315,7 +316,7 @@ final class WorkspaceModel {
 
     func run(_ phase: CompilationResult.Phase) async {
         commitEditorText()
-        guard let project, let projectID, !isRunning else { return }
+        guard let project, let projectID, !isRunning, !isClearingPackages else { return }
 
         isRunning = true
         runningPhase = phase
@@ -419,7 +420,7 @@ final class WorkspaceModel {
 
     /// Tries the packages Output reported, then leaves the project open either way.
     func retryPackageDownloads() async {
-        guard let project, !isRunning else { return }
+        guard let project, !isRunning, !isClearingPackages else { return }
         isRunning = true
         runningPhase = .setup
         defer {
@@ -748,6 +749,51 @@ final class WorkspaceModel {
     /// reclaimed, and so a build can be forced to happen for real.
     func clearBuildCache() {
         compiler.clearBuildCache()
+    }
+
+    enum PackageStorageError: LocalizedError {
+        case busy, unsaved
+        var errorDescription: String? {
+            switch self {
+            case .busy: "Wait for the current build or download to finish."
+            case .unsaved: "Save your project successfully before clearing downloaded packages."
+            }
+        }
+    }
+
+    func downloadedPackageStorage() async throws -> GoPackageStorage.Summary {
+        await libraryUpdated()
+        if !isRunning, downloadProgress == nil { await flush() }
+        return try await library.downloadedPackageStorage()
+    }
+
+    func clearDownloadedPackages() async throws -> GoPackageStorage.Summary {
+        guard !isRunning, downloadProgress == nil, !isClearingPackages else {
+            throw PackageStorageError.busy
+        }
+        isClearingPackages = true
+        defer { isClearingPackages = false }
+        autosave?.cancel()
+        await libraryUpdated()
+        await flush()
+        guard !hasUnsavedChanges, recoveryProject == nil else { throw PackageStorageError.unsaved }
+        let cleaned = try await library.clearDownloadedPackages()
+        if let project, let projectID,
+           let stored = cleaned.items.first(where: { $0.id == projectID }) {
+            // Use the live source in case an edit arrived while the library wrote.
+            let live = GoPackageStorage.clearingDownloadedPackages(from: project)
+            sourceRevision = max(sourceRevision, stored.sourceRevision ?? 0)
+            savedRevision = max(savedRevision, stored.sourceRevision ?? 0)
+            if live.summary.fileCount > 0 {
+                replaceFiles(with: live.project.files)
+                packageProblems = []
+                lastResult = nil
+                autosave?.cancel()
+                await flush()
+                guard !hasUnsavedChanges else { throw PackageStorageError.unsaved }
+            }
+        }
+        return cleaned.summary
     }
 
     /// Drops a vendored module the way installing added it: the `vendor/`
