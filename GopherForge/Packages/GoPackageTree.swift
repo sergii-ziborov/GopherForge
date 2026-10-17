@@ -50,6 +50,12 @@ enum GoPackageTree {
     }
 
     static func rows(in files: [String: String], expanded: Set<String> = []) -> [Row] {
+        rows(of: nodes(in: files), expanded: expanded)
+    }
+
+    /// Walks an already built package tree. Expanding a package must not parse
+    /// every vendored file again.
+    static func rows(of nodes: [Node], expanded: Set<String> = []) -> [Row] {
         var rows: [Row] = []
         func walk(_ nodes: [Node], depth: Int, parent: String) {
             for node in nodes {
@@ -66,7 +72,7 @@ enum GoPackageTree {
                 }
             }
         }
-        walk(nodes(in: files), depth: 0, parent: "")
+        walk(nodes, depth: 0, parent: "")
         return rows
     }
 

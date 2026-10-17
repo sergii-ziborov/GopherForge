@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Environment(WorkspaceModel.self) private var workspace
     @AppStorage("editorFontSize") private var fontSize: Double = 14
     @AppStorage("keepAwakeDuringBuilds") private var keepAwake = false
+    @AppStorage(AppLock.storageKey) private var requireFaceID = false
     @AppStorage(AppearanceMode.storageKey) private var appearance = AppearanceMode.system.rawValue
     /// Read once when the screen appears rather than on every redraw: it walks
     /// a directory, and Settings redraws for every stepper tick.
@@ -50,7 +51,31 @@ struct SettingsView: View {
                 Stepper(value: $fontSize, in: 11...22, step: 1) {
                     LabeledContent("Text size", value: "\(Int(fontSize)) pt")
                 }
-                Toggle("Keep the screen awake while building", isOn: $keepAwake)
+                Toggle("Keep the screen awake", isOn: $keepAwake)
+                Text("While a build or a package download is running, the screen stays on.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Toggle("Require Face ID", isOn: Binding(
+                    get: { requireFaceID },
+                    set: { enabled in
+                        guard enabled else {
+                            requireFaceID = false
+                            return
+                        }
+                        Task {
+                            if await AppLock.authenticate() {
+                                requireFaceID = true
+                            }
+                        }
+                    }
+                ))
+            } header: {
+                Text("Lock")
+            } footer: {
+                Text("When you leave GopherForge, Face ID or the device passcode is required to come back. A download keeps going underneath.")
             }
 
             Section("Toolchain") {

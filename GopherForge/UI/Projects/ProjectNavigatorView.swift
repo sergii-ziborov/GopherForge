@@ -23,6 +23,10 @@ struct ProjectNavigatorView: View {
     /// Package rows whose dependencies are showing.
     @State private var expandedPackages: Set<String> = []
     @State private var packageRemoval: GoPackageTree.Removal?
+    /// Built off the redraw. Opening a folder only walks this, it does not
+    /// scan the project again.
+    @State private var fileNodes: [ProjectFileNode] = []
+    @State private var packageNodes: [GoPackageTree.Node] = []
     @State private var isShowingPackages = false
     @State private var packageSearch = ""
     @State private var creating: Creation?
@@ -77,6 +81,9 @@ struct ProjectNavigatorView: View {
             }
         }
         .background(Color(.systemGroupedBackground))
+        .task(id: workspace.navigatorRevision) {
+            await refreshNavigatorTrees()
+        }
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
                 PackageBrowserView(
@@ -504,7 +511,22 @@ struct ProjectNavigatorView: View {
     }
 
     private var packageRows: [GoPackageTree.Row] {
-        GoPackageTree.rows(in: workspace.project?.files ?? [:], expanded: expandedPackages)
+        GoPackageTree.rows(of: packageNodes, expanded: expandedPackages)
+    }
+
+    private func refreshNavigatorTrees() async {
+        let files = workspace.project?.files ?? [:]
+        let revision = workspace.navigatorRevision
+        async let tree = Task.detached(priority: .userInitiated) {
+            ProjectNavigatorListing.tree(in: files)
+        }.value
+        async let packages = Task.detached(priority: .utility) {
+            GoPackageTree.nodes(in: files)
+        }.value
+        let built = await (tree, packages)
+        guard workspace.navigatorRevision == revision else { return }
+        fileNodes = built.0
+        packageNodes = built.1
     }
 
     private var matchingPackages: [GoVendorWriter.InstalledModule] {
@@ -517,7 +539,7 @@ struct ProjectNavigatorView: View {
 
     private var rows: [ProjectNavigatorRow] {
         ProjectNavigatorListing.rows(
-            in: workspace.project?.files ?? [:],
+            of: fileNodes,
             revealing: workspace.selectedFile,
             expanded: expandedFolders,
             collapsed: collapsedFolders

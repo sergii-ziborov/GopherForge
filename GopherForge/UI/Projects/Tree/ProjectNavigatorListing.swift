@@ -115,6 +115,17 @@ enum ProjectNavigatorListing {
         expanded: Set<String> = [],
         collapsed: Set<String> = []
     ) -> [ProjectNavigatorRow] {
+        rows(of: tree(in: files), revealing: path, expanded: expanded, collapsed: collapsed)
+    }
+
+    /// Walks an already built tree. Opening a folder uses this, so a large
+    /// project is not scanned again for a disclosure triangle.
+    static func rows(
+        of nodes: [ProjectFileNode],
+        revealing path: String? = nil,
+        expanded: Set<String> = [],
+        collapsed: Set<String> = []
+    ) -> [ProjectNavigatorRow] {
         var rows: [ProjectNavigatorRow] = []
         func walk(_ nodes: [ProjectFileNode], depth: Int) {
             for node in nodes {
@@ -132,7 +143,7 @@ enum ProjectNavigatorListing {
                 walk(node.children, depth: depth + 1)
             }
         }
-        walk(tree(in: files), depth: 0)
+        walk(nodes, depth: 0)
         return rows
     }
 }

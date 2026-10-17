@@ -14,6 +14,9 @@ final class WorkspaceModel {
     private(set) var projectID: UUID?
     private(set) var projectGeneration = 0
     private(set) var sourceRevision: UInt64 = 0
+    /// Bumps when the navigator should rebuild. A download does not bump it
+    /// on every module, or opening a folder waits on the whole project.
+    private(set) var navigatorRevision: UInt64 = 0
     private(set) var savedRevision: UInt64 = 0
     private(set) var hasUnsavedChanges = false
     private(set) var saveError: String?
@@ -31,6 +34,11 @@ final class WorkspaceModel {
     /// package already written and stops the one in flight.
     private(set) var moduleDownload: ModuleDownload?
     private var moduleDownloadCancelled = false
+    /// Files saved to disk during a download, not yet shown in the navigator.
+    private var unpublishedFiles: [String: String]?
+    /// Run and Retry write into the open project. Importing a different
+    /// repository must not overwrite it on each module.
+    private var persistDownloadsToOpenProject = false
     private var moduleAttemptName: String?
     private var moduleAttemptStarted: Date?
     private var currentModuleTask: Task<GoPackageInstaller.Result, Error>?
@@ -161,6 +169,7 @@ final class WorkspaceModel {
         self.project = project
         projectID = id
         sourceRevision = revision
+        navigatorRevision &+= 1
         savedRevision = isNew ? 0 : revision
         hasUnsavedChanges = isNew
         if recoveryProject == nil, pendingBuildRecord == nil { saveError = nil }
@@ -219,6 +228,7 @@ final class WorkspaceModel {
         )
         self.project = project
         sourceRevision &+= 1
+        navigatorRevision &+= 1
         hasUnsavedChanges = true
         refreshIdioms()
         scheduleAutosave()
@@ -246,7 +256,10 @@ final class WorkspaceModel {
     func flush() async {
         commitEditorText()
         guard let project, let projectID else { return }
-        await save(project, id: projectID, revision: sourceRevision)
+        let snapshot = unpublishedFiles.map { project.replacingFiles($0) } ?? project
+        let revision = unpublishedFiles == nil ? sourceRevision : sourceRevision &+ 1
+        if unpublishedFiles != nil { sourceRevision = revision }
+        await save(snapshot, id: projectID, revision: revision)
     }
 
     func retrySave() async {
@@ -309,7 +322,10 @@ final class WorkspaceModel {
             beginModuleDownload(title: project.name, status: "Preparing packages…")
         }
         moduleDownloadCancelled = false
+        persistDownloadsToOpenProject = true
         let vendored = await addingMissingModules(to: project, phase: phase, pattern: pattern)
+        persistDownloadsToOpenProject = false
+        publishDownloadedFiles()
         moduleDownload = nil
         if moduleDownloadCancelled {
             moduleDownloadCancelled = false
@@ -397,7 +413,10 @@ final class WorkspaceModel {
         beginModuleDownload(title: project.name, status: "Retrying packages…")
         let directory = GoPackageGraph.directory(of: project.entryFile)
         let pattern = directory.isEmpty ? "." : "./\(directory)"
+        persistDownloadsToOpenProject = true
         let vendored = await addingMissingModules(to: project, phase: .build, pattern: pattern)
+        persistDownloadsToOpenProject = false
+        publishDownloadedFiles()
         if vendored.files != project.files {
             replaceFiles(with: vendored.files)
         }
@@ -574,9 +593,21 @@ final class WorkspaceModel {
 
     /// Writes each module as it arrives, so closing the window, locking the
     /// phone, or leaving the app does not throw away what already downloaded.
+    /// Remembers modules as they arrive without publishing a new project.
+    ///
+    /// Publishing on every module rebuilt the file tree and the package graph
+    /// on the main thread, which is what froze scrolling, folder opening and
+    /// rotation for the whole download.
     private func persistDownloaded(_ files: [String: String]) {
-        guard project != nil else { return }
-        replaceFiles(with: files)
+        guard persistDownloadsToOpenProject, project != nil else { return }
+        unpublishedFiles = files
+        scheduleAutosave()
+    }
+
+    private func publishDownloadedFiles() {
+        guard let unpublishedFiles else { return }
+        self.unpublishedFiles = nil
+        replaceFiles(with: unpublishedFiles)
     }
 
     private static func problem(from failure: GoDependencyPreparer.Failure) -> PackageDownloadProblem {
@@ -705,6 +736,7 @@ final class WorkspaceModel {
         )
         self.project = updated
         sourceRevision &+= 1
+        navigatorRevision &+= 1
         hasUnsavedChanges = true
         if files[selectedFile] == nil {
             selectedFile = updated.entryFile
@@ -727,6 +759,7 @@ final class WorkspaceModel {
         highlightQuery = ""
         clearFocusedError()
         sourceRevision &+= 1
+        navigatorRevision &+= 1
         hasUnsavedChanges = true
         refreshIdioms()
         scheduleAutosave()
@@ -802,6 +835,7 @@ final class WorkspaceModel {
         )
         self.project = project
         sourceRevision &+= 1
+        navigatorRevision &+= 1
         hasUnsavedChanges = true
         if let reformatted = files[selectedFile] { editorText = reformatted }
         refreshIdioms()

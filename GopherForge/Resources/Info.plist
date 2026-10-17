@@ -72,6 +72,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Unlock GopherForge when you return to it.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Serhii Ziborov. All rights reserved.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

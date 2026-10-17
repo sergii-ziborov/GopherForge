@@ -17,6 +17,9 @@ struct ContentView: View {
     /// it — which is how a lesson could be marked complete and the course show
     /// nothing.
     @State private var learnProgress = LearnProgress()
+    @AppStorage("keepAwakeDuringBuilds") private var keepAwake = false
+    @AppStorage(AppLock.storageKey) private var requireFaceID = false
+    @State private var isLocked = false
     @State private var shareStatus: String?
     @State private var isImportingShare = false
     @State private var importedShareKeys: Set<String> = []
@@ -56,6 +59,14 @@ struct ContentView: View {
             .environment(learnProgress)
             .environment(\.duoPresentation, duoPresentation)
             .task { await workspace.prepare() }
+            .onChange(of: keepAwake, initial: true) { _, _ in updateIdleTimer() }
+            .onChange(of: workspace.isRunning) { _, _ in updateIdleTimer() }
+            .onChange(of: workspace.moduleDownload?.status) { _, _ in updateIdleTimer() }
+            .overlay {
+                if isLocked {
+                    AppLockCover(unlock: unlock)
+                }
+            }
             .onOpenURL { url in
                 Task { await consumeSharedImports(opened: url) }
             }
@@ -87,11 +98,29 @@ struct ContentView: View {
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     workspace.interruptStalledDownload()
+                    if isLocked { Task { await unlock() } }
                     Task { await consumeSharedImports(opened: nil) }
                 } else {
+                    if phase == .background, requireFaceID { isLocked = true }
+                    updateIdleTimer()
                     Task { await workspace.flush() }
                 }
             }
+    }
+
+    private func updateIdleTimer() {
+        let busy = workspace.isRunning || workspace.moduleDownload != nil
+        UIApplication.shared.isIdleTimerDisabled = keepAwake && busy
+    }
+
+    private func unlock() async {
+        guard requireFaceID else {
+            isLocked = false
+            return
+        }
+        if await AppLock.authenticate() {
+            isLocked = false
+        }
     }
 
     /// A GitHub link shared into the app is downloaded, including the modules
