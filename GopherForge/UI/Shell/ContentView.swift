@@ -61,7 +61,7 @@ struct ContentView: View {
             .task { await workspace.prepare() }
             .onChange(of: keepAwake, initial: true) { _, _ in updateIdleTimer() }
             .onChange(of: workspace.isRunning) { _, _ in updateIdleTimer() }
-            .onChange(of: workspace.moduleDownload?.status) { _, _ in updateIdleTimer() }
+            .onChange(of: workspace.downloadProgress?.status) { _, _ in updateIdleTimer() }
             .overlay {
                 if isLocked {
                     AppLockCover(unlock: unlock)
@@ -71,13 +71,38 @@ struct ContentView: View {
                 Task { await consumeSharedImports(opened: url) }
             }
             .sheet(isPresented: Binding(
-                get: { workspace.moduleDownload != nil },
+                get: { workspace.showsDownloadSheet },
                 set: { showing in
-                    if !showing { workspace.dismissModuleDownload() }
+                    if !showing { workspace.hideDownloadSheet() }
                 }
             )) {
                 ModuleDownloadSheet()
                     .environment(workspace)
+            }
+            .overlay(alignment: .bottom) {
+                if let progress = workspace.downloadProgress, !workspace.showsDownloadSheet {
+                    Button {
+                        workspace.showDownloadSheet()
+                    } label: {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                            Text(progress.status)
+                                .font(.caption)
+                                .lineLimit(1)
+                            Spacer(minLength: 0)
+                            Text("\(progress.alreadyInstalled.count + progress.installed.count)")
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(.regularMaterial, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 64)
+                    .accessibilityIdentifier("download.banner")
+                }
             }
             .overlay(alignment: .top) {
                 if let shareStatus {
@@ -109,7 +134,7 @@ struct ContentView: View {
     }
 
     private func updateIdleTimer() {
-        let busy = workspace.isRunning || workspace.moduleDownload != nil
+        let busy = workspace.isRunning || workspace.downloadProgress != nil
         UIApplication.shared.isIdleTimerDisabled = keepAwake && busy
     }
 

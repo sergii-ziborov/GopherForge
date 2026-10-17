@@ -17,6 +17,12 @@ final class WorkspaceModel {
     /// Bumps when the navigator should rebuild. A download does not bump it
     /// on every module, or opening a folder waits on the whole project.
     private(set) var navigatorRevision: UInt64 = 0
+    /// Kept on the model so rotating the phone does not rebuild these. The
+    /// navigator view is recreated on rotation and would otherwise parse the
+    /// whole project again.
+    private(set) var navigatorFileNodes: [ProjectFileNode] = []
+    private(set) var navigatorPackageNodes: [GoPackageTree.Node] = []
+    private var navigatorCacheRevision: UInt64?
     private(set) var savedRevision: UInt64 = 0
     private(set) var hasUnsavedChanges = false
     private(set) var saveError: String?
@@ -30,10 +36,10 @@ final class WorkspaceModel {
     /// phone takes seconds, and a spinner that says nothing for that long reads
     /// as a button that does not work.
     private(set) var runningStep: GoBuildProgress?
-    /// Set while repository modules are downloading. Closing it keeps every
-    /// package already written and stops the one in flight.
-    private(set) var moduleDownload: ModuleDownload?
-    private var moduleDownloadCancelled = false
+    /// Progress while packages download. Stays set if the sheet is closed, so
+    /// the work remains visible and does not stop.
+    private(set) var downloadProgress: ModuleDownload?
+    var showsDownloadSheet = false
     /// Files saved to disk during a download, not yet shown in the navigator.
     private var unpublishedFiles: [String: String]?
     /// Run and Retry write into the open project. Importing a different
@@ -318,19 +324,22 @@ final class WorkspaceModel {
         }
 
         let pattern = phase == .run || phase == .build ? selectedTargetPattern : "./..."
-        if phase != .format, phase != .setup, needsModuleDownload(project, phase: phase, pattern: pattern) {
-            beginModuleDownload(title: project.name, status: "Preparing packages…")
+        if phase == .run || phase == .build {
+            // Shown before the package graph is scanned. That scan is the long
+            // pause, and it used to happen with no window on screen.
+            beginModuleDownload(title: project.name, status: "Checking packages…", files: project.files)
+            // The sheet is a SwiftUI update. Yielding once is not enough: the
+            // scan has to wait until the next turn of the main queue, or the
+            // window appears only after the scan finishes.
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                DispatchQueue.main.async { continuation.resume() }
+            }
         }
-        moduleDownloadCancelled = false
         persistDownloadsToOpenProject = true
         let vendored = await addingMissingModules(to: project, phase: phase, pattern: pattern)
         persistDownloadsToOpenProject = false
         publishDownloadedFiles()
-        moduleDownload = nil
-        if moduleDownloadCancelled {
-            moduleDownloadCancelled = false
-            return
-        }
+        endModuleDownload()
         if vendored.files != project.files {
             replaceFiles(with: vendored.files)
         }
@@ -359,10 +368,15 @@ final class WorkspaceModel {
     /// The snapshot alone is not a buildable project: `go.mod` names modules
     /// that are not in the archive. They are vendored here, before the editor
     /// opens, so Run is not the first moment the absence shows up.
-    func dismissModuleDownload() {
-        moduleDownloadCancelled = true
-        currentModuleTask?.cancel()
-        moduleDownload = nil
+    /// Hides the list. The download keeps going and stays visible in Output
+    /// and on the banner, which opens this sheet again.
+    func hideDownloadSheet() {
+        showsDownloadSheet = false
+    }
+
+    func showDownloadSheet() {
+        guard downloadProgress != nil else { return }
+        showsDownloadSheet = true
     }
 
     /// A download that was alive when the screen slept often never resumes.
@@ -377,15 +391,17 @@ final class WorkspaceModel {
     func importGitHub(_ reference: GitHubRepositoryReference) async throws -> GopherForgeProject {
         beginModuleDownload(
             title: reference.displayName,
-            status: "Downloading \(reference.displayName)…"
+            status: "Downloading \(reference.displayName)…",
+            files: [:]
         )
         do {
             let downloaded = try await GitHubRepositoryImporter().importRepository(reference)
+            seedExistingModules(in: downloaded.files)
             let directory = GoPackageGraph.directory(of: downloaded.entryFile)
             let pattern = directory.isEmpty ? "." : "./\(directory)"
             noteDownload("Adding packages…")
             let ready = await addingMissingModules(to: downloaded, phase: .build, pattern: pattern)
-            moduleDownload = nil
+            endModuleDownload()
             if !packageProblems.isEmpty {
                 lastResult = .failure(
                     phase: .setup,
@@ -408,9 +424,9 @@ final class WorkspaceModel {
             isRunning = false
             runningPhase = nil
             runningStep = nil
-            moduleDownload = nil
+            endModuleDownload()
         }
-        beginModuleDownload(title: project.name, status: "Retrying packages…")
+        beginModuleDownload(title: project.name, status: "Retrying packages…", files: project.files)
         let directory = GoPackageGraph.directory(of: project.entryFile)
         let pattern = directory.isEmpty ? "." : "./\(directory)"
         persistDownloadsToOpenProject = true
@@ -457,7 +473,9 @@ final class WorkspaceModel {
                         packagePattern: pattern,
                         entryFile: project.entryFile
                     )
-                    let missing = compiler.missingImportPaths(phase: phase, project: snapshot)
+                    let missing = await Task.detached(priority: .userInitiated) {
+                        compiler.missingImportPaths(phase: phase, project: snapshot)
+                    }.value
                     guard let parsed = GoModParser.parse(files["go.mod"] ?? "") else {
                         return missing.first.map { .unresolvedImport($0, importedBy: project.entryFile) }
                     }
@@ -478,7 +496,6 @@ final class WorkspaceModel {
                     return nil
                 },
                 install: { path, version, files in
-                    if self.moduleDownloadCancelled { throw CancellationError() }
                     self.noteDownload("Adding \(path)…", module: path)
                     let task = Task { try await GoPackageInstaller().install(
                         path: path,
@@ -497,7 +514,7 @@ final class WorkspaceModel {
                     self.persistDownloaded(result.files)
                     return result.files
                 },
-                shouldStop: { self.moduleDownloadCancelled }
+                shouldStop: { false }
             )
             do {
                 let prepared = try await preparer.prepare(files: project.files)
@@ -527,29 +544,6 @@ final class WorkspaceModel {
         }
     }
 
-    /// True when Run has to fetch something before the compiler can start.
-    private func needsModuleDownload(
-        _ project: GopherForgeProject,
-        phase: CompilationResult.Phase,
-        pattern: String
-    ) -> Bool {
-        guard let module = GoModParser.parse(project.files["go.mod"] ?? "") else { return false }
-        if toolchain == .missing { toolchain = compiler.probe() }
-        guard let error = compiler.graphError(
-            phase: phase,
-            project: GoSourceSnapshot(
-                files: project.files,
-                packagePattern: pattern,
-                entryFile: project.entryFile
-            )
-        ), case let .unresolvedImport(importPath, _) = error else { return false }
-        switch GoRequirementMatch.resolve(importPath: importPath, module: module) {
-        case .success: return true
-        case .failure(.missingFromProject): return githubReference(of: project) != nil
-        default: return false
-        }
-    }
-
     /// Downloads the GitHub snapshot again and copies in Go files this project
     /// does not have. An earlier import stopped at a line budget and left out
     /// packages the program still imports, such as `server/fileserver`.
@@ -574,8 +568,52 @@ final class WorkspaceModel {
         )
     }
 
-    private func beginModuleDownload(title: String, status: String) {
-        moduleDownload = ModuleDownload(title: title, status: status, installed: [], failure: nil)
+    private func beginModuleDownload(title: String, status: String, files: [String: String]) {
+        let already = GoVendorWriter.installedModules(in: files)
+            .filter(\.isVendored)
+            .map(\.path)
+            .sorted()
+        downloadProgress = ModuleDownload(
+            title: title,
+            status: status,
+            alreadyInstalled: already,
+            installed: [],
+            failure: nil
+        )
+        showsDownloadSheet = true
+    }
+
+    private func seedExistingModules(in files: [String: String]) {
+        let already = GoVendorWriter.installedModules(in: files)
+            .filter(\.isVendored)
+            .map(\.path)
+            .sorted()
+        downloadProgress?.alreadyInstalled = already
+    }
+
+    /// Rebuilds the file and package trees off the main thread, and only when
+    /// the project actually changed. A cache hit returns immediately, which is
+    /// what rotation needs: the view is new, the trees are not.
+    func refreshNavigatorTreesIfNeeded() async {
+        let revision = navigatorRevision
+        if navigatorCacheRevision == revision { return }
+        let files = project?.files ?? [:]
+        async let tree = Task.detached(priority: .userInitiated) {
+            ProjectNavigatorListing.tree(in: files)
+        }.value
+        async let packages = Task.detached(priority: .utility) {
+            GoPackageTree.nodes(in: files)
+        }.value
+        let built = await (tree, packages)
+        guard navigatorRevision == revision else { return }
+        navigatorFileNodes = built.0
+        navigatorPackageNodes = built.1
+        navigatorCacheRevision = revision
+    }
+
+    private func endModuleDownload() {
+        downloadProgress = nil
+        showsDownloadSheet = false
     }
 
     private func noteDownload(_ status: String, module: String? = nil) {
@@ -584,10 +622,12 @@ final class WorkspaceModel {
             moduleAttemptName = module
             moduleAttemptStarted = Date()
         }
-        guard moduleDownload != nil else { return }
-        moduleDownload?.status = status
-        if let module, moduleDownload?.installed.contains(module) == false {
-            moduleDownload?.installed.append(module)
+        guard downloadProgress != nil else { return }
+        downloadProgress?.status = status
+        if let module,
+           downloadProgress?.alreadyInstalled.contains(module) == false,
+           downloadProgress?.installed.contains(module) == false {
+            downloadProgress?.installed.append(module)
         }
     }
 
@@ -650,9 +690,10 @@ final class WorkspaceModel {
     }
 
     private func failModuleDownload(_ message: String) {
-        guard moduleDownload != nil else { return }
-        moduleDownload?.status = "Couldn't finish"
-        moduleDownload?.failure = message
+        guard downloadProgress != nil else { return }
+        downloadProgress?.status = "Couldn't finish"
+        downloadProgress?.failure = message
+        showsDownloadSheet = true
     }
 
     private func record(

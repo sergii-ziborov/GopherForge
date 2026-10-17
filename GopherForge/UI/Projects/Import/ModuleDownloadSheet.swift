@@ -1,10 +1,12 @@
 import SwiftUI
 
 /// What the download window is showing while a repository's modules come in.
-struct ModuleDownload: Identifiable, Equatable {
-    let id = UUID()
+struct ModuleDownload: Equatable {
     var title: String
     var status: String
+    /// Vendored before this download started.
+    var alreadyInstalled: [String]
+    /// Fetched during this download.
     var installed: [String]
     var failure: String?
 }
@@ -18,7 +20,7 @@ struct ModuleDownloadSheet: View {
     var body: some View {
         NavigationStack {
             Group {
-                if let download = workspace.moduleDownload {
+                if let download = workspace.downloadProgress {
                     List {
                         Section {
                             HStack(spacing: 10) {
@@ -39,10 +41,20 @@ struct ModuleDownloadSheet: View {
                         } header: {
                             Text(download.title)
                         } footer: {
-                            Text("Already saved. You can close this and keep going.")
+                            Text("Closing this keeps the download going. Progress stays in Output.")
+                        }
+                        if !download.alreadyInstalled.isEmpty {
+                            Section("Already in this project · \(download.alreadyInstalled.count)") {
+                                ForEach(download.alreadyInstalled, id: \.self) { module in
+                                    Label(module, systemImage: "checkmark.circle")
+                                        .font(.callout)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(2)
+                                }
+                            }
                         }
                         if !download.installed.isEmpty {
-                            Section("\(download.installed.count) added") {
+                            Section("Added now · \(download.installed.count)") {
                                 ForEach(download.installed, id: \.self) { module in
                                     Label(module, systemImage: "shippingbox")
                                         .font(.callout)
@@ -58,7 +70,7 @@ struct ModuleDownloadSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { workspace.dismissModuleDownload() }
+                    Button("Close") { workspace.hideDownloadSheet() }
                 }
             }
         }

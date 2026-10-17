@@ -130,7 +130,7 @@ struct GoDependencyPreparer {
     /// `skipping` is the set of module paths that already failed. The next
     /// import should be one that is not in that set, so one failure does not
     /// hide the rest.
-    var planError: (_ files: [String: String], _ skipping: Set<String>) -> GoPackageGraph.GraphError?
+    var planError: (_ files: [String: String], _ skipping: Set<String>) async -> GoPackageGraph.GraphError?
     var install: (String, String, [String: String]) async throws -> [String: String]
     var shouldStop: () -> Bool = { false }
 
@@ -146,7 +146,7 @@ struct GoDependencyPreparer {
             if shouldStop() {
                 return Prepared(files: files, installed: installed, problems: problems)
             }
-            guard let error = planError(files, failed),
+            guard let error = await planError(files, failed),
                   case let .unresolvedImport(importPath, _) = error
             else {
                 return Prepared(files: files, installed: installed, problems: problems)
@@ -187,7 +187,15 @@ struct GoDependencyPreparer {
                 files = try await install(resolved.path, resolved.version, files)
                 installed.append(resolved.path)
             } catch is CancellationError {
-                return Prepared(files: files, installed: installed, problems: problems)
+                if shouldStop() {
+                    return Prepared(files: files, installed: installed, problems: problems)
+                }
+                problems.append(PackageDownloadProblem(
+                    module: resolved.path,
+                    reason: .notLoaded,
+                    detail: "The download of this package stopped. Retry loads it again."
+                ))
+                failed.insert(resolved.path)
             } catch {
                 let problem = Self.problem(for: error, module: "\(resolved.path)@\(resolved.version)")
                 problems.append(problem)
