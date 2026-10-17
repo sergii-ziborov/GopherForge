@@ -293,6 +293,7 @@
 		B0CD5C971694D1378F70ADCF /* JavaScriptSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C9F707DAC452A5F30A664E /* JavaScriptSyntaxHighlighter.swift */; };
 		B0F3ED14BCE04958D2FF3CA0 /* GoEnginePlannerMoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319CE698320D895B54E0CF28 /* GoEnginePlannerMoreTests.swift */; };
 		B13CC2CCA2BF2786482047FA /* GoBuildPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC23ADDF771DFDE35A2AB7D4 /* GoBuildPlannerTests.swift */; };
+		B15F6F94D131498B4258BDD9 /* GoPackageTreeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803A3862E01434DC564B51F4 /* GoPackageTreeTests.swift */; };
 		B16C01525A1A96790A7FB907 /* GoStandardLibraryIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85860C9DB30A09E6075DD92 /* GoStandardLibraryIndexTests.swift */; };
 		B1C902A976B6CDF4970F6F68 /* GoVetConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40D244F1E2AC43FA203D5D28 /* GoVetConfiguration.swift */; };
 		B25AA844419FAD17337ED5D0 /* PracticeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A80AB95CDF1B055EEE8EE3 /* PracticeCatalog.swift */; };
@@ -374,6 +375,7 @@
 		E99008ED17768BB3E73CF2BF /* GoExampleProjectLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDF7EB685463C38ACF85C0C /* GoExampleProjectLedger.swift */; };
 		E9DEB09084A62AD1EED46919 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7534C762E1439ED0B3E80A6D /* SettingsView.swift */; };
 		EA0228BE65C2E577EE341226 /* CourseUnitConcurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F6C546A00EEDB8B97D3 /* CourseUnitConcurrency.swift */; };
+		EA79DE4B6BD731D522206BA7 /* GoPackageTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E7648F89033C2F1AF25E3F /* GoPackageTree.swift */; };
 		EB012D95E5012B0996E7930B /* GoTestPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EADEEA1AE3089E496F183C88 /* GoTestPlanner.swift */; };
 		EBA151832EA458A6843C57D2 /* ConcurrencyTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6E621B3F5AFC84B5CCC083 /* ConcurrencyTimelineView.swift */; };
 		EBC8FD8D6906A4C4BE44F23F /* CodeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFAC6D84921E5D734815B48 /* CodeEditorView.swift */; };
@@ -673,6 +675,7 @@
 		7472AFE8191AFFFF497C44D8 /* GopherForgeProjectDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GopherForgeProjectDocument.swift; sourceTree = "<group>"; };
 		74B9798883C6B8861696905D /* 1.1-publication.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1-publication.json"; sourceTree = "<group>"; };
 		7534C762E1439ED0B3E80A6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		75E7648F89033C2F1AF25E3F /* GoPackageTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPackageTree.swift; sourceTree = "<group>"; };
 		76391BE490F2230C009746A4 /* GoProgramRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoProgramRunner.swift; sourceTree = "<group>"; };
 		767B39A0F010BB85DC68480F /* ConcurrencyLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyLabView.swift; sourceTree = "<group>"; };
 		76A47211ECD3C721CF4D1143 /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
@@ -691,6 +694,7 @@
 		7EFEFC449087B51E7F1ACB8E /* ProjectArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectArchive.swift; sourceTree = "<group>"; };
 		7F05D836688B793C4B633207 /* GoExampleProjectWordCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleProjectWordCount.swift; sourceTree = "<group>"; };
 		7FDE23AED7F54C03980924DC /* site-1.1-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-1.1-lesson.png"; sourceTree = "<group>"; };
+		803A3862E01434DC564B51F4 /* GoPackageTreeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPackageTreeTests.swift; sourceTree = "<group>"; };
 		8140C2A77F38DA2A63DAC95A /* GoDiagnosticParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoDiagnosticParserTests.swift; sourceTree = "<group>"; };
 		81638D6AB5003A9F9289A0D7 /* 1.1.1-learning-checks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.1-learning-checks.json"; sourceTree = "<group>"; };
 		827FBE2744D63FE43EDE083E /* ProjectLibraryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLibraryRow.swift; sourceTree = "<group>"; };
@@ -1102,6 +1106,7 @@
 				1A76B986623B2FF427B4659F /* GoModParserTests.swift */,
 				C99EBD76E6143949C3147BF6 /* GoPackageCatalogTests.swift */,
 				D3AA380AA28E196E308D4FC7 /* GoPackageInstallTests.swift */,
+				803A3862E01434DC564B51F4 /* GoPackageTreeTests.swift */,
 				351ADE9262011F5446942A4D /* GoSemanticVersionTests.swift */,
 				EF10CC3AD5737930B956D5F3 /* GoVendorWriterTests.swift */,
 				1C63582A8B9FC4A343BB745A /* SourceFileLimitTests.swift */,
@@ -2338,6 +2343,7 @@
 				1190886B84701D01A0650C5A /* GoPackageCatalog.swift */,
 				676B0B01AA92A29C61B94C72 /* GoPackageInsight.swift */,
 				DDC1BA07699F5CF30C3318EF /* GoPackageInstaller.swift */,
+				75E7648F89033C2F1AF25E3F /* GoPackageTree.swift */,
 				C0F00882F004B0260E0A3FA8 /* GoSemanticVersion.swift */,
 				ACC10F84520ED09200E0CF6F /* GoVendorWriter.swift */,
 				F95448A8D7C0FC64BBF5B552 /* ZipArchive.swift */,
@@ -2691,6 +2697,7 @@
 				80521EAA2C5EF044332B7C98 /* GoPackageInsight.swift in Sources */,
 				0644807D818BEE86194230A0 /* GoPackageInstaller.swift in Sources */,
 				C54E8F3C1AA748CD1220E1D4 /* GoPackageSearchClient.swift in Sources */,
+				EA79DE4B6BD731D522206BA7 /* GoPackageTree.swift in Sources */,
 				BF641063FCE443823063CA51 /* GoPhaseRunner.swift in Sources */,
 				551EF6B456A937497E320192 /* GoPlanFailureReader.swift in Sources */,
 				051818DEE9E3FFCC736C1261 /* GoProgramArtifacts.swift in Sources */,
@@ -2900,6 +2907,7 @@
 				E7C84628FD92C2E35CEA4BCF /* GoPackageCatalogTests.swift in Sources */,
 				AD590EA43CFED84D63C11491 /* GoPackageGraphTests.swift in Sources */,
 				BCD111A4CCB02C445F61D09D /* GoPackageInstallTests.swift in Sources */,
+				B15F6F94D131498B4258BDD9 /* GoPackageTreeTests.swift in Sources */,
 				D1AF19B58758C7A9C3B0F353 /* GoPhaseRunnerTests.swift in Sources */,
 				628D8DA08442BD1FEF11A02D /* GoPlanFailureReaderTests.swift in Sources */,
 				C548CA170BD6D77C71ADA525 /* GoProgramArtifactsTests.swift in Sources */,

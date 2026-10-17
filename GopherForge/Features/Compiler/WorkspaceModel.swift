@@ -635,8 +635,17 @@ final class WorkspaceModel {
     /// Drops a vendored module the way installing added it: the `vendor/`
     /// tree, the `require` line and the checksums, in one write.
     func removePackage(_ modulePath: String) {
-        guard let files = project?.files else { return }
-        replaceFiles(with: GoVendorWriter.remove(modulePath: modulePath, from: files))
+        removePackages([modulePath])
+    }
+
+    /// Drops several modules in one write. Used when a package's dependencies
+    /// are not imported by anything that will remain.
+    func removePackages(_ modulePaths: [String]) {
+        guard var files = project?.files else { return }
+        for path in modulePaths {
+            files = GoVendorWriter.remove(modulePath: path, from: files)
+        }
+        replaceFiles(with: files)
     }
 
     /// Replaces the whole file set, which is what installing a package does.

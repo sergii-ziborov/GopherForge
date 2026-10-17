@@ -20,6 +20,9 @@ struct ProjectNavigatorView: View {
     @State private var expandedFolders: Set<String> = []
     /// Folders on that path which the reader closed.
     @State private var collapsedFolders: Set<String> = []
+    /// Package rows whose dependencies are showing.
+    @State private var expandedPackages: Set<String> = []
+    @State private var packageRemoval: GoPackageTree.Removal?
     @State private var isShowingPackages = false
     @State private var packageSearch = ""
     @State private var creating: Creation?
@@ -160,6 +163,48 @@ struct ProjectNavigatorView: View {
         } message: {
             Text("This removes it from this project.")
         }
+        .confirmationDialog(
+            packageRemovalTitle,
+            isPresented: Binding(
+                get: { packageRemoval != nil },
+                set: { if !$0 { packageRemoval = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Remove package", role: .destructive) {
+                guard let packageRemoval else { return }
+                workspace.removePackage(packageRemoval.root)
+                self.packageRemoval = nil
+            }
+            if packageRemoval?.exclusiveDependents.isEmpty == false {
+                Button("Remove package and dependencies", role: .destructive) {
+                    guard let packageRemoval else { return }
+                    workspace.removePackages(packageRemoval.all)
+                    self.packageRemoval = nil
+                }
+            }
+            Button("Cancel", role: .cancel) { packageRemoval = nil }
+        } message: {
+            Text(packageRemovalMessage)
+        }
+    }
+
+    private var packageRemovalTitle: String {
+        let name = packageRemoval?.root.split(separator: "/").last.map(String.init) ?? "package"
+        guard let count = packageRemoval?.exclusiveDependents.count, count > 0 else {
+            return "Remove \(name)?"
+        }
+        return "Remove \(name) and \(count) \(count == 1 ? "dependency" : "dependencies") only it uses?"
+    }
+
+    private var packageRemovalMessage: String {
+        guard let packageRemoval, !packageRemoval.exclusiveDependents.isEmpty else {
+            return "This takes the package out of the project."
+        }
+        let names = packageRemoval.exclusiveDependents.map {
+            $0.split(separator: "/").last.map(String.init) ?? $0
+        }
+        return "Also only used here: \(names.joined(separator: ", "))."
     }
 
     // MARK: - Tree
@@ -289,23 +334,8 @@ struct ProjectNavigatorView: View {
             }
             .accessibilityIdentifier(AccessibilityID.addPackage)
 
-            ForEach(packages) { module in
-                InstalledPackageRow(module: module)
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            workspace.removePackage(module.path)
-                        } label: {
-                            Label("Remove", systemImage: "trash")
-                        }
-                        .accessibilityIdentifier(AccessibilityID.packageRemove)
-                    }
-                    .contextMenu {
-                        Button(role: .destructive) {
-                            workspace.removePackage(module.path)
-                        } label: {
-                            Label("Remove \(module.displayName)", systemImage: "trash")
-                        }
-                    }
+            ForEach(packageRows) { row in
+                packageRow(row)
             }
         } header: {
             Text("Packages")
@@ -314,6 +344,59 @@ struct ProjectNavigatorView: View {
                 Text("Dependencies belong here, not in the file tree. "
                     + "Add one to vendor it into this project.")
             }
+        }
+    }
+
+    private func packageRow(_ row: GoPackageTree.Row) -> some View {
+        HStack(spacing: 6) {
+            if row.hasChildren {
+                Button {
+                    if expandedPackages.contains(row.module.path) {
+                        expandedPackages.remove(row.module.path)
+                    } else {
+                        expandedPackages.insert(row.module.path)
+                    }
+                } label: {
+                    Image(systemName: expandedPackages.contains(row.module.path) ? "chevron.down" : "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 12)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(
+                    expandedPackages.contains(row.module.path)
+                        ? "Collapse \(row.module.displayName)"
+                        : "Expand \(row.module.displayName)"
+                )
+            } else {
+                Color.clear.frame(width: 12, height: 1)
+            }
+            InstalledPackageRow(module: row.module)
+        }
+        .padding(.leading, CGFloat(row.depth) * 14)
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                askToRemove(row.module.path)
+            } label: {
+                Label("Remove", systemImage: "trash")
+            }
+            .accessibilityIdentifier(AccessibilityID.packageRemove)
+        }
+        .contextMenu {
+            Button(role: .destructive) {
+                askToRemove(row.module.path)
+            } label: {
+                Label("Remove \(row.module.displayName)", systemImage: "trash")
+            }
+        }
+    }
+
+    private func askToRemove(_ path: String) {
+        let removal = GoPackageTree.removal(of: path, in: workspace.project?.files ?? [:])
+        if removal.exclusiveDependents.isEmpty {
+            workspace.removePackage(path)
+        } else {
+            packageRemoval = removal
         }
     }
 
@@ -418,6 +501,10 @@ struct ProjectNavigatorView: View {
 
     private var packages: [GoVendorWriter.InstalledModule] {
         GoVendorWriter.installedModules(in: workspace.project?.files ?? [:])
+    }
+
+    private var packageRows: [GoPackageTree.Row] {
+        GoPackageTree.rows(in: workspace.project?.files ?? [:], expanded: expandedPackages)
     }
 
     private var matchingPackages: [GoVendorWriter.InstalledModule] {
