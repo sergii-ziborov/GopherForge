@@ -212,6 +212,27 @@ final class WasmGoCompiler: @unchecked Sendable {
         )
     }
 
+    /// Why this snapshot cannot be planned yet, or nil when it can.
+    ///
+    /// Used to decide whether a missing import should be vendored before the
+    /// real build. A missing toolchain returns nil so the build itself can
+    /// report that, rather than this check pretending the project is fine.
+    func graphError(phase: CompilationResult.Phase, project: GoSourceSnapshot) -> GoPackageGraph.GraphError? {
+        guard let layout = locator.resolve() else { return nil }
+        do {
+            _ = try planner(for: layout, project: project).plan(
+                phase: phase,
+                files: project.files,
+                packagePattern: project.packagePattern
+            )
+            return nil
+        } catch let error as GoPackageGraph.GraphError {
+            return error
+        } catch {
+            return nil
+        }
+    }
+
     private func planner(
         for layout: GoToolchainLocator.Layout,
         project: GoSourceSnapshot

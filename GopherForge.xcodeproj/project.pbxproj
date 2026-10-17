@@ -50,6 +50,7 @@
 		1972594CFD2BB5972DECA930 /* GoRuntimeFailureReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F0D18668A801923C4DD296 /* GoRuntimeFailureReader.swift */; };
 		19896A48E0344E2BDC982801 /* GoTestBinaryRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469A377027A8E69DB975DFD7 /* GoTestBinaryRunner.swift */; };
 		19AD4F3F7F8E0E2316BBF9F2 /* GameCenterAvailabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2AE8BEDDA8B4001297915 /* GameCenterAvailabilityTests.swift */; };
+		19B6025F00266EFE41BFC94B /* GoDependencyPreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324AE672BEFA31B7782F1003 /* GoDependencyPreparer.swift */; };
 		1A72F05F89BC300ADB73166D /* GitHubRepositoryReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01AC94504F2A9FC0CB08EA4 /* GitHubRepositoryReferenceTests.swift */; };
 		1C2A87493EE8AD288F7D5BB8 /* GopherForgeProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C2DF51A4A5A45A489334B6 /* GopherForgeProject.swift */; };
 		1CCE7730EADC046DF1534F3E /* GoStepArtifactCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34431DF91777869CFA7B47A3 /* GoStepArtifactCacheTests.swift */; };
@@ -130,6 +131,7 @@
 		4CC65E0A2A63CFE4638648E0 /* GoExampleLibraryProjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5870E5353AD9A751652A873F /* GoExampleLibraryProjects.swift */; };
 		4CF4FE1064D717ED2FBE5BC0 /* ConcurrencyTimelineLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B47C2BFEE16EA3B61E67969 /* ConcurrencyTimelineLayoutTests.swift */; };
 		4D972F202DF1759E7624CBEA /* WasmSandboxResourceLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA8411FC2782F4D0A93303 /* WasmSandboxResourceLimiter.swift */; };
+		4E0AB1E7FB732E5003BC6959 /* GoDependencyPreparerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE85C1305AF792D3BA11A8B /* GoDependencyPreparerTests.swift */; };
 		4EDC95C225AAE5DFBA3C017A /* LessonHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA195115ED15FB595D2BB5DF /* LessonHint.swift */; };
 		4FF8E6C09FF30132128AECA6 /* GoBuildConstraintTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BACB382DF268F20D0E5A370 /* GoBuildConstraintTests.swift */; };
 		50AC3C866324C9618290B726 /* ConcurrencyTraceReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCF73520646FAE9E1B42DF4 /* ConcurrencyTraceReader.swift */; };
@@ -263,6 +265,7 @@
 		A1AEC89221A735491BA134E7 /* GameCenterServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C39BE38B5D97C5A13530B8D /* GameCenterServiceTests.swift */; };
 		A236EB38C780B111388EBA34 /* GitHubRepositoryReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9A93DB7A5F3608B6EFAB03 /* GitHubRepositoryReference.swift */; };
 		A37600E625B2D450D25D6D68 /* GoExampleLibraryGraphicsMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8273C1DAE685FE8E87F7B6 /* GoExampleLibraryGraphicsMore.swift */; };
+		A3A1E0E00A66DDFD9621DD8C /* ProjectNavigatorListing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B4A3EE762E7374713CF227 /* ProjectNavigatorListing.swift */; };
 		A3B9F1BAA3A6C7735AE5525E /* WorkspacePaneRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5B823F1B0D6E38D8DC2676 /* WorkspacePaneRoutingTests.swift */; };
 		A3D46ACA67AB04BBD89FE3F1 /* GoModuleHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB893CF511276D54342074A /* GoModuleHash.swift */; };
 		A57F48471BBD50E38CCD479E /* LessonEditorCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23223EFEA3152E7F97E74294 /* LessonEditorCard.swift */; };
@@ -552,6 +555,7 @@
 		31DE4275A698C0C1537F9A4F /* TestRepoRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRepoRoot.swift; sourceTree = "<group>"; };
 		3224AE7EAD387C726E705613 /* site-preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-preview.png"; sourceTree = "<group>"; };
 		322EC191ADE37BECA00B87C0 /* GoRuntimeFailureReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoRuntimeFailureReaderTests.swift; sourceTree = "<group>"; };
+		324AE672BEFA31B7782F1003 /* GoDependencyPreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoDependencyPreparer.swift; sourceTree = "<group>"; };
 		3287A4EBB3E2BAEAB3646C0D /* 00-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "00-code.png"; sourceTree = "<group>"; };
 		338011E88D8889A515A6A1E0 /* LessonHintCatalogMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonHintCatalogMore.swift; sourceTree = "<group>"; };
 		34431DF91777869CFA7B47A3 /* GoStepArtifactCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoStepArtifactCacheTests.swift; sourceTree = "<group>"; };
@@ -791,6 +795,7 @@
 		ACA09EE8D0DF200905A14D8B /* GoTestOutputParserMoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoTestOutputParserMoreTests.swift; sourceTree = "<group>"; };
 		ACC10F84520ED09200E0CF6F /* GoVendorWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoVendorWriter.swift; sourceTree = "<group>"; };
 		ACD680145705487D9C5C95C8 /* SourceFileKindTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFileKindTests.swift; sourceTree = "<group>"; };
+		ACE85C1305AF792D3BA11A8B /* GoDependencyPreparerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoDependencyPreparerTests.swift; sourceTree = "<group>"; };
 		ADE4CAB7BECE13FBB9A586E2 /* GopherForgeProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GopherForgeProjectTests.swift; sourceTree = "<group>"; };
 		AE0F825675EE403BFD311B43 /* MyProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProjectsView.swift; sourceTree = "<group>"; };
 		AEEAB723D3AE6960A79505C6 /* CourseUnitCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitCollections.swift; sourceTree = "<group>"; };
@@ -814,6 +819,7 @@
 		B49D2A6EAF733C1FBC33A43B /* QuizCatalogConcurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizCatalogConcurrency.swift; sourceTree = "<group>"; };
 		B50F3CFE663E17D8721EBD90 /* AchievementCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementCatalog.swift; sourceTree = "<group>"; };
 		B53C4B90ECA432A86F6A3A53 /* CoursePathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursePathView.swift; sourceTree = "<group>"; };
+		B5B4A3EE762E7374713CF227 /* ProjectNavigatorListing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectNavigatorListing.swift; sourceTree = "<group>"; };
 		B60D336E4D3CB9E8261947AD /* GoExampleLibraryStdlib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibraryStdlib.swift; sourceTree = "<group>"; };
 		B64EA13829BF2EC540029505 /* 03-course.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-course.png"; sourceTree = "<group>"; };
 		B6EB89D20EB8653F24D9FEC0 /* review-matching-21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "review-matching-21.png"; sourceTree = "<group>"; };
@@ -1087,6 +1093,7 @@
 		0CEDCDB29EF63BD0AD4CF8A6 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				ACE85C1305AF792D3BA11A8B /* GoDependencyPreparerTests.swift */,
 				1A76B986623B2FF427B4659F /* GoModParserTests.swift */,
 				C99EBD76E6143949C3147BF6 /* GoPackageCatalogTests.swift */,
 				D3AA380AA28E196E308D4FC7 /* GoPackageInstallTests.swift */,
@@ -1516,6 +1523,14 @@
 			path = "app-store";
 			sourceTree = "<group>";
 		};
+		665C7E41FA9F4FEE5203ACC8 /* Tree */ = {
+			isa = PBXGroup;
+			children = (
+				B5B4A3EE762E7374713CF227 /* ProjectNavigatorListing.swift */,
+			);
+			path = Tree;
+			sourceTree = "<group>";
+		};
 		6856DB152FBB89ED2EB11FA4 /* website */ = {
 			isa = PBXGroup;
 			children = (
@@ -1738,6 +1753,7 @@
 				5E45387C0000AE318DDE9051 /* ProjectOrganizerSheet.swift */,
 				A52E4F19F9B386E05EF2CD6B /* ProjectsHomeView.swift */,
 				69926E390E9CD5816DB0A905 /* ProjectTemplateStyle.swift */,
+				665C7E41FA9F4FEE5203ACC8 /* Tree */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2302,6 +2318,7 @@
 		FEA29A2B2C796270CB24E400 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				324AE672BEFA31B7782F1003 /* GoDependencyPreparer.swift */,
 				EC1FC461CF3BD355C35AEDEA /* GoModuleArchive.swift */,
 				1190886B84701D01A0650C5A /* GoPackageCatalog.swift */,
 				676B0B01AA92A29C61B94C72 /* GoPackageInsight.swift */,
@@ -2623,6 +2640,7 @@
 				1D6F092BB742A65AF4C3F0E6 /* GoConcept.swift in Sources */,
 				4261473D692DD98BFBE7E446 /* GoConceptTagger.swift in Sources */,
 				9F886CF42630B3C1ABD16B1F /* GoCourseCatalog.swift in Sources */,
+				19B6025F00266EFE41BFC94B /* GoDependencyPreparer.swift in Sources */,
 				D161F209CBB5A2FB300607A5 /* GoDiagnostic.swift in Sources */,
 				75B95680EBA551A24ECE4888 /* GoDiagnosticParser.swift in Sources */,
 				1EB6D44BEA7518794111E251 /* GoExample.swift in Sources */,
@@ -2760,6 +2778,7 @@
 				F89DDBF3C6A84BF97D29B4C9 /* ProjectLibraryItem.swift in Sources */,
 				5B0FE6F7FC29B5817C9A7754 /* ProjectLibraryLocation.swift in Sources */,
 				3333C0C2DFB67475E0A03781 /* ProjectLibraryRow.swift in Sources */,
+				A3A1E0E00A66DDFD9621DD8C /* ProjectNavigatorListing.swift in Sources */,
 				6BB42036D9B3B049282D4E26 /* ProjectNavigatorView.swift in Sources */,
 				A647E27821A36BCB820174DB /* ProjectOrganizerSheet.swift in Sources */,
 				5583EDE98F26417AEA2E4D12 /* ProjectTemplate.swift in Sources */,
@@ -2852,6 +2871,7 @@
 				4225D02C78976036CA68FEB4 /* GoBuildProgressTests.swift in Sources */,
 				657A7F5FAE0EC48DA8E8320F /* GoConceptCatalogTests.swift in Sources */,
 				0C08804E88C79C803679645B /* GoConceptTaggerTests.swift in Sources */,
+				4E0AB1E7FB732E5003BC6959 /* GoDependencyPreparerTests.swift in Sources */,
 				55E625D5DDE44A2CC771CCC0 /* GoDiagnosticParserMoreTests.swift in Sources */,
 				0675899C3208AC24ECC3064C /* GoDiagnosticParserTests.swift in Sources */,
 				B0F3ED14BCE04958D2FF3CA0 /* GoEnginePlannerMoreTests.swift in Sources */,
@@ -2962,7 +2982,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3074,7 +3094,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3191,7 +3211,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3220,7 +3240,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3248,7 +3268,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3270,7 +3290,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

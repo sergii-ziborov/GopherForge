@@ -102,19 +102,36 @@ final class GitHubRepositoryImporterTests: XCTestCase {
         }
     }
 
-    /// A binary named like a document is still a binary, and putting one in a
-    /// text view helps nobody.
-    func testAFileOverTheLineBudgetIsDropped() throws {
+    /// Notes past the reading budget are dropped. Go source is kept past that
+    /// budget, because generated files are how a real module compiles, up to
+    /// the higher ceiling that still refuses an unbounded file.
+    func testGoSourceSurvivesTheReadingBudgetAndNotesDoNot() throws {
         let long = (0..<SourceFileLimit.maximumLines + 1).map { "// \($0)" }.joined(separator: "\n")
         let data = try archive([
             "main.go": "package main\n\nfunc main() {}\n",
             "huge.go": long,
+            "NOTES.md": long,
         ])
 
         let project = try importer.project(fromArchive: data, reference: reference)
 
-        XCTAssertNil(project.files["huge.go"])
+        XCTAssertNotNil(project.files["huge.go"])
+        XCTAssertNil(project.files["NOTES.md"])
         XCTAssertNotNil(project.files["main.go"])
+    }
+
+    /// Documentation sorts before `cmd/`, and a budget spent on it used to
+    /// delete the program. Go files are kept first.
+    func testGoFilesAreKeptAheadOfEarlierDocumentation() {
+        let notes = (0..<5).map { "docs/note\($0).md" }
+        var entries: [String: Data] = [:]
+        for path in notes { entries[path] = Data("# \n".utf8) }
+        entries["cmd/memos/main.go"] = Data("package main\n".utf8)
+        entries["go.mod"] = Data("module m\n".utf8)
+
+        let kept = GitHubRepositoryImporter.keptFiles(in: entries, limit: 2)
+
+        XCTAssertEqual(Set(kept.keys), ["cmd/memos/main.go", "go.mod"])
     }
 
     func testBinariesAreDropped() {

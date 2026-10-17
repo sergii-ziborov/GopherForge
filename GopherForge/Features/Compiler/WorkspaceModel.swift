@@ -286,9 +286,6 @@ final class WorkspaceModel {
     func run(_ phase: CompilationResult.Phase) async {
         commitEditorText()
         guard let project, let projectID, !isRunning else { return }
-        let revision = sourceRevision
-        let opening = projectGeneration
-        let sourceReady = remembering
 
         isRunning = true
         runningPhase = phase
@@ -298,11 +295,101 @@ final class WorkspaceModel {
             runningStep = nil
         }
 
-        let snapshot = project.snapshot(
-            packagePattern: phase == .run || phase == .build ? selectedTargetPattern : "./...",
+        let pattern = phase == .run || phase == .build ? selectedTargetPattern : "./..."
+        let ready: GopherForgeProject
+        do {
+            ready = try await addingMissingModules(to: project, phase: phase, pattern: pattern)
+        } catch let failure as GoDependencyPreparer.Failure {
+            if failure.files != project.files {
+                replaceFiles(with: failure.files)
+            }
+            await record(
+                .failure(phase: .setup, detail: failure.detail),
+                phase: phase,
+                projectID: projectID
+            )
+            return
+        } catch {
+            await record(
+                .failure(phase: .setup, detail: error.localizedDescription),
+                phase: phase,
+                projectID: projectID
+            )
+            return
+        }
+
+        let revision = sourceRevision
+        let opening = projectGeneration
+        let sourceReady = remembering
+        let snapshot = ready.snapshot(
+            packagePattern: pattern,
             workspaceReuseKey: projectID.uuidString
         )
         let result = await execute(phase: phase, snapshot: snapshot, projectID: projectID)
+        await record(
+            result,
+            phase: phase,
+            projectID: projectID,
+            revision: revision,
+            opening: opening,
+            sourceReady: sourceReady
+        )
+    }
+
+    /// Vendors modules named in `go.mod` that the selected build imports and
+    /// does not yet have. The compiler never sees the network; this does,
+    /// once, and then the source is part of the project.
+    private func addingMissingModules(
+        to project: GopherForgeProject,
+        phase: CompilationResult.Phase,
+        pattern: String
+    ) async throws -> GopherForgeProject {
+        guard phase != .format, phase != .setup else { return project }
+        guard let parsed = GoModParser.parse(project.files["go.mod"] ?? ""),
+              !parsed.requirements.isEmpty
+        else {
+            return project
+        }
+
+        let preparer = GoDependencyPreparer(
+            planError: { [compiler] files in
+                compiler.graphError(
+                    phase: phase,
+                    project: GoSourceSnapshot(
+                        files: files,
+                        packagePattern: pattern,
+                        entryFile: project.entryFile
+                    )
+                )
+            },
+            install: { [weak self] path, version, files in
+                await MainActor.run {
+                    self?.runningStep = GoBuildProgress(label: "Add \(path)", step: 1, totalSteps: 1)
+                }
+                let result = try await GoPackageInstaller().install(
+                    path: path,
+                    version: version,
+                    into: files
+                )
+                return result.files
+            }
+        )
+        let prepared = try await preparer.prepare(files: project.files)
+        guard prepared.files != project.files else { return project }
+        replaceFiles(with: prepared.files)
+        return self.project ?? project
+    }
+
+    private func record(
+        _ result: CompilationResult,
+        phase: CompilationResult.Phase,
+        projectID: UUID,
+        revision: UInt64? = nil,
+        opening: Int? = nil,
+        sourceReady: Task<Void, Never>? = nil
+    ) async {
+        let revision = revision ?? sourceRevision
+        let opening = opening ?? projectGeneration
         if self.projectID == projectID, sourceRevision == revision, projectGeneration == opening {
             lastResult = result
             resultGeneration += 1

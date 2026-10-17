@@ -27,7 +27,10 @@ struct ProjectCompatibilityReport: Equatable, Sendable {
         let hasVendor = project.files.keys.contains { $0.hasPrefix("vendor/") }
 
         if requirementCount > 0, !hasVendor {
-            notes.append("Module downloads are off in this build; vendor the dependencies to build offline.")
+            notes.append(
+                "Dependencies are not vendored yet. Building downloads the modules this "
+                    + "program imports, then compiles offline."
+            )
         }
         if usesCgo(project) {
             notes.append("cgo is not supported: this package needs a native C toolchain.")

@@ -130,14 +130,48 @@ final class ProjectNavigatorListingTests: XCTestCase {
             "a/b/.gopherforge-folder": "",
             "a/b/readme.md": "hello",
         ]
-        let groups = ProjectNavigatorListing.fileGroups(in: files)
-        XCTAssertEqual(groups.map(\.directory), ["", "a", "a/b"])
-        XCTAssertEqual(groups.first { $0.directory == "a/b" }?.paths, ["a/b/readme.md"])
+        let roots = ProjectNavigatorListing.tree(in: files)
+        let folderA = roots.first { $0.path == "a" }
+        XCTAssertEqual(folderA?.children.map(\.name), ["b"])
+        XCTAssertEqual(folderA?.children.first?.children.map(\.name), ["readme.md"])
+        XCTAssertFalse(ProjectNavigatorListing.rows(in: files).contains { $0.name.contains("gopherforge-folder") })
         XCTAssertTrue(ProjectFileSearch.results(query: "gopherforge-folder", in: files).isEmpty)
     }
 
+    func testADeepPathIsNestedUnderEachFolderName() {
+        let roots = ProjectNavigatorListing.tree(in: [
+            "SECURITY.md": "",
+            "go.mod": "module m\n",
+            ".agents/skills/release/SKILL.md": "# skill\n",
+            ".agents/skills/release/references/release-notes.md": "# notes\n",
+        ])
+
+        let agents = roots.first { $0.name == ".agents" }
+        XCTAssertEqual(agents?.isFolder, true)
+        XCTAssertEqual(agents?.children.map(\.name), ["skills"])
+        let release = agents?.children.first?.children.first
+        XCTAssertEqual(release?.name, "release")
+        XCTAssertEqual(
+            Set(release?.children.map(\.name) ?? []),
+            ["SKILL.md", "references"]
+        )
+        let notes = release?.children.first { $0.name == "references" }?.children.map(\.name)
+        XCTAssertEqual(notes, ["release-notes.md"])
+
+        let names = ProjectNavigatorListing.rows(in: [
+            ".agents/skills/release/SKILL.md": "",
+        ]).map(\.name)
+        XCTAssertFalse(names.contains { $0.contains("/") })
+        XCTAssertEqual(
+            ProjectNavigatorListing.rows(in: [
+                ".agents/skills/release/SKILL.md": "",
+            ]).map(\.depth),
+            [0, 1, 2, 3]
+        )
+    }
+
     func testVendorFilesAreNotGroupedInTheTree() {
-        let groups = ProjectNavigatorListing.fileGroups(in: [
+        let rows = ProjectNavigatorListing.rows(in: [
             "main.go": "package main\n",
             "go.mod": "module playground\n",
             "vendor/modules.txt": "# github.com/gin-gonic/gin v1.10.0\n",
@@ -145,8 +179,8 @@ final class ProjectNavigatorListingTests: XCTestCase {
             "vendor/github.com/gin-gonic/gin/context.go": "package gin\n",
         ])
 
-        XCTAssertEqual(Set(groups.flatMap(\.paths)), ["main.go", "go.mod"])
-        XCTAssertFalse(groups.contains { $0.directory.contains("vendor") })
+        XCTAssertEqual(Set(rows.filter { !$0.isFolder }.map(\.path)), ["main.go", "go.mod"])
+        XCTAssertFalse(rows.contains { $0.path.contains("vendor") })
     }
 }
 

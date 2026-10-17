@@ -162,46 +162,81 @@ struct ProjectNavigatorView: View {
 
     private var tree: some View {
         List {
-            ForEach(groups, id: \.directory) { group in
-                Section {
-                    rows(in: group)
-                } header: {
-                    folderHeader(for: group)
+            Section {
+                ForEach(rows) { row in
+                    if row.isFolder {
+                        folderRow(row)
+                    } else {
+                        fileRow(row)
+                    }
                 }
+            } header: {
+                Text("Project files")
             }
             packagesSection
         }
         .listStyle(.sidebar)
     }
 
-    private func folderHeader(for group: (directory: String, title: String, paths: [String])) -> some View {
-        HStack {
-            Label(group.title, systemImage: group.directory.isEmpty ? "tray.full" : "folder")
-            Spacer()
-            if !group.directory.isEmpty {
-                Menu {
-                    Button { beginCreating(.file, in: group.directory) } label: {
-                        Label("New file here", systemImage: "doc.badge.plus")
-                    }
-                    Button { beginCreating(.folder, in: group.directory) } label: {
-                        Label("New subfolder", systemImage: "folder.badge.plus")
-                    }
-                    Divider()
-                    Button { beginRenaming(.init(path: group.directory, isFolder: true)) } label: {
-                        Label("Rename folder", systemImage: "pencil")
-                    }
-                    Button(role: .destructive) {
-                        deleting = .init(path: group.directory, isFolder: true)
-                    } label: {
-                        Label("Delete folder", systemImage: "trash")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+    private func folderRow(_ row: ProjectNavigatorRow) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "folder")
+                .font(.callout)
+                .frame(width: 20, alignment: .center)
+                .accessibilityHidden(true)
+            Text(row.name)
+                .font(.callout.weight(.medium))
+                .lineLimit(1)
+                .truncationMode(.middle)
+            Spacer(minLength: 0)
+            Menu {
+                Button { beginCreating(.file, in: row.path) } label: {
+                    Label("New file here", systemImage: "doc.badge.plus")
                 }
-                .accessibilityLabel("Folder actions for \(group.directory)")
+                Button { beginCreating(.folder, in: row.path) } label: {
+                    Label("New subfolder", systemImage: "folder.badge.plus")
+                }
+                Divider()
+                Button { beginRenaming(.init(path: row.path, isFolder: true)) } label: {
+                    Label("Rename folder", systemImage: "pencil")
+                }
+                Button(role: .destructive) {
+                    deleting = .init(path: row.path, isFolder: true)
+                } label: {
+                    Label("Delete folder", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+            }
+            .accessibilityLabel("Folder actions for \(row.path)")
+        }
+        .padding(.leading, CGFloat(row.depth) * 14)
+        .textCase(nil)
+    }
+
+    private func fileRow(_ row: ProjectNavigatorRow) -> some View {
+        Button {
+            open(row.path, at: nil)
+        } label: {
+            ProjectFileRow(
+                path: row.path,
+                isSelected: workspace.selectedFile == row.path,
+                detail: nil
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.leading, CGFloat(row.depth) * 14)
+        .accessibilityIdentifier(AccessibilityID.file(row.path))
+        .contextMenu {
+            Button { beginRenaming(.init(path: row.path, isFolder: false)) } label: {
+                Label("Rename file", systemImage: "pencil")
+            }
+            Button(role: .destructive) {
+                deleting = .init(path: row.path, isFolder: false)
+            } label: {
+                Label("Delete file", systemImage: "trash")
             }
         }
-        .textCase(nil)
     }
 
     private var packagesSection: some View {
@@ -237,32 +272,6 @@ struct ProjectNavigatorView: View {
             if packages.isEmpty {
                 Text("Dependencies belong here, not in the file tree. "
                     + "Add one to vendor it into this project.")
-            }
-        }
-    }
-
-    private func rows(in group: (directory: String, title: String, paths: [String])) -> some View {
-        ForEach(group.paths, id: \.self) { path in
-            Button {
-                open(path, at: nil)
-            } label: {
-                ProjectFileRow(
-                    path: path,
-                    isSelected: workspace.selectedFile == path,
-                    detail: nil
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier(AccessibilityID.file(path))
-            .contextMenu {
-                Button { beginRenaming(.init(path: path, isFolder: false)) } label: {
-                    Label("Rename file", systemImage: "pencil")
-                }
-                Button(role: .destructive) {
-                    deleting = .init(path: path, isFolder: false)
-                } label: {
-                    Label("Delete file", systemImage: "trash")
-                }
             }
         }
     }
@@ -378,8 +387,8 @@ struct ProjectNavigatorView: View {
         }
     }
 
-    private var groups: [(directory: String, title: String, paths: [String])] {
-        ProjectNavigatorListing.fileGroups(in: workspace.project?.files ?? [:])
+    private var rows: [ProjectNavigatorRow] {
+        ProjectNavigatorListing.rows(in: workspace.project?.files ?? [:])
     }
 }
 
@@ -422,31 +431,3 @@ private struct InstalledPackageRow: View {
     }
 }
 
-/// The project's own files, grouped by directory, with `vendor/` left out.
-enum ProjectNavigatorListing {
-    static func fileGroups(in files: [String: String]) -> [(directory: String, title: String, paths: [String])] {
-        let own = files.keys.filter {
-            !GoVendorWriter.isVendoredPath($0)
-                && !$0.hasSuffix("/" + GopherForgeProject.folderMarker)
-        }.sorted()
-        let grouped = Dictionary(grouping: own) { path -> String in
-            let components = path.split(separator: "/").dropLast()
-            return components.joined(separator: "/")
-        }
-        var directories: Set<String> = [""]
-        for path in files.keys where !GoVendorWriter.isVendoredPath(path) {
-            let components = path.split(separator: "/").dropLast()
-            guard !components.isEmpty else { continue }
-            for count in 1...components.count {
-                directories.insert(components.prefix(count).joined(separator: "/"))
-            }
-        }
-        return directories.sorted().map { directory in
-                (
-                    directory: directory,
-                    title: directory.isEmpty ? "Project files" : directory,
-                    paths: (grouped[directory] ?? []).sorted()
-                )
-            }
-    }
-}

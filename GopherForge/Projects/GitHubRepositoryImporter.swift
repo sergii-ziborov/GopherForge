@@ -55,8 +55,10 @@ struct GitHubRepositoryImporter: Sendable {
     /// it in a text view helps nobody.
     static let maximumFileBytes = 512 * 1024
     /// Enough for a real repository, bounded so a hostile one cannot ask for
-    /// all of memory. The archive reader enforces its own limit as well.
-    static let maximumFiles = 400
+    /// all of memory. Go source is kept ahead of notes and pages, because a
+    /// budget spent on `.agents` and Markdown is how `cmd/` disappears and the
+    /// module no longer builds. The archive reader enforces its own limit too.
+    static let maximumFiles = 2_000
 
     /// The compressed archive's own ceiling.
     ///
@@ -117,17 +119,7 @@ struct GitHubRepositoryImporter: Sendable {
             throw ImportError.notAnArchive
         }
 
-        var files: [String: String] = [:]
-        for path in entries.keys.sorted() {
-            guard files.count < Self.maximumFiles else { break }
-            guard Self.isWorthKeeping(path: path) else { continue }
-            guard let body = entries[path], body.count <= Self.maximumFileBytes else { continue }
-            // Invalid UTF-8 means it was not text after all, whatever the name
-            // said. Dropped rather than mangled.
-            guard let text = String(data: body, encoding: .utf8) else { continue }
-            guard !SourceFileLimit.exceedsLimit(text) else { continue }
-            files[path] = text
-        }
+        let files = Self.keptFiles(in: entries)
 
         guard files.keys.contains(where: { $0.hasSuffix(".go") }) else {
             throw ImportError.noGoSource(reference.displayName)
@@ -146,6 +138,33 @@ struct GitHubRepositoryImporter: Sendable {
                 importedAt: importedAt
             )
         )
+    }
+
+    /// Text worth opening, with Go source taken first when the file budget
+    /// would otherwise fill up on documentation.
+    static func keptFiles(in entries: [String: Data], limit: Int = maximumFiles) -> [String: String] {
+        var essential: [(String, String)] = []
+        var other: [(String, String)] = []
+        for path in entries.keys.sorted() {
+            guard isWorthKeeping(path: path) else { continue }
+            guard let body = entries[path], body.count <= maximumFileBytes else { continue }
+            // Invalid UTF-8 means it was not text after all, whatever the name
+            // said. Dropped rather than mangled.
+            guard let text = String(data: body, encoding: .utf8) else { continue }
+            guard !SourceFileLimit.exceedsImportLimit(text, path: path) else { continue }
+            if SourceFileLimit.isBuildEssential(path) {
+                essential.append((path, text))
+            } else {
+                other.append((path, text))
+            }
+        }
+
+        var files: [String: String] = [:]
+        for (path, text) in essential + other {
+            guard files.count < limit else { break }
+            files[path] = text
+        }
+        return files
     }
 
     static func isWorthKeeping(path: String) -> Bool {

@@ -8,9 +8,9 @@ import Foundation
 /// container.
 struct LocalProjectLoader {
     struct Limits {
-        var maximumFileCount = 400
+        var maximumFileCount = 2_000
         var maximumFileBytes = 512 * 1024
-        var maximumTotalBytes = 8 * 1024 * 1024
+        var maximumTotalBytes = 24 * 1024 * 1024
 
         static let standard = Limits()
     }
@@ -132,7 +132,7 @@ struct LocalProjectLoader {
 
             guard let data = try? Data(contentsOf: url) else { continue }
             let text = String(decoding: data, as: UTF8.self)
-            guard !SourceFileLimit.exceedsLimit(text) else { continue }
+            guard !SourceFileLimit.exceedsImportLimit(text, path: relativePath) else { continue }
             files[relativePath] = text
         }
 

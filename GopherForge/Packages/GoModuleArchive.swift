@@ -95,12 +95,25 @@ struct GoModuleArchive {
 /// reviewer — can read.
 ///
 /// Guideline 2.5.2's teaching exception is that the user's own imported
-/// source is viewable. Five hundred lines is the ceiling for a file this
-/// app imports as the project itself. Installed packages are vendored as
-/// published — a real module is often longer than that, and refusing it
-/// would make Add packages refuse most of the ecosystem.
+/// source is viewable. Five hundred lines is the ceiling for notes and
+/// pages. Go source has a higher ceiling, because generated files are part
+/// of the build. Installed packages are vendored as published — a real
+/// module is often longer than either, and refusing it would make Add
+/// packages refuse most of the ecosystem.
 enum SourceFileLimit {
     static let maximumLines = 500
+    /// Generated Go — protobuf, tables — is often longer than a lesson, and
+    /// dropping it is how an imported repository stops compiling.
+    static let maximumGoLines = 20_000
+
+    static func isBuildEssential(_ path: String) -> Bool {
+        let name = path.split(separator: "/").last.map(String.init) ?? path
+        return path.hasSuffix(".go") || name == "go.mod" || name == "go.sum"
+    }
+
+    static func exceedsImportLimit(_ text: String, path: String) -> Bool {
+        lineCount(of: text) > (isBuildEssential(path) ? maximumGoLines : maximumLines)
+    }
 
     static func lineCount(of text: String) -> Int {
         if text.isEmpty { return 0 }
