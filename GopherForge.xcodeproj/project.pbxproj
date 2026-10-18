@@ -320,8 +320,10 @@
 		C0EE8D2D35DAA6F58539D81B /* WorkspacePaneContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E78117C16199B882B0789D6 /* WorkspacePaneContent.swift */; };
 		C16F5F1211DDA1AED4CE037D /* ProjectLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3972B4120A64FE8AB658A5 /* ProjectLibrary.swift */; };
 		C195658E7747FC118E3F5461 /* GoToolInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C18A30D1D678743818A5B95 /* GoToolInvocation.swift */; };
+		C42DFA969271207BCAFF011B /* ReadingLessonSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D281FFA297EFAE90DE95A6 /* ReadingLessonSections.swift */; };
 		C548CA170BD6D77C71ADA525 /* GoProgramArtifactsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71BD6CFE208A7DC6F0357D9 /* GoProgramArtifactsTests.swift */; };
 		C54E8F3C1AA748CD1220E1D4 /* GoPackageSearchClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C44D1B6FF174E0839CFA6E0 /* GoPackageSearchClient.swift */; };
+		C610D26CF744A1D838E1A42A /* ReadingLessons.json in Resources */ = {isa = PBXBuildFile; fileRef = E4A5DD243872D873DA39B8D9 /* ReadingLessons.json */; };
 		C6A6AF019571FD0BCB5700D2 /* IncrementalBuildGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D858A4A3C9E4D0D55D39E3FD /* IncrementalBuildGateTests.swift */; };
 		C73F08B18C439E6746CBEB0B /* GoLexicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617347315A90E62186D6CC90 /* GoLexicon.swift */; };
 		C7C7F805C1AB6FB6A22D1158 /* GoStepFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B71A42B7797F09587C8C461 /* GoStepFingerprint.swift */; };
@@ -360,6 +362,7 @@
 		DDA331F22829A1CA0F3DC152 /* GitHubRepositoryImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B3F24B601B33666EFB232C /* GitHubRepositoryImporter.swift */; };
 		DE604BE396876B6B86BAAFEF /* SystemPackage in Frameworks */ = {isa = PBXBuildFile; productRef = EAF914823E8054C740FD723F /* SystemPackage */; };
 		DF3146498F00E14ACB176BF2 /* SourceFileKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E6EDE7EE614E890C000FFA7 /* SourceFileKind.swift */; };
+		DF7808BCDD9F110AFC38706D /* ReadingLesson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C7AA3093533017B6ABF08E /* ReadingLesson.swift */; };
 		E04143C25B773C52FBBAAB39 /* GoTestOutputParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67DF216A8BBFC138AE6456E6 /* GoTestOutputParser.swift */; };
 		E1562E8B5A98287611C13D30 /* LessonSymbolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F7D8ADDF9B75C0947122FB /* LessonSymbolTests.swift */; };
 		E177B2E27E812C1966F1550F /* SyntaxAttributedStringBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ACF31241E073A41379EC723 /* SyntaxAttributedStringBuilder.swift */; };
@@ -372,6 +375,7 @@
 		E76A6296736542B1EFE7DFF5 /* ConcurrencyLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767B39A0F010BB85DC68480F /* ConcurrencyLabView.swift */; };
 		E7C84628FD92C2E35CEA4BCF /* GoPackageCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99EBD76E6143949C3147BF6 /* GoPackageCatalogTests.swift */; };
 		E834FBB76AE9E767578B691B /* ThirdPartyNoticesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABD118D47AF0C30BC442B9C /* ThirdPartyNoticesTests.swift */; };
+		E845CFF68420F30328248DA0 /* ReadingLessonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72168EB8195A4B76AFD56640 /* ReadingLessonTests.swift */; };
 		E96B9750B6AF4454D2C1D65B /* GopherForgeProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE4CAB7BECE13FBB9A586E2 /* GopherForgeProjectTests.swift */; };
 		E977C6A678A3C7167D6E2785 /* ConcurrencyLabScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BDB006C22B38BDB35F3112 /* ConcurrencyLabScenario.swift */; };
 		E97F9D19465D61F59661E1FC /* InterviewQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B32C5411505EA09972CEB0F4 /* InterviewQuestionView.swift */; };
@@ -609,6 +613,7 @@
 		4C16B065B856EA5D1A013779 /* GoImportConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoImportConfigurationTests.swift; sourceTree = "<group>"; };
 		4C57D1E7F77DF74D296CABA8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4D017598D42D8E05691210BF /* ListingCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCopyTests.swift; sourceTree = "<group>"; };
+		4D3D150ED49B9D2EF5DB8FF5 /* 1.1.1-build33.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.1-build33.json"; sourceTree = "<group>"; };
 		4D4B87B6F16E50E00B36FDEC /* GoBuildConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBuildConstraint.swift; sourceTree = "<group>"; };
 		4DC55D19704F32F2F7689E45 /* GoExampleLibrarySites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibrarySites.swift; sourceTree = "<group>"; };
 		4DE75D43C6982C2179B1506D /* site-1.1-review.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "site-1.1-review.png"; sourceTree = "<group>"; };
@@ -675,6 +680,7 @@
 		718FD4E4FF1A6EF1CFEF0604 /* duo-laptop-idioms.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-laptop-idioms.png"; sourceTree = "<group>"; };
 		71C9F707DAC452A5F30A664E /* JavaScriptSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavaScriptSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		71E8B323DE01865E866AFCA5 /* navigator-ipad-persistent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigator-ipad-persistent.png"; sourceTree = "<group>"; };
+		72168EB8195A4B76AFD56640 /* ReadingLessonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingLessonTests.swift; sourceTree = "<group>"; };
 		72DEDF7F845B96B350E25660 /* ProjectLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLibraryTests.swift; sourceTree = "<group>"; };
 		7350822ED80A1CBE29CECC0D /* LocalSiteServerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSiteServerTests.swift; sourceTree = "<group>"; };
 		7449557FEEF51133F4046BEF /* 09-examples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "09-examples.png"; sourceTree = "<group>"; };
@@ -689,6 +695,7 @@
 		79235EED0E4D3FB6C361A5EC /* GoExampleLibraryConcurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibraryConcurrency.swift; sourceTree = "<group>"; };
 		79732B19BD87F55DC83A2DEC /* IdiomFindingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdiomFindingListView.swift; sourceTree = "<group>"; };
 		7981BAC65421EBD7EB48225C /* 11-problems.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "11-problems.png"; sourceTree = "<group>"; };
+		79D281FFA297EFAE90DE95A6 /* ReadingLessonSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingLessonSections.swift; sourceTree = "<group>"; };
 		7A972BD83E502587AFBBE02F /* 1.1.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = 1.1.md; sourceTree = "<group>"; };
 		7B30881EB0B739EC4B812E22 /* 1.1-layout-checks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "1.1-layout-checks.md"; sourceTree = "<group>"; };
 		7C6E695DA769DD6900500437 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
@@ -717,6 +724,7 @@
 		866C5819D981432F0554B944 /* WorkspacePaneChromeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspacePaneChromeTests.swift; sourceTree = "<group>"; };
 		86CF3FFBC6F3FF5CED80090A /* CompilationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompilationResult.swift; sourceTree = "<group>"; };
 		87045A4C2EC80E4A0E82C23F /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
+		87C7AA3093533017B6ABF08E /* ReadingLesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingLesson.swift; sourceTree = "<group>"; };
 		87EDB8F5654AD75393D3B09C /* TarLongNameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TarLongNameTests.swift; sourceTree = "<group>"; };
 		88068649C11B39B5F69850FE /* CourseUnitCollectionsMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitCollectionsMore.swift; sourceTree = "<group>"; };
 		89F61A7E2945C834274D1EBC /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
@@ -875,6 +883,7 @@
 		CA195115ED15FB595D2BB5DF /* LessonHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonHint.swift; sourceTree = "<group>"; };
 		CA2A4F91643F8D9353A46B39 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CACF9973E2653547F13C9747 /* GzipStreamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipStreamTests.swift; sourceTree = "<group>"; };
+		CB71D409896DF57F21392E82 /* 1.1.2-build34.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.2-build34.json"; sourceTree = "<group>"; };
 		CBAEE753FA2ACE4B071C6E27 /* LearningProse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningProse.swift; sourceTree = "<group>"; };
 		CBD9D357F9C9D7931A018985 /* 09-examples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "09-examples.png"; sourceTree = "<group>"; };
 		CC0F385AC2399673F3C1E305 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
@@ -921,6 +930,7 @@
 		E3C3987E99D274363DC18576 /* LessonHintCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonHintCatalogTests.swift; sourceTree = "<group>"; };
 		E471E8E11A1A1ED5C7555D5B /* CoursePathLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursePathLayout.swift; sourceTree = "<group>"; };
 		E4818C6C0B196DCC13954FE0 /* FolderBudgetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderBudgetTests.swift; sourceTree = "<group>"; };
+		E4A5DD243872D873DA39B8D9 /* ReadingLessons.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ReadingLessons.json; sourceTree = "<group>"; };
 		E59269859BEAA2D33BE1D9D4 /* lessons.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lessons.json; sourceTree = "<group>"; };
 		E5D3CD20798479E85C5166A4 /* ProjectNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectNavigatorView.swift; sourceTree = "<group>"; };
 		E85860C9DB30A09E6075DD92 /* GoStandardLibraryIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoStandardLibraryIndexTests.swift; sourceTree = "<group>"; };
@@ -1089,7 +1099,9 @@
 				7B30881EB0B739EC4B812E22 /* 1.1-layout-checks.md */,
 				74B9798883C6B8861696905D /* 1.1-publication.json */,
 				A875A2687C64A9BDA8AEDB3D /* 1.1-publication20.json */,
+				4D3D150ED49B9D2EF5DB8FF5 /* 1.1.1-build33.json */,
 				81638D6AB5003A9F9289A0D7 /* 1.1.1-learning-checks.json */,
+				CB71D409896DF57F21392E82 /* 1.1.2-build34.json */,
 				7A972BD83E502587AFBBE02F /* 1.1.md */,
 			);
 			path = releases;
@@ -1146,6 +1158,14 @@
 				37EE545DA389C966512C64D9 /* IdiomRuleCatalog.swift */,
 			);
 			path = Idioms;
+			sourceTree = "<group>";
+		};
+		1AE68E866F0E19DD339F72E0 /* Reading */ = {
+			isa = PBXGroup;
+			children = (
+				87C7AA3093533017B6ABF08E /* ReadingLesson.swift */,
+			);
+			path = Reading;
 			sourceTree = "<group>";
 		};
 		1C6DFB83FE6E5EF3A6A1690B /* Projects */ = {
@@ -1245,6 +1265,7 @@
 				5739CE1C8DB31E883A4B8DB8 /* Mistakes */,
 				9F17808DD7811657C091DC89 /* Presentation */,
 				0E73FCA8022F8AE635503F68 /* Quiz */,
+				1AE68E866F0E19DD339F72E0 /* Reading */,
 				698B41DA2D1830A3F768B89C /* Solutions */,
 				7DAA1640569C764801352040 /* SpotTheBug */,
 				6BCB3B3CEABEF60E7E39551D /* Units */,
@@ -1335,6 +1356,7 @@
 				43A5A9C3BD568728D5BEAB92 /* Info.plist */,
 				113625E88D01B6E032E2FC45 /* LessonGuides.json */,
 				CA2A4F91643F8D9353A46B39 /* PrivacyInfo.xcprivacy */,
+				E4A5DD243872D873DA39B8D9 /* ReadingLessons.json */,
 				8BA2E3C45B03EE5A6E311132 /* ThirdPartyNotices.md */,
 				0F61232AACF5A3CE96012E57 /* VendoredModules */,
 			);
@@ -1842,6 +1864,7 @@
 				FF9396790AC8AF66B989B47B /* MatchingDrillTests.swift */,
 				84CD736C931A0F78CC52334C /* PracticeCatalogTests.swift */,
 				6A285D7E837939C9A6FD1E07 /* QuizTests.swift */,
+				72168EB8195A4B76AFD56640 /* ReadingLessonTests.swift */,
 				B3CE9344D6BE7612FA7AFA36 /* ReviewSchedulerTests.swift */,
 				A495C12C228087A012DDF803 /* Catalog */,
 				A3E614BB9E66DCCD1281158B /* Mistakes */,
@@ -2160,6 +2183,7 @@
 				9FB568C9792A03E6E068925B /* LessonHintCard.swift */,
 				5E7F5FC2DA2E48DEA466D4FD /* LessonInfographicView.swift */,
 				6124353EE1B7E894632A7B3B /* LessonSections.swift */,
+				79D281FFA297EFAE90DE95A6 /* ReadingLessonSections.swift */,
 				0CDE43A3AFAA953558889645 /* UnitDetailView.swift */,
 				A25A96659C812530B49CA786 /* UnitHeaderCard.swift */,
 				477E663C14FDC374C8683EC3 /* UnitJourneyRow.swift */,
@@ -2521,6 +2545,7 @@
 				21A67E8A5B873FE38E9150E3 /* Assets.xcassets in Resources */,
 				92E1222E4563655FE8C61A7E /* LessonGuides.json in Resources */,
 				7DD90731ABEF07B639D05498 /* PrivacyInfo.xcprivacy in Resources */,
+				C610D26CF744A1D838E1A42A /* ReadingLessons.json in Resources */,
 				22AB9FDAE644A54DCBB980B6 /* ThirdPartyNotices.md in Resources */,
 				77CDE82482427F8CC9117D85 /* Toolchain in Resources */,
 				3BA261D70768894A7EFA3214 /* VendoredModules in Resources */,
@@ -2831,6 +2856,8 @@
 				8B918A635D6377EBC7A760B0 /* QuizSession.swift in Sources */,
 				98B6038284AC1CD72EEC2837 /* QuizSummaryView.swift in Sources */,
 				FB2843FCAF8C5F032688C016 /* QuizView.swift in Sources */,
+				DF7808BCDD9F110AFC38706D /* ReadingLesson.swift in Sources */,
+				C42DFA969271207BCAFF011B /* ReadingLessonSections.swift in Sources */,
 				75D5537CB5030003F3F7ECDE /* ResolvedModuleSection.swift in Sources */,
 				6B4332B017DABF24572B127A /* ReviewMatchCatalog.swift in Sources */,
 				1690CD23B2B6AAB3A3457662 /* ReviewMatchCatalogMore.swift in Sources */,
@@ -2973,6 +3000,7 @@
 				63D60519180018D4A2388165 /* ProjectPathNormalizerTests.swift in Sources */,
 				4C0D4C7340A66036BEC2478D /* ProjectTemplateTests.swift in Sources */,
 				90AC5DF3FBB1FAD1BE7B0959 /* QuizTests.swift in Sources */,
+				E845CFF68420F30328248DA0 /* ReadingLessonTests.swift in Sources */,
 				6E417AE0BC4EF6DF474C3BEC /* ReviewSchedulerTests.swift in Sources */,
 				D2E6A9F37710A1FA3099EC22 /* SourceFileBadgeTests.swift in Sources */,
 				D9798038B2F9F524C7E9E1F9 /* SourceFileKindTests.swift in Sources */,
@@ -3020,7 +3048,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3132,7 +3160,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3249,7 +3277,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3278,7 +3306,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3306,7 +3334,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3328,7 +3356,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

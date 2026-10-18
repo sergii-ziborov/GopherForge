@@ -45,6 +45,10 @@ struct LessonDetailView: View {
                     LearningProse(text: lesson.explanation)
                 }
 
+                if let reading = ReadingLessonCatalog.reading(for: lesson.id) {
+                    ReadingLessonSections(reading: reading, tint: tint)
+                }
+
                 if let guide {
                     LessonSection(title: "In practice", systemImage: "lightbulb", tint: tint) {
                         LearningProse(text: guide.practical)
@@ -61,7 +65,7 @@ struct LessonDetailView: View {
                 // A reading exercise has no failing Check that could open the
                 // help sheet, so its authored hint remains on the page. Code
                 // lessons reveal theirs only after an actual failed attempt.
-                if !lesson.requiresCompiler {
+                if !lesson.requiresCompiler, !lesson.isReading {
                     LessonReferenceHintCard(hint: model.hint, tint: tint)
                 }
 
@@ -304,6 +308,8 @@ struct LessonDetailView: View {
     @ViewBuilder
     private var taskSection: some View {
         switch lesson.task {
+        case .reading:
+            EmptyView()
         case let .guidedTyping(target):
             LessonSection(title: "Type this until it is automatic", systemImage: "keyboard", tint: tint) {
                 CodeBlock(title: "", code: target)

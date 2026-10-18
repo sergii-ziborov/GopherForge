@@ -146,6 +146,10 @@ final class ThirdPartyNoticesTests: XCTestCase {
     private static func sources(in lesson: Lesson) -> [(String, String)] {
         var items: [(String, String)] = []
         switch lesson.task {
+        case .reading:
+            items.append(contentsOf: ReadingLessonCatalog.reading(for: lesson.id)?.sections.enumerated().compactMap {
+                index, section in section.code.map { ("reading.\(index)", $0) }
+            } ?? [])
         case let .guidedTyping(target):
             items.append(("target", target))
         case let .fillGaps(template, blanks):

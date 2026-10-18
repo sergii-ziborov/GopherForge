@@ -33,12 +33,53 @@ final class PracticeFlowUITests: XCTestCase {
         let prompt = app.buttons["drill.tile.review.core.short#prompt"]
         XCTAssertTrue(prompt.waitForExistence(timeout: 10))
         let tiles = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'drill.tile.'"))
-        XCTAssertEqual(tiles.count, 4)
+        XCTAssertEqual(tiles.count, 6)
         let heights = (0..<tiles.count).map { tiles.element(boundBy: $0).frame.height }
         XCTAssertLessThan((heights.max() ?? 0) - (heights.min() ?? 0), 0.5)
         prompt.tap()
         app.buttons["drill.tile.review.core.short#answer"].tap()
-        XCTAssertEqual(tiles.count, 4)
+        XCTAssertEqual(tiles.count, 6)
+    }
+
+    func testReviewHasThreeRoundsAndAnExplicitFinishButton() {
+        resetProgress()
+        completeShortDeclaration()
+        app.buttons["BackButton"].tap()
+        XCTAssertTrue(app.buttons["lesson.core.short-declaration"].waitForExistence(timeout: 10))
+        app.buttons["BackButton"].tap()
+        let review = app.buttons[AccessibilityIdentifier.reviewEntry]
+        XCTAssertTrue(app.waitForElement(review))
+        review.tap()
+        for round in 1...3 {
+            let status = app.staticTexts["learn.review.progress"]
+            XCTAssertTrue(status.waitForExistence(timeout: 10))
+            XCTAssertEqual(status.label, "Match \(round) of 3")
+            XCTAssertFalse(app.buttons["learn.review.done"].exists)
+            for pair in ["review.core.short", "review.core.assignment", "review.core.short-scope"] {
+                app.buttons["drill.tile.\(pair)#prompt"].tap()
+                app.buttons["drill.tile.\(pair)#answer"].tap()
+            }
+            if round == 1 {
+                XCTAssertTrue(app.buttons["learn.review.next"].waitForExistence(timeout: 10))
+                app.buttons["drill.restart"].tap()
+                XCTAssertFalse(app.buttons["learn.review.next"].exists)
+                for pair in ["review.core.short", "review.core.assignment", "review.core.short-scope"] {
+                    app.buttons["drill.tile.\(pair)#prompt"].tap()
+                    app.buttons["drill.tile.\(pair)#answer"].tap()
+                }
+            }
+            if round < 3 {
+                let next = app.buttons["learn.review.next"]
+                XCTAssertTrue(next.waitForExistence(timeout: 10))
+                next.tap()
+            }
+        }
+        let finish = app.buttons["learn.review.done"]
+        XCTAssertTrue(finish.waitForExistence(timeout: 10))
+        attachScreenshot(named: "review-three-rounds-finish")
+        finish.tap()
+        XCTAssertTrue(finish.waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.reviewEntry].waitForExistence(timeout: 10))
     }
 
     func testWrongAnswerExplainsAndPersistsThenCorrectAnswerMovesForward() {

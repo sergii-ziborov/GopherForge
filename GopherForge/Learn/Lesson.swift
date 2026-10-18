@@ -8,6 +8,8 @@ import Foundation
 struct Lesson: Identifiable, Equatable, Sendable {
     /// What the learner is asked to do, and how the app decides they did it.
     enum Task: Equatable, Sendable {
+        /// Worked examples and explanations, completed by the reader.
+        case reading
         /// Type the shape until it is muscle memory. Wrong keys are recorded
         /// and never inserted.
         case guidedTyping(target: String)
@@ -43,6 +45,8 @@ struct Lesson: Identifiable, Equatable, Sendable {
         if case .compile = task { return true }
         return false
     }
+
+    var isReading: Bool { task == .reading }
 
     /// A predict lesson is a question with an answer rather than something to
     /// build, so it belongs with the drills and quizzes rather than in the

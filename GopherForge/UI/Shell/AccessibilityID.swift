@@ -26,6 +26,7 @@ enum AccessibilityID {
     static let reviewEmpty = "learn.review.empty"
     static let reviewProgress = "learn.review.progress"
     static let reviewNext = "learn.review.next"
+    static let reviewDone = "learn.review.done"
     static let githubImportEntry = "projects.github"
     static let githubURLField = "github.url"
     static let githubImportButton = "github.import"

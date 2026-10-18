@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Match terms and meanings from lessons already finished.
 struct ReviewView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(LearnProgress.self) private var progress
     @State private var boards: [MatchingDrill] = []
     @State private var index = 0
@@ -9,6 +10,7 @@ struct ReviewView: View {
     @State private var hasLoaded = false
     @State private var loadedCompletion: Set<String>?
     @State private var loadedConcepts: Set<String> = []
+    @State private var completionGeneration = UUID()
 
     var body: some View {
         Group {
@@ -37,15 +39,18 @@ struct ReviewView: View {
             "Nothing to match yet",
             systemImage: "link",
             description: Text(
-                "Finish a lesson or answer a knowledge-check question correctly to match its Go concepts here. "
-                    + "Your board grows as you learn."
+                "Learn enough concepts to fill at least three matching pairs. "
+                    + "Finish lessons or answer knowledge-check questions correctly; Review only uses what you have learned."
             )
         )
         .accessibilityIdentifier(AccessibilityID.reviewEmpty)
     }
 
     private var session: some View {
-        MatchingDrillView(drill: boards[index], onFinish: finished)
+        MatchingDrillView(drill: boards[index], onRestart: {
+            completionGeneration = UUID()
+            canAdvance = false
+        }, onFinish: finished)
             .id(boards[index].id)
             .safeAreaInset(edge: .bottom) {
                 VStack(spacing: 10) {
@@ -72,6 +77,14 @@ struct ReviewView: View {
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+                        Button { dismiss() } label: {
+                            Text("Finish review")
+                                .font(.callout.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                        }
+                            .buttonStyle(.borderedProminent)
+                            .accessibilityIdentifier(AccessibilityID.reviewDone)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -81,8 +94,12 @@ struct ReviewView: View {
     }
 
     private func finished(_ result: MatchingDrillResult) {
-        canAdvance = true
-        Task { await progress.record(result) }
+        let generation = completionGeneration
+        Task {
+            await progress.record(result)
+            guard generation == completionGeneration else { return }
+            canAdvance = true
+        }
     }
 
     private func loadBoards() {
@@ -94,6 +111,7 @@ struct ReviewView: View {
             shuffle: { $0.shuffled() }
         )
         index = 0
+        completionGeneration = UUID()
         canAdvance = false
     }
 }

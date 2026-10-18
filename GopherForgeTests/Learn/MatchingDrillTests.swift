@@ -221,11 +221,12 @@ final class MatchingDrillTests: XCTestCase {
         }
     }
 
-    func testEveryCompletedLessonCanContributeToReview() {
+    func testReviewNeverShowsFewerThanThreePairsOrUnlearnedContent() {
         for lesson in GoCourseCatalog.lessons {
             let boards = ReviewMatchCatalog.unlocked(completed: [lesson.id])
-            XCTAssertFalse(boards.isEmpty, "\(lesson.id) leaves Review empty")
+            XCTAssertTrue(boards.allSatisfy { $0.pairs.count >= 3 })
             XCTAssertTrue(boards.flatMap(\.pairs).allSatisfy { $0.requiredLessonID == lesson.id })
+            if !boards.isEmpty { XCTAssertGreaterThanOrEqual(boards.count, 3) }
         }
     }
 
@@ -236,11 +237,14 @@ final class MatchingDrillTests: XCTestCase {
         XCTAssertTrue(pairs.allSatisfy { completed.contains($0.requiredLessonID ?? "") })
     }
 
-    func testFirstTeachingLessonOffersTwoDifferentPairs() throws {
-        let first = try XCTUnwrap(GoCourseCatalog.teachingLessons.first)
-        let pairs = ReviewMatchCatalog.unlocked(completed: [first.id]).flatMap(\.pairs)
-        XCTAssertGreaterThanOrEqual(pairs.count, 2)
-        XCTAssertEqual(Set(pairs.map(\.answer)).count, pairs.count)
+    func testShortDeclarationAloneOffersThreeKnownPairsAndThreeRounds() throws {
+        let lesson = try XCTUnwrap(GoCourseCatalog.lesson(id: "core.short-declaration"))
+        let boards = ReviewMatchCatalog.unlocked(completed: [lesson.id])
+        XCTAssertEqual(boards.count, 3)
+        for board in boards {
+            XCTAssertGreaterThanOrEqual(board.pairs.count, 3)
+            XCTAssertEqual(Set(board.pairs.map(\.answer)).count, board.pairs.count)
+        }
     }
 
     func testGeneratedBoardsHaveDistinctAnswersAndRespectTileBudget() {
@@ -256,7 +260,9 @@ final class MatchingDrillTests: XCTestCase {
     func testEveryCorrectlyAnsweredConceptCanFillMatching() {
         for tag in GoConcept.all {
             let boards = ReviewMatchCatalog.unlocked(completed: [], confirmedConcepts: [tag])
-            XCTAssertFalse(boards.isEmpty, tag)
+            // An early concept with fewer than three authored facts waits for
+            // more learned material rather than inventing distractor pairs.
+            XCTAssertTrue(boards.allSatisfy { $0.pairs.count >= 3 }, tag)
             XCTAssertTrue(boards.flatMap(\.pairs).allSatisfy { $0.conceptTag == tag }, tag)
         }
     }

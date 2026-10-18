@@ -10,6 +10,21 @@ enum GoLanguage { static func module(_ name:String)->String { "module \(name)\n\
    for l in unit.lessons {
     var d:[String:Any]=["id":l.id,"title":l.title,"objective":l.objective,"explanation":l.explanation,"tags":l.conceptTags]
     switch l.task {
+     case .reading:
+      d["kind"]="reading"
+      if let reading = ReadingLessonCatalog.reading(for: l.id) {
+       d["reading"] = [
+        "sections": reading.sections.map { section -> [String:Any] in
+         var item:[String:Any] = ["title":section.title,"body":section.body]
+         if let code=section.code { item["code"]=code }
+         if let language=section.language { item["language"]=language }
+         if let walkthrough=section.walkthrough { item["walkthrough"]=walkthrough }
+         return item
+        },
+        "takeaway": reading.takeaway,
+        "references": reading.references.map(\.absoluteString)
+       ]
+      }
      case let .compile(starter,test): d["kind"]="compile";d["source"]=starter;_ = test
      case let .predict(source,question,answer): d["kind"]="predict";d["source"]=source;d["question"]=question;_ = answer
      case let .guidedTyping(target):d["kind"]="read";d["source"]=target

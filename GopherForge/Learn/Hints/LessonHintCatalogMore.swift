@@ -6,7 +6,10 @@ extension LessonHintCatalog {
     }
 
     static var allAuthored: [String: LessonHint] {
-        Dictionary(uniqueKeysWithValues: (Array(authored.values) + rest).map { ($0.lessonID, $0) })
+        let readingHints = ReadingLessonCatalog.all.map {
+            LessonHint(lessonID: $0.id, hint: $0.hint, nuance: $0.nuance)
+        }
+        return Dictionary(uniqueKeysWithValues: (Array(authored.values) + rest + readingHints).map { ($0.lessonID, $0) })
     }
 
     private static func entry(_ id: String, hint: String, nuance: String) -> LessonHint {

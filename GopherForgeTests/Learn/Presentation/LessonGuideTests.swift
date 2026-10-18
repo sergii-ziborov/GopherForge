@@ -3,7 +3,7 @@ import XCTest
 
 final class LessonGuideTests: XCTestCase {
     func testEveryLessonAndChallengeHasAnAuthoredGuide() {
-        let expected = Set(GoCourseCatalog.lessons.map(\.id))
+        let expected = Set(GoCourseCatalog.lessons.filter { !$0.isReading }.map(\.id))
         let actual = LessonGuideCatalog.all.map(\.id)
         XCTAssertEqual(Set(actual), expected)
         XCTAssertEqual(actual.count, expected.count, "No duplicated or orphaned diagrams")

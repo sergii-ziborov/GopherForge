@@ -179,6 +179,7 @@ final class LessonModel {
 
     private static func starter(for lesson: Lesson) -> String {
         switch lesson.task {
+        case .reading: ""
         case let .compile(starter, _): starter
         case let .guidedTyping(target): target
         case let .fillGaps(template, _): template

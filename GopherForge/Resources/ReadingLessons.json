@@ -1,0 +1,1204 @@
+[
+  {
+    "id": "core.declarations-walkthrough",
+    "unitID": "core",
+    "afterLessonID": "core.short-declaration",
+    "title": "Read a declaration one scope at a time",
+    "objective": "Follow values through a short declaration, an assignment and a shadowed name without running the program.",
+    "introduction": "A useful way to read Go is to ask three questions at each assignment: which block owns this name, what type does it have, and is a new variable being created? The spelling of a name alone does not answer any of them.",
+    "conceptTag": "vars.short-declaration",
+    "sections": [
+      {
+        "title": "Trace the original variable",
+        "body": "Start with a local variable. Its type comes from the expression on the right. An ordinary assignment updates that same variable; it does not create another binding. Read the two lines as a small state table: first count is 2, then count is 5.",
+        "code": "count := 2\ncount = count + 3\nfmt.Println(count) // 5",
+        "language": "go",
+        "walkthrough": "The right side is evaluated before the assignment. The old count contributes 2, the expression becomes 5, and only then is count updated. This is useful when stepping through a counter, an index or a retry budget."
+      },
+      {
+        "title": "A nested block owns a different name",
+        "body": "An if body is a new lexical block. A short declaration there may hide an outer variable. This can be intentional for a temporary result, but it becomes confusing when the outer result was supposed to change.",
+        "code": "name := \"outside\"\nif ok {\n    name := \"inside\"\n    fmt.Println(name) // inside\n}\nfmt.Println(name) // outside",
+        "language": "go",
+        "walkthrough": "The inner name stops being accessible at the closing brace. Replacing its := with = would instead update the outer string. The difference is scope, not a special rule about if."
+      },
+      {
+        "title": "Use the rule while reviewing real code",
+        "body": "In a multi-name short declaration, at least one non-blank name must be new in the same block. Existing names in that block keep their declared types. Before changing := to =, find every declaration and branch exit; an inner err may be a deliberate short-lived error, or it may hide the value returned later.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Read the block before the operator. Prefer a short temporary scope when it clarifies ownership; use assignment when an existing result must change.",
+    "references": [
+      "https://go.dev/ref/spec#Short_variable_declarations"
+    ],
+    "reviewPrompt": "Nested :=",
+    "reviewAnswer": "May hide an outer variable with a new local name",
+    "question": "Which statement is correct about nested :=?",
+    "wrongAnswers": [
+      "It is automatically overwritten when the block ends",
+      "It becomes a pointer to the inner variable"
+    ],
+    "hint": "Track each name together with the block that declares it.",
+    "nuance": "A nested declaration and an assignment have different effects even when the name is spelled identically."
+  },
+  {
+    "id": "core.error-path-walkthrough",
+    "unitID": "core",
+    "afterLessonID": null,
+    "title": "Read the failure path before the happy path",
+    "objective": "Trace a result and error through a complete boundary, including wrapping and partial results.",
+    "introduction": "An error result is part of a function contract. The caller needs to know whether a value is valid when err is non-nil, who should add context, and which layer decides what the user sees. A short early return makes that contract visible.",
+    "conceptTag": "errors.explicit-check",
+    "sections": [
+      {
+        "title": "Trace both returns",
+        "body": "This function promises a useful positive integer only when its error is nil. Invalid syntax and a non-positive number are different failures. In each failure branch, return immediately; the normal result appears once at the bottom.",
+        "code": "func positive(raw string) (int, error) {\n    n, err := strconv.Atoi(raw)\n    if err != nil {\n        return 0, fmt.Errorf(\"parse count: %w\", err)\n    }\n    if n <= 0 {\n        return 0, errors.New(\"count must be positive\")\n    }\n    return n, nil\n}",
+        "language": "go",
+        "walkthrough": "For \"abc\", Atoi fails and the first branch exits. For \"0\", parsing succeeds and validation fails. For \"8\", neither error branch runs and the caller receives 8, nil. No exception handler is needed to follow those paths."
+      },
+      {
+        "title": "Handle it at the boundary",
+        "body": "The helper adds operation context without choosing an HTTP status or printing to a console. A CLI handler or HTTP adapter can decide how to report the error. Avoid logging the same error at every layer; repeated messages obscure a single failure.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Partial results need a documented contract",
+        "body": "Some APIs deliberately return useful data with an error. io.Reader is a notable example: process the bytes returned before deciding what the error means. Do not generalize the early-return pattern into discarding all non-zero results. Read the particular API contract and distinguish expected absence, invalid input and infrastructure failure.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Follow each return as a pair. Handle errors deliberately, preserve a useful cause with wrapping, and use partial values only when the API promises them.",
+    "references": [
+      "https://go.dev/blog/error-handling-and-go",
+      "https://pkg.go.dev/io#Reader"
+    ],
+    "reviewPrompt": "A result with an error",
+    "reviewAnswer": "Use partial data only when its API contract permits it",
+    "question": "Which statement is correct about a result with an error?",
+    "wrongAnswers": [
+      "Whenever the value is not its zero value",
+      "Only after converting the error to a string"
+    ],
+    "hint": "Walk through one invalid input and one valid input before reading the success return.",
+    "nuance": "An error does not universally invalidate every returned value; the called API defines that contract.",
+    "beforeLessonID": "core.multiple-returns"
+  },
+  {
+    "id": "collections.slice-walkthrough",
+    "unitID": "collections",
+    "afterLessonID": null,
+    "title": "A slice is a window, not a copied array",
+    "objective": "Predict a subslice, an element write and append by tracking the backing array.",
+    "introduction": "A slice describes a region of an array. Copying a slice value copies its descriptor, not all the elements. Two descriptors may therefore refer to the same elements while having different lengths and capacities.",
+    "conceptTag": "slices.aliasing",
+    "sections": [
+      {
+        "title": "Draw the shared storage",
+        "body": "Treat the array as three numbered cells and each slice as a window over those cells. b begins at the second cell of a. Updating b[0] changes that cell; a observes it because it still refers to the same array.",
+        "code": "a := []int{10, 20, 30}\nb := a[1:3]\nb[0] = 99\nfmt.Println(a) // [10 99 30]\nfmt.Println(b) // [99 30]",
+        "language": "go",
+        "walkthrough": "No goroutines are involved here. This is aliasing in a single execution flow. It matters for helper functions that appear to return a fresh view but actually let their callers change the original data."
+      },
+      {
+        "title": "Capacity affects append, not ownership",
+        "body": "Append may reuse storage when capacity is available, or allocate storage when it is not. Assign its result because the returned descriptor can change. A full slice expression can restrict capacity, preventing an append through that view from using the hidden tail; existing element writes still share storage.",
+        "code": "a := []int{10, 20, 30}\nb := a[:1:1] // len 1, cap 1\nb = append(b, 40)\nb[0] = 7\nfmt.Println(a) // [10 20 30]",
+        "language": "go",
+        "walkthrough": "This append must grow beyond b's capacity. Do not depend on a particular capacity growth factor; the language does not promise one."
+      },
+      {
+        "title": "Choose a copy at the ownership boundary",
+        "body": "Use slices.Clone for an independent shallow copy of the elements. For slices of pointers or nested slices, the pointed-to objects remain shared. Decide whether you need a view, a shallow clone, or a domain-specific deep copy. Write that decision into the function contract instead of leaving callers to guess.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Track array identity as well as len and cap. A different slice value can still expose the same mutable storage.",
+    "references": [
+      "https://go.dev/blog/slices-intro",
+      "https://pkg.go.dev/slices#Clone"
+    ],
+    "reviewPrompt": "Copying a slice header",
+    "reviewAnswer": "Can still share the original backing array",
+    "question": "Which statement is correct about copying a slice header?",
+    "wrongAnswers": [
+      "All elements into a new independent array",
+      "The original array and every object reachable from it"
+    ],
+    "hint": "Draw the array once and point both slice windows at it.",
+    "nuance": "Capacity clipping controls append reuse; it does not isolate writes to elements already in the slice.",
+    "beforeLessonID": "collections.length-capacity"
+  },
+  {
+    "id": "collections.concurrent-slices",
+    "unitID": "collections",
+    "afterLessonID": "collections.append-aliasing",
+    "title": "Shared slices and concurrent append",
+    "objective": "Separate shared headers, shared elements and safe collection of concurrent results.",
+    "introduction": "A goroutine does not make its arguments private. If two workers share a slice, you must reason about the slice descriptor and the array it refers to. Making extra goroutines can expose an ownership mistake that a sequential example concealed.",
+    "conceptTag": "concurrency.mutex",
+    "sections": [
+      {
+        "title": "Why append needs coordination",
+        "body": "Concurrent append to one shared slice variable reads and writes the same descriptor and may write the same backing storage. Even if capacity is large enough, append still changes the shared length. Reserving capacity is a performance choice, not synchronization.",
+        "code": "// Unsafe: both goroutines update the same slice.\nvar results []int\ngo func() { results = append(results, 1) }()\ngo func() { results = append(results, 2) }()",
+        "language": "go",
+        "walkthrough": "The outcome is not a reliable permutation of [1 2]. This is a deliberate counterexample, not code to copy. A passing test without the race detector does not establish safety."
+      },
+      {
+        "title": "Give each worker a separate slot",
+        "body": "A pre-sized slice permits independent element writes when each worker owns a different index, no worker changes the descriptor, and the reader waits for every writer. Elements that themselves contain shared pointers need their own ownership rules.",
+        "code": "results := make([]int, len(inputs))\nvar wg sync.WaitGroup\nfor i, value := range inputs {\n    wg.Add(1)\n    go func(i, value int) {\n        defer wg.Done()\n        results[i] = value * 2\n    }(i, value)\n}\nwg.Wait() // Read results only after the writers finish.",
+        "language": "go",
+        "walkthrough": "Index i is assigned to exactly one goroutine. WaitGroup orders the final read after the completed writes. For very large inputs, combine this ownership pattern with a bounded worker pool rather than starting a goroutine per item."
+      },
+      {
+        "title": "Use a single collector for variable-length output",
+        "body": "If each job returns an unknown number of values, let workers send results to one owner that appends, or protect every access with the same mutex. A channel transfers values; it does not deep-copy a slice payload. The sender must stop mutating transferred storage or clone it first. Run race-enabled tests on a supported desktop toolchain; the app does not offer a native race detector.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Concurrency safety comes from ownership and synchronization, not spare capacity. Distinct indexes plus a final join differ from concurrent append.",
+    "references": [
+      "https://go.dev/ref/mem",
+      "https://go.dev/doc/articles/race_detector.html"
+    ],
+    "reviewPrompt": "Concurrent append",
+    "reviewAnswer": "Needs one owner or synchronization, even with capacity",
+    "question": "Which statement is correct about concurrent append?",
+    "wrongAnswers": [
+      "Yes, allocation is the only shared operation",
+      "Yes, if the slice contains integers"
+    ],
+    "hint": "Separate the slice header from its elements and identify every writer.",
+    "nuance": "Independent slots are safe only with fixed ownership and synchronization before the final read."
+  },
+  {
+    "id": "collections.retained-buffers",
+    "unitID": "collections",
+    "afterLessonID": "collections.bounds",
+    "title": "A tiny slice can keep a large buffer alive",
+    "objective": "Recognize retained backing arrays and detach small long-lived results deliberately.",
+    "introduction": "Visible length is not retained memory size. A small view can keep an entire allocation reachable. This is often noticed when a parser, cache or queue stores a few bytes from each large input and memory grows far beyond the stored lengths.",
+    "conceptTag": "runtime.allocation",
+    "sections": [
+      {
+        "title": "Follow the reference that survives",
+        "body": "The function returns only sixteen bytes, but the result still points into the large allocation. As long as that backing array remains reachable, garbage collection cannot reclaim the array just because most of its bytes are outside the returned view.",
+        "code": "func prefix() []byte {\n    data := make([]byte, 8<<20)\n    // A real program would read data here.\n    return data[:16]\n}",
+        "language": "go",
+        "walkthrough": "The 8 MiB allocation is an illustrative size, not a threshold in Go. The problem is the lifetime mismatch: a short prefix outlives the large buffer it views."
+      },
+      {
+        "title": "Detach only what must outlive the input",
+        "body": "Copy a small result when it needs an independent lifetime. The copy costs time and an allocation, so use it at a boundary such as inserting into a long-lived cache, not indiscriminately inside every short-lived operation.",
+        "code": "func detachedPrefix(data []byte) []byte {\n    n := min(16, len(data))\n    return bytes.Clone(data[:n])\n}",
+        "language": "go",
+        "walkthrough": "Clipping capacity with data[:n:n] alone would not detach the original array. Setting one local variable to nil also does not help while another live view still refers to the allocation."
+      },
+      {
+        "title": "Measure retention rather than guessing",
+        "body": "Distinguish bytes allocated over time from bytes still live. A temporary copy can increase allocation traffic while reducing retained memory. Inspect heap profiles in the real service, reproduce with representative payloads, and compare before and after. For slices of pointers, discarded elements can also retain pointed-to objects; use appropriate clearing or slices helpers when shrinking reusable storage.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Optimize lifetimes, not just lengths. A small copy can release a much larger backing array once all other references are gone.",
+    "references": [
+      "https://go.dev/blog/slices-intro",
+      "https://pkg.go.dev/bytes#Clone",
+      "https://go.dev/doc/diagnostics"
+    ],
+    "reviewPrompt": "A long-lived subslice",
+    "reviewAnswer": "Can retain a much larger backing allocation",
+    "question": "Which statement is correct about a long-lived subslice?",
+    "wrongAnswers": [
+      "Clipping capacity with data[:n:n]",
+      "Assigning a second variable to the same slice"
+    ],
+    "hint": "Look for a small cached value that still points into a large input.",
+    "nuance": "Reducing a slice capacity does not copy storage or shorten the backing array lifetime."
+  },
+  {
+    "id": "concurrency.bounded-work",
+    "unitID": "concurrency",
+    "afterLessonID": "concurrency.worker-pool",
+    "title": "More goroutines are not more capacity",
+    "objective": "Bound active workers and queued work according to the resource that actually limits throughput.",
+    "introduction": "Concurrency is how work overlaps. Capacity is how much useful work the system can sustain. A thousand waiting goroutines do not give Redis a thousand extra cores or increase a database connection budget. They do consume memory, queue time and cancellation bookkeeping.",
+    "conceptTag": "services.capacity",
+    "sections": [
+      {
+        "title": "Start with a budget",
+        "body": "Suppose one downstream operation takes about 20 ms at the target load. Twenty concurrent operations can support roughly 1,000 operations per second in that simplified steady-state example. Real latency distributions, payload size and server limits change the result. Treat it as a sizing hypothesis, then measure tail latency and saturation.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Apply admission control before creating more work",
+        "body": "A fixed worker count bounds active calls. A bounded jobs channel also bounds queued work. A context-aware producer stops waiting when the request is no longer useful. This fragment shows the admission point; workers, cancellation and channel ownership must all belong to the same enclosing operation.",
+        "code": "jobs := make(chan Job, 32)\n// Start a fixed number of workers elsewhere.\nselect {\ncase jobs <- job:\n    // Accepted into the bounded queue.\ncase <-ctx.Done():\n    return ctx.Err()\n}",
+        "language": "go",
+        "walkthrough": "Do not launch a new goroutine for every rejected or blocked enqueue: that merely moves an unbounded queue from the channel into goroutine stacks."
+      },
+      {
+        "title": "Pick a deliberate overload response",
+        "body": "For request/response traffic, reject work that cannot meet its deadline or wait only within a bounded budget. For background work, use a durable queue if losing work is unacceptable. A worker pool limits concurrency, not requests per second; add rate limiting when the downstream contract is a rate. Track active calls, queue depth, queue age, errors and latency together.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Bound workers, waiting work and waiting time. Size those limits from downstream behavior, then verify under load.",
+    "references": [
+      "https://go.dev/blog/pipelines",
+      "https://pkg.go.dev/golang.org/x/sync/errgroup#Group.SetLimit"
+    ],
+    "reviewPrompt": "A bounded worker pool",
+    "reviewAnswer": "Limits concurrent jobs, not requests per second",
+    "question": "Which statement is correct about a bounded worker pool?",
+    "wrongAnswers": [
+      "It increases the dependency's physical capacity automatically",
+      "It removes all queueing and timeout costs"
+    ],
+    "hint": "Find the slowest resource and the queue in front of it.",
+    "nuance": "An unbounded population of goroutines waiting for a semaphore is still an unbounded queue."
+  },
+  {
+    "id": "concurrency.cancel-and-join",
+    "unitID": "concurrency",
+    "afterLessonID": "concurrency.no-handle",
+    "title": "Cancellation is a request; joining proves exit",
+    "objective": "Design a worker so it can stop waiting and its owner can wait for it to finish.",
+    "introduction": "Starting a goroutine creates an obligation: identify who asks it to stop and who observes that it has stopped. Canceling a context closes a signal; it does not terminate arbitrary Go code. Every blocking point must cooperate or have another bounded exit.",
+    "conceptTag": "concurrency.goroutine-leak",
+    "sections": [
+      {
+        "title": "A blocked send needs an escape",
+        "body": "A producer may outlive its consumer. If the consumer returns early, an unconditional send can wait forever and keep its goroutine and reachable objects alive. Select between sending and cancellation.",
+        "code": "func send(ctx context.Context, out chan<- Item, item Item) error {\n    select {\n    case out <- item:\n        return nil\n    case <-ctx.Done():\n        return ctx.Err()\n    }\n}",
+        "language": "go",
+        "walkthrough": "If the send and cancellation are both ready, select may choose either. Design the protocol to tolerate that race in intent; cancellation does not mean no operation can ever finish afterwards."
+      },
+      {
+        "title": "Wait for the owned goroutine",
+        "body": "A done channel acknowledges exit. The owner cancels, then waits. The worker must observe ctx, including inside downstream operations, or this wait can still block. Production shutdown also needs an overall timeout and a clear policy when a dependency refuses to return.",
+        "code": "ctx, cancel := context.WithCancel(parent)\ndone := make(chan struct{})\ngo func() {\n    defer close(done)\n    runWorker(ctx) // Must cooperate with cancellation.\n}()\n// Later, in the owner:\ncancel()\n<-done",
+        "language": "go",
+        "walkthrough": "The worker closes done because it owns the completion signal. Do not close a work channel from an unrelated receiver while senders may still use it."
+      },
+      {
+        "title": "Use a lifecycle checklist",
+        "body": "For every worker, list start, inputs, outputs, stop signal and join point. Include error paths, not only success. Context does not interrupt a mutex lock or CPU loop automatically; choose primitives and loop checkpoints accordingly. A finalizer or the garbage collector is not a goroutine cleanup strategy.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Cancellation communicates intent. A join or completion acknowledgement establishes that the owned work has actually stopped.",
+    "references": [
+      "https://go.dev/blog/pipelines",
+      "https://pkg.go.dev/context"
+    ],
+    "reviewPrompt": "Cancellation and joining",
+    "reviewAnswer": "Request a stop, then observe the worker finishing",
+    "question": "Which statement is correct about cancellation and joining?",
+    "wrongAnswers": [
+      "Every goroutine using it has already exited",
+      "Every blocking primitive is forcibly interrupted"
+    ],
+    "hint": "Identify the stop signal and the acknowledgement as two separate events.",
+    "nuance": "A context only helps at code paths and APIs that observe it; cancellation alone does not join workers."
+  },
+  {
+    "id": "runtime.stack-and-heap",
+    "unitID": "runtime",
+    "afterLessonID": null,
+    "title": "Stacks, escape analysis and object lifetimes",
+    "objective": "Explain why returning a local address is safe and why allocation placement must be measured.",
+    "introduction": "Lifetime is the semantic question: how long must a value remain usable? Stack and heap placement are implementation choices used to satisfy that requirement. The compiler performs escape analysis; source syntax alone is not a dependable allocation profiler.",
+    "conceptTag": "runtime.allocation",
+    "sections": [
+      {
+        "title": "A local address can safely leave a function",
+        "body": "Returning a pointer to a local value is normal Go. The implementation arranges storage so callers do not receive a dangling pointer. Do not import C stack-lifetime rules into this code.",
+        "code": "type Counter struct { N int }\nfunc newCounter() *Counter {\n    c := Counter{N: 1}\n    return &c\n}",
+        "language": "go",
+        "walkthrough": "The local spelling c does not disappear in a way that invalidates the returned pointer. Exactly which allocations survive optimization can depend on inlining and the surrounding call sites."
+      },
+      {
+        "title": "Pointers are a design decision first",
+        "body": "A value receiver copies its receiver; a pointer receiver allows shared mutation and may be required by method sets. Neither form is universally faster. Large copies, escaping references, cache locality and synchronization all matter. Start with ownership and API semantics, then inspect a benchmark that represents the actual use.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Inspect the native build, not an assumption",
+        "body": "On a desktop Go installation, compiler diagnostics can report escape decisions. Their wording and decisions can change across versions; they are observations, not API guarantees.",
+        "code": "go build -gcflags=\"-m=2\" ./...\ngo test -bench=. -benchmem ./...",
+        "language": "shell",
+        "walkthrough": "Use these commands in your development environment. Compare allocations per operation and time after warm-up. The app's WebAssembly sandbox does not reproduce every native service allocation or threading cost."
+      }
+    ],
+    "takeaway": "Reason about required lifetime first. Use compiler diagnostics and measurements to learn how the implementation realizes it.",
+    "references": [
+      "https://go.dev/doc/faq#stack_or_heap",
+      "https://go.dev/doc/diagnostics"
+    ],
+    "reviewPrompt": "Escape analysis",
+    "reviewAnswer": "Helps determine stack versus heap storage",
+    "question": "Which statement is correct about escape analysis?",
+    "wrongAnswers": [
+      "The pointer always expires on the next function call",
+      "The caller must manually free the local stack frame"
+    ],
+    "hint": "Separate the language lifetime guarantee from a particular allocation decision.",
+    "nuance": "Pointer syntax does not prove a heap allocation, and a value expression is not a promise of zero allocations."
+  },
+  {
+    "id": "runtime.gc-reachability",
+    "unitID": "runtime",
+    "afterLessonID": null,
+    "title": "What the garbage collector can and cannot free",
+    "objective": "Follow references from roots and distinguish unreachable objects from unwanted live data.",
+    "introduction": "Garbage collection reclaims memory that the runtime determines is no longer reachable. It does not know that an application has lost interest in a cache entry, nor does it close a forgotten network connection on a useful schedule. Ownership still matters.",
+    "conceptTag": "runtime.gc",
+    "sections": [
+      {
+        "title": "Think in reference paths",
+        "body": "Imagine a global cache holding a pointer to an order, which points to a large receipt buffer. As long as a live reference path reaches the buffer, it is not garbage. Removing one local reference is insufficient when the cache still holds another.",
+        "code": "type Order struct { Receipt []byte }\nvar cache = map[string]*Order{}\n\nfunc remember(id string, receipt []byte) {\n    cache[id] = &Order{Receipt: receipt}\n}\n// These helpers assume a single owner of cache.\nfunc forget(id string) {\n    delete(cache, id)\n}",
+        "language": "go",
+        "walkthrough": "Delete removes this map entry, not every possible reference to the order. Concurrent access to the map would require synchronization. The example focuses only on the reference graph."
+      },
+      {
+        "title": "Collection is not immediate destruction",
+        "body": "An unreachable allocation becomes eligible for reclamation; there is no promise that the operating system immediately receives the same amount of memory. Runtime-managed free space can be reused. RSS, live heap and total allocated bytes answer different questions, so compare like with like when diagnosing growth.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Resources need explicit lifetime management",
+        "body": "Close files and response bodies, stop owned background workers, and bound caches according to their contracts. A tracing collector can collect unreachable cycles, but it cannot make an indefinitely blocked goroutine release the values it still reaches. Avoid finalizers as normal cleanup: their timing does not establish a reliable resource protocol.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "The GC answers reachability, not business usefulness. Remove unwanted references and close resources explicitly; then measure the correct memory metric.",
+    "references": [
+      "https://go.dev/doc/gc-guide",
+      "https://pkg.go.dev/runtime"
+    ],
+    "reviewPrompt": "A cached reachable object",
+    "reviewAnswer": "Stays live until its remaining references disappear",
+    "question": "Which statement is correct about a cached reachable object?",
+    "wrongAnswers": [
+      "The garbage collector never handles byte slices",
+      "Setting any variable to nil disables future collection"
+    ],
+    "hint": "Follow every remaining reference path, including caches and blocked workers.",
+    "nuance": "Eligible for collection does not mean the same bytes disappear from process RSS immediately."
+  },
+  {
+    "id": "runtime.gc-budget",
+    "unitID": "runtime",
+    "afterLessonID": null,
+    "title": "GC cost, allocation rate and memory budgets",
+    "objective": "Distinguish reducing live data from tuning collection frequency and respect a container memory limit.",
+    "introduction": "A service pays for memory in more than one way: live objects occupy space, new allocations create work, and collection uses CPU. Tuning a single GC knob cannot repair an unbounded cache or a queue that retains every request body.",
+    "conceptTag": "runtime.gc",
+    "sections": [
+      {
+        "title": "Measure two different problems",
+        "body": "A high allocation rate with a small live heap suggests churn: many objects become garbage quickly. A growing live heap suggests retained data or a growing workload. Capture representative profiles before changing code; removing one temporary allocation is not helpful if a cache retains gigabytes indefinitely.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Treat settings as tradeoffs",
+        "body": "GOGC influences the heap-growth target and therefore the tradeoff between collection frequency and memory. GOMEMLIMIT is a soft runtime memory limit, not an operating-system hard cap. Native allocations and other process memory can require additional budget. Leave measured headroom under the container limit rather than making the two numbers equal.",
+        "code": "# Illustrative native-service configuration, not an iOS setting:\nGOGC=100 GOMEMLIMIT=400MiB ./service",
+        "language": "shell",
+        "walkthrough": "The 400 MiB value is an example, not a recommendation for every 512 MiB container. Measure your binary, traffic and non-runtime memory before choosing a value."
+      },
+      {
+        "title": "Reduce work before aggressive tuning",
+        "body": "Avoid retaining whole request graphs in queues, bound cache entries, and reuse buffers only with clear ownership and size limits. Increasing a memory allowance may reduce collection frequency but raises memory use; forcing very frequent GC can waste CPU. A pool is an optimization with lifecycle constraints, not a guarantee that objects will stay cached or that memory use is bounded.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "First bound live data and measure allocation churn. Then tune collection within an observed process budget and recheck latency under load.",
+    "references": [
+      "https://go.dev/doc/gc-guide",
+      "https://pkg.go.dev/runtime/debug#SetMemoryLimit",
+      "https://pkg.go.dev/sync#Pool"
+    ],
+    "reviewPrompt": "GOMEMLIMIT",
+    "reviewAnswer": "A soft runtime budget, not a process hard cap",
+    "question": "Which statement is correct about gomemlimit?",
+    "wrongAnswers": [
+      "Yes, it caps every byte used by the process",
+      "Yes, it also bounds caches and request queues"
+    ],
+    "hint": "Compare allocation rate, live heap and process memory before choosing a knob.",
+    "nuance": "The runtime memory limit is soft and cannot substitute for a bounded workload or a measured container budget."
+  },
+  {
+    "id": "runtime.goroutines-and-threads",
+    "unitID": "runtime",
+    "afterLessonID": null,
+    "title": "Goroutines, OS threads and GOMAXPROCS",
+    "objective": "Explain concurrency versus parallel execution without assuming a goroutine is an OS thread.",
+    "introduction": "A goroutine is a Go execution task scheduled by the runtime. An OS thread is an operating-system execution resource. The runtime multiplexes tasks onto threads; counting goroutines therefore does not tell you how many cores are doing useful work.",
+    "conceptTag": "runtime.scheduler",
+    "sections": [
+      {
+        "title": "Use the G, M, P model carefully",
+        "body": "In runtime terminology G represents a goroutine, M an OS thread, and P the scheduler resources needed to execute ordinary Go code. GOMAXPROCS controls how many Ps execute Go code at once. It is not a limit on total goroutines or a universal limit on all process threads.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "CPU work and waiting behave differently",
+        "body": "Several CPU-bound tasks need available execution capacity to run in parallel. Waiting network operations can overlap while other work proceeds. Starting ten thousand CPU-heavy goroutines does not create ten thousand cores and may add scheduling overhead. Native defaults can account for runtime and container configuration; inspect the actual service instead of copying a magic setting.",
+        "code": "fmt.Println(\"Go execution slots:\", runtime.GOMAXPROCS(0))\nfmt.Println(\"goroutines now:\", runtime.NumGoroutine())",
+        "language": "go",
+        "walkthrough": "Passing zero queries the current GOMAXPROCS value. NumGoroutine is a snapshot and includes runtime/application work; it is a diagnostic signal, not a precise request counter."
+      },
+      {
+        "title": "Choose the right concurrency level",
+        "body": "For CPU work, benchmark a bounded pool around the available CPU budget. For I/O work, use downstream concurrency, queue and deadline limits. A service can be overloaded with many waiting tasks even when CPU looks low. The iOS app's WebAssembly execution environment does not demonstrate native OS-thread behavior; these examples describe native Go services.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Goroutines express concurrency. The runtime and OS determine parallel execution within available CPU and downstream budgets.",
+    "references": [
+      "https://go.dev/src/runtime/HACKING",
+      "https://pkg.go.dev/runtime#GOMAXPROCS"
+    ],
+    "reviewPrompt": "GOMAXPROCS",
+    "reviewAnswer": "Limits parallel Go execution slots, not goroutines",
+    "question": "Which statement is correct about gomaxprocs?",
+    "wrongAnswers": [
+      "Yes, each goroutine reserves a physical core",
+      "Yes, once the goroutine has a large enough stack"
+    ],
+    "hint": "Count tasks, execution slots and operating-system threads as different quantities.",
+    "nuance": "A low CPU percentage can coexist with severe overload caused by blocked downstream calls and growing queues."
+  },
+  {
+    "id": "runtime.profiles-and-leaks",
+    "unitID": "runtime",
+    "afterLessonID": null,
+    "title": "Find a leak by following evidence",
+    "objective": "Choose a heap profile, goroutine profile, CPU profile or trace to test a specific hypothesis.",
+    "introduction": "A rising memory graph is a symptom. Before changing code, ask whether traffic grew, objects are retained, workers are stuck, or allocation churn became expensive. Different diagnostic tools answer different questions.",
+    "conceptTag": "runtime.profiling",
+    "sections": [
+      {
+        "title": "Choose the observation",
+        "body": "A heap profile helps find retained allocations; allocation profiles emphasize cumulative allocation traffic. A goroutine profile shows where tasks wait. CPU sampling identifies code consuming CPU, while an execution trace exposes scheduling and blocking relationships. Compare the same workload and interval rather than comparing unrelated snapshots.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Write a bounded diagnostic capture",
+        "body": "For a native local program, a goroutine profile can be written to a file without opening an HTTP diagnostics server. Handle the file error and close the file. Profiles can include operational details, so store and share them deliberately.",
+        "code": "f, err := os.Create(\"goroutines.txt\")\nif err != nil {\n    return err\n}\ndefer f.Close()\nif err := pprof.Lookup(\"goroutine\").WriteTo(f, 1); err != nil {\n    return err\n}",
+        "language": "go",
+        "walkthrough": "This fragment belongs inside an error-returning diagnostic function and imports os and runtime/pprof. Capture once at the relevant time; do not create an unbounded stream of profile files."
+      },
+      {
+        "title": "Turn a suspicion into a comparison",
+        "body": "If goroutine count grows after requests finish, compare stacks and identify the owner of the repeated wait. If heap grows with cache keys, inspect eviction and reference lifetimes. Change one thing and repeat the workload. A single stable run does not prove absence of races or leaks, and profiling overhead itself should be considered.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Name the hypothesis, choose a tool that can observe it, and compare equivalent workloads before and after the change.",
+    "references": [
+      "https://go.dev/doc/diagnostics",
+      "https://pkg.go.dev/runtime/pprof",
+      "https://pkg.go.dev/runtime/trace"
+    ],
+    "reviewPrompt": "A goroutine profile",
+    "reviewAnswer": "Shows stacks that help locate blocked workers",
+    "question": "Which statement is correct about a goroutine profile?",
+    "wrongAnswers": [
+      "Only the application binary size",
+      "Only the total number of source files"
+    ],
+    "hint": "Pick the profile that can actually observe the suspected resource.",
+    "nuance": "Profiles need workload context; a large cumulative allocation total does not itself establish a live-memory leak."
+  },
+  {
+    "id": "services.http-lifecycle",
+    "unitID": "services",
+    "afterLessonID": null,
+    "title": "An HTTP request has a lifecycle and a budget",
+    "objective": "Separate request parsing, domain work, downstream deadlines and response writing.",
+    "introduction": "A Go web service is more than a route callback. Every request consumes a connection, parsing work, application time and possibly downstream capacity. Give those resources explicit lifetimes. This lesson describes native server code; guest Go programs in the app cannot open network sockets.",
+    "conceptTag": "stdlib.http",
+    "sections": [
+      {
+        "title": "Keep the boundary small",
+        "body": "A handler translates a protocol into an application operation: validate input, call a service with the request context, then map the result to a response. Domain logic should not need a ResponseWriter. If the client leaves, the request context can notify cooperative downstream work.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Configure a server rather than only a callback",
+        "body": "This is a native-server configuration fragment. Header and idle timeouts address specific connection phases; they are not a complete business-operation deadline. WriteTimeout must fit the response type, especially streaming, rather than being copied blindly.",
+        "code": "srv := &http.Server{\n    Addr:              \":8080\",\n    Handler:           handler,\n    ReadHeaderTimeout: 5 * time.Second,\n    IdleTimeout:       60 * time.Second,\n}\n// Start srv and arrange graceful shutdown in the owning process.",
+        "language": "go",
+        "walkthrough": "The values are illustrative. Add request-body limits, operation-specific deadlines and response policies based on the API. A timeout does not undo an operation the remote service already committed."
+      },
+      {
+        "title": "Choose HTTP when it matches the problem",
+        "body": "HTTP APIs fit request/response interactions and interoperability. A batch program or local library may need no server at all. Test handlers with httptest and in-memory requests before deployment. In-memory handler tests check application behavior; they do not prove production TLS, socket, proxy or load-balancer configuration.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "A handler is an adapter with explicit resource limits. Pass context into the application and test protocol behavior without requiring a running network service.",
+    "references": [
+      "https://pkg.go.dev/net/http#Server",
+      "https://pkg.go.dev/net/http/httptest"
+    ],
+    "reviewPrompt": "An HTTP adapter",
+    "reviewAnswer": "Translates requests and responses around a use case",
+    "question": "Which statement is correct about an http adapter?",
+    "wrongAnswers": [
+      "Owning every domain rule and database implementation",
+      "Guaranteeing a remote operation is undone after timeout"
+    ],
+    "hint": "Follow the request from validation to the final response, including cancellation.",
+    "nuance": "Connection-phase timeouts and a business operation deadline protect different parts of a request."
+  },
+  {
+    "id": "services.gin-routing",
+    "unitID": "services",
+    "afterLessonID": null,
+    "title": "Gin routes are adapters, not the whole application",
+    "objective": "Read route groups, path parameters and injected dependencies in a small Gin API.",
+    "introduction": "Gin supplies routing, middleware and request/response helpers on top of net/http. It is useful when those conventions reduce repeated adapter code. It does not supply your domain model, persistence policy or downstream capacity, and a small API can also use the standard library.",
+    "conceptTag": "services.gin",
+    "sections": [
+      {
+        "title": "Read the route from left to right",
+        "body": "New creates an engine without the default middleware set. The group applies a common path prefix. A named segment is read from the Gin context, then handed to a service. This is an illustrative fragment: store and its result/error contract are application dependencies.",
+        "code": "r := gin.New()\nr.Use(gin.Logger(), gin.Recovery())\napi := r.Group(\"/v1\")\napi.GET(\"/items/:id\", func(c *gin.Context) {\n    id := c.Param(\"id\")\n    item, err := store.Find(c.Request.Context(), id)\n    if err != nil {\n        c.JSON(http.StatusNotFound, gin.H{\"error\": \"item unavailable\"})\n        return\n    }\n    c.JSON(http.StatusOK, item)\n})",
+        "language": "go",
+        "walkthrough": "This simplified example treats Find failure uniformly. A real adapter should distinguish not-found from timeout, cancellation and internal failure rather than returning 404 for all of them."
+      },
+      {
+        "title": "Inject the dependency, not a global registry",
+        "body": "Construct a handler with the interface it needs, then register methods on the engine. That makes a fake store available to tests and avoids hiding process configuration in globals. Keep route names and response shapes stable as an external contract.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Test routing without starting a server",
+        "body": "A Gin engine implements http.Handler, so httptest can send an in-memory request through the router and middleware. Assert status, headers and body, including errors. The app includes local-preview patterns, but these reading examples are not a promise that every Gin version or native networking feature runs in its sandbox.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Use Gin to express the HTTP adapter. Keep application behavior behind explicit dependencies and test the adapter through its Handler interface.",
+    "references": [
+      "https://gin-gonic.com/en/docs/",
+      "https://github.com/gin-gonic/gin/blob/master/docs/doc.md"
+    ],
+    "reviewPrompt": "A Gin route group",
+    "reviewAnswer": "Shares a URL prefix and middleware between routes",
+    "question": "Which statement is correct about a gin route group?",
+    "wrongAnswers": [
+      "It creates a separate operating-system process for every route",
+      "It automatically implements the database layer"
+    ],
+    "hint": "Read the path prefix, route pattern, parameter and response in that order.",
+    "nuance": "Gin is optional tooling around HTTP; it does not make an application architecture or network policy for you."
+  },
+  {
+    "id": "services.gin-validation",
+    "unitID": "services",
+    "afterLessonID": null,
+    "title": "Validate a request before doing side effects",
+    "objective": "Follow JSON binding, size limits, validation and a safe error response.",
+    "introduction": "Decoded JSON is not yet trusted application input. A field can have the right Go type and still violate a business rule. Bound the body, handle decoding failure, then apply domain validation before writing to storage or calling another service.",
+    "conceptTag": "services.gin",
+    "sections": [
+      {
+        "title": "Separate decoding from application rules",
+        "body": "This adapter accepts a JSON object with a non-empty name. ShouldBindJSON lets the handler choose its error response instead of relying on an automatically written status. The body cap is a policy example and should match the endpoint.",
+        "code": "type CreateItem struct {\n    Name string `json:\"name\" binding:\"required,max=80\"`\n}\nfunc create(c *gin.Context) {\n    c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 16<<10)\n    var input CreateItem\n    if err := c.ShouldBindJSON(&input); err != nil {\n        c.JSON(http.StatusBadRequest, gin.H{\"error\": \"invalid request\"})\n        return\n    }\n    // Normalize and validate domain rules before persisting input.\n}",
+        "language": "go",
+        "walkthrough": "The generic error avoids echoing an arbitrary decoder message. A production API can map an over-limit body to 413 and expose structured, documented field errors. Decide whether unknown JSON fields should be rejected and configure that policy deliberately."
+      },
+      {
+        "title": "Validation does not provide authorization",
+        "body": "A valid item ID does not prove the requester may access that item. Authenticate the caller, check authorization at the relevant boundary, and keep secrets out of logs and responses. Binding tags check specified shapes; business invariants may require several fields and current state.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Test the cases users actually send",
+        "body": "Cover missing fields, wrong types, malformed and oversized input, duplicate requests and unexpected fields according to the chosen policy. Specify whether optional zero values differ from missing values. If accepting a command has an external effect, consider an idempotency contract rather than assuming retries are harmless.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Decode, validate shape, enforce business rules and authorization, then perform side effects. Each step has a different responsibility.",
+    "references": [
+      "https://github.com/gin-gonic/gin/blob/master/docs/doc.md",
+      "https://pkg.go.dev/net/http#MaxBytesReader"
+    ],
+    "reviewPrompt": "Successful JSON binding",
+    "reviewAnswer": "Does not prove authorization or every business rule",
+    "question": "Which statement is correct about successful json binding?",
+    "wrongAnswers": [
+      "The user is authorized to access every referenced record",
+      "The request is safe to retry after any side effect"
+    ],
+    "hint": "Find the point where input first becomes allowed to cause a side effect.",
+    "nuance": "Required fields and authorization are different checks; valid JSON can still represent an invalid operation."
+  },
+  {
+    "id": "services.redis-capacity",
+    "unitID": "services",
+    "afterLessonID": null,
+    "title": "Redis is fast; its capacity is still finite",
+    "objective": "Distinguish client pool limits, request deadlines, rate limits and bounded command batches.",
+    "introduction": "Redis can be overwhelmed by too much work, large payloads, expensive commands or many clients competing for the same resources. Making every slice element a goroutine only moves pressure downstream. Treat the server, the network and the client pool as separate budgets.",
+    "conceptTag": "services.redis",
+    "sections": [
+      {
+        "title": "Understand what a client pool limits",
+        "body": "A shared client normally reuses connections. Creating a new client for each request defeats that reuse. A connection-pool setting is not automatically a global rate limiter, and waiting for a connection still consumes request time. Exact option semantics depend on the client version; read its production documentation.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Give each operation a bounded lifetime",
+        "body": "This native Go fragment assumes a configured shared go-redis client. Missing keys and infrastructure failures are different cases. The request context carries the parent lifetime; the shorter local timeout bounds this particular operation.",
+        "code": "ctx, cancel := context.WithTimeout(requestCtx, 150*time.Millisecond)\ndefer cancel()\nvalue, err := client.Get(ctx, key).Result()\nswitch {\ncase errors.Is(err, redis.Nil):\n    // Cache miss: use the documented fallback.\ncase err != nil:\n    return fmt.Errorf(\"cache lookup: %w\", err)\ndefault:\n    use(value)\n}",
+        "language": "go",
+        "walkthrough": "150 ms is an example, not a universal Redis timeout. Configure and verify client network timeouts as well; do not assume a context deadline replaces every transport setting."
+      },
+      {
+        "title": "Batch for efficiency without removing limits",
+        "body": "Pipelining can reduce network round trips, but an enormous pipeline can increase queued work and memory. Bound batch size and total payload, avoid broad scans or expensive hot-path commands, and monitor server latency, errors, pool waits and command volume. Test fallback behavior too: when the cache slows, a sudden flood of misses can overload the database behind it.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Limit work before it reaches Redis. A pool, timeout, rate limiter and bounded pipeline solve different parts of the capacity problem.",
+    "references": [
+      "https://redis.io/docs/latest/develop/clients/go/produsage/",
+      "https://redis.io/docs/latest/develop/using-commands/pipelining/"
+    ],
+    "reviewPrompt": "A Redis connection pool",
+    "reviewAnswer": "Reuses connections; it is not a request-rate limit",
+    "question": "Which statement is correct about a redis connection pool?",
+    "wrongAnswers": [
+      "Yes, every connection always allows exactly one request per second",
+      "Yes, it also bounds every other application instance"
+    ],
+    "hint": "Identify the client pool, the queue and the server as separate limits.",
+    "nuance": "A cache outage can become a database outage if fallback traffic has no admission control."
+  },
+  {
+    "id": "services.cache-stampede",
+    "unitID": "services",
+    "afterLessonID": null,
+    "title": "Cache misses, retries and overload amplification",
+    "objective": "Design a cache-miss path that avoids multiplying identical work and ambiguous retries.",
+    "introduction": "A cache is often added to reduce load, yet its failure path can multiply load. When a popular key expires, many callers may fetch the same value at once. When a timeout triggers retries at several layers, one user action can become many downstream operations.",
+    "conceptTag": "services.capacity",
+    "sections": [
+      {
+        "title": "Collapse duplicate work within a process",
+        "body": "singleflight lets concurrent callers for the same key share one in-flight computation. The loader should have an explicit bounded lifetime. In this fragment loadCtx is owned by the service, not borrowed indefinitely from whichever request happened to arrive first.",
+        "code": "result, err, _ := group.Do(key, func() (any, error) {\n    ctx, cancel := context.WithTimeout(loadCtx, time.Second)\n    defer cancel()\n    return loadFromStore(ctx, key)\n})\nif err != nil { return err }\nuse(result)",
+        "language": "go",
+        "walkthrough": "group is a shared singleflight.Group. This synchronous form waits for the shared result; callers that must independently stop waiting need a cancellation-aware design, for example DoChan with a select. Coalescing is per process, not a distributed lock across replicas."
+      },
+      {
+        "title": "Define cache freshness and failure policy",
+        "body": "Choose TTLs from the data contract. Jitter can spread expirations, but it does not make stale data acceptable automatically. Serving a stale value may be useful for a catalogue and wrong for an authorization decision. Bound key count and value size, and ensure a miss cannot start unlimited fallback work.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Retry only a retryable, safe operation",
+        "body": "Use a small attempt budget, backoff with jitter and an overall deadline. A timed-out write may already have committed, so an automatic retry can duplicate a side effect without an idempotency contract. Coordinate retries at one layer where possible. Record attempts and final outcomes so apparent success does not conceal amplified downstream load.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Coalesce duplicates, bound fallback work and retry under an explicit contract. A faster happy path does not excuse an unbounded failure path.",
+    "references": [
+      "https://pkg.go.dev/golang.org/x/sync/singleflight",
+      "https://redis.io/docs/latest/develop/clients/go/produsage/"
+    ],
+    "reviewPrompt": "singleflight.Group",
+    "reviewAnswer": "Coalesces in-flight work per key within one process",
+    "question": "Which statement is correct about singleflight.group?",
+    "wrongAnswers": [
+      "All replicas and all Redis clients worldwide",
+      "Every completed request forever, like a persistent cache"
+    ],
+    "hint": "Follow one expired hot key through every replica and retry layer.",
+    "nuance": "An in-flight duplicate suppressor is neither a persistent cache nor a distributed lock."
+  },
+  {
+    "id": "architecture.package-boundaries",
+    "unitID": "architecture",
+    "afterLessonID": null,
+    "title": "Packages follow responsibilities, not a diagram",
+    "objective": "Choose cohesive package boundaries and keep concrete dependencies at the edges.",
+    "introduction": "Go packages provide namespaces and compile-time dependency boundaries. More packages do not automatically create a cleaner design. Start with behavior that changes together, then separate a boundary when it hides an implementation detail or makes a dependency direction clearer.",
+    "conceptTag": "architecture.boundaries",
+    "sections": [
+      {
+        "title": "Keep names useful at the call site",
+        "body": "A package named orders can expose orders.Service or orders.Create without repeating a business prefix everywhere. A package called utils tends to accumulate unrelated dependencies because its purpose does not constrain what belongs there. Prefer a name that explains why its exported operations belong together.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Let the consumer name a small interface",
+        "body": "The application needs the operation Save, not every method of the database client. Define that need near the code that uses it, and inject an implementation when wiring the process.",
+        "code": "type OrderStore interface {\n    Save(context.Context, Order) error\n}\ntype Service struct { store OrderStore }\nfunc NewService(store OrderStore) *Service {\n    return &Service{store: store}\n}",
+        "language": "go",
+        "walkthrough": "The concrete SQL or Redis adapter can satisfy this interface implicitly. Do not create an interface for every struct by habit; add it where substitution or a stable boundary is useful."
+      },
+      {
+        "title": "Review dependency direction",
+        "body": "HTTP handlers can depend on application operations; those operations should not need a router context. Keep protocol and storage types from spreading through every function. An internal directory can restrict which importers may use a package, but it does not make a design cohesive by itself. Watch for import cycles as a signal that responsibilities may be entangled.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "A good boundary reduces what a caller must know. Use cohesive packages and small consumer-owned contracts where they remove real coupling.",
+    "references": [
+      "https://go.dev/doc/modules/layout",
+      "https://go.dev/doc/effective_go#interfaces"
+    ],
+    "reviewPrompt": "A consumer-owned interface",
+    "reviewAnswer": "Names the behavior its caller needs from a dependency",
+    "question": "Which statement is correct about a consumer-owned interface?",
+    "wrongAnswers": [
+      "In a universal package containing every database API",
+      "As a mandatory duplicate for every concrete type"
+    ],
+    "hint": "Describe the caller's required behavior before naming the implementation.",
+    "nuance": "A directory tree is not architecture unless dependencies and responsibilities actually follow its boundaries."
+  },
+  {
+    "id": "architecture.ports-and-adapters",
+    "unitID": "architecture",
+    "afterLessonID": null,
+    "title": "Ports and adapters with a real request",
+    "objective": "Trace an HTTP adapter through an application operation to a storage port and compare test boundaries.",
+    "introduction": "Ports and adapters is a way to keep a use case independent of delivery and infrastructure details. It is useful when one behavior has several entry points or storage implementations. The value comes from dependency direction, not from the number of folders named domain.",
+    "conceptTag": "architecture.boundaries",
+    "sections": [
+      {
+        "title": "Trace one operation",
+        "body": "A request body becomes a CreateOrder command. The application validates business rules and calls an OrderStore port. The HTTP adapter translates the outcome back into protocol terms. The storage adapter translates the port operation into its own database protocol. Domain rules do not inspect HTTP headers or SQL row objects.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Keep orchestration readable",
+        "body": "This example is an application fragment. Validation runs before persistence. The error receives operation context while the caller retains access to its cause.",
+        "code": "func (s *Service) Create(ctx context.Context, order Order) error {\n    if err := order.Validate(); err != nil {\n        return err\n    }\n    if err := s.store.Save(ctx, order); err != nil {\n        return fmt.Errorf(\"save order: %w\", err)\n    }\n    return nil\n}",
+        "language": "go",
+        "walkthrough": "The interface does not define transaction semantics by magic. If creating an order and publishing an event must be atomic, design that consistency boundary explicitly, for example with a database transaction and an outbox."
+      },
+      {
+        "title": "Test at more than one boundary",
+        "body": "A fake store can test the use case cheaply, but cannot prove that a SQL adapter writes the right schema. Add integration tests for adapters and a smaller number of end-to-end journeys. Keep fakes faithful to important failure contracts, including cancellation and duplicate requests. Avoid adding layers when a small program has no substitution or ownership problem to solve.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Use a port to express an application need and an adapter to translate an external mechanism. Verify both the use case and the concrete boundary.",
+    "references": [
+      "https://go.dev/doc/effective_go#interfaces",
+      "https://pkg.go.dev/database/sql#Tx"
+    ],
+    "reviewPrompt": "A storage port",
+    "reviewAnswer": "Expresses a use case need independently of the database",
+    "question": "Which statement is correct about a storage port?",
+    "wrongAnswers": [
+      "Every table and wire command used by all databases",
+      "An automatic transaction spanning unrelated external services"
+    ],
+    "hint": "Trace a single request rather than adding layers to an abstract diagram.",
+    "nuance": "Mocking a dependency tests a contract in isolation; it does not verify the concrete adapter honors that contract."
+  },
+  {
+    "id": "architecture.styles-and-clean-code",
+    "unitID": "architecture",
+    "afterLessonID": null,
+    "title": "Choose a style; keep the code easy to change",
+    "objective": "Compare a modular monolith, layered design and microservices using concrete operational tradeoffs.",
+    "introduction": "Architecture is a choice about boundaries, change and failure. A modular monolith can keep strong internal boundaries with one deployment. Microservices can separate ownership and release schedules, but add remote calls, distributed failures, versioning and operational work.",
+    "conceptTag": "architecture.design",
+    "sections": [
+      {
+        "title": "Choose the smallest useful distribution boundary",
+        "body": "A small team sharing one transaction model may benefit from one deployable process with cohesive packages. Separate services become useful when independent scaling, ownership or delivery outweighs coordination costs. A folder named services does not make a monolith distributed, and a network hop does not make a boundary clean.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Make the normal path visible",
+        "body": "Early returns keep a short function focused on its successful operation. Names should explain domain meaning; return errors at the layer able to add useful context. Avoid a generic helper that hides the important policy decision from its caller.",
+        "code": "func Ship(order Order) error {\n    if order.Cancelled {\n        return ErrCancelled\n    }\n    if !order.Paid {\n        return ErrUnpaid\n    }\n    return reserveShipment(order)\n}",
+        "language": "go",
+        "walkthrough": "This fragment makes the ordering of policy checks explicit. The real operation still needs an atomicity and idempotency contract if reservation changes external state. Shorter code is not cleaner when it conceals those obligations."
+      },
+      {
+        "title": "Use a change-oriented checklist",
+        "body": "Ask whether one business change requires edits across unrelated packages; whether error ownership is clear; whether interfaces have real consumers; and whether tests describe observable behavior instead of private function calls. Keep formatting with gofmt, document surprising contracts, and remove abstractions that do not pay for their indirection. No architecture style eliminates concurrency, capacity or consistency tradeoffs.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Choose boundaries for real change and ownership needs. Clear names, explicit errors, narrow contracts and behavioral tests matter in every architecture style.",
+    "references": [
+      "https://go.dev/doc/effective_go",
+      "https://go.dev/doc/modules/layout"
+    ],
+    "reviewPrompt": "A modular monolith",
+    "reviewAnswer": "Keeps module boundaries in one deployable process",
+    "question": "Which statement is correct about a modular monolith?",
+    "wrongAnswers": [
+      "It must expose every internal operation over a network",
+      "It cannot have independent modules or tests"
+    ],
+    "hint": "Compare the cost of a boundary with the change it makes easier.",
+    "nuance": "Distribution adds failure modes and operational work; it is not a prerequisite for clean Go code."
+  },
+  {
+    "id": "operations.bash-arguments",
+    "unitID": "operations",
+    "afterLessonID": null,
+    "title": "Bash passes arguments; quoting defines their boundaries",
+    "objective": "Read a small build script without splitting paths or accidentally invoking a shell through Go.",
+    "introduction": "Bash is useful for connecting build and deployment tools on a developer machine. Go itself does not require Bash, Docker or Kubernetes. Learning their boundaries helps when a Go program becomes part of a service workflow; these commands are reading examples, not app terminal commands.",
+    "conceptTag": "tooling.bash",
+    "sections": [
+      {
+        "title": "Preserve a path as one argument",
+        "body": "Unquoted parameter expansion can perform word splitting and filename expansion. Quote a variable when its value should be one argument. In Bash, an array preserves several arguments without rebuilding a shell command string.",
+        "code": "#!/usr/bin/env bash\nset -u\nproject_dir=\"${1:-.}\"\nargs=(-C \"$project_dir\" test ./...)\ngo \"${args[@]}\"",
+        "language": "bash",
+        "walkthrough": "With a directory containing spaces, the array still supplies one directory argument. The script uses Bash-specific array syntax; it is not a portable /bin/sh script. The -C option changes Go's working directory before running the command."
+      },
+      {
+        "title": "Keep data out of shell syntax",
+        "body": "When a Go process starts a tool, exec.Command passes an argument vector directly. This avoids asking a shell to reinterpret semicolons, substitutions or spaces. It does not by itself make the target command safe; validate its allowed operation and arguments.",
+        "code": "cmd := exec.CommandContext(ctx, \"go\", \"test\", \"./...\")\ncmd.Dir = projectDir\ncmd.Stdout = os.Stdout\ncmd.Stderr = os.Stderr\nif err := cmd.Run(); err != nil {\n    return fmt.Errorf(\"go test: %w\", err)\n}",
+        "language": "go",
+        "walkthrough": "This is native Go code for a development tool. It does not add subprocess execution to the iOS sandbox. Avoid sh -c with concatenated user input."
+      },
+      {
+        "title": "Choose Go when the script stops being glue",
+        "body": "A few fixed tool invocations can remain a script. Structured retries, complex state, concurrent work and testable domain rules often belong in Go. Quote \"$@\" when forwarding original arguments, avoid eval, and handle the exit status at the point where failure changes the workflow.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Preserve argument boundaries. Use Bash for small orchestration and direct process argument vectors from native Go when no shell language is needed.",
+    "references": [
+      "https://www.gnu.org/software/bash/manual/bash.html#Quoting",
+      "https://pkg.go.dev/os/exec"
+    ],
+    "reviewPrompt": "Quoted Bash array expansion",
+    "reviewAnswer": "Preserves each element as one command argument",
+    "question": "Which statement is correct about quoted bash array expansion?",
+    "wrongAnswers": [
+      "It executes every argument as an independent shell script",
+      "It automatically authorizes any path passed by a user"
+    ],
+    "hint": "Count arguments after expansion, especially when a path contains spaces.",
+    "nuance": "Avoiding a shell prevents shell reinterpretation; the invoked tool still needs an allowed-operation contract."
+  },
+  {
+    "id": "operations.bash-failures",
+    "unitID": "operations",
+    "afterLessonID": null,
+    "title": "Pipelines, exit codes and explicit failure handling",
+    "objective": "Read pipeline failure behavior and keep configuration and secrets out of command strings.",
+    "introduction": "A script is another program with success and failure paths. A command printing plausible output can still fail. Pipelines complicate this because the last command can succeed even when an earlier producer failed.",
+    "conceptTag": "tooling.bash",
+    "sections": [
+      {
+        "title": "Observe the whole pipeline",
+        "body": "Bash pipefail makes a pipeline fail when a component fails, instead of using only the final command's status. Check that status explicitly at the workflow boundary. set -e has exceptions in conditionals and other constructs, so it is not a replacement for understanding control flow.",
+        "code": "#!/usr/bin/env bash\nset -u -o pipefail\nif go test ./... | tee test.log; then\n    printf \"%s\\n\" \"Tests passed\"\nelse\n    printf \"%s\\n\" \"Tests failed; inspect test.log\" >&2\n    exit 1\nfi",
+        "language": "bash",
+        "walkthrough": "tee preserves a log while showing output. With pipefail, a failing go test makes the condition fail even when tee succeeds. This script is for a trusted local project and writes one named log file."
+      },
+      {
+        "title": "Treat environment variables as configuration",
+        "body": "A process receives an environment at startup; editing a shell variable without exporting it does not pass it to child processes. Validate required configuration in the Go program and report a useful missing-variable error. Do not bake credentials into images or print the entire environment to debug one setting.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Make cleanup and retries deliberate",
+        "body": "A trap can arrange cleanup of resources a script created, but it cannot roll back an external side effect automatically. Avoid rerunning a deployment simply because its status command timed out. Keep a stable operation identifier and inspect the outcome before retrying. As a script grows, move complex state transitions into a program with tests.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "A successful last pipeline command does not prove upstream success. Preserve exit status, handle failure explicitly, and avoid exposing configuration secrets.",
+    "references": [
+      "https://www.gnu.org/software/bash/manual/bash.html#Pipelines",
+      "https://www.gnu.org/software/bash/manual/bash.html#The-Set-Builtin"
+    ],
+    "reviewPrompt": "Bash pipefail",
+    "reviewAnswer": "Makes upstream failure affect the pipeline status",
+    "question": "Which statement is correct about bash pipefail?",
+    "wrongAnswers": [
+      "tee reruns every failed Go test automatically",
+      "A pipeline always ignores the last command's status"
+    ],
+    "hint": "Check which command supplies the pipeline's status before trusting its output.",
+    "nuance": "set -e has contextual exceptions; an explicit failure branch is often easier to reason about."
+  },
+  {
+    "id": "operations.docker-build",
+    "unitID": "operations",
+    "afterLessonID": null,
+    "title": "Build a small Go image with explicit runtime needs",
+    "objective": "Separate the build stage from the runtime image and identify what a minimal image leaves out.",
+    "introduction": "A container image packages a native application and its runtime files. It does not compile Go inside the iOS app, and it does not remove the need to maintain the operating environment. Multi-stage builds let the final image omit the compiler and source tree.",
+    "conceptTag": "tooling.containers",
+    "sections": [
+      {
+        "title": "Read the two stages",
+        "body": "The builder resolves dependencies and compiles a Linux binary. The final stage copies only the program. This example assumes go.mod and go.sum exist and the program lives in cmd/api.",
+        "code": "# syntax=docker/dockerfile:1\nFROM golang:1.27 AS build\nWORKDIR /src\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 GOOS=linux go build -o /out/api ./cmd/api\n\nFROM scratch\nCOPY --from=build /out/api /api\nUSER 65532:65532\nEXPOSE 8080\nENTRYPOINT [\"/api\"]",
+        "language": "dockerfile",
+        "walkthrough": "This scratch example fits a compatible pure-Go binary with no required external files. It omits CA certificates, zoneinfo, a shell and writable application directories. Add the actual runtime assets or choose an appropriate maintained runtime base. Pin and update base image digests in a reproducible release process."
+      },
+      {
+        "title": "Control the build context",
+        "body": "A .dockerignore file keeps unrelated logs, local builds and secrets out of the context. Copy module files before source to reuse a dependency layer when possible. Do not use build arguments or image layers as a secret store. Architecture and cgo requirements can change which runtime base is valid; CGO_ENABLED=0 is not a universal switch for every application.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Run the artifact you intend to release",
+        "body": "A non-root user reduces ordinary process privileges, but does not replace resource and filesystem limits. Test startup, configuration, TLS requirements and graceful termination using the actual final image. A compiler-stage unit test alone cannot prove the minimal runtime image contains the files the service needs.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Build with the toolchain, run with the required runtime files, and verify the final image. A smaller image must still satisfy the program's contract.",
+    "references": [
+      "https://docs.docker.com/build/building/multi-stage/",
+      "https://docs.docker.com/build/building/best-practices/"
+    ],
+    "reviewPrompt": "A multi-stage image build",
+    "reviewAnswer": "Can omit the compiler from the runtime image",
+    "question": "Which statement is correct about a multi-stage image build?",
+    "wrongAnswers": [
+      "It makes every Go dependency work without cgo",
+      "It guarantees scratch contains certificates and time-zone data"
+    ],
+    "hint": "List the runtime files before choosing scratch as a base image.",
+    "nuance": "A static executable may still need certificates, configuration, zoneinfo or writable storage."
+  },
+  {
+    "id": "operations.podman-runtime",
+    "unitID": "operations",
+    "afterLessonID": null,
+    "title": "Docker and Podman: images are not running containers",
+    "objective": "Distinguish image, container, host networking and persistent data while comparing local runtimes.",
+    "introduction": "Docker and Podman can build and run OCI-style container images, but their host integration, daemon model, networking and rootless behavior are not identical. An image is an artifact; a container is a running or stopped instance with its own lifecycle.",
+    "conceptTag": "tooling.containers",
+    "sections": [
+      {
+        "title": "Read build and run separately",
+        "body": "These Podman commands build an image from a trusted project and start one named container. The published port is restricted to the local host in this development example. Docker has similar basic commands, but do not assume every option and host behavior is interchangeable.",
+        "code": "podman build -t localhost/go-api:dev .\npodman run --rm --name go-api \\\n  -p 127.0.0.1:8080:8080 localhost/go-api:dev",
+        "language": "shell",
+        "walkthrough": "The application inside the container must listen on an appropriate container interface, usually :8080, for port forwarding to reach it. Its own localhost is not the host's localhost. --rm removes this disposable container on exit; it does not manage external persistent data."
+      },
+      {
+        "title": "Know where the Linux environment lives",
+        "body": "Rootless Podman uses user namespaces and related host facilities; it does not mean a process gains no privileges at all. On macOS and Windows, a Linux virtual machine commonly provides the container environment. Filesystem mounts, ownership and network paths can differ from a native Linux host. Verify the actual target setup.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Separate lifecycle from persistence",
+        "body": "Write normal logs to stdout/stderr and configure persistent volumes deliberately for data that must survive replacement. Do not keep the only database copy in an ephemeral container layer. Supply configuration at runtime, bound CPU and memory appropriately, and test how the application handles termination. Go can run directly as a binary too; a container is a deployment choice.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Images, instances, virtual-machine integration and persistent data are different layers. Similar command names do not establish identical runtime behavior.",
+    "references": [
+      "https://docs.podman.io/en/latest/markdown/podman.1.html",
+      "https://docs.podman.io/en/latest/markdown/podman-machine.1.html"
+    ],
+    "reviewPrompt": "Container localhost",
+    "reviewAnswer": "Refers to its network namespace, not the host",
+    "question": "Which statement is correct about container localhost?",
+    "wrongAnswers": [
+      "Every other container and the host at once",
+      "A public service endpoint automatically created by the runtime"
+    ],
+    "hint": "Identify whether an address belongs to the container, the VM or the host.",
+    "nuance": "Rootless containers still need explicit resource, filesystem and network policies."
+  },
+  {
+    "id": "operations.kubernetes-workloads",
+    "unitID": "operations",
+    "afterLessonID": null,
+    "title": "Kubernetes reconciles a workload; a Service routes to it",
+    "objective": "Read Deployment, Pod labels, resource budgets and a Service without confusing them with an application build.",
+    "introduction": "Kubernetes operates containerized workloads. It does not write your Go code or remove distributed-system failures. A Deployment describes the desired replicated workload; a Service gives selected Pods a stable network abstraction while individual Pods are replaced.",
+    "conceptTag": "tooling.kubernetes",
+    "sections": [
+      {
+        "title": "Follow selectors and labels",
+        "body": "This abbreviated manifest connects a Service to Pods carrying app: go-api. The image reference is a placeholder for an image you have built, tested and published to an accessible registry. Read it as configuration, not something the iOS app can apply.",
+        "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: go-api\nspec:\n  replicas: 2\n  selector:\n    matchLabels: {app: go-api}\n  template:\n    metadata:\n      labels: {app: go-api}\n    spec:\n      containers:\n        - name: api\n          image: your-registry/go-api:tested\n          ports: [{containerPort: 8080}]\n          resources:\n            requests: {cpu: \"100m\", memory: \"128Mi\"}\n            limits: {cpu: \"1\", memory: \"512Mi\"}\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: go-api\nspec:\n  selector: {app: go-api}\n  ports: [{port: 80, targetPort: 8080}]",
+        "language": "yaml",
+        "walkthrough": "The numbers illustrate syntax, not capacity recommendations. This Service is internal by default; public ingress, TLS and authentication need their own design. The Deployment example still needs suitable probe and shutdown policies."
+      },
+      {
+        "title": "Budget each replica and its downstream work",
+        "body": "Requests influence scheduling and resource allocation; limits constrain runtime resource use in different ways. A memory limit can lead to termination when exceeded, while a CPU limit can cause throttling. Multiple replicas multiply connection pools and worker concurrency: two Pods each allowing fifty downstream calls can present a hundred concurrent calls before other clients are counted.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Use orchestration only when it pays for itself",
+        "body": "Rolling replacement and service discovery help teams operating many workloads, but cluster maintenance and debugging cost time. A VM, a managed service or a single container host can be simpler for a small application. Learn the reconciliation model before copying a large production manifest, and inspect a plan in a non-production environment before applying it.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Match labels to selectors, give each replica a resource and downstream budget, and treat public routing as a separate concern.",
+    "references": [
+      "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/",
+      "https://kubernetes.io/docs/concepts/services-networking/service/",
+      "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+    ],
+    "reviewPrompt": "A Kubernetes Service selector",
+    "reviewAnswer": "Chooses matching Pod labels for stable routing",
+    "question": "Which statement is correct about a kubernetes service selector?",
+    "wrongAnswers": [
+      "By reading the package name of the Go executable",
+      "By compiling every image named in the cluster"
+    ],
+    "hint": "Trace Deployment selector, Pod label and Service selector together.",
+    "nuance": "Scaling replicas also scales their downstream connection pools and worker pressure."
+  },
+  {
+    "id": "operations.probes-and-shutdown",
+    "unitID": "operations",
+    "afterLessonID": null,
+    "title": "Readiness, liveness and graceful shutdown",
+    "objective": "Give each health signal one purpose and arrange a bounded stop that drains owned work.",
+    "introduction": "A process being alive does not mean it can accept useful work. Readiness controls whether a Pod receives normal Service traffic. Liveness can trigger a restart. A startup probe can allow initialization before the other probes take effect. Choose each signal according to the failure it should detect.",
+    "conceptTag": "tooling.kubernetes",
+    "sections": [
+      {
+        "title": "Do not restart every downstream outage",
+        "body": "If liveness fails whenever Redis is unavailable, a shared Redis outage can cause every application replica to restart repeatedly. That adds work while fixing nothing. Readiness should reflect whether the service can handle its promised traffic, including its degraded-mode contract; liveness should detect a condition a restart can plausibly repair.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      },
+      {
+        "title": "Drain requests within a finite deadline",
+        "body": "This native Go fragment assumes srv is already serving in another goroutine. The signal context requests shutdown; a separate context bounds draining so an already-canceled signal context does not abort it immediately.",
+        "code": "stopCtx, stop := signal.NotifyContext(context.Background(),\n    os.Interrupt, syscall.SIGTERM)\ndefer stop()\n<-stopCtx.Done()\n\ndrainCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)\ndefer cancel()\nif err := srv.Shutdown(drainCtx); err != nil {\n    return fmt.Errorf(\"drain HTTP: %w\", err)\n}",
+        "language": "go",
+        "walkthrough": "Ten seconds is illustrative and must fit the platform termination grace period. Shutdown does not automatically wait for every background worker or hijacked connection. Stop accepting work, signal owned workers, join them, and close shared clients in a deliberate order."
+      },
+      {
+        "title": "Test the termination path under traffic",
+        "body": "Readiness changes and endpoint propagation take time; applications can still see late requests. Make handlers safe during draining, choose how to reject new work, and verify existing requests finish or fail predictably. Persist required background work before exit. Probe intervals and thresholds should fit startup and recovery behavior instead of creating a rapid restart loop.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "A health check needs an action model: route traffic, wait for startup, or restart. Graceful shutdown requires explicit ownership, deadlines and a tested drain path.",
+    "references": [
+      "https://kubernetes.io/docs/concepts/workloads/pods/probes/",
+      "https://pkg.go.dev/net/http#Server.Shutdown",
+      "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/"
+    ],
+    "reviewPrompt": "Readiness and liveness",
+    "reviewAnswer": "Readiness gates traffic; liveness can trigger a restart",
+    "question": "Which statement is correct about readiness and liveness?",
+    "wrongAnswers": [
+      "Liveness, because every dependency failure must restart the Pod",
+      "A CPU profile taken once when the image was built"
+    ],
+    "hint": "For each health failure, name the action the platform should take.",
+    "nuance": "Use a fresh bounded drain context; the signal context is already canceled when shutdown starts."
+  }
+]

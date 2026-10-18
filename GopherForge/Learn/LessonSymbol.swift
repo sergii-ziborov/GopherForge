@@ -23,6 +23,18 @@ enum LessonSymbol {
 
     /// One symbol per concept the course teaches.
     static let byConcept: [String: String] = [
+        GoConcept.runtimeGC: "arrow.triangle.2.circlepath",
+        GoConcept.runtimeAllocation: "memorychip",
+        GoConcept.runtimeScheduler: "cpu",
+        GoConcept.runtimeProfiling: "waveform.path.ecg",
+        GoConcept.serviceCapacity: "gauge.with.dots.needle.50percent",
+        GoConcept.serviceRedis: "externaldrive",
+        GoConcept.serviceGin: "network",
+        GoConcept.architectureBoundaries: "square.stack.3d.up",
+        GoConcept.architectureDesign: "square.grid.3x3",
+        GoConcept.toolingBash: "terminal",
+        GoConcept.toolingContainers: "shippingbox",
+        GoConcept.toolingKubernetes: "point.3.connected.trianglepath.dotted",
         GoConcept.varsUnused: "trash",
         GoConcept.shortDeclaration: "equal.square",
         GoConcept.unusedImport: "shippingbox",

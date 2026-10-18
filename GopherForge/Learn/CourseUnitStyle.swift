@@ -23,6 +23,10 @@ enum CourseUnitStyle {
         case "modules": "shippingbox"
         case "concurrency": "arrow.triangle.branch"
         case "stdlib": "books.vertical"
+        case "runtime": "cpu"
+        case "services": "network"
+        case "architecture": "square.stack.3d.up"
+        case "operations": "terminal"
         default: "book"
         }
     }
@@ -39,6 +43,10 @@ enum CourseUnitStyle {
         case "modules": Color(hex: 0xB07B00)
         case "concurrency": GopherForgeTheme.sky
         case "stdlib": Color(hex: 0x4E8F3E)
+        case "runtime": GopherForgeTheme.deepBlue
+        case "services": GopherForgeTheme.aqua
+        case "architecture": Color(hex: 0x6B4FA8)
+        case "operations": Color(hex: 0x4E8F3E)
         default: GopherForgeTheme.slate
         }
     }

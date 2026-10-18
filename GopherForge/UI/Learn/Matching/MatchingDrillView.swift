@@ -10,10 +10,12 @@ struct MatchingDrillView: View {
     @State private var session: MatchingDrillSession
     @State private var didRecord = false
     private let onFinish: (MatchingDrillResult) -> Void
+    private let onRestart: () -> Void
 
-    init(drill: MatchingDrill, onFinish: @escaping (MatchingDrillResult) -> Void = { _ in }) {
+    init(drill: MatchingDrill, onRestart: @escaping () -> Void = {}, onFinish: @escaping (MatchingDrillResult) -> Void = { _ in }) {
         _session = State(initialValue: MatchingDrillSession(drill: drill))
         self.onFinish = onFinish
+        self.onRestart = onRestart
     }
 
     var body: some View {
@@ -141,6 +143,7 @@ struct MatchingDrillView: View {
     }
 
     private func restart() {
+        onRestart()
         session = MatchingDrillSession(drill: session.drill)
         didRecord = false
     }

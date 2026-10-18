@@ -39,6 +39,12 @@ extension ReviewMatchCatalog {
         pair("stdlib.sort", "slices.SortFunc", "Uses a comparator to order slice elements", GoConcept.stdlibSort),
         pair("stdlib.context", "defer cancel()", "Releases resources for the derived context", GoConcept.contextCancel),
         MatchingPair(
+            id: "review.core.short-scope", prompt: "Package-level :=",
+            answer: "Not allowed; use var or const at package scope",
+            conceptTag: GoConcept.shortDeclaration,
+            requiredLessonID: "core.short-declaration"
+        ),
+        MatchingPair(
             id: "review.core.assignment", prompt: "x = 3",
             answer: "Assigns to an existing variable; no name is declared",
             conceptTag: GoConcept.shortDeclaration,

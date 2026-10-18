@@ -3,13 +3,21 @@ import Foundation
 /// Matching practice from completed lessons, including short first sessions.
 enum ReviewMatchCatalog {
     static let pairsPerRound = 5
+    static let minimumPairsPerRound = 3
+    static let minimumRounds = 3
     static let maximumRounds = 5
 
     static let rounds: [MatchingDrill] = [
         core, collections, types, errors, concurrency, tour, stdlib,
     ]
 
-    static var allPairs: [MatchingPair] { rounds.flatMap(\.pairs) + additionalPairs }
+    static var allPairs: [MatchingPair] {
+        rounds.flatMap(\.pairs) + additionalPairs + ReadingLessonCatalog.all.map {
+            MatchingPair(id: "review.reading.\($0.id)", prompt: $0.reviewPrompt,
+                         answer: $0.reviewAnswer, conceptTag: $0.conceptTag,
+                         requiredLessonID: $0.id)
+        }
+    }
 
     /// Keep complete authored boards, but also deal the remaining learned
     /// concepts. A partial board must not disappear just because it has fewer
@@ -40,10 +48,19 @@ enum ReviewMatchCatalog {
                     && !used.contains(pair.id)
             }
 
-        var start = 0
-        while start < leftovers.count {
-            let end = min(start + pairsPerRound, leftovers.count)
-            let slice = Array(leftovers[start..<end])
+        var remaining = leftovers
+        if !remaining.isEmpty, remaining.count < minimumPairsPerRound, !boards.isEmpty {
+            for pair in boards.flatMap(\.pairs) where !remaining.contains(where: { $0.answer == pair.answer }) {
+                remaining.append(pair)
+                if remaining.count == minimumPairsPerRound { break }
+            }
+        }
+        // Rebalance a 1- or 2-pair tail instead of dealing a trivial board.
+        while remaining.count >= minimumPairsPerRound {
+            let take = remaining.count > pairsPerRound && remaining.count < pairsPerRound + minimumPairsPerRound
+                ? remaining.count - minimumPairsPerRound : min(pairsPerRound, remaining.count)
+            let slice = Array(remaining.prefix(take))
+            remaining.removeFirst(take)
             boards.append(
                 MatchingDrill(
                     id: "review.mixed." + slice.map(\.id).joined(separator: "+"),
@@ -56,7 +73,15 @@ enum ReviewMatchCatalog {
                     pairs: slice
                 )
             )
-            start = end
+        }
+        // Reinforce a small learned pool without introducing unfinished concepts.
+        guard !boards.isEmpty else { return [] }
+        let learnedBoards = boards
+        while boards.count < minimumRounds {
+            let source = learnedBoards[boards.count % learnedBoards.count]
+            boards.append(MatchingDrill(id: source.id + ".reinforce.\(boards.count)",
+                title: source.title, subtitle: "Reinforce concepts you have learned",
+                unitID: source.unitID, pairs: source.pairs))
         }
         return Array(shuffle(boards).prefix(maximumRounds))
     }

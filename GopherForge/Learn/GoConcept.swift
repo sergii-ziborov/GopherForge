@@ -79,6 +79,18 @@ enum GoConcept {
     static let selectDefault = "concurrency.select-default"
     static let syncOnce = "concurrency.once"
     static let functionValue = "functions.value"
+    static let runtimeGC = "runtime.gc"
+    static let runtimeAllocation = "runtime.allocation"
+    static let runtimeScheduler = "runtime.scheduler"
+    static let runtimeProfiling = "runtime.profiling"
+    static let serviceCapacity = "services.capacity"
+    static let serviceRedis = "services.redis"
+    static let serviceGin = "services.gin"
+    static let architectureBoundaries = "architecture.boundaries"
+    static let architectureDesign = "architecture.design"
+    static let toolingBash = "tooling.bash"
+    static let toolingContainers = "tooling.containers"
+    static let toolingKubernetes = "tooling.kubernetes"
 
     /// Every tag the product knows, used to validate course content and to
     /// keep the review scheduler from inventing categories at runtime.
@@ -99,5 +111,8 @@ enum GoConcept {
         namedResults, makeVsNew, arrays, mapCommaOK, stringer, emptyInterface,
         bufferedChannel, rangeOverChannel, selectDefault,
         syncOnce, functionValue,
+        runtimeGC, runtimeAllocation, runtimeScheduler, runtimeProfiling,
+        serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
+        architectureDesign, toolingBash, toolingContainers, toolingKubernetes,
     ]
 }

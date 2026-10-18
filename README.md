@@ -12,15 +12,15 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 18 October 2026 | Changes |
+| Version | Status, checked 19 October 2026 | Changes |
 | --- | --- | --- |
-| **1.1** | Available on the App Store | Visual learning guides and adaptive iPhone, iPad and Duo workspaces. |
-| **1.1.1 (33)** | Waiting for App Review | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
-| **1.1.2 (34)** | Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
+| **1.1.1 (33)** | Available on the App Store | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
+| **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
+| **1.1.2 (35)** | Preparing for private TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
 
-1.1.1 and 1.1.2 are not public App Store releases. TestFlight access is private;
-there is no public invitation link. The current source includes the upcoming
-changes above. [Version history](https://gopherforge.app/updates) ·
+The current source contains the upcoming 1.1.2 changes. They are not yet a public
+App Store release. TestFlight access is private; there is no public invitation
+link. [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
 The app is a one-time purchase: US $6.99, US $4.99 in Ukraine, with localized
@@ -36,8 +36,11 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** 47 teaching lessons across nine units, 22 prediction challenges
-  and 69 authored visual guides. Review learned concepts and revisit mistakes.
+- **Learn Go.** The public course has 47 teaching lessons, 22 prediction
+  challenges and 69 visual guides. In the upcoming 1.1.2 source, 26 additional
+  reading lessons bring teaching to 73 lessons in 13 units. Worked examples
+  explain runtime/GC, concurrency, HTTP/Gin, Redis, architecture, Bash, Docker,
+  Podman and Kubernetes without mandatory compilation.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview
@@ -57,13 +60,13 @@ GitHub imports and package downloads need a connection. Pure-Go module archives
 are checked against the Go checksum service before vendoring. In the current
 source (1.1.1 onward), building prepares missing modules required by imports
 using the versions already declared in `go.mod`. This is not a complete
-replacement for Go's module solver. Public version 1.1 still requires adding
-transitive dependencies separately.
+replacement for Go's module solver. The earlier 1.1 release requires adding transitive
+dependencies separately.
 
 Settings → **Clear downloaded packages** removes dependency source across saved
 user projects while keeping their code and dependency versions. Lessons and
 built-in Examples are excluded. Packages download again when needed. This
-control is part of the upcoming 1.1.1 update.
+control is available from version 1.1.1.
 
 See [package behavior and limits](docs/PACKAGES.md).
 

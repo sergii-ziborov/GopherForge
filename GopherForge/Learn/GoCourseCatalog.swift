@@ -8,7 +8,7 @@ import Foundation
 /// programmer translating habits rather than meeting variables for the first
 /// time.
 enum GoCourseCatalog {
-    static let units: [CourseUnit] = [
+    private static let originalUnits: [CourseUnit] = [
         CourseUnitCore.unit,
         // Types you declare come straight after the basics: everything below
         // this line is written in terms of them.
@@ -22,6 +22,21 @@ enum GoCourseCatalog {
         CourseUnitModules.unit,
         CourseUnitConcurrency.unit,
         CourseUnitStandardLibrary.unit,
+    ]
+
+    static let units: [CourseUnit] = originalUnits.map(ReadingLessonCatalog.expanding) + [
+        ReadingLessonCatalog.unit("runtime", title: "Runtime and memory",
+            summary: "Stacks, GC, goroutines, threads and diagnostic evidence.",
+            note: "Read worked examples without compiling. Native service behavior can differ from the app's WebAssembly execution environment."),
+        ReadingLessonCatalog.unit("services", title: "Go services",
+            summary: "HTTP, Gin, Redis and the capacity of downstream services.",
+            note: "These reading lessons explain native service designs. They do not add guest network sockets or remote services to the iOS sandbox."),
+        ReadingLessonCatalog.unit("architecture", title: "Architecture and clean code",
+            summary: "Package boundaries, ports and adapters, and choosing a useful architectural style.",
+            note: "Start from one request and one reason to change. Architecture is a set of tradeoffs, not a required folder template."),
+        ReadingLessonCatalog.unit("operations", title: "Around Go: shell and deployment",
+            summary: "Bash, Docker, Podman and Kubernetes through explained examples.",
+            note: "Read commands and manifests here; use your own development environment to run them. These tools are useful deployment options, not prerequisites for every Go program."),
     ]
 
     static var lessons: [Lesson] {

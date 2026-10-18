@@ -15,6 +15,46 @@ final class LessonPresentationUITests: XCTestCase {
         XCTAssertTrue(app.waitForElement(app.element(withIdentifier: "lesson.watchOut").firstMatch, scrollingUpTo: 12))
     }
 
+    func testReadingLessonShowsExamplesAndCanFinishWithoutCompiler() {
+        launch("collections.slice-walkthrough")
+        XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 15))
+        XCTAssertTrue(app.waitForElement(app.element(withIdentifier: "reading.section.0").firstMatch, scrollingUpTo: 5))
+        XCTAssertFalse(app.buttons[AccessibilityIdentifier.lessonCheck].exists)
+        XCTAssertFalse(app.textViews[AccessibilityIdentifier.editor].exists)
+        let done = app.buttons[AccessibilityIdentifier.lessonComplete]
+        let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
+        if undo.exists { undo.tap() }
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        let expand = app.buttons["Open code in full screen"].firstMatch
+        XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 8))
+        expand.tap()
+        XCTAssertTrue(app.buttons["Back"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.textViews[AccessibilityIdentifier.editor].exists)
+        attachScreenshot(named: "reading-slices-code-fullscreen")
+        app.buttons["Back"].firstMatch.tap()
+        attachScreenshot(named: "reading-slices-example")
+        done.tap()
+        XCTAssertTrue(undo.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.element(withIdentifier: "lesson.verified").exists)
+        app.terminate()
+        launch("collections.slice-walkthrough")
+        XCTAssertTrue(undo.waitForExistence(timeout: 10))
+    }
+
+    func testCourseCanReachTheNewDeploymentUnitWithoutLosingNavigation() {
+        app.launchArguments = ["-GopherForgeSection", "learn"]
+        app.launch()
+        let operations = app.buttons["unit.operations"]
+        XCTAssertTrue(app.waitForElement(operations, scrollingUpTo: 20))
+        operations.tap()
+        let lesson = app.buttons["lesson.operations.bash-arguments"]
+        XCTAssertTrue(app.waitForElement(lesson, scrollingUpTo: 6))
+        lesson.tap()
+        XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons[AccessibilityIdentifier.lessonCheck].exists)
+        attachScreenshot(named: "reading-bash-unit")
+    }
+
     func testEmbeddedCodeScrollsTheLessonAndExpandedEditsSurvive() throws {
         launch("core.multiple-returns")
         let expand = app.buttons["lesson.editor.expand"]

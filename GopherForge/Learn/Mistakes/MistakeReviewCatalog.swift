@@ -12,7 +12,13 @@ enum MistakeReviewCatalog {
     static let all: [MistakeReviewQuestion] = {
         var questions = QuizCatalog.all.flatMap { quiz in
             quiz.questions.map { MistakeReviewQuestion(question: $0, unitID: quiz.unitID) }
-        } + diagnosticQuestions
+        } + diagnosticQuestions + ReadingLessonCatalog.all.map { reading in
+            MistakeReviewQuestion(question: QuizQuestion(
+                id: "reading.question.\(reading.id)", prompt: reading.question, code: "",
+                options: [reading.reviewAnswer] + reading.wrongAnswers, correctIndex: 0,
+                explanation: reading.takeaway, conceptTag: reading.conceptTag
+            ), unitID: reading.unitID)
+        }
         var covered = Set(questions.map { $0.question.conceptTag })
         for pair in ReviewMatchCatalog.allPairs where !covered.contains(pair.conceptTag) {
             guard let lessonID = pair.requiredLessonID,
