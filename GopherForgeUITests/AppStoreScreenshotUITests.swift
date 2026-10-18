@@ -60,6 +60,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         launch(section: "projects")
         openTemplate("worker-pool")
         expectSource()
+        resetOpeningDock()
         capture("00-code")
 
         // Go, compiled and run here.
@@ -349,7 +350,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         // No terminate first: `launch()` already relaunches, and terminating an
         // app that has not started yet fails the run before it reaches a screen.
         var arguments = ["-GopherForgeSection", section,
-                         "-dockHeight", "280", "-editorFontSize", "14",
+                         "-editorFontSize", "14",
                          "-appearanceMode", "light"]
         if let screen { arguments += ["-GopherForgeScreen", screen] }
         app.launchArguments = arguments
@@ -483,6 +484,18 @@ final class AppStoreScreenshotUITests: XCTestCase {
             withVelocity: .slow,
             thenHoldForDuration: 0.3
         )
+    }
+
+    private func resetOpeningDock() {
+        let handle = app.otherElements[AccessibilityIdentifier.dockResizeHandle]
+        guard handle.waitForExistence(timeout: 2),
+              let value = handle.value as? String,
+              let height = Double(value.split(separator: " ").first ?? "") else { return }
+        guard abs(height - 280) > 10 else { return }
+        let seat = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        seat.press(forDuration: 0.3,
+                   thenDragTo: seat.withOffset(CGVector(dx: 0, dy: height - 280)),
+                   withVelocity: .slow, thenHoldForDuration: 0.3)
     }
 
     /// XCTest currently captures the inactive outer display on Duo. The host
