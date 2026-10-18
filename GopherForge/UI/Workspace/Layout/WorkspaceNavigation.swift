@@ -2,75 +2,80 @@ import SwiftUI
 
 extension WorkspaceView {
     var duoWorkspaceHeader: some View {
-        GeometryReader { geometry in
-            let topInset = activeWorkspaceWindow?.safeAreaInsets.top ?? 0
-            VStack(spacing: 0) {
+        let topInset = activeWorkspaceWindow?.safeAreaInsets.top ?? 0
+        // Each row owns its height. A second window-inset read inside a
+        // GeometryReader can change after the enclosing frame was measured.
+        return VStack(spacing: 0) {
             if topInset > 0 {
-                Text(workspace.project?.name ?? "Workspace")
-                    .font(.headline)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .padding(.leading, max(16, duoHeaderInsets(in: geometry, y: 0, height: topInset).leading))
-                    .padding(.trailing, duoHeaderInsets(in: geometry, y: 0, height: topInset).trailing)
-                    .frame(maxWidth: .infinity, minHeight: topInset, maxHeight: topInset, alignment: .leading)
+                GeometryReader { geometry in
+                    Text(workspace.project?.name ?? "Workspace")
+                        .font(.headline)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .padding(.leading, max(16, duoHeaderInsets(in: geometry, y: 0, height: topInset).leading))
+                        .padding(.trailing, duoHeaderInsets(in: geometry, y: 0, height: topInset).trailing)
+                        .frame(maxWidth: .infinity, minHeight: topInset, maxHeight: topInset, alignment: .leading)
+                }
+                .frame(height: topInset)
             }
-            HStack(spacing: 6) {
-                Button(action: toggleFiles) {
-                    Image(systemName: "sidebar.leading")
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Toggle Files")
-                .accessibilityValue(usesLaptopLayout || !layout.hasNavigator
-                    ? (isDrawerOpen ? "Open" : "Closed")
-                    : (navigatorCollapsed ? "Closed" : "Open"))
-                .accessibilityIdentifier(AccessibilityID.filesToggle)
-                Button {
-                    dismissLaptopKeyboard()
-                    navigation.show(.projects)
-                } label: {
-                    Label("Projects", systemImage: "chevron.left")
-                        .frame(minHeight: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to Projects")
-                .labelStyle(.titleAndIcon)
-                .frame(minHeight: 44)
-                .accessibilityIdentifier(usesLaptopLayout ? AccessibilityID.laptopProjectsBack : "workspace.projectsBack")
-                if topInset == 0 { Text(workspace.project?.name ?? "Workspace")
-                    .font(.headline).lineLimit(1).truncationMode(.middle)
-                    .foregroundStyle(.primary)
-                    .layoutPriority(-1)
-                }
-                Spacer(minLength: 4)
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 4) {
-                        ForEach(WorkspaceToolbarActions.primaryPhases, id: \.self) { phase in
-                            PhaseButton(phase: phase, minimumHitTarget: 44)
+            GeometryReader { geometry in
+                HStack(spacing: 6) {
+                    Button(action: toggleFiles) {
+                        Image(systemName: "sidebar.leading")
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Toggle Files")
+                    .accessibilityValue(usesLaptopLayout || !layout.hasNavigator
+                        ? (isDrawerOpen ? "Open" : "Closed")
+                        : (navigatorCollapsed ? "Closed" : "Open"))
+                    .accessibilityIdentifier(AccessibilityID.filesToggle)
+                    Button {
+                        dismissLaptopKeyboard()
+                        navigation.show(.projects)
+                    } label: {
+                        Label("Projects", systemImage: "chevron.left")
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Back to Projects")
+                    .labelStyle(.titleAndIcon)
+                    .frame(minHeight: 44)
+                    .accessibilityIdentifier(usesLaptopLayout ? AccessibilityID.laptopProjectsBack : "workspace.projectsBack")
+                    if topInset == 0 { Text(workspace.project?.name ?? "Workspace")
+                        .font(.headline).lineLimit(1).truncationMode(.middle)
+                        .foregroundStyle(.primary)
+                        .layoutPriority(-1)
+                    }
+                    Spacer(minLength: 4)
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 4) {
+                            ForEach(WorkspaceToolbarActions.primaryPhases, id: \.self) { phase in
+                                PhaseButton(phase: phase, minimumHitTarget: 44)
+                            }
+                            workspaceMenu(includingPrimaryActions: false, minimumHitTarget: 44)
                         }
-                        workspaceMenu(includingPrimaryActions: false, minimumHitTarget: 44)
+                        HStack(spacing: 4) {
+                            PhaseButton(phase: .run, minimumHitTarget: 44)
+                            workspaceMenu(includingPrimaryActions: true, minimumHitTarget: 44)
+                        }
                     }
-                    HStack(spacing: 4) {
-                        PhaseButton(phase: .run, minimumHitTarget: 44)
-                        workspaceMenu(includingPrimaryActions: true, minimumHitTarget: 44)
-                    }
+                    .font(.title3)
+                    .padding(.horizontal, 4)
+                    .background(.thinMaterial, in: Capsule())
                 }
-                .font(.title3)
-                .padding(.horizontal, 4)
-                .background(.thinMaterial, in: Capsule())
+                .labelStyle(.iconOnly)
+                .buttonStyle(.plain)
+                .font(.subheadline)
+                .foregroundStyle(.tint)
+                .padding(.leading, duoHeaderInsets(in: geometry, y: 0, height: 44).leading)
+                .padding(.trailing, duoHeaderInsets(in: geometry, y: 0, height: 44).trailing)
+                .frame(width: geometry.size.width, height: 44)
             }
-            .labelStyle(.iconOnly)
-            .buttonStyle(.plain)
-            .font(.subheadline)
-            .foregroundStyle(.tint)
-            .padding(.leading, duoHeaderInsets(in: geometry, y: topInset, height: 44).leading)
-            .padding(.trailing, duoHeaderInsets(in: geometry, y: topInset, height: 44).trailing)
-            .frame(width: geometry.size.width, height: 44)
-            }
+            .frame(height: 44)
         }
-        .frame(height: (activeWorkspaceWindow?.safeAreaInsets.top ?? 0) + 44)
         .background(Color(.secondarySystemBackground))
         // A container identifier propagates to every child in SwiftUI and
         // would overwrite Files, Projects and the phase button identifiers.

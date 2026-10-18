@@ -337,23 +337,30 @@ final class WorkspaceFlowUITests: XCTestCase {
               !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
             throw XCTSkip("This check is for a conventional phone")
         }
-        XCUIDevice.shared.orientation = .landscapeLeft
         defer { XCUIDevice.shared.orientation = .portrait }
-        let files = app.buttons[AccessibilityIdentifier.filesToggle]
-        let search = app.textFields[AccessibilityIdentifier.fileSearch]
-        XCTAssertTrue(files.waitForExistence(timeout: 5))
-        if !search.waitForExistence(timeout: 2) { files.tap() }
-        XCTAssertTrue(search.waitForExistence(timeout: 5))
-        let editor = app.textViews[AccessibilityIdentifier.editor]
-        let withFiles = editor.frame.minX
-        attachScreenshot(named: "phone-landscape-files-column")
-        files.tap()
-        XCTAssertTrue(search.waitForNonExistence(timeout: 5))
-        XCTAssertTrue(editor.isHittable)
-        XCTAssertGreaterThan(editor.frame.width, app.windows.firstMatch.frame.width * 0.6)
-        attachScreenshot(named: "phone-landscape-code")
-        files.tap()
-        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        for orientation in [UIDeviceOrientation.landscapeLeft, .landscapeRight] {
+            XCUIDevice.shared.orientation = orientation
+            let files = app.buttons[AccessibilityIdentifier.filesToggle]
+            let search = app.textFields[AccessibilityIdentifier.fileSearch]
+            XCTAssertTrue(files.waitForExistence(timeout: 5))
+            if !search.waitForExistence(timeout: 2) { files.tap() }
+            XCTAssertTrue(search.waitForExistence(timeout: 5))
+            let editor = app.textViews[AccessibilityIdentifier.editor]
+            attachScreenshot(named: "phone-landscape-files-column")
+            files.tap()
+            XCTAssertTrue(search.waitForNonExistence(timeout: 5))
+            XCTAssertTrue(editor.isHittable)
+            XCTAssertGreaterThan(editor.frame.width, app.windows.firstMatch.frame.width * 0.6)
+            let projects = app.buttons["landscape.section.projects"]
+            XCTAssertTrue(projects.isHittable)
+            XCTAssertGreaterThan(editor.frame.maxX, projects.frame.maxX,
+                                 "the floating section rail must overlay code instead of reserving a column")
+            XCTAssertEqual(editor.frame.maxX, app.windows.firstMatch.frame.maxX, accuracy: 2,
+                           "landscape code must reach the trailing edge of the display")
+            attachScreenshot(named: "phone-landscape-code")
+            files.tap()
+            XCTAssertTrue(search.waitForExistence(timeout: 5))
+        }
     }
 
     @MainActor
@@ -577,6 +584,39 @@ final class WorkspaceFlowUITests: XCTestCase {
             throw XCTSkip("The outer Duo display cannot represent a laptop keyboard viewport")
         }
         assertLaptopTabsSwapKeyboardForResults()
+    }
+
+    @MainActor
+    func testDuoHeaderControlsRemainAbovePanelsAfterColdLaunchAndRotation() throws {
+        defer { XCUIDevice.shared.orientation = .portrait }
+        for orientation in [UIDeviceOrientation.portrait, .landscapeLeft, .portrait] {
+            XCUIDevice.shared.orientation = orientation
+            app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
+            app.launch()
+            let files = app.buttons[AccessibilityIdentifier.filesToggle]
+            XCTAssertTrue(files.waitForExistence(timeout: 15))
+            guard app.buttons["workspace.projectsBack"].exists
+                    || app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
+                throw XCTSkip("The native Duo header is required")
+            }
+            let panels = app.buttons["pane.more"]
+            XCTAssertTrue(panels.waitForExistence(timeout: 10))
+            for button in [files, app.buttons["phase.run"], app.buttons[AccessibilityIdentifier.projectMenu]] {
+                XCTAssertTrue(button.isHittable, "Duo header controls must remain visible and usable")
+                XCTAssertGreaterThanOrEqual(button.frame.height, 40)
+                XCTAssertLessThanOrEqual(button.frame.maxY, panels.frame.minY + 1,
+                                         "Panel tabs must not cover the header controls")
+            }
+            let search = app.textFields[AccessibilityIdentifier.fileSearch]
+            let filesWereVisible = search.exists
+            files.tap()
+            XCTAssertTrue(filesWereVisible ? search.waitForNonExistence(timeout: 5)
+                          : search.waitForExistence(timeout: 5))
+            files.tap()
+            XCTAssertTrue(filesWereVisible ? search.waitForExistence(timeout: 5)
+                          : search.waitForNonExistence(timeout: 5))
+            attachScreenshot(named: "duo-header-after-cold-launch-and-rotation")
+        }
     }
 
     @MainActor

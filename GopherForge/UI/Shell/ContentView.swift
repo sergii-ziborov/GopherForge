@@ -209,11 +209,11 @@ struct ContentView: View {
         if duoPresentation.isDuo {
             nativeTabs
         } else {
-            HStack(spacing: 0) {
-                nativeTabs
-                    .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
-                if usesLandscapeNavigation { LandscapeSectionRail() }
-            }
+            nativeTabs
+                .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
+                .overlay(alignment: .trailing) {
+                    if usesLandscapeNavigation { LandscapeSectionRail() }
+                }
         }
     }
 

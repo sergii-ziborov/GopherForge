@@ -148,6 +148,7 @@ struct WorkspaceView: View {
 
             if let terminal {
                 workspaceArea(terminal: terminal)
+                    .ignoresSafeArea(isCompactPhoneLandscape ? .container : [], edges: .trailing)
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
