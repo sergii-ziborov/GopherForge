@@ -43,6 +43,12 @@ enum WorkspaceLayout: Equatable {
     static func inspectorWidth(for availableWidth: CGFloat) -> CGFloat {
         min(max(availableWidth * 0.30, 300), 420)
     }
+
+    static func tabletDockHeight(preferred: CGFloat, availableHeight: CGFloat) -> CGFloat {
+        // A saved tall dock must leave room to edit after rotation or when
+        // the keyboard reduces the viewport. Keep the saved preference intact.
+        min(preferred, max(52, availableHeight - 240))
+    }
 }
 
 /// The Build side.
@@ -227,10 +233,14 @@ struct WorkspaceView: View {
             updateKeyboardFrame(notification)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { notification in
-            updateKeyboardFrame(notification)
+            if duoHingePresent {
+                keyboardVisible = keyboardIntersectsWindow
+            } else {
+                updateKeyboardFrame(notification)
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidChangeFrameNotification)) {
-            updateKeyboardFrame($0)
+            if !duoHingePresent { updateKeyboardFrame($0) }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             // Some keyboards retain the accessory's old on-screen rectangle
@@ -285,7 +295,8 @@ struct WorkspaceView: View {
         // A floating iPad keyboard doesn't take the entire bottom edge.
         // Rotation can precede the final window geometry. Read the settled
         // docked keyboard boundary instead of retaining the pre-rotation frame.
-        let guideFrame = activeWorkspaceWindow?.keyboardLayoutGuide.layoutFrame ?? .null
+        let guideFrame = duoHingePresent ? CGRect.null
+            : (activeWorkspaceWindow?.keyboardLayoutGuide.layoutFrame ?? .null)
         let frame = guideFrame.height > 120 ? guideFrame : keyboardFrame
         guard !frame.isNull,
               frame.width >= content.width * 0.8,

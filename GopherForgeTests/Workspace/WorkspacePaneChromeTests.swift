@@ -51,4 +51,12 @@ final class WorkspacePaneChromeTests: XCTestCase {
             XCTAssertFalse(GopherForgeTheme.systemImage(for: phase).isEmpty)
         }
     }
+
+    func testSavedTallTabletDockLeavesRoomForCodeInAShortViewport() {
+        let dock = WorkspaceLayout.tabletDockHeight(preferred: 640, availableHeight: 360)
+        XCTAssertGreaterThanOrEqual(360 - dock, 240)
+        XCTAssertGreaterThanOrEqual(dock, 52)
+        XCTAssertEqual(WorkspaceLayout.tabletDockHeight(preferred: 280, availableHeight: 900), 280)
+        XCTAssertEqual(WorkspaceLayout.tabletDockHeight(preferred: 640, availableHeight: 1100), 640)
+    }
 }

@@ -85,11 +85,13 @@ extension WorkspaceView {
             if !navigatorCollapsed {
                 ProjectNavigatorView(onOpenFile: revealCode)
                     .frame(width: navigatorWidth(for: width))
+                    .clipped()
                     .transition(.move(edge: .leading).combined(with: .opacity))
                 navigatorResizeHandle(availableWidth: width)
             }
             paneStack(terminal: terminal)
                 .frame(minWidth: 0, maxWidth: .infinity)
+                .clipped()
         }
     }
 
@@ -113,6 +115,7 @@ extension WorkspaceView {
     }
 
     func tabletLayout(terminal: ProjectTerminalSession, width: CGFloat) -> some View {
+        GeometryReader { geometry in
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if !navigatorCollapsed {
@@ -126,7 +129,11 @@ extension WorkspaceView {
 
             dockResizeHandle
             dockContent(terminal: terminal)
-            .frame(height: dockHeight)
+            .frame(height: WorkspaceLayout.tabletDockHeight(
+                preferred: dockHeight, availableHeight: geometry.size.height
+            ))
+            .clipped()
+        }
         }
     }
 

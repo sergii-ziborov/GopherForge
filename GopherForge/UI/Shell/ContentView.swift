@@ -204,10 +204,16 @@ struct ContentView: View {
             && verticalSizeClass == .compact
     }
 
+    @ViewBuilder
     private var tabLayout: some View {
-        HStack(spacing: 0) {
+        if duoPresentation.isDuo {
             nativeTabs
-            if usesLandscapeNavigation { LandscapeSectionRail() }
+        } else {
+            HStack(spacing: 0) {
+                nativeTabs
+                    .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
+                if usesLandscapeNavigation { LandscapeSectionRail() }
+            }
         }
     }
 
@@ -229,7 +235,6 @@ struct ContentView: View {
             }
         }
         .tabViewStyle(.tabBarOnly)
-        .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
     }
 
     private var tabSelection: Binding<AppSection> {
@@ -270,7 +275,7 @@ struct LandscapeSectionRail: View {
                                         in: RoundedRectangle(cornerRadius: 22))
                         }
                         .buttonStyle(.plain)
-                        .foregroundStyle(navigation.section == section ? GopherForgeTheme.accent : .secondary)
+                        .foregroundStyle(navigation.section == section ? GopherForgeTheme.accent : Color(uiColor: .label))
                         .accessibilityLabel(section.title)
                         .accessibilityIdentifier("landscape.section.\(section.rawValue)")
                         .accessibilityAddTraits(navigation.section == section ? .isSelected : [])

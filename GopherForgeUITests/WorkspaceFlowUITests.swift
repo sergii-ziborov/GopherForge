@@ -389,6 +389,11 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertTrue(app.selectWorkspacePane("terminal"))
         XCTAssertTrue(app.textFields["terminal.input"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.selectWorkspacePane("code"))
+        let hideKeyboard = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        if hideKeyboard.exists { hideKeyboard.tap() }
+        for section in ["projects", "build", "learn", "settings"] {
+            XCTAssertTrue(app.buttons["landscape.section.\(section)"].isHittable)
+        }
         attachScreenshot(named: "phone-landscape-download-code")
         if ProcessInfo.processInfo.environment["GF_CAPTURE_NATIVE"] == "1" {
             print("GF_NATIVE_FRAME_READY: iphone-landscape-download-code")
@@ -559,13 +564,18 @@ final class WorkspaceFlowUITests: XCTestCase {
     /// On a half-open Duo the editor and terminal belong above the hinge.
     /// A result tab dismisses the keyboard and fills the lower display; going
     /// back to a work tab restores its keyboard helpers.
-    func testLaptopTabsSwapKeyboardForResults() {
+    func testLaptopTabsSwapKeyboardForResults() throws {
+        guard #available(iOS 27.1, *), UIDevice.current.userInterfaceIdiom == .phone else {
+            throw XCTSkip("A native expanded Duo is required: a forced iPad layout cannot reposition the system keyboard")
+        }
         app.launchArguments = [
             "-GopherForgeSection", Section.build.rawValue,
             "-GopherForgeDuoLaptopUITest",
         ]
         app.launch()
-
+        guard app.windows.firstMatch.frame.width >= 600 else {
+            throw XCTSkip("The outer Duo display cannot represent a laptop keyboard viewport")
+        }
         assertLaptopTabsSwapKeyboardForResults()
     }
 
@@ -617,7 +627,7 @@ final class WorkspaceFlowUITests: XCTestCase {
         if ProcessInfo.processInfo.environment["GF_CAPTURE_NATIVE"] == "1" {
             print("GF_NATIVE_FRAME_READY: \(name)")
             fflush(stdout)
-            Thread.sleep(forTimeInterval: 20)
+            Thread.sleep(forTimeInterval: 40)
         }
     }
 
