@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-18T05:37:50.249294+00:00",
+  "version": "1.1.2",
+  "build": "34",
+  "buildId": "119f5f23-4d4e-4ef1-a480-18d531270b35",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "internalBuildState": "IN_BETA_TESTING",
+  "externalBuildState": "READY_FOR_BETA_SUBMISSION",
+  "testFlightGroups": [
+    {
+      "id": "8bb1ef54-e467-44dd-8678-f6702de1e59a",
+      "name": "Internal QA"
+    }
+  ],
+  "betaNotes": "Duo: fixes the workspace header so Files, Projects, Run and the project menu stay above the panel tabs in folded portrait and landscape.\n\niPhone landscape: extends the code editor to the right edge with floating Projects, Build, Learn and Settings controls over the editor.\n\nPlease check Files, rotation, Code/Terminal keyboard hide and reopen, and the unfolded and laptop Duo postures.",
+  "existingSubmission": {
+    "version": "1.1.1",
+    "build": "33",
+    "state": "WAITING_FOR_REVIEW",
+    "reviewSubmissionId": "55221c50-655d-44e9-aa3d-32404b1f5996",
+    "modified": false
+  },
+  "newVersionSubmittedForAppReview": false,
+  "appId": "6809702319",
+  "appSourceCommit": "8d7aafcea40cf0dc1c0eff606d03241ef4a4be3a",
+  "changes": [
+    "Duo header rows allocate their intrinsic heights from one window-inset read, keeping Files, Projects, Run and the project menu above the panel tabs.",
+    "Conventional iPhone landscape section rail overlays the editor instead of reserving a 72-point column.",
+    "Conventional iPhone landscape workspace extends to the trailing screen edge."
+  ],
+  "qa": {
+    "relevantPassingCases": 12,
+    "iPhone": 3,
+    "duoFoldedHeader": 1,
+    "duoFullyOpenHeader": 1,
+    "duoFullyOpenPortraitKeyboard": 3,
+    "duoLaptop": 4,
+    "flatPortraitHingeAssertion": {
+      "result": "failed outside its intended partially open posture",
+      "test": "testDetectedLaptopPostureOnDuo",
+      "reason": "This test requires panel tabs to stay at the physical hinge. A flat inner portrait display intentionally fills space above the real keyboard; result panes split at the midpoint. The 60.33-point tab move triggered the assertion. No product layout was changed in response. The same complete test passed in the actual partially open laptop posture."
+    },
+    "limitations": [
+      "Mac locked after automated checks; an additional manual visual pass on the conventional iPhone was unavailable. XCTest landscape attachments from this simulator show malformed crops and were not used as App Store assets."
+    ]
+  }
+}
