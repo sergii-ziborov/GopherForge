@@ -348,7 +348,9 @@ final class AppStoreScreenshotUITests: XCTestCase {
     private func launch(section: String, screen: String? = nil) {
         // No terminate first: `launch()` already relaunches, and terminating an
         // app that has not started yet fails the run before it reaches a screen.
-        var arguments = ["-GopherForgeSection", section]
+        var arguments = ["-GopherForgeSection", section,
+                         "-dockHeight", "280", "-editorFontSize", "14",
+                         "-appearanceMode", "light"]
         if let screen { arguments += ["-GopherForgeScreen", screen] }
         app.launchArguments = arguments
         app.launch()
