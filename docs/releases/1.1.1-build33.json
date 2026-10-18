@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-18T02:37:17.114542+00:00",
+  "appId": "6809702319",
+  "version": "1.1.1",
+  "build": 33,
+  "buildId": "0aa5a642-c1fd-44c1-bed1-22b4b85ed7f4",
+  "appSourceCommit": "06e2eb9",
+  "submissionId": "55221c50-655d-44e9-aa3d-32404b1f5996",
+  "submissionState": "WAITING_FOR_REVIEW",
+  "submitted": true,
+  "screenshotSets": 16,
+  "screenshots": 160,
+  "firstScreenshot": "00-code-build33.png",
+  "releaseType": "AFTER_APPROVAL",
+  "validationLimitation": "Native expanded/laptop Duo posture was not rechecked because the Mac is locked; existing Duo layout, navigation and keyboard handling were preserved.",
+  "versionState": "WAITING_FOR_REVIEW",
+  "customProductPageState": "WAITING_FOR_REVIEW",
+  "testFlightState": "IN_BETA_TESTING",
+  "creativeAssetStates": [
+    "WAITING_FOR_REVIEW",
+    "WAITING_FOR_REVIEW"
+  ],
+  "imagesInSubmittedPages": 140,
+  "imagesInOptimizationDraft": 20,
+  "installedOnPhysicalIPhone": true
+}

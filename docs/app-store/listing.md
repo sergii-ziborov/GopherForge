@@ -1,5 +1,33 @@
 # App Store listing audit
 
+## Version 1.1.1 (33), 18 October 2026
+
+Apple accepted submission `55221c50-655d-44e9-aa3d-32404b1f5996`.
+Version 1.1.1, its custom product page, Header and Search Results assets are
+`WAITING_FOR_REVIEW`. Build 33 is `VALID`, selected for the App Store version,
+available in Internal QA TestFlight, and installed on the physical iPhone.
+Release remains automatic after approval. The receipt is recorded in
+[the build 33 record](../releases/1.1.1-build33.json).
+
+Promotional Text, Description, What's New, Keywords, App Review notes and
+TestFlight descriptions/testing notes reflect the shipped features and fixes.
+The keyword field is 98 ASCII characters. Support, marketing, privacy and terms
+links returned HTTP 200 with a normal browser user agent.
+
+Both submitted pages contain ten fresh build 33 screenshots for each of seven
+display groups: 140 images, with `00-code-build33.png` first in every group.
+Header and Search placements are active on both pages. The separate, unsubmitted
+optimization draft has twenty refreshed images and also starts with code.
+
+Qualification passed conventional iPhone landscape/keyboard checks, iPad
+rotation/keyboard checks, native closed-Duo rotation checks and six panel unit
+checks. Expanded/laptop Duo postures were not rechecked because the Mac was
+locked; existing Duo layout, navigation and keyboard handling were retained.
+The Duo listing's last three images were captured through the existing Examples
+route after automated dashboard scrolling did not reach that library.
+
+## Historical audit and version 1.1 submission
+
 Live version checked on 10 October; build 20 submission checked on 12 October 2026.
 This records the English (US) listing for app `6809702319`; it is not an
 instruction to submit a build for review.
