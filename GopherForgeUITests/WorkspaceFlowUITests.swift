@@ -364,6 +364,54 @@ final class WorkspaceFlowUITests: XCTestCase {
     }
 
     @MainActor
+    func testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt() throws {
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
+        app.launch()
+        guard !app.buttons["workspace.projectsBack"].exists,
+              !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
+            throw XCTSkip("This check is for a conventional phone")
+        }
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        let hideKeyboard = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        let projects = app.buttons["landscape.section.projects"]
+        let settings = app.buttons["landscape.section.settings"]
+
+        for orientation in [UIDeviceOrientation.landscapeLeft, .landscapeRight] {
+            XCUIDevice.shared.orientation = orientation
+            XCTAssertTrue(projects.waitForExistence(timeout: 10))
+            let files = app.textFields[AccessibilityIdentifier.fileSearch]
+            if files.exists { app.buttons[AccessibilityIdentifier.filesToggle].tap() }
+            XCTAssertTrue(editor.isHittable)
+            XCTAssertTrue(settings.isHittable)
+            let projectsFrame = projects.frame
+            let settingsFrame = settings.frame
+
+            editor.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.4)).tap()
+            XCTAssertTrue(hideKeyboard.waitForExistence(timeout: 10))
+            XCTAssertTrue(app.keyboards.firstMatch.isHittable)
+            print("LANDSCAPE_RAIL keyboard=\(app.keyboards.firstMatch.frame) projectsBefore=\(projectsFrame) projectsAfter=\(projects.frame) settingsBefore=\(settingsFrame) settingsAfter=\(settings.frame)")
+            XCTAssertEqual(projects.frame.minY, projectsFrame.minY, accuracy: 2,
+                           "the keyboard must cover the section rail instead of pushing it upwards")
+            XCTAssertEqual(settings.frame.minY, settingsFrame.minY, accuracy: 2,
+                           "the section rail must keep its full-height position behind the keyboard")
+            XCTAssertLessThanOrEqual(editor.frame.maxY, hideKeyboard.frame.minY + 1,
+                                     "the editor must still avoid the keyboard accessory")
+            attachScreenshot(named: "phone-landscape-keyboard-over-section-rail")
+
+            hideKeyboard.tap()
+            XCTAssertTrue(hideKeyboard.waitForNonExistence(timeout: 10))
+            XCTAssertTrue(settings.isHittable)
+            XCTAssertEqual(projects.frame.minY, projectsFrame.minY, accuracy: 2)
+            XCTAssertEqual(settings.frame.minY, settingsFrame.minY, accuracy: 2)
+        }
+        XCUIDevice.shared.orientation = .portrait
+        XCTAssertTrue(app.tabBars.buttons["Projects"].waitForExistence(timeout: 10))
+        XCTAssertFalse(projects.exists)
+    }
+
+    @MainActor
     func testPhoneLandscapeDownloadLeavesCodeVisibleAndRestoresPortraitNavigation() throws {
         XCUIDevice.shared.orientation = .portrait
         app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary",

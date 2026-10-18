@@ -212,7 +212,10 @@ struct ContentView: View {
             nativeTabs
                 .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
                 .overlay(alignment: .trailing) {
-                    if usesLandscapeNavigation { LandscapeSectionRail() }
+                    if usesLandscapeNavigation {
+                        LandscapeSectionRail()
+                            .ignoresSafeArea(.keyboard, edges: .bottom)
+                    }
                 }
         }
     }
@@ -256,7 +259,7 @@ struct ContentView: View {
 }
 
 /// Conventional phone landscape navigation floats at the trailing edge.
-/// The scrollable column still fits when the software keyboard is visible.
+/// It stays centered on the display; the software keyboard may cover it.
 struct LandscapeSectionRail: View {
     @Environment(AppNavigation.self) private var navigation
 
