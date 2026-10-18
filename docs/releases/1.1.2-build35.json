@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-18T23:29:28.331047+00:00",
+  "version": "1.1.2",
+  "build": "35",
+  "buildId": "3d6a3475-b499-44c2-a918-a2c28f867859",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "internalBuildState": "IN_BETA_TESTING",
+  "externalBuildState": "READY_FOR_BETA_SUBMISSION",
+  "testFlightGroups": [
+    {
+      "id": "8bb1ef54-e467-44dd-8678-f6702de1e59a",
+      "name": "Internal QA"
+    }
+  ],
+  "betaNotes": "Expanded learning preview: 26 new reading lessons with 78 explained sections and worked code examples. The course now has 73 teaching lessons across 13 units, plus 22 prediction challenges.\n\nRead without compiling: deeper slices and concurrent access, cancellation and bounded work, GC and memory budgets, goroutines and OS threads, profiling, native HTTP/Gin, Redis capacity and cache failures, architecture and clean code, Bash, Docker, Podman and Kubernetes. Commands and native service examples are for your own development environment; the iOS sandbox capabilities are unchanged.\n\nReview now has an explicit Finish review action. Boards use at least three learned pairs and sessions at least three rounds; small learned pools are reinforced without introducing unfinished concepts. Restart resets completion controls.\n\niPhone landscape section controls remain fixed when the software keyboard opens; the keyboard may cover them. Please check reading completion survives reopening, code full screen, Review finish/restart, mistakes, and keyboard rotation. Established Duo laptop and portrait workspaces are unchanged.",
+  "newVersionSubmittedForAppReview": false,
+  "publicRelease": {
+    "version": "1.1.1",
+    "build": "33",
+    "state": "READY_FOR_SALE",
+    "modified": false
+  },
+  "appSourceCommit": "b3bff525869538355cc070f59bae126baac5cb48",
+  "readingLessons": 26,
+  "readingSections": 78,
+  "teachingLessons": 73,
+  "courseUnits": 13,
+  "predictionChallenges": 22,
+  "nativeReadingSourceSHA256": "5a2b8522cf885cbfb9c866cd88234e9eb0ef5fa62f134dd7587cc605ea481b8c",
+  "ipaSHA256": "087a05e088736542b2a92bf283c55d62df15fd7003d7c92a9f25f7b73106a406",
+  "signedAppAndExtensionVersion": "1.1.2 (35)",
+  "readingSourceMatchesSignedIPA": true,
+  "bundledVisualGuides": 69,
+  "appleValidation": "passed",
+  "appleUpload": "succeeded",
+  "verification": {
+    "targetedUnitTestsPassed": 67,
+    "uiFlowsPassed": 6,
+    "failures": 0,
+    "goFragmentsParsed": 26,
+    "bashExamplesParsed": 2,
+    "finalTestLogSHA256": "fa1c49f98383f425e3eea4caa1d3a6f40cf3a1cab6d21ed1f5f863873af165b3",
+    "uiFlows": [
+      "Reading and full-screen code without compilation; completion persists",
+      "Navigation from course to new Bash/deployment lesson",
+      "Review: three rounds, restart, Finish, return to Learn",
+      "Matching tile height and completed pair visibility",
+      "Saved mistakes survive relaunch and move forward on correction",
+      "iPhone landscape keyboard overlays stationary section rail"
+    ],
+    "diagnosticsArchive": "Final xcresult did not finalize after tests succeeded because the disk filled. The full text test log remains available; earlier same-app UI captures were exported.",
+    "duoLayouts": "No changes to established laptop or portrait workspace layouts in this course expansion; no new Duo device verification claimed."
+  },
+  "website": {
+    "url": "https://gopherforge.app/updates#coming-next",
+    "sourceCommit": "72c02ea6b6f82f6ec2ac0324028418e8dcb54f71",
+    "deploymentId": "7c8c9cd3-685e-4001-8969-98fa2ad89f90",
+    "publishedAndVerified": true,
+    "publicCoursePreviewsPreserved": 69,
+    "screenshotsPreserved": 6,
+    "firstScreenshot": "Go source code",
+    "liveChecks": [
+      "Home and Support contain updated 1.1.1 dependency behavior",
+      "Coming-next identifies private Internal QA TestFlight build 35 and the 26 new readings",
+      "69 public course previews remain present",
+      "Direct lesson HTML contains explanation, guide and Go code without failed Suspense",
+      "No horizontal overflow at 390px or 1280px on inspected routes"
+    ],
+    "courseAndSSRAssertionsPassed": 1007
+  },
+  "scope": "Private TestFlight only; no new App Review submission or public beta invitation."
+}
