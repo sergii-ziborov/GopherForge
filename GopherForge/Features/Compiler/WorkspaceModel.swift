@@ -141,6 +141,17 @@ final class WorkspaceModel {
         }
     }
 
+    #if DEBUG
+    func showDownloadLayoutFixtureIfRequested() {
+        guard ProcessInfo.processInfo.arguments.contains("-GopherForgeDownloadLayoutUITest") else { return }
+        downloadProgress = ModuleDownload(
+            title: "Packages", status: "Adding github.com/pion/opus…",
+            alreadyInstalled: [], installed: [], failure: nil
+        )
+        showsDownloadSheet = false
+    }
+    #endif
+
     private var remembering: Task<Void, Never>?
     /// The pending autosave, cancelled and replaced on each edit.
     private var autosave: Task<Void, Never>?

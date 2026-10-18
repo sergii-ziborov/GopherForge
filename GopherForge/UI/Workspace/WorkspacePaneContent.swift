@@ -9,6 +9,7 @@ struct WorkspacePaneContent: View {
     let pane: WorkspacePane
     let terminal: ProjectTerminalSession
     let fontSize: Double
+    var compactChrome = false
     var focusRequest = 0
     var keyboardCommandsOnly = false
     var onEditorReady: ((UITextView) -> Void)?
@@ -23,6 +24,7 @@ struct WorkspacePaneContent: View {
         switch pane {
         case .code:
             VStack(spacing: 0) {
+                if !compactChrome {
                 HStack(spacing: 8) {
                     Image(systemName: "doc.text")
                         .foregroundStyle(GopherForgeTheme.accent)
@@ -42,6 +44,7 @@ struct WorkspacePaneContent: View {
                 .frame(height: 34)
                 .background(Color(.secondarySystemBackground))
                 Divider()
+                }
                 SyntaxCodeEditor(
                     // Through the model's setter rather than straight at the
                     // property: every keystroke has to reach the project and
@@ -157,6 +160,35 @@ struct WorkspacePanePicker: View {
         case .idioms: workspace.idiomFindings.count
         case .code, .output, .terminal: 0
         }
+    }
+}
+
+/// A named panel selector for the short, conventional phone toolbar.
+struct WorkspacePaneMenu: View {
+    @Binding var selection: WorkspacePane
+    let panes: [WorkspacePane]
+
+    var body: some View {
+        Menu {
+            ForEach(panes) { pane in
+                Button {
+                    withAnimation(.easeOut(duration: 0.18)) { selection = pane }
+                } label: {
+                    Label(pane.title, systemImage: pane.systemImage)
+                }
+                .accessibilityIdentifier("pane.menu.\(pane.rawValue)")
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: selection.systemImage)
+                Text(selection.title)
+                Image(systemName: "chevron.down").font(.caption2)
+            }
+            .font(.subheadline.weight(.semibold)).fixedSize()
+            .frame(minHeight: 44).contentShape(Rectangle())
+        }
+        .accessibilityIdentifier("pane.more")
+        .accessibilityLabel("Choose panel").accessibilityValue(selection.title)
     }
 }
 

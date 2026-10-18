@@ -329,9 +329,12 @@ final class WorkspaceFlowUITests: XCTestCase {
 
     @MainActor
     func testPhoneLandscapeFilesCanCloseAndReturn() throws {
+        XCUIDevice.shared.orientation = .portrait
         app.launchArguments = ["-GopherForgeSection", Section.build.rawValue, "-GopherForgeEmptyLibrary"]
         app.launch()
-        guard app.windows.firstMatch.frame.width < 600 else {
+        XCUIDevice.shared.orientation = .portrait
+        guard !app.buttons["workspace.projectsBack"].exists,
+              !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
             throw XCTSkip("This check is for a conventional phone")
         }
         XCUIDevice.shared.orientation = .landscapeLeft
@@ -346,10 +349,55 @@ final class WorkspaceFlowUITests: XCTestCase {
         attachScreenshot(named: "phone-landscape-files-column")
         files.tap()
         XCTAssertTrue(search.waitForNonExistence(timeout: 5))
-        XCTAssertLessThan(editor.frame.minX, withFiles - 120)
+        XCTAssertTrue(editor.isHittable)
+        XCTAssertGreaterThan(editor.frame.width, app.windows.firstMatch.frame.width * 0.6)
         attachScreenshot(named: "phone-landscape-code")
         files.tap()
         XCTAssertTrue(search.waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testPhoneLandscapeDownloadLeavesCodeVisibleAndRestoresPortraitNavigation() throws {
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary",
+                               "-GopherForgeDownloadLayoutUITest"]
+        app.launch()
+        XCUIDevice.shared.orientation = .portrait
+        guard !app.buttons["workspace.projectsBack"].exists,
+              !app.buttons[AccessibilityIdentifier.laptopProjectsBack].exists else {
+            throw XCTSkip("This check requires a conventional phone")
+        }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        let banner = app.buttons["download.banner"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 15))
+        XCTAssertTrue(banner.waitForExistence(timeout: 5))
+        if app.textFields[AccessibilityIdentifier.fileSearch].exists {
+            app.buttons[AccessibilityIdentifier.filesToggle].tap()
+        }
+        XCTAssertTrue(app.buttons["pane.more"].isHittable)
+        XCTAssertTrue(app.buttons["pane.more"].staticTexts["Code"].exists)
+        XCTAssertFalse(app.buttons["pane.code"].exists)
+        XCTAssertFalse(app.tabBars.buttons["Projects"].isHittable)
+        XCTAssertTrue(app.buttons["landscape.section.projects"].isHittable)
+        XCTAssertTrue(app.buttons["landscape.section.learn"].isHittable)
+        XCTAssertGreaterThan(editor.frame.height, app.windows.firstMatch.frame.height * 0.6,
+                             "landscape code must take most of the display")
+        XCTAssertLessThanOrEqual(editor.frame.maxY, banner.frame.minY + 1,
+                                 "package progress must not cover code")
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        XCTAssertTrue(app.textFields["terminal.input"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.selectWorkspacePane("code"))
+        attachScreenshot(named: "phone-landscape-download-code")
+        if ProcessInfo.processInfo.environment["GF_CAPTURE_NATIVE"] == "1" {
+            print("GF_NATIVE_FRAME_READY: iphone-landscape-download-code")
+            fflush(stdout)
+            Thread.sleep(forTimeInterval: 30)
+        }
+        XCUIDevice.shared.orientation = .portrait
+        XCTAssertTrue(app.tabBars.buttons["Projects"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["pane.code"].waitForExistence(timeout: 5))
     }
 
     @MainActor
@@ -519,6 +567,83 @@ final class WorkspaceFlowUITests: XCTestCase {
         app.launch()
 
         assertLaptopTabsSwapKeyboardForResults()
+    }
+
+    @MainActor
+    func testDuoWorkspaceSurvivesPortraitLandscapeRoundTrip() throws {
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary"]
+        app.launch()
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        XCTAssertTrue(editor.waitForExistence(timeout: 20))
+        let laptop = app.buttons[AccessibilityIdentifier.laptopProjectsBack]
+        let wasLaptop = laptop.waitForExistence(timeout: 3)
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        if hide.exists { hide.tap() }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.filesToggle].waitForExistence(timeout: 5))
+        XCTAssertTrue(editor.isHittable)
+        XCTAssertTrue(app.buttons["pane.more"].isHittable)
+        XCTAssertGreaterThan(editor.frame.width, 250)
+        if app.windows.firstMatch.frame.width < 800 {
+            for section in ["Projects", "Build", "Learn", "Settings"] {
+                XCTAssertTrue(app.sectionButton(section).isHittable,
+                              "closed Duo keeps its vertical section tabs")
+            }
+        }
+        attachScreenshot(named: "duo-existing-landscape-layout")
+        holdNativeFrame("duo-landscape")
+        XCUIDevice.shared.orientation = .portrait
+        if wasLaptop {
+            XCTAssertTrue(laptop.waitForExistence(timeout: 5))
+            XCTAssertTrue(hide.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.keyboards.firstMatch.isHittable)
+        } else {
+            XCTAssertFalse(laptop.exists)
+            XCTAssertTrue(app.sectionButton("Projects").waitForExistence(timeout: 5))
+        }
+        XCTAssertTrue(editor.isHittable)
+        if wasLaptop {
+            let keyboard = app.keyboards.firstMatch
+            XCTAssertLessThan(abs(keyboard.frame.minY - hide.frame.maxY), 40,
+                              "returning to portrait must not leave a gap above the keys")
+        }
+        attachScreenshot(named: "duo-existing-portrait-layout")
+        holdNativeFrame("duo-portrait")
+    }
+
+    private func holdNativeFrame(_ name: String) {
+        if ProcessInfo.processInfo.environment["GF_CAPTURE_NATIVE"] == "1" {
+            print("GF_NATIVE_FRAME_READY: \(name)")
+            fflush(stdout)
+            Thread.sleep(forTimeInterval: 20)
+        }
+    }
+
+    @MainActor
+    func testPadRotationsKeepEditorAndKeyboardUsable() throws {
+        app.launchArguments = ["-GopherForgeSection", "build", "-GopherForgeEmptyLibrary",
+                               "-GopherForgeDownloadLayoutUITest"]
+        app.launch()
+        guard app.windows.firstMatch.frame.width >= 700 else { throw XCTSkip("iPad check") }
+        defer { XCUIDevice.shared.orientation = .portrait }
+        for orientation in [UIDeviceOrientation.landscapeLeft, .portrait] {
+            XCUIDevice.shared.orientation = orientation
+            let editor = app.textViews[AccessibilityIdentifier.editor]
+            XCTAssertTrue(editor.waitForExistence(timeout: 15))
+            XCTAssertTrue(editor.isHittable)
+            editor.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.3)).tap()
+            let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+            XCTAssertTrue(hide.waitForExistence(timeout: 10))
+            XCTAssertGreaterThan(editor.frame.height, 120)
+            let keyboard = app.keyboards.firstMatch
+            XCTAssertTrue(keyboard.isHittable)
+            XCTAssertLessThanOrEqual(editor.frame.maxY, keyboard.frame.minY)
+            hide.tap()
+            XCTAssertTrue(hide.waitForNonExistence(timeout: 5))
+            holdNativeFrame(orientation == .portrait ? "ipad-portrait" : "ipad-landscape")
+        }
     }
 
     /// Runs against a simulator whose Duo hinge is actually horizontal. It

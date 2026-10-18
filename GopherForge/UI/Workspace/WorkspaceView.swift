@@ -26,9 +26,9 @@ enum WorkspaceLayout: Equatable {
     case canvas
     case tablet
 
-    static func resolve(width: CGFloat, isPad: Bool) -> Self {
+    static func resolve(width: CGFloat, isPad: Bool, allowsCanvas: Bool = true) -> Self {
         if isPad && width >= 800 { return .tablet }
-        if width >= 900 { return .canvas }
+        if allowsCanvas && width >= 900 { return .canvas }
         if width >= 600 { return .columns }
         return .compact
     }
@@ -73,7 +73,10 @@ struct WorkspaceView: View {
     var isCompactPhoneLandscape: Bool {
         !duoHingePresent && UIDevice.current.userInterfaceIdiom == .phone && verticalSizeClass == .compact
     }
-    var roundsLandscapePanels: Bool { isCompactPhoneLandscape && !keyboardVisible }
+    var isClosedDuoLandscape: Bool {
+        guard duoHingePresent, let bounds = activeWorkspaceWindow?.bounds else { return false }
+        return bounds.width > bounds.height && bounds.height < 500
+    }
     @AppStorage("workspaceNavigatorWidth") var navigatorWidth: Double = 220
     @AppStorage("workspaceNavigatorCollapsed") var navigatorCollapsed = false
     @State var navigatorDragStart: Double?
@@ -101,13 +104,15 @@ struct WorkspaceView: View {
             workspaceRoot
                 .navigationTitle(workspace.project?.name ?? "Workspace")
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar { toolbar }
+                .toolbar(isCompactPhoneLandscape ? .hidden : .visible, for: .navigationBar)
+                .toolbar { if !isCompactPhoneLandscape { toolbar } }
         }
     }
 
     var workspaceRoot: some View {
         VStack(spacing: 0) {
             if duoHingePresent { duoWorkspaceHeader }
+            else if isCompactPhoneLandscape { phoneLandscapeHeader }
             WorkspaceStatusStrip(status: workspace.toolchain)
             if workspace.hasUnsavedChanges || workspace.saveError != nil {
                 HStack(spacing: 8) {
@@ -140,15 +145,19 @@ struct WorkspaceView: View {
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            if isCompactPhoneLandscape || UIDevice.current.userInterfaceIdiom == .pad,
+               let progress = workspace.downloadProgress, !workspace.showsDownloadSheet {
+                ModuleDownloadStatusButton(progress: progress, compact: true)
+            }
         }
         // The keyboard's actual frame owns this boundary. SwiftUI can retain
         // the previous responder's accessory height when Terminal becomes Code.
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .ignoresSafeArea(duoHingePresent ? .container : [], edges: .top)
-        .ignoresSafeArea(duoHingePresent && usesLaptopLayout && !softwareKeyboardVisible ? .container : [], edges: .bottom)
+        .ignoresSafeArea((duoHingePresent && usesLaptopLayout || isCompactPhoneLandscape || isClosedDuoLandscape) && !softwareKeyboardVisible ? .container : [], edges: .bottom)
         .environment(\.softwareKeyboardAccessoryEnabled, keyboardAccessoryEnabled)
         .background(Color(.secondarySystemBackground).ignoresSafeArea(.container))
-        .toolbar(usesLaptopLayout || keyboardVisible ? .hidden : .visible, for: .tabBar)
+        .toolbar(usesLaptopLayout || keyboardVisible || isCompactPhoneLandscape ? .hidden : .visible, for: .tabBar)
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
                 PackageBrowserView(allowsProjectChoice: false) {
@@ -217,8 +226,11 @@ struct WorkspaceView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
             updateKeyboardFrame(notification)
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
-            keyboardVisible = keyboardIntersectsWindow
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { notification in
+            updateKeyboardFrame(notification)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidChangeFrameNotification)) {
+            updateKeyboardFrame($0)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             // Some keyboards retain the accessory's old on-screen rectangle
@@ -271,10 +283,14 @@ struct WorkspaceView: View {
     func keyboardViewportHeight(in geometry: GeometryProxy) -> CGFloat {
         let content = geometry.frame(in: .global)
         // A floating iPad keyboard doesn't take the entire bottom edge.
-        guard !keyboardFrame.isNull,
-              keyboardFrame.width >= content.width * 0.8,
-              keyboardFrame.maxY >= content.maxY - 1 else { return geometry.size.height }
-        return min(geometry.size.height, max(0, keyboardFrame.minY - content.minY))
+        // Rotation can precede the final window geometry. Read the settled
+        // docked keyboard boundary instead of retaining the pre-rotation frame.
+        let guideFrame = activeWorkspaceWindow?.keyboardLayoutGuide.layoutFrame ?? .null
+        let frame = guideFrame.height > 120 ? guideFrame : keyboardFrame
+        guard !frame.isNull,
+              frame.width >= content.width * 0.8,
+              frame.maxY >= content.maxY - 1 else { return geometry.size.height }
+        return min(geometry.size.height, max(0, frame.minY - content.minY))
     }
 
     // MARK: - Layouts
@@ -343,6 +359,37 @@ struct WorkspaceView: View {
             }
             projectMenu
         }
+    }
+
+    /// Only conventional landscape phones use this row. Duo keeps its
+    /// established header, pane tabs and system section navigation.
+    var phoneLandscapeHeader: some View {
+        HStack(spacing: 8) {
+            Button(action: toggleFiles) {
+                Image(systemName: "sidebar.leading").frame(width: 44, height: 44)
+            }
+            .accessibilityLabel("Files")
+            .accessibilityIdentifier(AccessibilityID.filesToggle)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(workspace.project?.name ?? "Workspace")
+                    .font(.caption2).foregroundStyle(.secondary)
+                Text(pane == .code ? workspace.selectedFile : pane.title)
+                    .font(.caption.monospaced().weight(.semibold))
+            }
+            .lineLimit(1).truncationMode(.middle)
+            .frame(maxWidth: 160, alignment: .leading)
+            .layoutPriority(-1)
+            Divider().frame(height: 20)
+            WorkspacePaneMenu(selection: $pane, panes: WorkspacePane.workPanes)
+            Spacer(minLength: 4)
+            ForEach(WorkspaceToolbarActions.primaryPhases, id: \.self) { phase in
+                PhaseButton(phase: phase, minimumHitTarget: 44)
+            }
+            workspaceMenu(includingPrimaryActions: false, minimumHitTarget: 44)
+        }
+        .labelStyle(.iconOnly).buttonStyle(.plain).foregroundStyle(.tint)
+        .padding(.horizontal, 4).frame(height: 44)
+        .background(Color(.secondarySystemBackground))
     }
 
     var projectMenu: some View {

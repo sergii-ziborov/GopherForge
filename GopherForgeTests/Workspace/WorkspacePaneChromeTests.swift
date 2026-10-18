@@ -33,6 +33,13 @@ final class WorkspacePaneChromeTests: XCTestCase {
             - WorkspaceLayout.inspectorWidth(for: 1100), 400)
     }
 
+    func testShortPhoneKeepsOneWorkPaneEvenAtCanvasWidth() {
+        XCTAssertEqual(WorkspaceLayout.resolve(width: 950, isPad: false, allowsCanvas: false), .columns)
+        XCTAssertEqual(WorkspaceLayout.resolve(width: 568, isPad: false, allowsCanvas: false), .compact)
+        XCTAssertEqual(WorkspaceLayout.resolve(width: 950, isPad: false), .canvas)
+        XCTAssertEqual(WorkspaceLayout.resolve(width: 950, isPad: true), .tablet)
+    }
+
     func testPhaseLabelsMatchTheToolbar() {
         XCTAssertEqual(GopherForgeTheme.label(for: .format), "Beautify")
         XCTAssertEqual(GopherForgeTheme.label(for: .vet), "Vet")

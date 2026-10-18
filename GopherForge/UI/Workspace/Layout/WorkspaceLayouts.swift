@@ -3,9 +3,10 @@ import SwiftUI
 extension WorkspaceView {
     func workspaceArea(terminal: ProjectTerminalSession) -> some View {
         GeometryReader { geometry in
-            let availableLayout = WorkspaceLayout.resolve(
+            let availableLayout: WorkspaceLayout = isCompactPhoneLandscape ? .compact : WorkspaceLayout.resolve(
                 width: geometry.size.width,
-                isPad: UIDevice.current.userInterfaceIdiom == .pad
+                isPad: UIDevice.current.userInterfaceIdiom == .pad,
+                allowsCanvas: !isCompactPhoneLandscape
             )
             let division = activeDivisionFrame(in: geometry)
             let horizontalDivision = division.flatMap { $0.width > $0.height * 2 ? $0 : nil }
@@ -84,18 +85,11 @@ extension WorkspaceView {
             if !navigatorCollapsed {
                 ProjectNavigatorView(onOpenFile: revealCode)
                     .frame(width: navigatorWidth(for: width))
-                    .clipShape(RoundedRectangle(cornerRadius: roundsLandscapePanels ? 20 : 0))
-                    .padding(.vertical, roundsLandscapePanels ? 8 : 0)
-                    .padding(.leading, roundsLandscapePanels ? 8 : 0)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                 navigatorResizeHandle(availableWidth: width)
             }
             paneStack(terminal: terminal)
                 .frame(minWidth: 0, maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: roundsLandscapePanels ? 20 : 0))
-                .padding(.vertical, roundsLandscapePanels ? 8 : 0)
-                .padding(.trailing, roundsLandscapePanels ? 8 : 0)
-                .padding(.leading, roundsLandscapePanels && navigatorCollapsed ? 8 : 0)
         }
     }
 
@@ -273,15 +267,17 @@ extension WorkspaceView {
             // The switcher sits at the top: the keyboard owns the bottom of
             // the screen. It scrolls because six readable tabs need more room
             // than the narrowest window provides.
-            WorkspacePanePicker(selection: $pane, panes: WorkspacePane.workPanes)
-                .background(Color(.secondarySystemBackground))
-
-            Divider()
+            if !isCompactPhoneLandscape {
+                WorkspacePanePicker(selection: $pane, panes: WorkspacePane.workPanes)
+                    .background(Color(.secondarySystemBackground))
+                Divider()
+            }
 
             WorkspacePaneContent(
                 pane: pane,
                 terminal: terminal,
                 fontSize: fontSize,
+                compactChrome: isCompactPhoneLandscape,
                 onRevealCode: { withAnimation(.easeOut(duration: 0.2)) { pane = .code } }
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

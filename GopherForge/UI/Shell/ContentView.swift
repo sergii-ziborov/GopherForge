@@ -8,6 +8,7 @@ import SwiftUI
 /// screen.
 struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @State private var workspace = WorkspaceModel()
     @State private var navigation = AppNavigation()
     @State private var duoPresentation = DuoPresentation()
@@ -58,7 +59,12 @@ struct ContentView: View {
             .environment(navigation)
             .environment(learnProgress)
             .environment(\.duoPresentation, duoPresentation)
-            .task { await workspace.prepare() }
+            .task {
+                await workspace.prepare()
+                #if DEBUG
+                workspace.showDownloadLayoutFixtureIfRequested()
+                #endif
+            }
             .onChange(of: keepAwake, initial: true) { _, _ in updateIdleTimer() }
             .onChange(of: workspace.isRunning) { _, _ in updateIdleTimer() }
             .onChange(of: workspace.downloadProgress?.status) { _, _ in updateIdleTimer() }
@@ -80,7 +86,8 @@ struct ContentView: View {
                     .environment(workspace)
             }
             .overlay(alignment: .bottom) {
-                if let progress = workspace.downloadProgress, !workspace.showsDownloadSheet {
+                if let progress = workspace.downloadProgress, !workspace.showsDownloadSheet,
+                   !usesInlineDownloadStatus {
                     Button {
                         workspace.showDownloadSheet()
                     } label: {
@@ -131,6 +138,13 @@ struct ContentView: View {
                     Task { await workspace.flush() }
                 }
             }
+    }
+
+    private var usesInlineDownloadStatus: Bool {
+        guard navigation.section == .build else { return false }
+        if UIDevice.current.userInterfaceIdiom == .pad { return true }
+        return !duoPresentation.isDuo && UIDevice.current.userInterfaceIdiom == .phone
+            && verticalSizeClass == .compact
     }
 
     private func updateIdleTimer() {
@@ -185,7 +199,19 @@ struct ContentView: View {
         }
     }
 
+    private var usesLandscapeNavigation: Bool {
+        !duoPresentation.isDuo && UIDevice.current.userInterfaceIdiom == .phone
+            && verticalSizeClass == .compact
+    }
+
     private var tabLayout: some View {
+        HStack(spacing: 0) {
+            nativeTabs
+            if usesLandscapeNavigation { LandscapeSectionRail() }
+        }
+    }
+
+    private var nativeTabs: some View {
         TabView(selection: tabSelection) {
             ForEach(AppSection.allCases) { item in
                 Group {
@@ -203,6 +229,7 @@ struct ContentView: View {
             }
         }
         .tabViewStyle(.tabBarOnly)
+        .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
     }
 
     private var tabSelection: Binding<AppSection> {
@@ -220,5 +247,68 @@ struct ContentView: View {
         case .learn: LearnHomeView()
         case .settings: SettingsView()
         }
+    }
+}
+
+/// Conventional phone landscape navigation floats at the trailing edge.
+/// The scrollable column still fits when the software keyboard is visible.
+struct LandscapeSectionRail: View {
+    @Environment(AppNavigation.self) private var navigation
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 4) {
+                    ForEach(AppSection.allCases) { section in
+                        Button { navigation.show(section) } label: {
+                            VStack(spacing: 2) {
+                                Image(systemName: section.systemImage).font(.system(size: 19))
+                                Text(section.title).font(.system(size: 9, weight: .medium))
+                            }
+                            .frame(width: 50, height: 44)
+                            .background(navigation.section == section ? GopherForgeTheme.accent.opacity(0.16) : .clear,
+                                        in: RoundedRectangle(cornerRadius: 22))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(navigation.section == section ? GopherForgeTheme.accent : .secondary)
+                        .accessibilityLabel(section.title)
+                        .accessibilityIdentifier("landscape.section.\(section.rawValue)")
+                        .accessibilityAddTraits(navigation.section == section ? .isSelected : [])
+                    }
+                }
+                .padding(5)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .frame(width: 60, height: min(geometry.size.height, 198))
+            .background(.regularMaterial, in: Capsule())
+            .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .frame(width: 72)
+    }
+}
+
+struct ModuleDownloadStatusButton: View {
+    @Environment(WorkspaceModel.self) private var workspace
+    let progress: ModuleDownload
+    var compact = false
+
+    var body: some View {
+        Button {
+            workspace.showDownloadSheet()
+        } label: {
+            HStack(spacing: 8) {
+                ProgressView().controlSize(compact ? .mini : .regular)
+                Text(progress.status).font(.caption).lineLimit(1)
+                Spacer(minLength: 0)
+                Text("\(progress.alreadyInstalled.count + progress.installed.count)")
+                    .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, compact ? 4 : 10)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: compact ? 0 : 40))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("download.banner")
     }
 }

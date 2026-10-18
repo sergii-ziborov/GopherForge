@@ -36,6 +36,17 @@ final class AppStoreScreenshotUITests: XCTestCase {
         app = nil
     }
 
+    func testCaptureUpdatedEditorScreenshot() {
+        XCUIDevice.shared.orientation = .portrait
+        launch(section: "projects")
+        openTemplate("worker-pool")
+        expectSource()
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        if hide.exists { hide.tap() }
+        XCTAssertTrue(app.textViews[AccessibilityIdentifier.editor].isHittable)
+        captureNativeDisplayFrame("00-code-build31")
+    }
+
     /// One ordered walk rather than a test per screen: the shots build on each
     /// other — the library needs projects in it, the second build reuses the
     /// first one's cache — and re-launching between them would throw that away.
