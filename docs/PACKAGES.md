@@ -1,7 +1,12 @@
 # Installing a package
 
-GopherForge compiles offline. Installing a package is the one moment it uses a
-network, and this is what happens in that moment and why.
+The compiler runs locally. Package downloads and GitHub imports need a network;
+subsequent builds use the source kept in the project.
+
+This document describes the current source, including the upcoming 1.1.1
+update. Public App Store version 1.1 still requires adding transitive modules
+separately. Version 1.1.1 (33) is waiting for App Review; 1.1.2 (34) is in
+private Internal QA TestFlight, as checked on 18 October 2026.
 
 Add packages from inside an open project (Files sidebar or the workspace **⋯**
 menu). The all-projects list and Settings do not install into a project they
@@ -49,12 +54,13 @@ was published under, which is the whole point of vendoring.
 Adding a dependency here is not `go get`, and the differences are worth stating
 plainly rather than leaving someone to meet them halfway through a build.
 
-**Transitive dependencies are not resolved.** Adding module A vendors A and
-adds A's requirement. It does not walk A's own `go.mod` and fetch what A
-imports. If A imports B and B is not vendored, the build reports an unresolved
-import; the compatibility report names it rather than failing obscurely. This
-is the most common surprise, and it is why the listing says "a pure-Go module"
-rather than promising that any module will work.
+**Missing imports use versions already declared in `go.mod`.** From 1.1.1,
+build preparation downloads modules needed by unresolved imports, matching the
+longest direct or indirect requirement path. GitHub import also prepares needed
+packages. This does not recursively solve arbitrary module requirements or
+implement Go's full module-version selection. A dependency absent from the
+project's requirements may still need to be added. Preparation is bounded to
+80 modules and keeps successful downloads when another module fails.
 
 **`//go:embed` of non-Go assets does not survive.** Vendoring keeps `.go`
 files, `go.mod` and the licence and notice files. Templates, images and other
@@ -64,14 +70,14 @@ write an `embedcfg`, which it does not.
 
 **Assembly and native source are dropped.** `.s` files and C or C++ sources are
 filtered out of the archive. cgo is unsupported for the same underlying reason:
-there is no native toolchain in the sandbox. Pure Go is the target, and that
-covers most of the ecosystem worth using on a phone.
+there is no native toolchain in the sandbox. Pure Go is the target;
+compatibility still depends on the package.
 
-**`replace`, `exclude` and `retract` are parsed but not applied.** The `go.mod`
-parser recognises them, and the build resolves imports from the paths actually
-present rather than implementing module-resolution semantics. A project relying
-on a `replace` directive is reported in the compatibility summary rather than
-silently built against the wrong thing.
+**Module directives have limited support.** The download matcher considers
+remote `replace` targets for a matching requirement. A replacement pointing to
+a folder on another machine cannot be downloaded and is reported explicitly.
+This is not a full implementation of `replace`, `exclude`, `retract` or Go's
+module-resolution semantics.
 
 **`go.work` is not implemented.** A workspace is detected and its root module
 opened; workspace semantics are not applied.
@@ -83,9 +89,18 @@ app reads the hashes out of it and does **not** verify the signature or the
 Merkle proof. The trust is therefore TLS to `sum.golang.org` rather than the
 log's own signature.
 
-That is weaker than what `go` does on a laptop, and stronger than every "curl
-this and run it" alternative. It is stated here, and in the app, rather than
-left to be discovered.
+This does not provide the transparency-log proof verification performed by
+the standard Go tooling.
+
+## Clearing downloaded packages
+
+From 1.1.1, Settings → **Clear downloaded packages** removes downloaded
+dependency source across saved user projects. User code and pinned dependency
+versions remain; missing pins recorded only in an older vendor manifest are
+preserved in `go.mod` before cleanup. Lessons and built-in Examples are excluded.
+
+The next build downloads required packages again, so it needs network access.
+This control is separate from clearing the compiler's build cache.
 
 ## What is checked, and how
 
