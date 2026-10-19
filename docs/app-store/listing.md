@@ -96,3 +96,17 @@ iOS and iPadOS 27 or later. An active placement alone does not establish that
 the browser displayed it. Version 1.1's universal image was verified as processed
 and then waiting for review with the submitted version; public release still
 requires Apple approval.
+
+
+## 1.1.2 (36), submitted 19 October 2026
+
+Description, promotional text, keywords, release notes and review instructions
+now describe 92 teaching lessons in 15 units and 25 practical Around Go lessons.
+Shell and deployment examples are explicitly learning material for the user's
+own development environment. The original paid download model, title/subtitle,
+support, privacy and terms links are retained.
+
+The main version and Learn Go custom page are Waiting for Review with automatic
+release after approval. Both have seven complete screenshot groups, code first;
+two learning frames per group are newly captured from build 36. Header and Search
+Results are active. See [the build 36 receipt](../releases/1.1.2-build36.json).

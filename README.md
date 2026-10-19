@@ -17,8 +17,7 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.1 (33)** | Available on the App Store | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
-
-| **1.1.2 (36)** | Release candidate in preparation | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
+| **1.1.2 (36)** | Available in Internal QA TestFlight; Waiting for Review | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
 
 The current source contains the TestFlight 1.1.2 changes. They are not yet a public
 App Store release. TestFlight access is private; there is no public invitation
