@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-19T06:51:52.669686+00:00",
+  "scope": "Website and public package documentation; native archive limits unchanged",
+  "website": {
+    "url": "https://gopherforge.app",
+    "sourceCommit": "cf6120edcb9d702177e8bd6a3ad52430d0c45bf3",
+    "deploymentId": "6dd6bc3b-908c-4ec7-b366-4a935d900fd8",
+    "liveCustomDomainVerified": true,
+    "pages": [
+      "/",
+      "/updates#next-release",
+      "/learn",
+      "/support#package-limits"
+    ],
+    "publicCoursePreviews": 69,
+    "newImage": "1.1.3 iPad architecture comparison, explicitly labelled development preview",
+    "screenshot": "../screenshots/module-limits-website.png",
+    "checksReportedBySiteBuild": {
+      "courseAndSSRTests": 7,
+      "assertions": 1007,
+      "productionBuild": "passed",
+      "noPageHorizontalOverflowAtWidths": [
+        390,
+        1280
+      ]
+    },
+    "liveChecks": {
+      "home": {
+        "http": 200,
+        "sha256": "b032e87f781332c234f3d7d4ad3feffa96123b7dd55f2b991d1aa5885f466865"
+      },
+      "updates": {
+        "http": 200,
+        "sha256": "b492d1f2261bc0177b28d5b2fcf5d4eb8c82b7a1f7513cbd3c27148e609e60a0"
+      },
+      "learn": {
+        "http": 200,
+        "sha256": "e62dd2e18d27eb5efd64759322c18bfc667ef71ab76d9afcaeca32357211b0a4"
+      }
+    }
+  },
+  "appStore": {
+    "checkedAt": "2026-10-19T06:49:14.304268+00:00",
+    "versions": [
+      {
+        "id": "5e22f357-e351-440c-ac3e-c1a1595857ef",
+        "version": "1.1.2",
+        "state": "WAITING_FOR_REVIEW",
+        "releaseType": "AFTER_APPROVAL"
+      },
+      {
+        "id": "fd0b6c13-7eb3-42bc-bf9c-6ebd96d041d6",
+        "version": "1.1.1",
+        "state": "READY_FOR_SALE",
+        "releaseType": "AFTER_APPROVAL"
+      },
+      {
+        "id": "3a161f49-3035-45bb-8668-bad6ad63f8a8",
+        "version": "1.1",
+        "state": "READY_FOR_SALE",
+        "releaseType": "AFTER_APPROVAL"
+      },
+      {
+        "id": "15167547-6b06-49b7-8684-1dc0141bae48",
+        "version": "1.0.1",
+        "state": "READY_FOR_SALE",
+        "releaseType": "AFTER_APPROVAL"
+      },
+      {
+        "id": "0309bc51-228d-4011-97d5-452bcac8f23d",
+        "version": "1.0",
+        "state": "READY_FOR_SALE",
+        "releaseType": "AFTER_APPROVAL"
+      }
+    ]
+  },
+  "nextRelease": {
+    "version": "1.1.3",
+    "build": 37,
+    "state": "development only",
+    "branch": "codex/architecture-and-patterns",
+    "uploadedToTestFlight": false,
+    "submittedToReview": false
+  },
+  "budgets": {
+    "nonDirectoryFilesPerModuleZip": 4000,
+    "compressedZipBytes": 100663296,
+    "uncompressedModuleBytes": 536870912,
+    "modulesPerPreparationPass": 80,
+    "filesCountedBeforeFiltering": true,
+    "streamingThresholdUncompressedBytes": 167772160,
+    "sourceSelectionTriggerBytes": 50331648,
+    "sourceSelectionIsAbsoluteRetentionCap": false
+  },
+  "exampleArchive": {
+    "module": "modernc.org/libc",
+    "version": "v1.75.3",
+    "nonDirectoryFiles": 4168,
+    "directories": 0,
+    "uncompressedBytes": 86414248,
+    "compressedEntryBytes": 17990503,
+    "inspection": "ZIP central directory only; source not extracted",
+    "checkedAt": "2026-10-19",
+    "source": "https://proxy.golang.org/modernc.org/libc/@v/v1.75.3.zip",
+    "canRetryBypassFileBudget": false,
+    "compilationOrRuntimeCompatibilityTested": false
+  },
+  "nativeSourceFiles": [
+    "GopherForge/Packages/GoModuleArchive.swift",
+    "GopherForge/Packages/Network/GoModuleProxyClient.swift",
+    "GopherForge/Packages/GoDependencyPreparer.swift"
+  ]
+}

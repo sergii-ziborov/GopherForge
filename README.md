@@ -46,6 +46,16 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Try working examples.** Multi-package programs, Go-generated PNGs, and
   HTML/CSS/JavaScript projects previewed locally in WebKit.
 
+### Next release: architecture and patterns
+
+The separate [1.1.3 development branch](https://github.com/sergii-ziborov/GopherForge/tree/codex/architecture-and-patterns)
+adds 53 reading lessons. Its planned course has 145 teaching lessons across 20
+units, including 98 readings: 19 architecture lessons with scenario-based fit
+ratings, eight clean-code lessons, all 23 classic design patterns and six
+concurrent Go patterns. Worked programs, diagrams, tradeoffs and independent
+review questions accompany the new material. This development version has not
+been uploaded to TestFlight or submitted to App Review.
+
 [Browse the course](https://gopherforge.app/learn) ·
 [App screenshots](docs/app-store/screenshots)
 
@@ -61,6 +71,20 @@ using the versions already declared in `go.mod`. This is not a complete
 replacement for Go's module solver. The earlier 1.1 release requires adding transitive
 dependencies separately.
 
+**A module must fit the archive limits:** at most **4,000 files**, **96 MiB
+compressed**, and **512 MiB uncompressed**. File count includes every
+non-directory entry in the downloaded ZIP, before tests, other-platform files
+and unused source are filtered out; it is not a count of files the project
+ultimately keeps. Automatic dependency preparation is limited to 80 modules
+per pass.
+
+For example, `modernc.org/libc@v1.75.3` contains **4,168 archive files** and is
+refused before compilation. Retry cannot bypass this limit for the same
+archive. A compatible smaller version or dependency may help when the
+project's requirements allow it; passing the archive limits still does not
+guarantee WASI compatibility. These are GopherForge resource budgets, not Go
+language limits. [How the limits work](docs/PACKAGES.md#archive-budgets).
+
 Settings → **Clear downloaded packages** removes dependency source across saved
 user projects while keeping their code and dependency versions. Lessons and
 built-in Examples are excluded. Packages download again when needed. This
@@ -72,6 +96,8 @@ See [package behavior and limits](docs/PACKAGES.md).
 
 - Go programs run in a bounded WASI sandbox. cgo, native assembly and guest
   network sockets are unsupported.
+- Module archives are capped at 4,000 files, 96 MiB downloaded and 512 MiB
+  uncompressed, counted before platform/source filtering.
 - The project console runs app operations; it is not a shell or SSH session.
 - Local web previews are not public hosting. Imported HTML or JavaScript can
   make requests to remote services.
