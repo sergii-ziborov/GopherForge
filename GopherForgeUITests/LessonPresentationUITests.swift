@@ -55,6 +55,43 @@ final class LessonPresentationUITests: XCTestCase {
         attachScreenshot(named: "reading-bash-unit")
     }
 
+    func testAroundGoUnitsOpenPracticalCommandsAndFullScreen() {
+        for (unitID, lessonID, command) in [
+            ("operations", "operations.shell-files", "pwd"),
+            ("containers", "operations.docker-build", "FROM"),
+            ("kubernetes", "operations.kubernetes-contexts", "kubectl"),
+        ] {
+            app.terminate()
+            app.launchArguments = ["-GopherForgeSection", "learn"]
+            app.launch()
+            let unit = app.buttons["unit.\(unitID)"]
+            XCTAssertTrue(app.waitForElement(unit, scrollingUpTo: 24))
+            unit.tap()
+            let lesson = app.buttons["lesson.\(lessonID)"]
+            XCTAssertTrue(app.waitForElement(lesson, scrollingUpTo: 8))
+            lesson.tap()
+            XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 10))
+            XCTAssertFalse(app.buttons[AccessibilityIdentifier.lessonCheck].exists)
+            let expand = app.buttons["Open code in full screen"].firstMatch
+            XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 12))
+            attachScreenshot(named: "around-go-\(unitID)")
+            expand.tap()
+            XCTAssertTrue(app.buttons["Back"].firstMatch.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", command)).firstMatch.exists)
+            attachScreenshot(named: "around-go-\(unitID)-commands")
+            app.buttons["Back"].firstMatch.tap()
+            let done = app.buttons[AccessibilityIdentifier.lessonComplete]
+            let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
+            if undo.exists { undo.tap() }
+            XCTAssertTrue(done.waitForExistence(timeout: 5))
+            done.tap()
+            XCTAssertTrue(undo.waitForExistence(timeout: 5))
+            app.terminate()
+            launch(lessonID)
+            XCTAssertTrue(undo.waitForExistence(timeout: 10))
+        }
+    }
+
     func testEmbeddedCodeScrollsTheLessonAndExpandedEditsSurvive() throws {
         launch("core.multiple-returns")
         let expand = app.buttons["lesson.editor.expand"]

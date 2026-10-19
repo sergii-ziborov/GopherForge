@@ -68,6 +68,7 @@ struct CodeBlock: View {
                         .fixedSize(horizontal: true, vertical: true)
                         .padding(16)
                 }
+                .defaultScrollAnchor(.topLeading)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .navigationTitle(title.isEmpty ? "Code" : title)
                 .navigationBarTitleDisplayMode(.inline)

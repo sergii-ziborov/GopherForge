@@ -37,6 +37,21 @@ final class AppStoreScreenshotUITests: XCTestCase {
         app = nil
     }
 
+    func testCaptureExpandedCourseScreenshot() {
+        XCUIDevice.shared.orientation = .portrait
+        launch(section: "learn")
+        XCTAssertTrue(app.waitForElement(app.buttons["unit.core"]))
+        captureNativeDisplayFrame("03-course-build36")
+        app.terminate()
+        app.launchArguments = ["-GopherForgeSection", "learn", "-GopherForgeLesson", "operations.kubernetes-inspect", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 15))
+        let expand = app.buttons["Open code in full screen"].firstMatch
+        XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 10))
+        app.swipeUp()
+        captureNativeDisplayFrame("09-around-go-build36")
+    }
+
     func testCaptureUpdatedEditorScreenshot() {
         XCUIDevice.shared.orientation = .portrait
         launch(section: "projects")

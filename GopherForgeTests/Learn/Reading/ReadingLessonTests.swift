@@ -3,11 +3,11 @@ import XCTest
 
 final class ReadingLessonTests: XCTestCase {
     func testBundledReadingsAreIntegratedExactlyOnceAndPreserveOriginalCourse() {
-        XCTAssertEqual(ReadingLessonCatalog.all.count, 26)
-        XCTAssertEqual(GoCourseCatalog.units.count, 13)
-        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 73)
+        XCTAssertEqual(ReadingLessonCatalog.all.count, 45)
+        XCTAssertEqual(GoCourseCatalog.units.count, 15)
+        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 92)
         XCTAssertEqual(GoCourseCatalog.challenges.count, 22)
-        XCTAssertEqual(GoCourseCatalog.lessons.count, 95)
+        XCTAssertEqual(GoCourseCatalog.lessons.count, 114)
         for reading in ReadingLessonCatalog.all {
             XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == reading.id }.count, 1, reading.id)
             XCTAssertEqual(GoCourseCatalog.unit(containing: reading.id)?.id, reading.unitID)
@@ -31,7 +31,8 @@ final class ReadingLessonTests: XCTestCase {
 
     func testReadingsContainWorkedCodeWalkthroughsUseCasesAndOfficialReferences() {
         let hosts: Set<String> = ["go.dev", "pkg.go.dev", "gin-gonic.com", "github.com",
-            "redis.io", "kubernetes.io", "www.gnu.org", "docs.docker.com", "docs.podman.io"]
+            "redis.io", "kubernetes.io", "www.gnu.org", "docs.docker.com", "docs.podman.io",
+            "git-scm.com", "curl.se", "www.freedesktop.org"]
         for reading in ReadingLessonCatalog.all {
             XCTAssertGreaterThan(reading.introduction.count, 100, reading.id)
             XCTAssertGreaterThanOrEqual(reading.sections.count, 3, reading.id)

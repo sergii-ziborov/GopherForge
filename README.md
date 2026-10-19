@@ -16,7 +16,9 @@ with a bundled Go 1.27.1 toolchain.
 | --- | --- | --- |
 | **1.1.1 (33)** | Available on the App Store | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
-| **1.1.2 (35)** | Available in private Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
+| **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
+
+| **1.1.2 (36)** | Release candidate in preparation | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
 
 The current source contains the TestFlight 1.1.2 changes. They are not yet a public
 App Store release. TestFlight access is private; there is no public invitation
@@ -36,11 +38,10 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public course has 47 teaching lessons, 22 prediction
-  challenges and 69 visual guides. In private TestFlight 1.1.2 (35), 26 additional
-  reading lessons bring teaching to 73 lessons in 13 units. Worked examples
-  explain runtime/GC, concurrency, HTTP/Gin, Redis, architecture, Bash, Docker,
-  Podman and Kubernetes without mandatory compilation.
+- **Learn Go.** The public course has 47 teaching lessons and 22 question-and-answer challenges and 69 visual guides. In the 1.1.2 (36) release candidate, 45 additional
+  reading lessons bring teaching to 92 lessons in 15 units. Worked examples
+  explain runtime/GC, concurrency, HTTP/Gin, Redis, architecture, Bash, Git, Go tools, HTTP diagnostics, Linux services, Docker,
+  Compose, Podman and Kubernetes without mandatory compilation.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview

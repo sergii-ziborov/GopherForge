@@ -1612,6 +1612,87 @@
     "id" : "operations",
     "lessons" : [
       {
+        "explanation" : "A shell starts in a working directory, and relative paths are resolved there. Before building or moving files, establish that location. These exercises use a new scratch directory on your own Mac or Linux machine; no administrator permissions are needed.",
+        "id" : "operations.shell-files",
+        "kind" : "reading",
+        "objective" : "Use pwd, cd, ls, mkdir, cp and mv in a small disposable workspace.",
+        "reading" : {
+          "references" : [
+            "https://www.gnu.org/software/bash/manual/bash.html#Bourne-Shell-Builtins",
+            "https://www.gnu.org/software/coreutils/manual/coreutils.html"
+          ],
+          "sections" : [
+            {
+              "body" : "pwd prints the working directory; ls -la includes hidden entries and metadata. cd changes this shell, not every terminal. The home shortcut is expanded by the shell, while a quoted path can contain spaces.",
+              "code" : "pwd\nls -la\ncd \"$HOME\"\npwd",
+              "language" : "bash",
+              "title" : "Locate the project before changing it",
+              "walkthrough" : "Compare the two pwd results. ls -la may show .git, but that alone does not establish a repository root. Quoting \"$HOME\" passes a single path, even if it contains spaces."
+            },
+            {
+              "body" : "mktemp -d makes a unique scratch directory. mkdir -p creates missing directory components. cp copies bytes; mv changes the path. Keep the original until you have inspected the destination rather than experimenting on project files.",
+              "code" : "scratch_dir=$(mktemp -d)\nmkdir -p \"$scratch_dir/input\" \"$scratch_dir/output\"\nprintf \"%s\\n\" \"hello Go\" > \"$scratch_dir/input/note.txt\"\ncp \"$scratch_dir/input/note.txt\" \"$scratch_dir/output/copy.txt\"\nmv \"$scratch_dir/output/copy.txt\" \"$scratch_dir/output/result.txt\"\ncat \"$scratch_dir/output/result.txt\"",
+              "language" : "bash",
+              "title" : "Create and copy a small fixture",
+              "walkthrough" : "The final line prints hello Go. The > operator creates or truncates the named file; it is appropriate here because the fixture is new. The scratch path stays in scratch_dir for the next command."
+            },
+            {
+              "body" : "wc -l counts newline-terminated lines, and cmp compares the copied content. rm removes the specifically named fixture files; rmdir removes only empty directories, making an unexpected leftover visible instead of recursively erasing it.",
+              "code" : "wc -l \"$scratch_dir/output/result.txt\"\ncmp \"$scratch_dir/input/note.txt\" \"$scratch_dir/output/result.txt\"\nrm \"$scratch_dir/input/note.txt\" \"$scratch_dir/output/result.txt\"\nrmdir \"$scratch_dir/input\" \"$scratch_dir/output\" \"$scratch_dir\"",
+              "language" : "bash",
+              "title" : "Check the result and remove only the fixture",
+              "walkthrough" : "wc should report one line. cmp is silent with status zero for identical files. The cleanup names only files this exercise created; rmdir fails if another file remains, so inspect rather than adding recursive deletion."
+            }
+          ],
+          "takeaway" : "Start by checking the working directory, quote paths, and verify copied bytes before removing anything. Practice filesystem changes in a named scratch workspace, not in your only project copy."
+        },
+        "tags" : [
+          "tooling.bash"
+        ],
+        "title" : "Bash essentials: navigate, inspect and copy files"
+      },
+      {
+        "explanation" : "Most development investigations begin with a filename, a symbol or a short log fragment. Use small commands to narrow the evidence before opening a huge file. The examples assume you are in a trusted Go project and have a text application log named app.log.",
+        "id" : "operations.shell-text",
+        "kind" : "reading",
+        "objective" : "Combine find, grep, head, tail, sort and uniq without hiding their exit behavior.",
+        "reading" : {
+          "references" : [
+            "https://www.gnu.org/software/coreutils/manual/coreutils.html",
+            "https://www.gnu.org/software/findutils/manual/html_mono/find.html",
+            "https://www.gnu.org/software/grep/manual/grep.html"
+          ],
+          "sections" : [
+            {
+              "body" : "find selects filesystem entries; grep searches text. The quoted pattern *.go is passed to find rather than expanded by Bash. -exec passes each discovered filename as an argument, preserving spaces without parsing the output of ls.",
+              "code" : "find . -type f -name \"*.go\"\nfind . -type f -name \"*.go\" -exec grep -nH -F \"ListenAndServe\" {} +",
+              "language" : "bash",
+              "title" : "Find source files and search their content",
+              "walkthrough" : "The first command lists Go files. The second prints filename, line number and matching text. No matches can produce a nonzero grep status; distinguish that normal search outcome from an unreadable file."
+            },
+            {
+              "body" : "head shows the beginning, tail the end, and tail -f follows appended data until Ctrl-C. Bound a first inspection instead of loading a multi-gigabyte file. Filtering stdout does not capture stderr from a program unless you redirect it explicitly.",
+              "code" : "head -n 10 app.log\ntail -n 40 app.log\ngrep -n -F \"timeout\" app.log\ntail -f app.log",
+              "language" : "bash",
+              "title" : "Read a bounded part of a log",
+              "walkthrough" : "Stop tail -f with Ctrl-C when you have enough evidence. It does not stop the process writing the log. grep finds the literal timeout string and reports line numbers rather than interpreting it as a regular expression."
+            },
+            {
+              "body" : "uniq -c combines adjacent equal lines, so sort first if order does not matter. This simple pipeline counts exact repeated lines; real structured logs often contain a different timestamp per event and need field-aware parsing.",
+              "code" : "grep -F \"ERROR\" app.log | sort | uniq -c | sort -nr | head -n 10",
+              "language" : "bash",
+              "title" : "Count repeated messages with a clear assumption",
+              "walkthrough" : "The result is a frequency list of identical ERROR lines, not an error rate. With pipefail, an early writer can report a broken pipe when head exits; do not reuse a viewing pipeline as an unquestioned CI pass/fail gate."
+            }
+          ],
+          "takeaway" : "Use find for paths and grep for text; quote patterns and preserve filenames as arguments. Bounded log inspection and explicit pipeline assumptions are more useful than printing every file."
+        },
+        "tags" : [
+          "tooling.bash"
+        ],
+        "title" : "Find code and inspect logs from the command line"
+      },
+      {
         "explanation" : "Bash is useful for connecting build and deployment tools on a developer machine. Go itself does not require Bash, Docker or Kubernetes. Learning their boundaries helps when a Go program becomes part of a service workflow; these commands are reading examples, not app terminal commands.",
         "id" : "operations.bash-arguments",
         "kind" : "reading",
@@ -1667,8 +1748,11 @@
               "walkthrough" : "tee preserves a log while showing output. With pipefail, a failing go test makes the condition fail even when tee succeeds. This script is for a trusted local project and writes one named log file."
             },
             {
-              "body" : "A process receives an environment at startup; editing a shell variable without exporting it does not pass it to child processes. Validate required configuration in the Go program and report a useful missing-variable error. Do not bake credentials into images or print the entire environment to debug one setting.",
-              "title" : "Treat environment variables as configuration"
+              "body" : "A prefix assignment belongs to one child process; export passes a variable to later children from this shell. Check selected non-secret settings instead of dumping the full environment. Already-running services keep their original environment.",
+              "code" : "APP_ENV=development go run ./cmd/api\nexport APP_ENV=development\nprintf \"APP_ENV=%s\\n\" \"$APP_ENV\"\ncommand -v go",
+              "language" : "bash",
+              "title" : "Pass configuration and inspect one setting",
+              "walkthrough" : "The first line runs a foreground API until you stop it; execute the following commands after it exits or in another shell. The example assumes cmd/api exists and does not require a credential. command -v shows which Go executable Bash will resolve."
             },
             {
               "body" : "A trap can arrange cleanup of resources a script created, but it cannot roll back an external side effect automatically. Avoid rerunning a deployment simply because its status command timed out. Keep a stable operation identifier and inspect the outcome before retrying. As a script grows, move complex state transitions into a program with tests.",
@@ -1682,6 +1766,298 @@
         ],
         "title" : "Pipelines, exit codes and explicit failure handling"
       },
+      {
+        "explanation" : "A process has a PID, an exit status and open streams. Starting a service in the background does not detach it from responsibility: keep the PID and wait for completion. These commands assume a local Go project with cmd/api and an available port.",
+        "id" : "operations.shell-processes",
+        "kind" : "reading",
+        "objective" : "Start one Go service, retain its PID, send TERM and wait for its result.",
+        "reading" : {
+          "references" : [
+            "https://www.gnu.org/software/bash/manual/bash.html#Job-Control-Builtins",
+            "https://www.gnu.org/software/bash/manual/bash.html#Signals"
+          ],
+          "sections" : [
+            {
+              "body" : "Build first, then run the binary itself in the background. $! is the PID of the latest asynchronous command. A background go run process may introduce a build/launcher process, so it is a poor substitute when practicing exact signal ownership.",
+              "code" : "mkdir -p bin\ngo build -o ./bin/api ./cmd/api\n./bin/api > api.log 2>&1 &\napi_pid=$!\nprintf \"API PID: %s\\n\" \"$api_pid\"",
+              "language" : "bash",
+              "title" : "Start the binary you can stop directly",
+              "walkthrough" : "Run the launch only after the build succeeds. Both output streams go to api.log. Record this PID instead of searching all processes by a broad application name or terminating unrelated Go jobs."
+            },
+            {
+              "body" : "ps reports process state; kill -0 checks that a PID can be addressed without sending a signal. lsof is a separately installed utility on some systems and can identify a listening socket; it does not prove the HTTP handler returns useful responses.",
+              "code" : "ps -p \"$api_pid\" -o pid,etime,args\nkill -0 \"$api_pid\"\nlsof -nP -iTCP:8080 -sTCP:LISTEN",
+              "language" : "bash",
+              "title" : "Inspect the process and the listening port",
+              "walkthrough" : "Check that the socket belongs to the binary you launched. If lsof is missing, use your OS socket inspection tool. A process may exit between any two commands; observation is not a lifetime guarantee."
+            },
+            {
+              "body" : "TERM lets a cooperative service drain work. wait observes your shell child and reaps it; an if branch can preserve nonzero status without aborting the shell. SIGKILL prevents application cleanup, so use it only after diagnosing an unresponsive process.",
+              "code" : "kill -TERM \"$api_pid\"\nif wait \"$api_pid\"; then\n    printf \"%s\\n\" \"Service exited successfully\"\nelse\n    status=$?\n    printf \"Service exit status: %s\\n\" \"$status\"\nfi\ntail -n 20 api.log",
+              "language" : "bash",
+              "title" : "Request shutdown and collect the outcome",
+              "walkthrough" : "A graceful service can return zero. A process terminated by a signal may report a nonzero status; inspect its log and shutdown contract. wait works for children of this shell, not any arbitrary PID from another terminal."
+            }
+          ],
+          "takeaway" : "Keep the child PID, inspect it, request TERM and wait for the outcome. A listening port, a live process and a successful HTTP response are three different observations."
+        },
+        "tags" : [
+          "tooling.bash"
+        ],
+        "title" : "Processes, signals and exit status"
+      },
+      {
+        "explanation" : "A useful script has explicit inputs and predictable cleanup. Bash distinguishes positional arguments, shell variables and exported environment. This lesson puts those pieces into a small test wrapper instead of assuming that adding set -e makes every failure path correct.",
+        "id" : "operations.shell-scripts",
+        "kind" : "reading",
+        "objective" : "Read required configuration, forward quoted arguments and clean a temporary workspace with a trap.",
+        "reading" : {
+          "references" : [
+            "https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion",
+            "https://www.gnu.org/software/bash/manual/bash.html#Bourne-Shell-Builtins"
+          ],
+          "sections" : [
+            {
+              "body" : "${1:-.} supplies a default when the first argument is absent or empty. A prefix assignment affects one command environment; export affects later child processes from this shell. Neither changes an already running service.",
+              "code" : "project_dir=\"${1:-.}\"\nprintf \"Testing: %s\\n\" \"$project_dir\"\nGOMAXPROCS=2 go -C \"$project_dir\" test ./...\nexport APP_ENV=development\nprintf \"APP_ENV=%s\\n\" \"$APP_ENV\"",
+              "language" : "bash",
+              "title" : "Read arguments and pass a setting to one process",
+              "walkthrough" : "The Go -C flag precedes the test command. The temporary GOMAXPROCS assignment does not permanently change your shell. Never print the complete environment to diagnose one non-secret setting."
+            },
+            {
+              "body" : "The : command with ${name:?message} reports a required input. mktemp creates the workspace, and EXIT runs cleanup on ordinary shell termination. The script forwards \"$@\" as separate arguments and uses an explicit test branch to preserve failure.",
+              "code" : "#!/usr/bin/env bash\nset -u\n: \"${PROJECT_DIR:?Set PROJECT_DIR to a Go project}\"\nwork_dir=$(mktemp -d) || exit 1\ntrap 'rm -f \"$work_dir/test.log\"; rmdir \"$work_dir\"' EXIT\nif go -C \"$PROJECT_DIR\" test \"$@\" ./... > \"$work_dir/test.log\" 2>&1; then\n    cat \"$work_dir/test.log\"\nelse\n    cat \"$work_dir/test.log\" >&2\n    exit 1\nfi",
+              "language" : "bash",
+              "title" : "Validate inputs and clean only owned temporary data",
+              "walkthrough" : "Save this as check.sh and call it with bash, PROJECT_DIR set, and optional go test flags such as -count=1. The trap names the one file it owns. SIGKILL and machine failure cannot run shell cleanup."
+            },
+            {
+              "body" : "bash -n parses without executing the script; it does not prove that command names, paths or remote systems exist. --help or command -v can establish what is installed. Review changes before making a script executable or putting it into CI.",
+              "code" : "bash -n check.sh\ncommand -v bash\ncommand -v go\nPROJECT_DIR=\"$PWD\" bash check.sh -count=1",
+              "language" : "bash",
+              "title" : "Check syntax before running the script",
+              "walkthrough" : "Syntax success is silent. The final line runs tests and can download required Go modules; it is an execution step, not another parser check. Keep credentials out of arguments and traces such as bash -x."
+            }
+          ],
+          "takeaway" : "A script should declare its inputs, preserve argument boundaries and clean only resources it created. Parsing, executing and validating its external effects are separate checks."
+        },
+        "tags" : [
+          "tooling.bash"
+        ],
+        "title" : "Small scripts: arguments, environment and cleanup"
+      },
+      {
+        "explanation" : "Git records snapshots, not a magic backup of every unsaved editor buffer. Start in an existing local repository and inspect your changes. The sequence below makes a topic branch, stages one reviewed path and records a local commit; publishing comes in the next lesson.",
+        "id" : "operations.git-local",
+        "kind" : "reading",
+        "objective" : "Keep working tree, staging area and committed history distinct.",
+        "reading" : {
+          "references" : [
+            "https://git-scm.com/docs/git-status",
+            "https://git-scm.com/docs/git-diff",
+            "https://git-scm.com/docs/git-restore"
+          ],
+          "sections" : [
+            {
+              "body" : "git status --short summarizes tracked and untracked paths. git diff shows unstaged tracked changes; git diff --staged shows what the next commit contains. Untracked file content is not included in ordinary git diff.",
+              "code" : "git status --short\ngit diff -- main.go\ngit diff --staged\ngit log -5 --oneline",
+              "language" : "bash",
+              "title" : "Inspect before selecting a change",
+              "walkthrough" : "Compare the two diff views. A file can have both staged and unstaged edits, and the next commit includes only the staged snapshot. -- separates options/revisions from the path main.go."
+            },
+            {
+              "body" : "switch -c creates and selects a new branch at the current commit. add stages the named content. Inspect the staged result before committing, rather than using add . when a repository includes unrelated experiments or local credentials.",
+              "code" : "git switch -c feature/health-check\ngit add -- main.go\ngit diff --staged\ngit commit -m \"Add health endpoint\"",
+              "language" : "bash",
+              "title" : "Put a reviewed change on a topic branch",
+              "walkthrough" : "Use an unused branch name and a real main.go change. The commit remains local until you push it. If a hook fails, inspect its output and rerun the necessary check rather than bypassing it automatically."
+            },
+            {
+              "body" : "restore --staged changes the index back toward HEAD while leaving the working file intact. A plain restore of the working tree has a different, destructive meaning. Check both views after unstaging to make the distinction visible.",
+              "code" : "git restore --staged -- main.go\ngit status --short\ngit diff -- main.go",
+              "language" : "bash",
+              "title" : "Unstage without discarding your edit",
+              "walkthrough" : "Use this on a staged change before committing. Your edits should now be unstaged. This is not a command to undo an existing commit; history repair and reverting a published change are different operations."
+            }
+          ],
+          "takeaway" : "Review unstaged and staged diffs separately, stage intended paths and commit on a named branch. Unstaging an edit preserves it; overwriting the working tree may discard it."
+        },
+        "tags" : [
+          "tooling.git"
+        ],
+        "title" : "Git daily work: inspect, branch, stage and commit"
+      },
+      {
+        "explanation" : "A remote-tracking branch is your local record of a remote branch at the last fetch. Fetching updates that record without integrating it into your current branch. The examples assume an origin remote, a main branch and an existing topic branch you own.",
+        "id" : "operations.git-remotes",
+        "kind" : "reading",
+        "objective" : "Inspect upstream changes before integration and keep unfinished work recoverable.",
+        "reading" : {
+          "references" : [
+            "https://git-scm.com/docs/git-fetch",
+            "https://git-scm.com/docs/git-stash",
+            "https://git-scm.com/docs/git-pull",
+            "https://git-scm.com/docs/git-push"
+          ],
+          "sections" : [
+            {
+              "body" : "remote -v shows fetch and push destinations; inspect those before publishing. fetch origin updates remote-tracking references. The three-dot diff compares the topic branch against its merge base with origin/main, highlighting the branch contribution.",
+              "code" : "git remote -v\ngit fetch origin\ngit log --oneline HEAD..origin/main\ngit diff origin/main...HEAD",
+              "language" : "bash",
+              "title" : "Fetch and compare before merging",
+              "walkthrough" : "HEAD..origin/main lists commits reachable from origin/main but not HEAD. Fetch does not change your working files. A remote URL may contain sensitive information; avoid pasting it indiscriminately into public logs."
+            },
+            {
+              "body" : "stash push -u includes untracked files as well as tracked edits, but not ignored files by default. apply restores a stash while retaining its saved entry. Inspect and resolve any conflicts before deciding to drop the saved copy.",
+              "code" : "git stash push -u -m \"WIP before syncing\"\ngit stash list\ngit stash show --stat \"stash@{0}\"\ngit stash apply \"stash@{0}\"\ngit status --short",
+              "language" : "bash",
+              "title" : "Temporarily store an unfinished tracked change",
+              "walkthrough" : "Only apply when a stash entry actually exists. apply can conflict; it does not mean every file was restored cleanly. The retained stash is useful until the restored work is checked. A stash is local, not a shared backup."
+            },
+            {
+              "body" : "On a clean main branch, pull --ff-only refuses an implicit merge when histories diverge. A topic branch push sets its upstream without rewriting remote history. A rejected push is evidence to fetch and inspect, not a reason to force-push blindly.",
+              "code" : "git switch main\ngit pull --ff-only origin main\ngit switch feature/health-check\ngit push -u origin feature/health-check",
+              "language" : "bash",
+              "title" : "Integrate deliberately and publish the branch",
+              "walkthrough" : "Resolve or save local changes before switching branches. The pull updates main only if fast-forward is possible. Pushing the topic branch publishes commits; it does not merge them into main or submit an application release."
+            }
+          ],
+          "takeaway" : "Fetch and compare before integrating. Preserve unfinished work, inspect conflicts and push the intended branch. Fast-forward refusal is a useful signal that history needs a deliberate decision."
+        },
+        "tags" : [
+          "tooling.git"
+        ],
+        "title" : "Git collaboration: fetch, compare, stash and push"
+      },
+      {
+        "explanation" : "A useful Go development loop checks the module boundary, formatting, tests, static diagnostics and the final build. These commands are for the native Go toolchain on a development machine; platform support and build tags can change which packages are selected.",
+        "id" : "operations.go-tooling",
+        "kind" : "reading",
+        "objective" : "Use the native Go CLI to inspect a module and check a service before packaging it.",
+        "reading" : {
+          "references" : [
+            "https://pkg.go.dev/cmd/go",
+            "https://go.dev/ref/mod",
+            "https://go.dev/doc/articles/race_detector"
+          ],
+          "sections" : [
+            {
+              "body" : "go version identifies the toolchain. go env GOMOD GOWORK prints selected module/workspace files without dumping every environment setting. list -m all describes the selected build list; mod why explains why a dependency is needed.",
+              "code" : "go version\ngo env GOMOD GOWORK\ngo list -m all\ngo mod why -m golang.org/x/sync",
+              "language" : "bash",
+              "title" : "Locate the module and inspect dependencies",
+              "walkthrough" : "Run inside your module; the selected module file should be the one you expect. The last dependency is an example: if it is not required, Go explains that. Module commands may access the configured proxy and network."
+            },
+            {
+              "body" : "gofmt -l lists formatting differences without rewriting files. test checks packages; -race adds supported native race instrumentation. vet reports suspicious constructs rather than proving semantic correctness. A clean run still depends on meaningful tests.",
+              "code" : "gofmt -l .\ngo test ./...\ngo test -race ./...\ngo vet ./...",
+              "language" : "bash",
+              "title" : "Format, test and inspect suspicious code",
+              "walkthrough" : "Run each check and inspect its status. Race detection needs a supported native platform/toolchain and may require cgo; it is not available through every cross-compilation target. A race-free test run covers only paths actually exercised."
+            },
+            {
+              "body" : "mod tidy can add or remove module requirements and sums, so review its diff rather than running it as an invisible deployment step. build -trimpath removes local filesystem paths from the executable; version -m inspects embedded build/module metadata.",
+              "code" : "go mod tidy\ngit diff -- go.mod go.sum\nmkdir -p bin\ngo build -trimpath -o ./bin/api ./cmd/api\ngo version -m ./bin/api",
+              "language" : "bash",
+              "title" : "Tidy deliberately and inspect the shipped binary",
+              "walkthrough" : "The example assumes cmd/api exists. Test any module file changes before committing. Embedded build metadata is useful for provenance, but build flags and source state must still be recorded for reproducible releases."
+            }
+          ],
+          "takeaway" : "Check the selected module, format, test, race-check where supported, run vet and inspect the final artifact. Review dependency-file changes explicitly instead of treating tidy as a harmless read-only command."
+        },
+        "tags" : [
+          "tooling.go-tools"
+        ],
+        "title" : "Go toolbelt: modules, tests, vet and build"
+      },
+      {
+        "explanation" : "An API can fail before any handler runs, or return an HTTP error over a perfectly healthy connection. curl helps identify that boundary. These examples target your own local Go service at 127.0.0.1:8080 with a /healthz endpoint; adjust the paths to your application.",
+        "id" : "operations.http-debugging",
+        "kind" : "reading",
+        "objective" : "Probe a local API and separate DNS, connection, HTTP and application failures.",
+        "reading" : {
+          "references" : [
+            "https://curl.se/docs/manpage.html",
+            "https://pkg.go.dev/net/http"
+          ],
+          "sections" : [
+            {
+              "body" : "-i includes response headers, --connect-timeout bounds connection establishment, and --max-time bounds the total operation. --fail-with-body makes HTTP 4xx/5xx nonzero while retaining the response body, unlike an ordinary successful curl transport.",
+              "code" : "curl -i --connect-timeout 2 --max-time 5 \\\n  --fail-with-body http://127.0.0.1:8080/healthz",
+              "language" : "bash",
+              "title" : "Inspect headers and keep a timeout",
+              "walkthrough" : "Expect a successful health response from your server. Connection refused means no reachable listener at that address, not an HTTP 500. A timeout has a different cause again; retain the specific diagnostic instead of reducing all failures to unavailable."
+            },
+            {
+              "body" : "--data-binary sends the provided bytes. The content type declares JSON, but the server still has to validate fields. This request is an example for a local /notes route accepting a text field; it is not an endpoint supplied by every Go service.",
+              "code" : "curl -i --max-time 5 --fail-with-body \\\n  -H \"Content-Type: application/json\" \\\n  --data-binary '{\"text\":\"inspect this request\"}' \\\n  http://127.0.0.1:8080/notes",
+              "language" : "bash",
+              "title" : "Send JSON without hiding the request contract",
+              "walkthrough" : "The single quotes keep Bash from interpreting the JSON double quotes. Data selects POST by default. Do not add a production authorization token to a shared example, shell history or a screenshot."
+            },
+            {
+              "body" : "--write-out prints transport timing after the request; -o /dev/null discards the body in this diagnostic. An HTTP status of 000 is not a server status: no HTTP response was received. Inspect hostname resolution separately when using a domain.",
+              "code" : "curl -sS -o /dev/null --max-time 5 \\\n  -w 'status=%{http_code} connect=%{time_connect}s total=%{time_total}s\\n' \\\n  http://127.0.0.1:8080/healthz",
+              "language" : "bash",
+              "title" : "Measure and reason about the failed layer",
+              "walkthrough" : "This timing command does not use --fail-with-body, so an HTTP 500 can still have curl status zero. Check both the printed HTTP status and the process outcome. Avoid -k as a default fix for TLS errors; correct the hostname and trust configuration."
+            }
+          ],
+          "takeaway" : "Check transport errors, HTTP status and response body separately. Bound diagnostic requests and preserve the failed layer before deciding whether the problem is routing, TLS, a handler or a downstream dependency."
+        },
+        "tags" : [
+          "tooling.networking"
+        ],
+        "title" : "HTTP debugging: curl, status codes and time budgets"
+      },
+      {
+        "explanation" : "A native Go binary can run directly under a service manager; Kubernetes is not required. These examples assume Linux with systemd and a preinstalled go-api.service. They do not apply to macOS launchd or every container environment.",
+        "id" : "operations.linux-service",
+        "kind" : "reading",
+        "objective" : "Inspect a systemd service, follow its logs and understand its restart boundary.",
+        "reading" : {
+          "references" : [
+            "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html",
+            "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html"
+          ],
+          "sections" : [
+            {
+              "body" : "systemctl cat shows the installed unit and drop-ins. status includes active state and recent log context; show exposes selected properties. Verify the executable and service user before changing the process lifecycle.",
+              "code" : "systemctl cat go-api.service\nsystemctl status go-api.service --no-pager\nsystemctl show go-api.service -p MainPID -p ActiveState -p SubState",
+              "language" : "bash",
+              "title" : "Read the unit and its current state",
+              "walkthrough" : "An inactive or failed status can produce a nonzero exit code. Check ExecStart, WorkingDirectory and User in the unit. Unit content may reveal configuration paths; inspect only the required evidence before sharing logs."
+            },
+            {
+              "body" : "journalctl selects journal entries for a unit and time range. -f follows new entries; Ctrl-C stops following without stopping the service. Access may require membership or administrator permissions depending on the host configuration.",
+              "code" : "journalctl -u go-api.service --since \"10 minutes ago\" --no-pager\njournalctl -u go-api.service -n 50 --no-pager\njournalctl -u go-api.service -f",
+              "language" : "bash",
+              "title" : "Follow the unit log instead of guessing a file path",
+              "walkthrough" : "Correlate startup, request errors and shutdown timestamps. A missing journal permission is different from no application logs. The program should emit useful stdout/stderr records without credentials or full sensitive request payloads."
+            },
+            {
+              "body" : "daemon-reload reloads unit definitions after editing them; it does not restart a process by itself. restart replaces the running service and can interrupt traffic. An ordinary deployment needs a deliberate change window and an application shutdown budget.",
+              "code" : "# After an intentional unit-file change on your own host:\nsudo systemctl daemon-reload\nsudo systemctl restart go-api.service\nsystemctl is-active go-api.service\ncurl --max-time 5 --fail-with-body http://127.0.0.1:8080/healthz",
+              "language" : "bash",
+              "title" : "Restart the intended service and verify recovery",
+              "walkthrough" : "These two sudo commands mutate host state and need authorization on that machine. Verify both service state and HTTP behavior. A running process can still be unhealthy; repeated restarts can conceal a bad configuration instead of repairing it."
+            }
+          ],
+          "takeaway" : "Inspect the unit, state and journal before restarting. Reloading definitions and replacing a process are distinct actions; verify the application endpoint after a controlled service change."
+        },
+        "tags" : [
+          "tooling.linux"
+        ],
+        "title" : "A Go service on Linux: systemctl and journalctl"
+      }
+    ],
+    "summary" : "Bash, Git, Go tools, HTTP debugging and Linux service commands.",
+    "title" : "Around Go: command line",
+    "translationNote" : "Read commands and manifests here; use your own development environment to run them. These tools are useful deployment options, not prerequisites for every Go program."
+  },
+  {
+    "id" : "containers",
+    "lessons" : [
       {
         "explanation" : "A container image packages a native application and its runtime files. It does not compile Go inside the iOS app, and it does not remove the need to maintain the operating environment. Multi-stage builds let the final image omit the compiler and source tree.",
         "id" : "operations.docker-build",
@@ -1701,8 +2077,11 @@
               "walkthrough" : "This scratch example fits a compatible pure-Go binary with no required external files. It omits CA certificates, zoneinfo, a shell and writable application directories. Add the actual runtime assets or choose an appropriate maintained runtime base. Pin and update base image digests in a reproducible release process."
             },
             {
-              "body" : "A .dockerignore file keeps unrelated logs, local builds and secrets out of the context. Copy module files before source to reuse a dependency layer when possible. Do not use build arguments or image layers as a secret store. Architecture and cgo requirements can change which runtime base is valid; CGO_ENABLED=0 is not a universal switch for every application.",
-              "title" : "Control the build context"
+              "body" : "Keep logs, local builds and secrets out of the build context with .dockerignore. Copy module files before source to reuse dependency work. The actual final image still needs a startup test; metadata inspection alone cannot prove its runtime files are sufficient.",
+              "code" : "docker build -t go-api:dev .\ndocker image inspect go-api:dev --format '{{.Config.User}} {{json .Config.Entrypoint}}'\ndocker image ls go-api",
+              "language" : "bash",
+              "title" : "Build the final image and inspect its metadata",
+              "walkthrough" : "For this Dockerfile the user should be 65532:65532 and the entrypoint /api. Verify the build succeeds before inspecting the tag, or you might inspect an older image. A CGO-dependent program needs a compatible build/runtime strategy."
             },
             {
               "body" : "A non-root user reduces ordinary process privileges, but does not replace resource and filesystem limits. Test startup, configuration, TLS requirements and graceful termination using the actual final image. A compiler-stage unit test alone cannot prove the minimal runtime image contains the files the service needs.",
@@ -1715,6 +2094,128 @@
           "tooling.containers"
         ],
         "title" : "Build a small Go image with explicit runtime needs"
+      },
+      {
+        "explanation" : "Start with a trusted project containing the Dockerfile from the earlier lesson and a Go service listening on :8080. The following commands use an isolated development container named go-api-dev; an image, a container instance and a published port are different objects.",
+        "id" : "operations.docker-run",
+        "kind" : "reading",
+        "objective" : "Run a named local container and diagnose it with logs, inspect and stats.",
+        "reading" : {
+          "references" : [
+            "https://docs.docker.com/reference/cli/docker/container/run/",
+            "https://docs.docker.com/reference/cli/docker/container/logs/",
+            "https://docs.docker.com/reference/cli/docker/container/stop/"
+          ],
+          "sections" : [
+            {
+              "body" : "build tags the image produced from the current context. run creates a container; -d runs it in the background and -p publishes a container port at a host address. Bind the host side to loopback when the exercise should stay local.",
+              "code" : "docker build -t go-api:dev .\ndocker run -d --name go-api-dev \\\n  -p 127.0.0.1:8080:8080 -e APP_ENV=development go-api:dev\ndocker ps --filter name=go-api-dev\ncurl --max-time 5 --fail-with-body http://127.0.0.1:8080/healthz",
+              "language" : "bash",
+              "title" : "Build once and start a named instance",
+              "walkthrough" : "Run only after the build succeeds and choose another name or port if already used. The Go listener must accept container-interface traffic, usually :8080. EXPOSE in the Dockerfile alone does not publish anything on the host."
+            },
+            {
+              "body" : "logs reads stdout/stderr, inspect can select one property, and stats reports current resource usage. docker exec starts a new command inside the container; a scratch image has no sh, ls or other debugging utility unless you explicitly supplied one.",
+              "code" : "docker logs --tail 50 go-api-dev\ndocker inspect --format '{{.State.Status}} {{.State.ExitCode}}' go-api-dev\ndocker stats --no-stream go-api-dev",
+              "language" : "bash",
+              "title" : "Inspect the instance and its actual runtime",
+              "walkthrough" : "A stopped container is omitted by ordinary ps; use docker ps -a when investigating an exit. ExitCode is not an HTTP status. Avoid dumping all inspect properties when only state is needed because configuration can include sensitive environment data."
+            },
+            {
+              "body" : "stop sends a graceful termination signal and allows a finite timeout before forced termination. rm removes the stopped container, not the image or unrelated volumes. Replacing an image tag does not upgrade a previously created container.",
+              "code" : "docker stop --timeout 15 go-api-dev\ndocker ps -a --filter name=go-api-dev\ndocker rm go-api-dev\ndocker image inspect go-api:dev --format '{{.Id}}'",
+              "language" : "bash",
+              "title" : "Stop and remove only this instance",
+              "walkthrough" : "Confirm you no longer need the disposable instance before removing it. Persistent state belongs in deliberate storage; removing the container should not be your only backup strategy. Keep the image if you want to reproduce its startup."
+            }
+          ],
+          "takeaway" : "Build an artifact, create a named instance and verify it through the published port. Inspect its own logs and exit state, then stop it deliberately; image tags and container instances have separate lifecycles."
+        },
+        "tags" : [
+          "tooling.containers"
+        ],
+        "title" : "Docker daily commands: build, run, inspect and stop"
+      },
+      {
+        "explanation" : "Compose defines a local multi-container environment in one file. This example assumes your API reads REDIS_ADDR, listens on :8080 and tolerates transient downstream failures. Use a disposable directory for the exercise and save the file below as compose.yaml.",
+        "id" : "operations.docker-compose",
+        "kind" : "reading",
+        "objective" : "Read compose.yaml and use config, up, ps, logs, exec and down.",
+        "reading" : {
+          "references" : [
+            "https://docs.docker.com/compose/gettingstarted/",
+            "https://docs.docker.com/compose/how-tos/startup-order/",
+            "https://docs.docker.com/reference/cli/docker/compose/"
+          ],
+          "sections" : [
+            {
+              "body" : "Service names provide network discovery on the Compose network. The API connects to redis:6379, not its own localhost. A dependency health check orders initial startup; it does not guarantee Redis stays healthy, so the Go client still needs deadlines and recovery.",
+              "code" : "services:\n  api:\n    build: .\n    ports: [\"127.0.0.1:8080:8080\"]\n    environment:\n      REDIS_ADDR: redis:6379\n    depends_on:\n      redis:\n        condition: service_healthy\n  redis:\n    image: redis:8-alpine\n    healthcheck:\n      test: [\"CMD\", \"redis-cli\", \"ping\"]\n      interval: 5s\n      timeout: 3s\n      retries: 5",
+              "language" : "yaml",
+              "title" : "Describe services and readiness in the file",
+              "walkthrough" : "This intentionally disposable Redis has no persistent volume or public port. Choose a supported tested image version for your project and pin release digests when needed. The API Dockerfile must exist in the same build context."
+            },
+            {
+              "body" : "-p gives the stack a predictable project name. config --quiet validates without printing resolved configuration. up --build -d builds and starts; ps and logs reveal readiness and startup errors. Use the same project name for each command.",
+              "code" : "docker compose -p go-lab config --quiet\ndocker compose -p go-lab up --build -d\ndocker compose -p go-lab ps\ndocker compose -p go-lab logs --tail 50 api redis",
+              "language" : "bash",
+              "title" : "Validate, start and inspect the project",
+              "walkthrough" : "Configuration validation does not prove the images will build or the service will boot. A missing Dockerfile, unavailable image or failing Redis health check each needs its own fix. Avoid publishing the full resolved config if it includes secrets."
+            },
+            {
+              "body" : "exec runs inside an existing service container; redis-cli PING checks the Redis protocol path. down stops and removes the project containers and its normal networks. It does not delete named volumes unless requested with an additional destructive option.",
+              "code" : "docker compose -p go-lab exec redis redis-cli PING\ncurl --max-time 5 --fail-with-body http://127.0.0.1:8080/healthz\ndocker compose -p go-lab down",
+              "language" : "bash",
+              "title" : "Probe a dependency and tear down deliberately",
+              "walkthrough" : "PING should return PONG, while the HTTP check verifies your API route. Run down only when the local session is finished. This fixture uses ephemeral Redis storage, so its data goes away with the disposable container."
+            }
+          ],
+          "takeaway" : "Use service DNS names inside a Compose network, validate the file and inspect each service. Initial dependency ordering complements application retry/deadline behavior; it does not replace it."
+        },
+        "tags" : [
+          "tooling.containers"
+        ],
+        "title" : "Compose: run an API and Redis as one local stack"
+      },
+      {
+        "explanation" : "A container writable layer usually disappears when its instance is removed. A bind mount maps a host path; a named volume has a lifecycle managed by the container runtime. These local examples use a dedicated fixture and Redis to demonstrate the difference.",
+        "id" : "operations.docker-volumes",
+        "kind" : "reading",
+        "objective" : "Choose a mount for configuration or persistent state and inspect it without deleting data.",
+        "reading" : {
+          "references" : [
+            "https://docs.docker.com/engine/storage/volumes/",
+            "https://docs.docker.com/engine/storage/bind-mounts/"
+          ],
+          "sections" : [
+            {
+              "body" : "A bind mount exposes a host path to the container. --mount makes source, destination and read-only intent explicit. The example assumes ./config.json already exists and the API accepts a -config flag; adapt that flag to your own program.",
+              "code" : "docker run --rm --name go-api-config \\\n  --mount \"type=bind,source=$PWD/config.json,target=/etc/go-api/config.json,readonly\" \\\n  go-api:dev -config /etc/go-api/config.json",
+              "language" : "bash",
+              "title" : "Mount a configuration file read-only",
+              "walkthrough" : "Unlike some -v forms, --mount reports a missing source instead of silently making a directory. The image must let its configured user read the file. On macOS, file sharing also crosses the container VM boundary."
+            },
+            {
+              "body" : "Create a dedicated named volume and mount it at Redis data storage. Append-only persistence records writes into that volume; it does not create an off-host backup. The port remains private to this container unless you publish it separately.",
+              "code" : "docker volume create go-lab-data\ndocker run -d --name go-lab-redis \\\n  --mount type=volume,source=go-lab-data,target=/data \\\n  redis:8-alpine redis-server --appendonly yes\ndocker exec go-lab-redis redis-cli SET example hello",
+              "language" : "bash",
+              "title" : "Give disposable Redis a separate data volume",
+              "walkthrough" : "Use an unused container name. SET changes only this exercise Redis key. The volume survives removal of the container; persistence and restore procedures still need testing against the selected Redis version."
+            },
+            {
+              "body" : "Inspect mounts to confirm storage identity, then stop and remove only the Redis instance. The volume remains available for a later explicitly configured container. Avoid prune or rm -v as a casual repair for a service that owns important state.",
+              "code" : "docker inspect --format '{{json .Mounts}}' go-lab-redis\ndocker stop go-lab-redis\ndocker rm go-lab-redis\ndocker volume inspect go-lab-data",
+              "language" : "bash",
+              "title" : "Remove an instance without deleting its stored data",
+              "walkthrough" : "The final command should still find the named volume. A missing container is expected after rm. Delete the exercise volume later only when you intentionally no longer need its data and have checked its exact name."
+            }
+          ],
+          "takeaway" : "Container replacement, volume deletion and backup are separate operations. Use explicit mount paths, account for the service UID and verify storage identity before changing the lifecycle of stateful workloads."
+        },
+        "tags" : [
+          "tooling.containers"
+        ],
+        "title" : "Container storage: bind mounts, volumes and permissions"
       },
       {
         "explanation" : "Docker and Podman can build and run OCI-style container images, but their host integration, daemon model, networking and rootless behavior are not identical. An image is an artifact; a container is a running or stopped instance with its own lifecycle.",
@@ -1735,12 +2236,18 @@
               "walkthrough" : "The application inside the container must listen on an appropriate container interface, usually :8080, for port forwarding to reach it. Its own localhost is not the host's localhost. --rm removes this disposable container on exit; it does not manage external persistent data."
             },
             {
-              "body" : "Rootless Podman uses user namespaces and related host facilities; it does not mean a process gains no privileges at all. On macOS and Windows, a Linux virtual machine commonly provides the container environment. Filesystem mounts, ownership and network paths can differ from a native Linux host. Verify the actual target setup.",
-              "title" : "Know where the Linux environment lives"
+              "body" : "Podman info reports the active environment; select only the rootless field when that is what you need. On macOS and Windows, Podman commonly uses a Linux VM. machine list and machine start manage that VM rather than the individual application container.",
+              "code" : "podman info --format '{{.Host.Security.Rootless}}'\n# On macOS/Windows with an existing Podman machine:\npodman machine list\n# Start the chosen existing machine only if it is stopped:\npodman machine start",
+              "language" : "bash",
+              "title" : "Inspect rootless runtime and the container VM",
+              "walkthrough" : "Linux installations may not use a Podman machine at all. Rootless does not mean unlimited host access or identical Docker networking. Inspect the selected connection and VM state before creating or restarting any shared environment."
             },
             {
-              "body" : "Write normal logs to stdout/stderr and configure persistent volumes deliberately for data that must survive replacement. Do not keep the only database copy in an ephemeral container layer. Supply configuration at runtime, bound CPU and memory appropriately, and test how the application handles termination. Go can run directly as a binary too; a container is a deployment choice.",
-              "title" : "Separate lifecycle from persistence"
+              "body" : "Run these in a second terminal while the earlier foreground go-api container is running. logs reads its stdout/stderr, ps selects its state and stop requests graceful termination. The earlier --rm option removes the disposable container on exit.",
+              "code" : "podman ps --filter name=go-api\npodman logs --tail 50 go-api\npodman stats --no-stream go-api\npodman stop --time 15 go-api",
+              "language" : "bash",
+              "title" : "Inspect logs and stop the intended instance",
+              "walkthrough" : "Use the exact exercise name so another service is not affected. Persistent data needs a deliberate volume and backup policy; --rm concerns the container instance, not an automatic external-storage lifecycle. The image remains available afterwards."
             }
           ],
           "takeaway" : "Images, instances, virtual-machine integration and persistent data are different layers. Similar command names do not establish identical runtime behavior."
@@ -1749,6 +2256,96 @@
           "tooling.containers"
         ],
         "title" : "Docker and Podman: images are not running containers"
+      },
+      {
+        "explanation" : "A cluster pulls an image from a registry it can reach; a local Docker image does not appear there automatically. Tags are mutable names, while a digest identifies specific image content. Replace the example registry and owner with a namespace where you have permission to publish.",
+        "id" : "operations.container-registry",
+        "kind" : "reading",
+        "objective" : "Tag and push an image you own, inspect its digest and match its platform to the deployment.",
+        "reading" : {
+          "references" : [
+            "https://docs.docker.com/reference/cli/docker/login/",
+            "https://docs.docker.com/reference/cli/docker/image/push/",
+            "https://docs.docker.com/build/building/multi-platform/"
+          ],
+          "sections" : [
+            {
+              "body" : "Use the registry credential flow appropriate to the host; --password-stdin keeps the token out of process arguments. This example reads a token interactively in Bash, passes it through stdin and unsets the variable after login.",
+              "code" : "registry=registry.example.com\nread -r -s -p \"Registry token: \" registry_token\nprintf \"\\n\"\nprintf \"%s\" \"$registry_token\" | docker login \"$registry\" \\\n  --username YOUR_USER --password-stdin\nunset registry_token",
+              "language" : "bash",
+              "title" : "Authenticate without a password in the command line",
+              "walkthrough" : "registry.example.com and YOUR_USER are placeholders. Do not run with shell tracing enabled or put tokens in a committed script. Docker stores credentials according to its configured credential helper; check that configuration on a shared host."
+            },
+            {
+              "body" : "Tagging gives the same local image another name; pushing uploads its referenced layers and manifest. Inspect the output digest and associate it with the source commit and tests. A tag called tested is still mutable unless the registry enforces otherwise.",
+              "code" : "image=registry.example.com/YOUR_OWNER/go-api:0.1.0\ndocker tag go-api:dev \"$image\"\ndocker push \"$image\"\ndocker image inspect \"$image\" --format '{{json .RepoDigests}}'",
+              "language" : "bash",
+              "title" : "Publish an explicit version and record the result",
+              "walkthrough" : "Replace owner and registry first and publish only your intended artifact. The digest from a successful push identifies the remote content. Referencing image@sha256:... in a deployment avoids relying on a mutable tag; use the full real digest, not an ellipsis."
+            },
+            {
+              "body" : "Buildx can build for a specified target when the builder supports it. A multi-platform image requires compatible toolchains, base images and code for each target. Setting GOOS alone does not ensure the native CPU architecture matches the Kubernetes node.",
+              "code" : "docker buildx ls\ndocker buildx build --platform linux/amd64 \\\n  -t registry.example.com/YOUR_OWNER/go-api:0.1.0-amd64 --push .\ndocker buildx imagetools inspect registry.example.com/YOUR_OWNER/go-api:0.1.0-amd64",
+              "language" : "bash",
+              "title" : "Match the image platform to the target nodes",
+              "walkthrough" : "This command publishes a separate amd64 tag. A compatible buildx builder may need emulation or native nodes. The earlier Dockerfile compiles inside its selected builder platform; custom cross-compilation needs explicit GOARCH/TARGETARCH handling."
+            }
+          ],
+          "takeaway" : "Publish to an owned registry namespace, retain the pushed digest and verify the target platform. A local tag or a successful host build does not prove a cluster can pull and run that artifact."
+        },
+        "tags" : [
+          "tooling.containers"
+        ],
+        "title" : "Publish an image: tags, digests and target platforms"
+      }
+    ],
+    "summary" : "Build, run, inspect and publish with Docker, Compose and Podman.",
+    "title" : "Around Go: containers",
+    "translationNote" : "Use your own development machine for these command examples. Each lesson distinguishes images, instances, networking and stored data."
+  },
+  {
+    "id" : "kubernetes",
+    "lessons" : [
+      {
+        "explanation" : "kubectl reads a kubeconfig and sends requests to its selected cluster as a configured identity. A namespace narrows many workload operations but does not select a cluster. These lessons assume an existing disposable development cluster with a context named dev-cluster; substitute your actual development context.",
+        "id" : "operations.kubernetes-contexts",
+        "kind" : "reading",
+        "objective" : "Inspect the target cluster and explicitly scope commands before making changes.",
+        "reading" : {
+          "references" : [
+            "https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/",
+            "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+            "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+          ],
+          "sections" : [
+            {
+              "body" : "config get-contexts lists saved contexts, and current-context prints the default. A context bundles cluster, identity and an optional namespace. These commands inspect local configuration; they do not establish whether the remote API is reachable.",
+              "code" : "kubectl config get-contexts\nkubectl config current-context\nkubectl --context dev-cluster cluster-info",
+              "language" : "bash",
+              "title" : "Identify the context before querying workloads",
+              "walkthrough" : "Replace dev-cluster with the development context you inspected. Avoid config view --raw in shared output because it can reveal credentials. Supplying --context on later commands avoids silently targeting a different default cluster."
+            },
+            {
+              "body" : "get namespaces shows available namespaces when your identity is allowed to list them. api-resources tells you the kinds the server exposes. auth can-i checks authorization for one requested action; it is not a proof that the action will otherwise succeed.",
+              "code" : "kubectl --context dev-cluster get namespaces\nkubectl --context dev-cluster api-resources --namespaced=true\nkubectl --context dev-cluster auth can-i create deployments -n go-lab",
+              "language" : "bash",
+              "title" : "Find namespaces and discover resource types",
+              "walkthrough" : "A no response from can-i means your identity lacks that permission. An absent go-lab namespace must be created deliberately by an authorized user before the later exercises. Do not switch to a more privileged production credential as an automatic workaround."
+            },
+            {
+              "body" : "Create go-lab only on the inspected development cluster if it does not exist. -n selects the namespace for the request. Pod queries can be watched with -w; Ctrl-C stops watching without deleting any workload.",
+              "code" : "# One-time setup if go-lab does not exist:\nkubectl --context dev-cluster create namespace go-lab\nkubectl --context dev-cluster -n go-lab get pods -o wide\nkubectl --context dev-cluster -n go-lab get pods -w",
+              "language" : "bash",
+              "title" : "Scope a development namespace explicitly",
+              "walkthrough" : "An empty namespace correctly reports no resources. AlreadyExists from create means the setup already happened; inspect before reusing a namespace someone else owns. Namespace deletion later would delete its namespaced resources, so it is not a casual cleanup command."
+            }
+          ],
+          "takeaway" : "Know the context, identity and namespace before working on a cluster. Keep the development context and namespace explicit in commands; a namespace flag alone cannot protect against targeting the wrong cluster."
+        },
+        "tags" : [
+          "tooling.kubernetes"
+        ],
+        "title" : "kubectl first steps: context, namespace and permissions"
       },
       {
         "explanation" : "Kubernetes operates containerized workloads. It does not write your Go code or remove distributed-system failures. A Deployment describes the desired replicated workload; a Service gives selected Pods a stable network abstraction while individual Pods are replaced.",
@@ -1770,8 +2367,11 @@
               "walkthrough" : "The numbers illustrate syntax, not capacity recommendations. This Service is internal by default; public ingress, TLS and authentication need their own design. The Deployment example still needs suitable probe and shutdown policies."
             },
             {
-              "body" : "Requests influence scheduling and resource allocation; limits constrain runtime resource use in different ways. A memory limit can lead to termination when exceeded, while a CPU limit can cause throttling. Multiple replicas multiply connection pools and worker concurrency: two Pods each allowing fifty downstream calls can present a hundred concurrent calls before other clients are counted.",
-              "title" : "Budget each replica and its downstream work"
+              "body" : "Requests influence scheduling; CPU and memory limits have different runtime effects. Use the Pod specification and Deployment state to inspect the declared budget, then compare with metrics if the cluster exposes them. The sample numbers are illustrative rather than recommendations.",
+              "code" : "kubectl --context dev-cluster -n go-lab get deployment go-api\nkubectl --context dev-cluster -n go-lab get pods -l app=go-api -o wide\nkubectl --context dev-cluster -n go-lab get deployment go-api \\\n  -o jsonpath='{.spec.template.spec.containers[0].resources}{\"\\n\"}'",
+              "language" : "bash",
+              "title" : "Observe replicas, requests and limits",
+              "walkthrough" : "Run after the context/setup and apply lessons. Two replicas each allowing fifty downstream calls can present a hundred simultaneous calls. Resource declarations do not measure actual usage; memory exhaustion can terminate a container while CPU limits can throttle it."
             },
             {
               "body" : "Rolling replacement and service discovery help teams operating many workloads, but cluster maintenance and debugging cost time. A VM, a managed service or a single container host can be simpler for a small application. Learn the reconciliation model before copying a large production manifest, and inspect a plan in a non-production environment before applying it.",
@@ -1786,6 +2386,170 @@
         "title" : "Kubernetes reconciles a workload; a Service routes to it"
       },
       {
+        "explanation" : "A manifest declares desired state; the API accepting it is only the start of reconciliation. Save the earlier Deployment and Service example as deployment.yaml, set a real pullable image reference and use the go-lab development namespace from the context lesson.",
+        "id" : "operations.kubernetes-apply",
+        "kind" : "reading",
+        "objective" : "Validate a workload document and observe reconciliation rather than assuming apply means ready.",
+        "reading" : {
+          "references" : [
+            "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_apply/",
+            "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_diff/",
+            "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_explain/"
+          ],
+          "sections" : [
+            {
+              "body" : "explain documents a field from the API schema. apply --dry-run=server asks the server to validate and default the request without persisting it. It still requires API access and appropriate permission and can depend on admission configuration.",
+              "code" : "kubectl --context dev-cluster explain deployment.spec.template.spec.containers\nkubectl --context dev-cluster -n go-lab apply \\\n  --dry-run=server -f deployment.yaml",
+              "language" : "bash",
+              "title" : "Read the schema and validate with the server",
+              "walkthrough" : "Fix unknown fields and validation errors before the real apply. A successful dry run does not schedule Pods, pull images or test your application. Only submit trusted reviewed files, including any resource namespace declared inside them."
+            },
+            {
+              "body" : "diff compares the proposed object with live state; exit one means differences, not necessarily a failed comparison. apply persists the desired resource changes, so inspect the exact files and target namespace before this mutation.",
+              "code" : "kubectl --context dev-cluster -n go-lab diff -f deployment.yaml\nkubectl --context dev-cluster -n go-lab apply -f deployment.yaml",
+              "language" : "bash",
+              "title" : "Review the delta and apply the intended state",
+              "walkthrough" : "kubectl diff uses status zero for no changes, one for differences and greater than one for errors. Do not hide all nonzero codes with || true in automation. apply may create or update several documents from this file."
+            },
+            {
+              "body" : "rollout status waits for a Deployment update to finish within a timeout. get reports objects and their current state; it does not prove every business request succeeds. A timeout should lead to diagnosis of the existing rollout before another deployment attempt.",
+              "code" : "kubectl --context dev-cluster -n go-lab rollout status deploy/go-api --timeout=120s\nkubectl --context dev-cluster -n go-lab get deploy,rs,pods,svc -l app=go-api\nkubectl --context dev-cluster -n go-lab get svc go-api",
+              "language" : "bash",
+              "title" : "Wait for convergence and inspect the resulting objects",
+              "walkthrough" : "The original Service example does not give the Service object an app label, so the final explicit Service query is necessary. Inspect readiness, image pulls and events if convergence fails. A successful apply alone is not release success."
+            }
+          ],
+          "takeaway" : "Validate a reviewed document, understand diff exit codes, apply once and observe the rollout. API acceptance and a ready, functional application are separate milestones."
+        },
+        "tags" : [
+          "tooling.kubernetes"
+        ],
+        "title" : "Deploy a manifest: explain, dry-run, diff and apply"
+      },
+      {
+        "explanation" : "Read the workload state before changing it. A Deployment, a Pod and a container can each have a different status, so diagnose the layer that is failing. These commands refer to the earlier go-api Deployment in the explicit go-lab development namespace.",
+        "id" : "operations.kubernetes-inspect",
+        "kind" : "reading",
+        "objective" : "Find the concrete reason behind Pending, CrashLoopBackOff or an unready container.",
+        "reading" : {
+          "references" : [
+            "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+            "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_logs/",
+            "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/"
+          ],
+          "sections" : [
+            {
+              "body" : "get -o wide includes node and Pod addresses. describe exposes scheduling decisions, container state and recent events. Copy the exact Pod name from get rather than inventing an identifier; the placeholder below must be replaced.",
+              "code" : "kubectl --context dev-cluster -n go-lab get pods -l app=go-api -o wide\npod_name=REPLACE_WITH_ACTUAL_POD\nkubectl --context dev-cluster -n go-lab describe pod \"$pod_name\"\nkubectl --context dev-cluster -n go-lab get events --sort-by=.metadata.creationTimestamp",
+              "language" : "bash",
+              "title" : "Find the Pod and read its events",
+              "walkthrough" : "Pending often needs scheduling/volume evidence; ImagePullBackOff needs the image or registry failure. CrashLoopBackOff describes retry backoff after container failure, not a root cause. Check the reported reason and exit code first."
+            },
+            {
+              "body" : "logs reads application stdout/stderr. -c selects the container name api from the earlier manifest. --previous requests the last terminated instance when one exists, which is valuable when the current container restarted before you could follow it.",
+              "code" : "kubectl --context dev-cluster -n go-lab logs \"$pod_name\" -c api --tail=100\nkubectl --context dev-cluster -n go-lab logs \"$pod_name\" -c api --previous --tail=100\nkubectl --context dev-cluster -n go-lab logs \"$pod_name\" -c api -f --since=5m",
+              "language" : "bash",
+              "title" : "Read the right container and the previous attempt",
+              "walkthrough" : "No previous container is a valid reason for --previous to fail. Ctrl-C only stops following logs. Redact sensitive application data before sharing output and correlate timestamps with restarts and rollout events."
+            },
+            {
+              "body" : "top requires the cluster metrics API, commonly provided by Metrics Server. exec starts a command that already exists in the image; the earlier scratch Go image has no shell. For richer diagnosis, use an approved ephemeral debug image and the required cluster permissions.",
+              "code" : "kubectl --context dev-cluster -n go-lab top pods -l app=go-api\nkubectl --context dev-cluster top nodes\n# Only for an image that actually contains /bin/sh:\nkubectl --context dev-cluster -n go-lab exec -it \"$pod_name\" -c api -- /bin/sh",
+              "language" : "bash",
+              "title" : "Inspect resources and choose an available debug path",
+              "walkthrough" : "A missing metrics API does not mean resource usage is zero. The exec line will fail for scratch images by design; use logs, profiles or a deliberate debug-container workflow instead of assuming every production image includes utilities."
+            }
+          ],
+          "takeaway" : "Read exact state, events, container logs and resource evidence before restarting. Previous logs can explain a crash loop; missing metrics or a missing shell is a tooling boundary, not an application diagnosis."
+        },
+        "tags" : [
+          "tooling.kubernetes"
+        ],
+        "title" : "Debug Pods: get, describe, logs, events and top"
+      },
+      {
+        "explanation" : "A Service object can exist while routing to no useful Pods. Diagnose its selector, selected endpoints, target port and application listener separately. This lesson uses the earlier internal Service go-api on port 80 targeting the Go container port 8080.",
+        "id" : "operations.kubernetes-network",
+        "kind" : "reading",
+        "objective" : "Trace a request from a local port through a Service to a ready application endpoint.",
+        "reading" : {
+          "references" : [
+            "https://kubernetes.io/docs/concepts/services-networking/service/",
+            "https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/",
+            "https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/"
+          ],
+          "sections" : [
+            {
+              "body" : "A Service selector matches Pod labels; EndpointSlices describe backend addresses and readiness. Deployment existence alone does not prove the Service selected its Pods. Query the named Service because the sample object does not have an app metadata label.",
+              "code" : "kubectl --context dev-cluster -n go-lab describe service go-api\nkubectl --context dev-cluster -n go-lab get pods -l app=go-api --show-labels\nkubectl --context dev-cluster -n go-lab get endpointslices \\\n  -l kubernetes.io/service-name=go-api -o wide",
+              "language" : "bash",
+              "title" : "Check selector and ready endpoints",
+              "walkthrough" : "Empty endpoints suggest a selector mismatch, missing Pods or readiness problems. Compare targetPort 8080 with the actual Go listener. A listener bound to 127.0.0.1 inside the Pod cannot normally serve traffic arriving at its Pod interface."
+            },
+            {
+              "body" : "port-forward supplies a temporary local development path; it is not a public ingress or load test. Bind it to loopback and keep the process running while you use a second terminal to call the local address.",
+              "code" : "# Terminal 1; stop with Ctrl-C:\nkubectl --context dev-cluster -n go-lab port-forward \\\n  --address 127.0.0.1 service/go-api 8080:80\n# Terminal 2:\ncurl --max-time 5 --fail-with-body http://127.0.0.1:8080/healthz",
+              "language" : "bash",
+              "title" : "Forward one local port and make a bounded request",
+              "walkthrough" : "The local 8080 forwards to Service port 80, which resolves to a Pod target. If another local process owns 8080, choose a different local port. The session can end when its selected Pod disappears; it does not create durable routing."
+            },
+            {
+              "body" : "An in-cluster client in go-lab can normally resolve go-api; a client in another namespace can use go-api.go-lab.svc.cluster.local on a cluster using that DNS suffix. Network policy and DNS configuration still apply. A port-forward does not prove the ordinary in-cluster network route works.",
+              "code" : "kubectl --context dev-cluster -n go-lab get service go-api -o yaml\nkubectl --context dev-cluster -n go-lab get networkpolicy",
+              "language" : "bash",
+              "title" : "Distinguish application access from a diagnostic tunnel",
+              "walkthrough" : "Check Service type, ports and selectors in the first output. No policies in this namespace is not a complete security audit: cluster networking and other policy mechanisms can also affect traffic. Ingress, public TLS and authentication need their own configuration."
+            }
+          ],
+          "takeaway" : "Trace labels, endpoint readiness, Service ports and the listener as separate links. Port-forward is a useful temporary tunnel, but it cannot validate all normal service-network and public-ingress behavior."
+        },
+        "tags" : [
+          "tooling.kubernetes"
+        ],
+        "title" : "Service routing: selectors, endpoints and port-forward"
+      },
+      {
+        "explanation" : "Separate application configuration from the image artifact. ConfigMaps hold ordinary configuration; Secrets are intended for sensitive values but are not made confidential merely by base64 encoding. These development examples assume a namespace you own and the permissions to manage its configuration.",
+        "id" : "operations.kubernetes-config",
+        "kind" : "reading",
+        "objective" : "Create a non-secret setting, mount a Secret reference and understand why environment changes need replacement.",
+        "reading" : {
+          "references" : [
+            "https://kubernetes.io/docs/concepts/configuration/configmap/",
+            "https://kubernetes.io/docs/concepts/configuration/secret/",
+            "https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/"
+          ],
+          "sections" : [
+            {
+              "body" : "create with --dry-run=client -o yaml generates an object locally. Piping that object to apply creates or updates the named configuration on the explicit cluster. LOG_LEVEL is an ordinary non-secret value here, so showing its key is appropriate.",
+              "code" : "kubectl --context dev-cluster -n go-lab create configmap go-api-config \\\n  --from-literal=LOG_LEVEL=info --dry-run=client -o yaml | \\\n  kubectl --context dev-cluster -n go-lab apply -f -\nkubectl --context dev-cluster -n go-lab describe configmap go-api-config",
+              "language" : "bash",
+              "title" : "Generate and apply a non-secret ConfigMap",
+              "walkthrough" : "In a Bash script, enable pipefail and handle the pipeline status. The first command only generates YAML; the second performs the API mutation. Do not use a ConfigMap for a database password or access token."
+            },
+            {
+              "body" : "This is a fragment to merge into the api container in deployment.yaml, not a standalone manifest. It assumes an existing go-api-credentials Secret with a password key, supplied through your cluster secret-management process.",
+              "code" : "env:\n  - name: LOG_LEVEL\n    valueFrom:\n      configMapKeyRef:\n        name: go-api-config\n        key: LOG_LEVEL\n  - name: DB_PASSWORD\n    valueFrom:\n      secretKeyRef:\n        name: go-api-credentials\n        key: password",
+              "language" : "yaml",
+              "title" : "Reference existing config and secret keys from the Pod",
+              "walkthrough" : "The application reads these values when its process starts. Restrict Secret access and configure storage protection at the cluster level. Never commit live Secret YAML or paste decoded credentials into a lesson exercise."
+            },
+            {
+              "body" : "Changing the ConfigMap does not rewrite environment variables in a running process. A controlled rollout restart replaces Pods so they read the updated values. ConfigMap volume updates have different propagation and application-reload behavior, and subPath mounts do not receive normal automatic updates.",
+              "code" : "kubectl --context dev-cluster -n go-lab rollout restart deployment/go-api\nkubectl --context dev-cluster -n go-lab rollout status deployment/go-api --timeout=120s\nkubectl --context dev-cluster -n go-lab get pods -l app=go-api",
+              "language" : "bash",
+              "title" : "Replace Pods when environment configuration changes",
+              "walkthrough" : "Only restart after the reviewed configuration and Pod template are ready. Observe readiness and service behavior afterwards without logging the password. This restart changes running workloads; it is not a read-only configuration check."
+            }
+          ],
+          "takeaway" : "Use ConfigMaps for ordinary values and controlled Secret references for credentials. Environment is captured at process startup; replacing Pods and reloading mounted files are distinct update strategies."
+        },
+        "tags" : [
+          "tooling.kubernetes"
+        ],
+        "title" : "Configuration: ConfigMaps, Secrets and update behavior"
+      },
+      {
         "explanation" : "A process being alive does not mean it can accept useful work. Readiness controls whether a Pod receives normal Service traffic. Liveness can trigger a restart. A startup probe can allow initialization before the other probes take effect. Choose each signal according to the failure it should detect.",
         "id" : "operations.probes-and-shutdown",
         "kind" : "reading",
@@ -1798,8 +2562,11 @@
           ],
           "sections" : [
             {
-              "body" : "If liveness fails whenever Redis is unavailable, a shared Redis outage can cause every application replica to restart repeatedly. That adds work while fixing nothing. Readiness should reflect whether the service can handle its promised traffic, including its degraded-mode contract; liveness should detect a condition a restart can plausibly repair.",
-              "title" : "Do not restart every downstream outage"
+              "body" : "Merge this fragment into the api container only if the Go server implements these endpoints. Readiness gates normal Service traffic; liveness should detect a condition a restart can repair. A startup probe delays the other probes until startup succeeds.",
+              "code" : "startupProbe:\n  httpGet: {path: /healthz, port: 8080}\n  periodSeconds: 2\n  failureThreshold: 30\nreadinessProbe:\n  httpGet: {path: /readyz, port: 8080}\n  periodSeconds: 5\nlivenessProbe:\n  httpGet: {path: /healthz, port: 8080}\n  periodSeconds: 10",
+              "language" : "yaml",
+              "title" : "Give each probe one action",
+              "walkthrough" : "The intervals are examples, not universal budgets. A shared Redis outage should not make every liveness endpoint fail and restart all replicas. Readiness should reflect the service degraded-mode contract; test the actual handler behavior."
             },
             {
               "body" : "This native Go fragment assumes srv is already serving in another goroutine. The signal context requests shutdown; a separate context bounds draining so an already-canceled signal context does not abort it immediately.",
@@ -1819,10 +2586,51 @@
           "tooling.kubernetes"
         ],
         "title" : "Readiness, liveness and graceful shutdown"
+      },
+      {
+        "explanation" : "A Deployment rollout changes its Pod template and replaces replicas under its update policy. A timeout or unhealthy Pod requires investigation before further mutations. These examples operate only on the inspected development go-api Deployment, using a real tested image reference in place of the placeholder.",
+        "id" : "operations.kubernetes-rollout",
+        "kind" : "reading",
+        "objective" : "Change an image deliberately, observe revisions and understand what rollback cannot restore.",
+        "reading" : {
+          "references" : [
+            "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/",
+            "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/",
+            "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_scale/"
+          ],
+          "sections" : [
+            {
+              "body" : "rollout history lists retained Deployment revisions. set image changes the api container image in the Pod template. Use an immutable image digest in a real release where reproducibility matters, and keep the declarative source in sync with this operational change.",
+              "code" : "kubectl --context dev-cluster -n go-lab rollout history deployment/go-api\nkubectl --context dev-cluster -n go-lab set image deployment/go-api \\\n  api=registry.example.com/YOUR_OWNER/go-api:0.1.1\nkubectl --context dev-cluster -n go-lab rollout status deployment/go-api --timeout=120s",
+              "language" : "bash",
+              "title" : "Inspect history and set the intended artifact",
+              "walkthrough" : "Replace the registry, owner and version with a published tested artifact before running. set image mutates the cluster immediately. A future apply from an old manifest can overwrite the change; version-controlled deployment configuration should describe the intended final state."
+            },
+            {
+              "body" : "scale changes desired replicas, not the size of an individual process. Check workload state and pressure afterwards. Requests, limits, database pools and worker concurrency multiply across replicas; an autoscaler or another controller may subsequently change the count.",
+              "code" : "kubectl --context dev-cluster -n go-lab scale deployment/go-api --replicas=3\nkubectl --context dev-cluster -n go-lab get deployment go-api\nkubectl --context dev-cluster -n go-lab get pods -l app=go-api\nkubectl --context dev-cluster -n go-lab top pods -l app=go-api",
+              "language" : "bash",
+              "title" : "Scale with resource and downstream budgets in mind",
+              "walkthrough" : "Three replicas are a syntax example, not a capacity recommendation. top requires a metrics API. Confirm the cluster can schedule the workload and downstream systems can handle its multiplied demand rather than treating replica count as free capacity."
+            },
+            {
+              "body" : "undo uses a retained earlier Deployment revision. It can restore the Pod template, but cannot reverse a database migration, external side effect or independently changed Secret/ConfigMap. Inspect the selected history revision and its artifact before a deliberate rollback.",
+              "code" : "kubectl --context dev-cluster -n go-lab rollout history deployment/go-api\n# After selecting and reviewing an appropriate previous revision:\nkubectl --context dev-cluster -n go-lab rollout undo deployment/go-api\nkubectl --context dev-cluster -n go-lab rollout status deployment/go-api --timeout=120s",
+              "language" : "bash",
+              "title" : "Roll back a Pod template, then verify the service",
+              "walkthrough" : "The undo line chooses the previous retained revision; use --to-revision with an inspected real number for an explicit choice. Afterwards verify readiness, logs and the API through a fresh test request. Do not repeatedly undo merely because a status command timed out."
+            }
+          ],
+          "takeaway" : "Record the released image, observe the rollout and budget replicas against downstream capacity. Rollback restores a retained workload template, not databases or every separate configuration object."
+        },
+        "tags" : [
+          "tooling.kubernetes"
+        ],
+        "title" : "Release operations: rollout, scale and rollback"
       }
     ],
-    "summary" : "Bash, Docker, Podman and Kubernetes through explained examples.",
-    "title" : "Around Go: shell and deployment",
-    "translationNote" : "Read commands and manifests here; use your own development environment to run them. These tools are useful deployment options, not prerequisites for every Go program."
+    "summary" : "Contexts, deployments, logs, services, configuration, probes and rollbacks.",
+    "title" : "Around Go: Kubernetes",
+    "translationNote" : "Start with the context lesson and a disposable development cluster. Examples keep cluster and namespace explicit; replace placeholder names and images before use."
   }
 ]

@@ -34,9 +34,15 @@ enum GoCourseCatalog {
         ReadingLessonCatalog.unit("architecture", title: "Architecture and clean code",
             summary: "Package boundaries, ports and adapters, and choosing a useful architectural style.",
             note: "Start from one request and one reason to change. Architecture is a set of tradeoffs, not a required folder template."),
-        ReadingLessonCatalog.unit("operations", title: "Around Go: shell and deployment",
-            summary: "Bash, Docker, Podman and Kubernetes through explained examples.",
+        ReadingLessonCatalog.unit("operations", title: "Around Go: command line",
+            summary: "Bash, Git, Go tools, HTTP debugging and Linux service commands.",
             note: "Read commands and manifests here; use your own development environment to run them. These tools are useful deployment options, not prerequisites for every Go program."),
+        ReadingLessonCatalog.unit("containers", title: "Around Go: containers",
+            summary: "Build, run, inspect and publish with Docker, Compose and Podman.",
+            note: "Use your own development machine for these command examples. Each lesson distinguishes images, instances, networking and stored data."),
+        ReadingLessonCatalog.unit("kubernetes", title: "Around Go: Kubernetes",
+            summary: "Contexts, deployments, logs, services, configuration, probes and rollbacks.",
+            note: "Start with the context lesson and a disposable development cluster. Examples keep cluster and namespace explicit; replace placeholder names and images before use."),
     ]
 
     static var lessons: [Lesson] {

@@ -11,10 +11,16 @@ enum SourceFileKind: String, Sendable, CaseIterable {
     case javascript
     case css
     case json
+    case shell
+    case yaml
+    case dockerfile
     case plain
 
     static func of(path: String) -> SourceFileKind {
         let name = path.split(separator: "/").last.map(String.init) ?? path
+        if name == "Dockerfile" || name == "Containerfile" || name.hasPrefix("Dockerfile.") { return .dockerfile }
+        if name.hasSuffix(".sh") || name.hasSuffix(".bash") { return .shell }
+        if name.hasSuffix(".yml") || name.hasSuffix(".yaml") { return .yaml }
         if name == "go.mod" { return .goMod }
         if name == "go.sum" { return .goSum }
         if name.hasSuffix(".go") { return .go }
@@ -36,6 +42,9 @@ enum SourceFileKind: String, Sendable, CaseIterable {
         case .javascript: "curlybraces"
         case .css: "paintbrush"
         case .json: "ellipsis.curlybraces"
+        case .shell: "terminal"
+        case .yaml: "list.bullet.indent"
+        case .dockerfile: "shippingbox"
         case .plain: "doc"
         }
     }
@@ -50,6 +59,9 @@ enum SourceFileKind: String, Sendable, CaseIterable {
         case .javascript: JavaScriptSyntaxHighlighter().tokens(in: source)
         case .css: CSSSyntaxHighlighter().tokens(in: source)
         case .json: JSONSyntaxHighlighter().tokens(in: source)
+        case .shell: OperationsSyntaxHighlighter(language: .shell).tokens(in: source)
+        case .yaml: OperationsSyntaxHighlighter(language: .yaml).tokens(in: source)
+        case .dockerfile: OperationsSyntaxHighlighter(language: .dockerfile).tokens(in: source)
         case .goSum, .markdown, .plain: []
         }
     }

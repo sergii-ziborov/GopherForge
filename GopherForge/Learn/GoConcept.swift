@@ -88,6 +88,10 @@ enum GoConcept {
     static let serviceGin = "services.gin"
     static let architectureBoundaries = "architecture.boundaries"
     static let architectureDesign = "architecture.design"
+    static let toolingGit = "tooling.git"
+    static let toolingGo = "tooling.go-tools"
+    static let toolingNetworking = "tooling.networking"
+    static let toolingLinux = "tooling.linux"
     static let toolingBash = "tooling.bash"
     static let toolingContainers = "tooling.containers"
     static let toolingKubernetes = "tooling.kubernetes"
@@ -113,6 +117,6 @@ enum GoConcept {
         syncOnce, functionValue,
         runtimeGC, runtimeAllocation, runtimeScheduler, runtimeProfiling,
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
-        architectureDesign, toolingBash, toolingContainers, toolingKubernetes,
+        architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
     ]
 }

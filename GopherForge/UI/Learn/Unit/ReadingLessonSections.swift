@@ -4,6 +4,17 @@ struct ReadingLessonSections: View {
     let reading: ReadingLesson
     let tint: Color
 
+    private func kind(for language: String?) -> SourceFileKind {
+        switch language {
+        case "go": .go
+        case "bash", "shell": .shell
+        case "yaml": .yaml
+        case "dockerfile": .dockerfile
+        case "json": .json
+        default: .plain
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Label("Read and understand · No compilation required", systemImage: "book.pages")
@@ -14,7 +25,7 @@ struct ReadingLessonSections: View {
                     LearningProse(text: section.body)
                     if let code = section.code {
                         CodeBlock(title: "Worked example · \(section.language ?? "text")",
-                                  code: code, fileKind: section.language == "go" ? .go : .plain)
+                                  code: code, fileKind: kind(for: section.language))
                     }
                     if let walkthrough = section.walkthrough { LearningProse(text: walkthrough) }
                 }
@@ -23,7 +34,7 @@ struct ReadingLessonSections: View {
             LessonSection(title: "Remember", systemImage: "lightbulb", tint: tint) {
                 LearningProse(text: reading.takeaway)
             }
-            if reading.unitID == "operations" || reading.unitID == "services" {
+            if ["operations", "containers", "kubernetes", "services"].contains(reading.unitID) {
                 Text("Read these examples here; run shell commands, containers and network services in your own development environment.")
                     .font(.footnote).foregroundStyle(.secondary)
             }
