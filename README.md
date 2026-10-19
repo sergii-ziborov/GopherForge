@@ -17,10 +17,10 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.1 (33)** | Available on the App Store | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
-| **1.1.2 (36)** | Available in Internal QA TestFlight; Waiting for Review | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
+| **1.1.2 (36)** | Available on the App Store | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
 | **1.1.3 (37)** | Next release, development only | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 
-The submitted 1.1.2 (36) remains in App Review. Current development source targets
+Version 1.1.2 (36) has released automatically after approval. Current development source targets
 1.1.3 (37); its architecture and patterns expansion has not been uploaded or submitted. TestFlight access is private; there is no public invitation
 link. [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
@@ -38,7 +38,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public course has 47 teaching lessons and 22 question-and-answer challenges and 69 visual guides. Submitted build 36 contains 92 teaching lessons. Next-release development contains **145 lessons across 20 units**, including 98 reading lessons. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 practical Around Go lessons remain available. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
+- **Learn Go.** The public 1.1.2 course has 92 teaching lessons, 22 question-and-answer challenges and the 69 original visual guides. Next-release development contains **145 lessons across 20 units**, including 98 reading lessons. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 practical Around Go lessons remain available. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview
@@ -55,6 +55,20 @@ ratings, eight clean-code lessons, all 23 classic design patterns and six
 concurrent Go patterns. Worked programs, diagrams, tradeoffs and independent
 review questions accompany the new material. This development version has not
 been uploaded to TestFlight or submitted to App Review.
+
+The 19 architecture and eight clean-code readings now include 81 further
+sections on package structure, consistency, transactions, failure recovery,
+API contracts, testing and incremental migration. Lesson IDs and saved progress
+remain unchanged.
+
+### Next.js website
+
+The [new website source](website/README.md) includes the complete native-course
+export, five practical blog articles, a scenario-based architecture comparison,
+highlighted code, reading self-checks and optional local browser progress.
+It needs no registration and does not execute or upload arbitrary code.
+The Hostwatch deployment and access-log analytics configuration are prepared;
+domain migration awaits an operator-configured GopherForge deployment target.
 
 [Browse the course](https://gopherforge.app/learn) ·
 [App screenshots](docs/app-store/screenshots)

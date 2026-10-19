@@ -1,0 +1,102 @@
+{
+  "checkedAt": "2026-10-19T16:34:33.802684+00:00",
+  "native": {
+    "developmentVersion": "1.1.3 (37)",
+    "expandedExistingLessons": 27,
+    "additionalSections": 81,
+    "readingLessons": 98,
+    "teachingLessons": 145,
+    "units": 20,
+    "predictionChallenges": 22,
+    "readingSHA256": "ba7e28c763b63fc123c0410b392f069d39b98337e917fe347812af20edcbf613",
+    "targetedNativeTestsPassed": 60,
+    "standaloneGoProgramsVerified": 53,
+    "raceDetectorForPatternPrograms": true,
+    "newDevicePostureValidation": false,
+    "uploadedToTestFlight": false,
+    "submittedToReview": false
+  },
+  "website": {
+    "framework": "Next.js 16.4.2 App Router",
+    "sourceDirectory": "website",
+    "nativeLessonExportSHA256": "05160fc8bbf1f3bb98ea4219159f9d50ba451b968c9ee3389eb83e46781b1917",
+    "courseLessonsAndChallenges": 167,
+    "originalNativeVisualGuides": 69,
+    "designGuides": 56,
+    "readingSelfChecks": 98,
+    "blogArticles": 5,
+    "registrationRequired": false,
+    "progress": "versioned local browser storage; independent from native app",
+    "arbitraryCodeExecution": false,
+    "contentAndProgressTestsPassed": 9,
+    "productionBuild": "passed including original native visual guides",
+    "httpVerification": {
+      "pages": 180,
+      "internalLinksAndAnchors": "passed",
+      "unknownLesson": 404,
+      "health": "passed",
+      "sitemap": "passed",
+      "checkedAt": "2026-10-19T16:33:36.853Z"
+    },
+    "mobileVerification": [
+      {
+        "path": "/learn?unit=clean-code",
+        "overflow": 0,
+        "width": 390
+      },
+      {
+        "path": "/learn/clean.errors#section-3",
+        "overflow": 0,
+        "width": 390
+      },
+      {
+        "path": "/blog/kubernetes-debugging-in-a-useful-order",
+        "overflow": 0,
+        "width": 390
+      },
+      {
+        "path": "/support#package-limits",
+        "overflow": 0,
+        "width": 390
+      }
+    ],
+    "browserFlowsVerified": [
+      "search CQRS within architecture",
+      "wrong answer explanation",
+      "correct answer acceptance",
+      "saved completion after reload",
+      "architecture scenario changes sorting"
+    ],
+    "localPreview": "http://127.0.0.1:3047",
+    "screenshots": [
+      "../screenshots/website-next/home-mobile.png"
+    ],
+    "productionDependencyAudit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "container": "non-root/read-only resource-limited Docker build and 180-page smoke passed before the final original-visual-guide export; latest full source independently rebuilt and smoke-verified as standalone Node",
+    "hostwatch": {
+      "deployed": false,
+      "analyticsReceivingLiveData": false,
+      "deploymentProfileFound": false,
+      "configurationPrepared": true,
+      "blocker": "No operator-configured GopherForge image/deployment target exists in the connected Hostwatch node; domain and TLS cutover also require operator integration."
+    }
+  },
+  "publicApp": {
+    "version": "1.1.2",
+    "currentVersionReleaseDate": "2026-10-19T08:40:26Z",
+    "manualReleaseRequired": false
+  },
+  "existingProductionWebsite": {
+    "url": "https://gopherforge.app/updates",
+    "stillServedBy": "existing Lovable project",
+    "publicVersionLabel": "1.1.2",
+    "statusCorrectionVerifiedLive": true,
+    "notReplacedByNextYet": true
+  }
+}

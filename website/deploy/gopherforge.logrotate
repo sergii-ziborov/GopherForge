@@ -1,0 +1,12 @@
+/var/log/nginx/gopherforge.access.json /var/log/nginx/gopherforge.error.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        /usr/sbin/nginx -s reopen
+    endscript
+}

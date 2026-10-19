@@ -4,11 +4,18 @@ struct GoSourceSnapshot { let files: [String:String]; let packagePattern: String
 enum GoLanguage { static func module(_ name:String)->String { "module \(name)\n\ngo 1.27\n" } }
 @main struct Export {
  static func main() throws {
+  let resources = URL(fileURLWithPath: CommandLine.arguments[1]).deletingLastPathComponent()
+  let guideData = try Data(contentsOf: resources.appendingPathComponent("LessonGuides.json"))
+  let rawGuides = try JSONSerialization.jsonObject(with: guideData) as? [[String:Any]] ?? []
+  let guides = Dictionary(uniqueKeysWithValues: rawGuides.compactMap { guide -> (String,[String:Any])? in
+   guard let id = guide["id"] as? String else { return nil }; return (id,guide)
+  })
   var units:[[String:Any]]=[]
   for unit in GoCourseCatalog.units {
    var lessons:[[String:Any]]=[]
    for l in unit.lessons {
     var d:[String:Any]=["id":l.id,"title":l.title,"objective":l.objective,"explanation":l.explanation,"tags":l.conceptTags]
+    if let guide = guides[l.id] { d["guide"] = guide }
     switch l.task {
      case .reading:
       d["kind"]="reading"
@@ -22,7 +29,11 @@ enum GoLanguage { static func module(_ name:String)->String { "module \(name)\n\
          return item
         },
         "takeaway": reading.takeaway,
-        "references": reading.references.map(\.absoluteString)
+        "references": reading.references.map(\.absoluteString),
+        "review": ["prompt": reading.reviewPrompt, "answer": reading.reviewAnswer],
+        "quiz": ["question": reading.question, "correct": reading.reviewAnswer,
+                 "alternatives": reading.wrongAnswers, "explanation": reading.nuance,
+                 "hint": reading.hint]
        ]
        if let guide = reading.designGuide,
           let data = try? JSONEncoder().encode(guide),

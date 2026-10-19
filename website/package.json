@@ -1,0 +1,33 @@
+{
+  "name": "gopherforge-website",
+  "version": "2.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3047",
+    "build": "next build",
+    "start": "node scripts/start.mjs",
+    "check": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "sync": "python3 scripts/sync-content.py",
+    "format": "prettier --write src scripts/*.mjs next.config.ts tests/*.mjs"
+  },
+  "dependencies": {
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3"
+  }
+}

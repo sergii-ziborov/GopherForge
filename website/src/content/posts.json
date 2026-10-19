@@ -1,0 +1,194 @@
+[
+  {
+    "slug": "choose-a-go-architecture",
+    "title": "Choose a Go architecture by the change it makes easier",
+    "description": "A practical path from one executable to explicit modules, ports and independent services. Compare guarantees, not diagrams.",
+    "category": "Architecture",
+    "date": "2026-10-19",
+    "readingMinutes": 7,
+    "related": [
+      "architecture.simple-monolith",
+      "architecture.modular-monolith",
+      "architecture.ports-and-adapters",
+      "architecture.microservices"
+    ],
+    "sections": [
+      {
+        "title": "Start with the constraint",
+        "body": "An architecture decision should name the change it makes cheaper. A small command-line tool needs straightforward control flow and a reliable exit status. A domain-rich application needs clear invariants and ownership. Independently deployed services need stable remote contracts and a plan for partial failure. These are different goals; one universal ranking hides them.\n\nWrite down the workload, correctness requirement, team ownership and current pain before choosing a style. If a single team deploys everything together, splitting the system into many remote services adds operational boundaries before it creates organizational independence."
+      },
+      {
+        "title": "One deployment can have strong boundaries",
+        "body": "A modular monolith lets billing and shipping expose small capability APIs while keeping local calls and a coordinated release. It can use ports and adapters internally, and it can separate command and query models. Those ideas do not require separate databases or a message broker.\n\nThe useful test is whether shipping can access billing only through the agreed contract. A shared models package with mutable records can undo the boundary even when the folder tree looks perfect. Go’s internal directory restricts importers, but sibling packages still need explicit ownership and a small exported surface."
+      },
+      {
+        "title": "A remote boundary creates new failure modes",
+        "body": "A local function either returns or fails within one process. A remote request can time out after the operation succeeds. Retrying it safely requires an operation identifier, idempotency and reconciliation. Database transactions no longer make a remote payment and a local write atomic.\n\nBefore extracting a service, decide who owns its data, how old clients remain compatible, what the deadline means and how an operator diagnoses failure. Independent scaling is valuable when it solves a measured bottleneck. It is a poor reason to distribute a tiny application whose main bottleneck is one missing database index."
+      },
+      {
+        "title": "Make the decision reversible",
+        "body": "Capture an architecture decision in a short record: context, alternatives, chosen tradeoff, consequences and evidence that would reopen it. Keep a seam around the capability you might extract. Move reads behind that contract before moving data ownership. For writes, keep one authoritative path so a comparison rollout cannot charge or reserve twice.\n\nUse the architecture comparison in the course to explore three scenarios. Its scores are editorial suitability guidance, not benchmarks. Read the costs and failure sections beside the score; styles such as DDD, CQRS and deployment topology can be combined."
+      },
+      {
+        "title": "A review you can do today",
+        "body": "Trace one request from input to durable effect. Identify validation, authorization, transaction ownership, timeout propagation and final error reporting. Then ask which change would currently touch the most unrelated packages. Improve that seam first.\n\nA useful architecture makes a business rule testable without HTTP and makes a database adapter testable without inventing another business system. If the current approach already does that at a reasonable cost, keeping it is a valid design decision."
+      }
+    ],
+    "references": [
+      "https://go.dev/doc/modules/layout",
+      "https://martinfowler.com/articles/microservice-trade-offs.html"
+    ]
+  },
+  {
+    "slug": "clean-go-without-ceremony",
+    "title": "Clean Go without a tower of abstractions",
+    "description": "Small consumer interfaces, explicit ownership and useful errors are more valuable than an interface for every struct.",
+    "category": "Clean code",
+    "date": "2026-10-19",
+    "readingMinutes": 6,
+    "related": [
+      "clean.interfaces",
+      "clean.errors",
+      "clean.ownership",
+      "clean.refactoring"
+    ],
+    "sections": [
+      {
+        "title": "Read the call before opening the implementation",
+        "body": "A clear API tells the caller what an operation does, what it owns and how it can fail. A method called Process hides the important decision. ReserveStock expresses intent. A duration type is clearer than an integer timeout with no unit.\n\nGood names cannot replace a behavioral contract. A returned slice may share a backing array; an interface with a Get method does not say what missing means or whether concurrent calls are safe. Put those promises in documentation and verify them at the boundary."
+      },
+      {
+        "title": "Let consumers ask for the capability they need",
+        "body": "A handler that reads one order should not depend on a twenty-method repository interface. Define a small contract beside the consuming use case. The concrete store satisfies it implicitly, and another consumer can ask for a different view of the same implementation.\n\nReturn concrete types from constructors when that is the useful API. A pure calculation rarely needs an interface. Introduce substitution where it makes an IO, time or policy boundary testable, rather than adding a mockable wrapper around every helper."
+      },
+      {
+        "title": "Carry an error to the layer that can act",
+        "body": "Add operation context while preserving a cause only when that cause is part of your public contract. Use errors.Is or errors.As for documented categories; do not parse human messages. Map storage errors into application meaning when driver details should remain private.\n\nLog at the boundary that handles the failure. Logging the same error at repository, service and transport layers turns one outage into three messages. Retries need a known idempotency policy and one total deadline. A low-level helper should not retry every error just because it can."
+      },
+      {
+        "title": "Own mutable data and resource lifetimes",
+        "body": "Returning a slice copies a descriptor, not the elements. A shallow clone of pointers still shares the pointed-to objects. Choose borrowed data, an immutable snapshot or caller-owned data deliberately. When a lock protects a map, the slices retrieved from that map also need an ownership rule after the lock is released.\n\nThe code that acquires a resource should define who closes it. The owner of a channel closes it after producers finish; receivers use cancellation rather than closing an arbitrary shared channel. A goroutine needs a stop condition and an observable completion boundary."
+      },
+      {
+        "title": "Refactor one seam at a time",
+        "body": "Capture behavior around the seam, move one responsibility without changing results, then make the behavior change separately. Keep compatibility for durable schemas, queued events and external callers. For a write migration, choose one authoritative path rather than running old and new effects in parallel.\n\nA regression test should describe the user-visible defect or contract. Tests that only repeat the implementation make a folder move expensive without proving the system still works. Use fakes to test application decisions and focused real-adapter tests to verify transactions, uniqueness and mapping."
+      }
+    ],
+    "references": [
+      "https://go.dev/wiki/CodeReviewComments",
+      "https://go.dev/blog/go1.13-errors",
+      "https://pkg.go.dev/errors"
+    ]
+  },
+  {
+    "slug": "why-a-small-module-zip-can-hit-a-limit",
+    "title": "Why a small module ZIP can still hit an import limit",
+    "description": "The 4,000-file archive budget, the modernc.org/libc example and what a Setup failure actually means.",
+    "category": "Workbench",
+    "date": "2026-10-19",
+    "readingMinutes": 5,
+    "related": ["operations.go-tooling"],
+    "sections": [
+      {
+        "title": "File count and byte size are different budgets",
+        "body": "GopherForge checks downloaded modules before installing their source into a project. The current limits are 4,000 non-directory files per module ZIP, 96 MiB for the compressed download, 512 MiB uncompressed and 80 modules per automatic preparation pass.\n\nThe file count is taken from the raw archive before decompression, checksum comparison and platform or source selection. Tests, documentation and sources for other operating systems count even if they would later be discarded. It is not a count of the files your project eventually keeps, and it is not one total project-file limit."
+      },
+      {
+        "title": "The libc case",
+        "body": "The official proxy archive for modernc.org/libc v1.75.3 contains 4,168 non-directory files. It exceeds the 4,000-file budget before compilation begins. That refusal is not a syntax error in your project and does not by itself mean device storage is full.\n\nRetrying the same immutable archive cannot make its file count smaller. A network retry is useful for an interrupted transfer; it cannot bypass a deterministic archive budget. The application currently keeps this budget in place."
+      },
+      {
+        "title": "Choose a response that preserves compatibility",
+        "body": "When the project’s requirements permit it, another compatible version or a smaller dependency may fit. Do not downgrade blindly: dependency API, security requirements and transitive versions still matter. A desktop Go environment may be the right place for a project outside the on-device constraints.\n\nPassing archive checks is only one gate. The on-device WASI sandbox does not support cgo, native assembly or guest-program networking. Successfully downloading a module does not certify that every package in it can build or run in that environment. This case does not establish Memos or SQLite compatibility."
+      },
+      {
+        "title": "Why not remove the cap immediately?",
+        "body": "An archive with many entries creates metadata, hashing and extraction work even when its compressed bytes are small. Raising the cap should be evaluated with representative modules, device memory measurements and cancellation behavior. A larger file budget alone is not proof of full dependency support.\n\nLarge archives already have a separate memory path: above 160 MiB uncompressed, entries can be hashed one at a time. A 48 MiB relevant-Go-source threshold can narrow source retention to an imported package and its in-module dependencies. That threshold is a selection trigger, not a guarantee of a final 48 MiB project."
+      }
+    ],
+    "references": [
+      "https://github.com/sergii-ziborov/GopherForge/blob/main/docs/PACKAGES.md",
+      "https://proxy.golang.org/modernc.org/libc/@v/v1.75.3.zip"
+    ]
+  },
+  {
+    "slug": "kubernetes-debugging-in-a-useful-order",
+    "title": "Debug a Kubernetes workload in a useful order",
+    "description": "Context, rollout, events, logs and probes: a small diagnostic sequence with a reason for each command.",
+    "category": "Around Go",
+    "date": "2026-10-19",
+    "readingMinutes": 6,
+    "related": [
+      "operations.kubernetes-contexts",
+      "operations.kubernetes-inspect"
+    ],
+    "sections": [
+      {
+        "title": "First verify where you are",
+        "body": "Before changing a workload, inspect the current context and namespace. A correct command against the wrong cluster is still an operational mistake. Prefer explicit namespace flags while investigating. These examples run in your own development environment; the iOS project console is not a Kubernetes shell.",
+        "code": "kubectl config current-context\nkubectl config get-contexts\nkubectl get namespaces\nkubectl -n demo get deployments,pods,services",
+        "language": "bash"
+      },
+      {
+        "title": "Inspect desired state and rollout",
+        "body": "A Deployment can exist while its newest ReplicaSet cannot become available. Read the rollout status and the workload description. Look for unavailable replicas, scheduling constraints, image pull failures and failed health checks. Avoid repeatedly deleting Pods without understanding which controller will recreate them and why.",
+        "code": "kubectl -n demo rollout status deployment/api --timeout=60s\nkubectl -n demo describe deployment api\nkubectl -n demo get events --sort-by=.metadata.creationTimestamp",
+        "language": "bash"
+      },
+      {
+        "title": "Read the right process logs",
+        "body": "Choose a particular Pod and container. If it is restarting, the previous container’s logs may explain what happened before the restart. A bounded time range and tail keep the investigation manageable. Treat logs as potentially sensitive: tokens, credentials and personal payloads should not be printed or pasted into a public issue.",
+        "code": "kubectl -n demo get pods -l app=api\n# Replace POD_NAME with a Pod from the command above.\nkubectl -n demo logs POD_NAME -c api --since=10m --tail=200\nkubectl -n demo logs POD_NAME -c api --previous --tail=200",
+        "language": "bash"
+      },
+      {
+        "title": "Distinguish readiness from liveness",
+        "body": "Readiness determines whether traffic should be sent to a Pod. Liveness can trigger a restart. A slow or unavailable dependency should not automatically make every process restart in a loop. Use a startup probe when initialization legitimately takes time.\n\nCheck resource requests, limits and termination events before assuming every failure is an application bug. Metrics such as kubectl top require the cluster’s metrics service; absence of those metrics is not evidence that resource usage is zero."
+      },
+      {
+        "title": "Make the smallest reviewed change",
+        "body": "Inspect a manifest with client dry-run and diff before applying it to the intended namespace. Review rollout behavior and keep an undo plan. Scale, rollback and delete are mutations; do not run them just to see whether the command works.\n\nThe course’s Kubernetes unit expands these steps into workload manifests, Services, configuration, Secrets, probes and rollout. Reading a command is not proof it has been exercised against your cluster, so verify names, versions and permissions in your own environment."
+      }
+    ],
+    "references": [
+      "https://kubernetes.io/docs/tasks/debug/debug-application/",
+      "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"
+    ]
+  },
+  {
+    "slug": "learn-go-between-your-phone-and-browser",
+    "title": "A practical Go learning loop, from browser to workbench",
+    "description": "Read a concept, trace the code, explain the answer and then verify a small change in a real Go environment.",
+    "category": "Learning",
+    "date": "2026-10-19",
+    "readingMinutes": 5,
+    "related": [
+      "core.short-declaration",
+      "core.declarations-walkthrough",
+      "clean.table-tests"
+    ],
+    "sections": [
+      {
+        "title": "Start with a prediction",
+        "body": "Before compiling a small program, write down what each line changes. Track a value together with its scope, type and ownership. For a slice, track the backing array as well as len and cap. For a goroutine, identify who can stop it and who waits for completion.\n\nA wrong prediction is useful when you can explain why it was wrong. Reading the final output immediately removes that opportunity. Use a question as a check on your model, rather than trying to memorize the position of the correct answer."
+      },
+      {
+        "title": "Use the same lesson in two environments",
+        "body": "The web library comes from the same native course export as the app. It includes the expanded architecture and clean-code readings, highlighted source, references and self-check questions. The web library can be ahead of the public app; the course page identifies that difference explicitly.\n\nReading and self-checks work without an account. Browser completion is stored locally and is separate from progress inside GopherForge. The site does not upload a saved progress profile, and clearing browser storage removes that local record."
+      },
+      {
+        "title": "Turn the idea into a small experiment",
+        "body": "Copy a complete program into the app or a local Go environment, run it, then change one assumption. Remove a cancellation check, introduce aliasing or change one error wrapper. Predict the new result before running again.\n\nThe website does not execute arbitrary source or send it to a compiler service. Compiler exercises retain the prompt and starter code so you can verify them in a real Go environment. A manual web completion mark means you finished studying; it is not a claim that a compiler verified your implementation."
+      },
+      {
+        "title": "Return to the source",
+        "body": "Follow the official references when a subtle rule matters. A worked example shows one path, while a language specification or API contract explains the general guarantee. Do not treat a measured capacity growth factor, architecture rating or clean race-detector run as a universal promise.\n\nEnd a session by stating the rule in your own words and naming one case where the simple example is insufficient. That habit makes the next lesson easier to connect to real code."
+      }
+    ],
+    "references": [
+      "https://go.dev/tour/",
+      "https://go.dev/ref/spec",
+      "https://go.dev/wiki/CodeReviewComments"
+    ]
+  }
+]

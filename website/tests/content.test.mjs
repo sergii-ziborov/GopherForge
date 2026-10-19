@@ -1,0 +1,76 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+const read = async (p) =>
+  JSON.parse(await readFile(new URL(p, import.meta.url), "utf8"));
+const units = await read("../src/content/course.json");
+const native = await read("../../docs/website/lessons.json");
+const lessons = units.flatMap((u) => u.lessons),
+  ids = new Set(lessons.map((l) => l.id));
+test("all original native visual guides are preserved without changing their content", async () => {
+  const guides = await read("../../GopherForge/Resources/LessonGuides.json");
+  assert.equal(lessons.filter((l) => l.guide).length, guides.length);
+  for (const guide of guides)
+    assert.deepEqual(lessons.find((l) => l.id === guide.id)?.guide, guide);
+});
+test("web catalog is the exact native public export, with stable unique routes", () => {
+  assert.deepEqual(units, native);
+  assert.equal(ids.size, lessons.length);
+  for (const l of lessons) assert.match(l.id, /^[a-z0-9.-]+$/);
+});
+
+test("reading text, examples and checks match the current native resources", async () => {
+  const readings = await read("../../GopherForge/Resources/ReadingLessons.json");
+  assert.equal(lessons.filter(l => l.kind === "reading").length, readings.length);
+  for (const reading of readings) {
+    const exported = lessons.find(l => l.id === reading.id);
+    assert.equal(exported?.explanation, reading.introduction, reading.id);
+    const sections = reading.sections.map(section => Object.fromEntries(Object.entries(section).filter(([,value]) => value !== null)));
+    assert.deepEqual(exported.reading.sections, sections, reading.id);
+    assert.equal(exported.reading.takeaway, reading.takeaway, reading.id);
+    assert.deepEqual(exported.reading.references, reading.references, reading.id);
+    assert.equal(exported.reading.quiz.correct, reading.reviewAnswer, reading.id);
+    assert.deepEqual(exported.reading.quiz.alternatives, reading.wrongAnswers, reading.id);
+  }
+});
+test("reading self-checks have three distinct options and corrective explanations", () => {
+  for (const l of lessons.filter((l) => l.kind === "reading")) {
+    const q = l.reading.quiz;
+    assert.ok(q, l.id);
+    assert.equal(new Set([q.correct, ...q.alternatives]).size, 3, l.id);
+    assert.equal(q.alternatives.length, 2);
+    assert.ok(q.explanation.length > 30);
+    assert.ok(l.reading.sections.length >= 3);
+  }
+});
+test("public export does not expose hidden compiler tests or verified exercise solutions", () => {
+  for (const l of lessons)
+    for (const key of [
+      "test",
+      "hiddenTests",
+      "idiomaticSolution",
+      "solution",
+      "expectedOutput",
+    ])
+      assert.equal(key in l, false, `${l.id}.${key}`);
+});
+test("every article related lesson exists and every slug is unique", async () => {
+  const posts = await read("../src/content/posts.json");
+  assert.equal(new Set(posts.map((p) => p.slug)).size, posts.length);
+  for (const p of posts) {
+    assert.ok(p.sections.length >= 4);
+    for (const id of p.related)
+      assert.ok(ids.has(id), `${p.slug}: missing ${id}`);
+  }
+});
+test("architecture ratings preserve all three scenarios and support links to real lessons", () => {
+  const styles = units
+    .find((u) => u.id === "architecture")
+    .lessons.filter((l) => l.reading.designGuide.ratings.length);
+  assert.equal(styles.length, 17);
+  for (const l of styles) {
+    assert.equal(l.reading.designGuide.ratings.length, 3);
+    for (const r of l.reading.designGuide.ratings)
+      assert.ok(r.score >= 1 && r.score <= 5);
+  }
+});

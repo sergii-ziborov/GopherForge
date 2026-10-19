@@ -814,6 +814,21 @@
         "code": null,
         "language": null,
         "walkthrough": null
+      },
+      {
+        "title": "Draw an import graph before a folder tree",
+        "body": "Start from changes the team makes together: placing an order, pricing it and persisting it. A package should expose the vocabulary needed by its callers, not its database layout. Put transport decoding in an adapter and business decisions behind a narrow application API. Draw arrows for actual Go imports: a cycle means responsibilities must move or a smaller contract must be introduced. Renaming directories to domain, service and repository does not remove coupling if every package imports one shared mutable model.",
+        "code": "cmd/shop/main.go\ninternal/orders/service.go\ninternal/orders/order.go\ninternal/postgres/orders.go\ninternal/httpapi/orders.go",
+        "language": "text",
+        "walkthrough": "This is a focused layout or boundary fragment, not a second standalone program. Read it together with the complete worked example above."
+      },
+      {
+        "title": "Use internal without promising more than it enforces",
+        "body": "The internal directory limits which importers may use a package; it does not make methods or data private between sibling packages. Unexport identifiers that clients do not need. Keep reusable libraries outside internal only when they have real independent consumers and a compatibility policy. Avoid a util package that accumulates unrelated helpers: move a helper beside its consumer until two callers reveal one coherent abstraction. Package boundaries and module version boundaries solve different problems."
+      },
+      {
+        "title": "Check a boundary with a change experiment",
+        "body": "Imagine replacing Postgres with a fake for a service test. If the service imports SQL row types, the dependency crosses the intended boundary. Then imagine adding one order rule: it should be tested without HTTP. Finally inspect exported names with go doc and examine direct dependencies with go list. A good boundary makes these changes local; it does not require a dedicated interface and a separate file for every type. Record the ownership rule in package documentation so the next feature can preserve it."
       }
     ],
     "takeaway": "A good boundary reduces what a caller must know. Use cohesive packages and small consumer-owned contracts where they remove real coupling.",
@@ -878,13 +893,26 @@
         "code": null,
         "language": null,
         "walkthrough": null
+      },
+      {
+        "title": "Put the port beside the use case",
+        "body": "The application asks for a capability such as reserving inventory, not for a generic database connection. Define the smallest interface that the application consumes, with domain values and context.Context for work that can block. A SQL adapter implements that contract; a test fake implements the same observable behavior. The executable constructs the adapter and injects it into the use case. The port does not import HTTP, SQL drivers or framework types. One struct can implement several consumer-specific interfaces without declaring it explicitly."
+      },
+      {
+        "title": "Map errors and transactions deliberately",
+        "body": "A repository adapter can translate sql.ErrNoRows into the application absence contract instead of leaking SQL details. An HTTP adapter maps that stable error category to a response and logs once. If a use case changes several records atomically, expose one transaction-scoped operation or unit-of-work boundary whose lifetime the use case controls. Calling three repository methods independently does not create a transaction. Keep a remote payment request outside a long database transaction and design reconciliation for a payment that succeeds before local persistence fails."
+      },
+      {
+        "title": "Test the contract, not just the fake",
+        "body": "A fake that always returns success can hide wrong SQL behavior. Run a shared repository contract against both fake and real adapter: missing record, duplicate identifier, cancellation and commit failure matter. Use application tests for business rules and adapter tests for SQL mapping. The extra abstraction earns its place when rules outlive a transport or infrastructure choice; a small read-only command can call one concrete implementation directly and introduce a port later."
       }
     ],
     "takeaway": "Use a port to express an application need and an adapter to translate an external mechanism. Verify both the use case and the concrete boundary.",
     "references": [
       "https://go.dev/doc/effective_go#interfaces",
       "https://pkg.go.dev/database/sql#Tx",
-      "https://alistair.cockburn.us/hexagonal-architecture"
+      "https://alistair.cockburn.us/hexagonal-architecture",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "A storage port",
     "reviewAnswer": "Expresses a use case need independently of the database",
@@ -960,6 +988,18 @@
       {
         "title": "Compare decisions on the same axis",
         "body": "Monolith and microservices describe deployment and ownership boundaries. Layered, hexagonal, Clean and Onion describe responsibility and source dependencies. Vertical slices organize change around features; MVC organizes presentation. DDD is a modeling approach, CQRS separates write and read models, and event sourcing chooses a state history as authority. A modular monolith can use hexagonal ports, vertical slices and CQRS together. Record the quality goal before comparing scores."
+      },
+      {
+        "title": "Separate three architecture questions",
+        "body": "First choose code organization: packages by capability, layers or vertical slices. Next choose state coordination: local transactions, asynchronous events or event history. Finally choose deployment topology: one executable, functions or independent services. These are different axes. A modular monolith can use hexagonal boundaries and CQRS; a microservice can still have tangled internal code. Describe the constraint a choice solves before comparing editorial ratings. Scores are scenario-specific recommendations, not performance measurements."
+      },
+      {
+        "title": "Write an architecture decision with an exit condition",
+        "body": "A useful decision record contains the workload, team ownership, correctness requirements, candidate approaches, chosen tradeoff and what evidence would reopen the decision. For a small team, one deployable with local transactions may beat independently deployable services despite an ambitious diagram. Revisit when measured scaling, fault isolation or team release independence becomes a constraint. Do not migrate because a style receives a higher score in a different scenario."
+      },
+      {
+        "title": "Make quality visible at the seams",
+        "body": "Review one request from input validation to durable effect and response. Who owns the transaction? Who retries? Where is authorization enforced? Which boundary receives a deadline, and which log identifies the operation without exposing credentials? Then inspect tests at these seams. Small functions alone cannot repair contradictory ownership or undefined failure recovery. Prefer the simplest architecture that makes the required guarantees testable and operationally understandable."
       }
     ],
     "takeaway": "Choose boundaries for real change and ownership needs. Clear names, explicit errors, narrow contracts and behavioral tests matter in every architecture style.",
@@ -2183,6 +2223,18 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Start splitting when different responsibilities change independently or teams need ownership boundaries. A simple monolith can scale through replicas; shared mutable state and database contention still need measurement. Avoid hiding every function behind an interface."
+      },
+      {
+        "title": "Build one process with explicit composition",
+        "body": "Keep main responsible for configuration, dependency construction, startup and graceful shutdown. Pass dependencies into handlers rather than hiding them in package globals. Place use cases behind package APIs even if there is only one executable. This retains fast local calls and a single operational unit while allowing multiple entry points later. A monolith describes deployment; it does not require a single package or prevent good isolation inside the process."
+      },
+      {
+        "title": "Use local transactions as a strength",
+        "body": "Order creation and inventory reservation can commit in one database transaction when they share a consistency boundary. Validate cheap input before opening that transaction, avoid network calls while holding locks and roll back on every failure path. A successful HTTP response should follow the required durable commit, not precede it. If an email must eventually follow the commit, record an outbox item atomically and process it later; sending email first cannot be rolled back with the database."
+      },
+      {
+        "title": "Scale only the measured bottleneck",
+        "body": "Measure request latency, database time, queue depth and memory before extracting services. A process can have multiple replicas and background workers while remaining a monolith, provided shared state is durable and concurrency-safe. Start by improving indexes or isolating a slow worker. If one capability later needs independent deployment, keep its existing API and extract behind that seam. Expect remote timeouts and partial failure to become new work after extraction."
       }
     ],
     "takeaway": "One process with explicit local responsibilities. Start splitting when different responsibilities change independently or teams need ownership boundaries. A simple monolith can scale through replicas; shared mutable state and database contention still need measurement. Avoid hiding every function behind an interface.",
@@ -2256,6 +2308,18 @@
       {
         "title": "MVC is a presentation organization",
         "body": "Model–View–Controller separates a model of state and behavior, a view that renders output, and a controller that translates user input into operations. A Go web handler can act as a controller and a template as the view. This does not require a database model for every view, nor does it decide whether the application is one process or many services. Keep business invariants outside presentation formatting; use html/template rather than concatenating untrusted HTML."
+      },
+      {
+        "title": "Trace dependency direction through a real request",
+        "body": "An HTTP layer decodes a request and maps a response; an application layer executes a use case; a storage adapter persists its state. The application should receive typed intent, not an http.Request. Likewise, database rows should not automatically become public JSON. Separate request DTOs from domain values when their validation and compatibility rules differ. Avoid a layer whose only purpose is forwarding every call unchanged to another layer."
+      },
+      {
+        "title": "Put the transaction around the business operation",
+        "body": "A transaction belongs to the complete use case, such as moving funds between accounts. Starting and committing inside each repository method makes the two balance changes independent. Pass transaction-scoped capabilities to the use case or offer one atomic domain operation. Keep validation errors distinct from infrastructure failures, and do not convert every failure into a nil result. A layered diagram does not itself establish atomicity, authorization or idempotency."
+      },
+      {
+        "title": "Reduce horizontal change amplification",
+        "body": "If one small feature repeatedly changes controller, manager, service, repository and mapper with no distinct decision in most layers, collapse unnecessary forwarding. Organize files by feature within a layer or introduce a vertical slice. Preserve stable cross-cutting policy such as authentication at a clear boundary. Test each layer only for the behavior it owns: request mapping, business invariant or persistence contract, rather than duplicating the same happy-path assertion five times."
       }
     ],
     "takeaway": "Separate responsibilities without requiring network tiers. A feature may touch every horizontal layer, so keep mapping work proportional to the value it protects. Layering alone does not invert dependencies, create transactions or make storage replaceable. A single function is simpler for a one-off script.",
@@ -2325,6 +2389,18 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "One database can support atomic changes, but bypassing module APIs destroys ownership. Enforce dependency direction with package boundaries and review. Extract a service only when independent scaling, release cadence or isolation pays for remote failures."
+      },
+      {
+        "title": "Turn capability ownership into package APIs",
+        "body": "Billing can expose IsPaid or ConfirmPayment without exporting its payment map or SQL tables. Shipping asks the billing API instead of reading billing tables directly. A practical layout puts each capability below internal with a small exported surface and keeps application wiring in cmd. Go internal restricts outside imports but does not prevent sibling packages from bypassing ownership, so unexport implementation types and review dependencies. Sharing one database is an operational choice, not permission for every module to mutate every table."
+      },
+      {
+        "title": "Choose consistency across module boundaries",
+        "body": "When two changes truly require one atomic transaction, define the coordinator and transaction-scoped operations explicitly. When they can be eventually consistent, commit the initiating change and an outbox record together, then apply the receiving action idempotently. Document what the user sees while shipping has not yet observed payment. An in-memory notification after commit can be lost if the process crashes, so it is not a substitute for a durable handoff."
+      },
+      {
+        "title": "Extract without breaking every caller",
+        "body": "A module is ready for service extraction when its contract, ownership and data access are already explicit. First find direct table reads, shared pointers and cross-module transactions; these are migration work. Put a network adapter behind the existing consumer contract and introduce timeouts, versioning and retry-safe operations. Run contract tests before switching traffic. Keep the monolith if the same team deploys everything together and local transactions still provide more value than independent release timing."
       }
     ],
     "takeaway": "Business capabilities expose APIs in one deployment. One database can support atomic changes, but bypassing module APIs destroys ownership. Enforce dependency direction with package boundaries and review. Extract a service only when independent scaling, release cadence or isolation pays for remote failures.",
@@ -2395,12 +2471,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Model missing products and invalid discounts before using this mechanism in production. Do not create a DTO, interface and mapper for every struct automatically. For a tiny CRUD endpoint, a focused handler and explicit SQL may be easier to change."
+      },
+      {
+        "title": "Distinguish imports from runtime calls",
+        "body": "The dependency rule concerns source imports: policy types do not import a web framework or database driver. At runtime a use case can call an adapter through a consumer-owned interface even though the adapter imports the policy package. Wire concrete adapters in the composition root. Entities express invariants; application services coordinate a use case. Request validation and serialization stay at the outside, while domain validation remains enforceable when the same use case is called by a job or CLI."
+      },
+      {
+        "title": "Avoid an interface for every concrete type",
+        "body": "A constructor returning a concrete type is often appropriate. Introduce an interface where a consumer needs a replaceable capability, especially at IO and clock boundaries. Do not create a BaseRepository or service factory hierarchy just to imitate a class-oriented diagram. A pure calculation needs no repository. Repeated DTO conversions should protect a real boundary; when two layers use an identical stable value, copying every field solely to preserve a diagram adds cost without independence."
+      },
+      {
+        "title": "Prove independence with a focused test",
+        "body": "Construct the application service with an in-memory contract implementation and a controlled clock. Check the invariant, failure result and absence of unwanted side effects. Then verify the production adapter separately against its real storage contract. If starting a router, database and message broker is required to test a price rule, policy still depends on infrastructure somewhere. Clean architecture suits long-lived business rules, while a short one-purpose tool may be clearer with fewer boundaries."
       }
     ],
     "takeaway": "Source dependencies point inward toward policy. Model missing products and invalid discounts before using this mechanism in production. Do not create a DTO, interface and mapper for every struct automatically. For a tiny CRUD endpoint, a focused handler and explicit SQL may be easier to change.",
     "references": [
       "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
-      "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/"
+      "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Clean dependency rule",
     "reviewAnswer": "Source dependencies point inward toward policy",
@@ -2465,6 +2554,18 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Extract a shared domain rule when several slices genuinely enforce the same invariant. Duplicated validation can drift, while an overgeneralized framework can make every change harder. Slices can share infrastructure without sharing their entire application model."
+      },
+      {
+        "title": "Organize by the change a user requests",
+        "body": "Keep the command or query, validation, handler and response mapping for PlaceOrder close together. Share domain rules when they genuinely apply across use cases, not because two DTOs happen to have similar fields. A slice can use a concrete store for a simple query and a richer domain model for a complex command. Vertical slices describe the direction of code organization; they can run in one process and do not imply a service for each endpoint."
+      },
+      {
+        "title": "Make shared policy explicit",
+        "body": "Authentication, authorization, observability and transaction management should have one understandable integration point. Keep endpoint-specific authorization near the use case when permission depends on loaded domain state. Avoid a global pipeline that catches and suppresses every error or makes transaction lifetime invisible. Two slices updating the same invariant need coordinated ownership, even if their files are in separate folders. Duplicating business rules across slices creates divergent behavior."
+      },
+      {
+        "title": "Test one slice end to end at its boundary",
+        "body": "For a command, test invalid input, denied access, success and a failed durable write. For a query, test filtering and response shape without constructing unrelated domain workflows. Preserve the public route and event contracts while reorganizing packages. Extract shared code only after repeated changes reveal one stable responsibility. This approach makes feature changes local but needs conventions so each slice does not invent different error, logging and validation behavior."
       }
     ],
     "takeaway": "Group code by use case and reason to change. Extract a shared domain rule when several slices genuinely enforce the same invariant. Duplicated validation can drift, while an overgeneralized framework can make every change harder. Slices can share infrastructure without sharing their entire application model.",
@@ -2535,11 +2636,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Use richer models where business language and rules justify them. A reporting query can return a projection without reconstructing every aggregate. Too many tiny entities and repositories obscure straightforward CRUD; bounded contexts can remain packages in one executable."
+      },
+      {
+        "title": "Model invariants before naming entities",
+        "body": "A value object is defined by its value, while an entity has identity over time. An aggregate is a consistency boundary whose root protects invariants, not a graph of everything related by a foreign key. For an order, accepting a line may check quantity and price rules before mutation. Keep those rules enforceable without an HTTP handler. A bounded context defines where terms have one meaning: customer in billing need not be the same model as customer in support."
+      },
+      {
+        "title": "Coordinate aggregates with explicit consistency",
+        "body": "Keep a transaction small enough to protect the invariant it owns. If placing an order and reserving remote stock cannot be atomic, model pending, confirmed and rejected states and define compensating actions. Use version checks when concurrent writers can otherwise overwrite each other. Domain events describe facts that already happened; publishing them durably requires an outbox or another defined handoff. Calling a broker in the middle of mutation does not make the database and broker commit together."
+      },
+      {
+        "title": "Use domain modeling selectively",
+        "body": "Start with scenarios from domain experts and encode examples as tests: duplicate line, cancelled order, price change and concurrent update. CRUD administration often needs a simple data model rather than repositories, aggregates and domain services. Introduce an anti-corruption adapter when integrating a foreign model so its vocabulary does not leak everywhere. DDD has a high communication and modeling cost; it pays when rules and language are complex, not merely when a project has many tables."
       }
     ],
     "takeaway": "Protects invariants within a consistency boundary. Use richer models where business language and rules justify them. A reporting query can return a projection without reconstructing every aggregate. Too many tiny entities and repositories obscure straightforward CRUD; bounded contexts can remain packages in one executable.",
     "references": [
-      "https://www.domainlanguage.com/ddd/reference/"
+      "https://www.domainlanguage.com/ddd/reference/",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "DDD aggregate",
     "reviewAnswer": "Protects invariants within a consistency boundary",
@@ -2604,11 +2718,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "If a projection becomes asynchronous, explain stale reads and rebuild procedures to clients and operators. Ordinary CRUD may not need separate models. Add CQRS where read shapes and write rules diverge, rather than to make simple storage appear architectural."
+      },
+      {
+        "title": "Separate models before separating infrastructure",
+        "body": "Commands express intent and validate invariants; queries return a shape optimized for a reader. Both can initially use the same process and database. A dashboard projection may join fields that never belong in the command aggregate. CQRS does not require event sourcing, a broker or separate databases. Keep authorization and sensitive-field filtering on the query path too: a read model is not automatically safe because it does not mutate state."
+      },
+      {
+        "title": "Design projection lag as user-visible behavior",
+        "body": "With an asynchronous projection, a successful command can be durable before the query model catches up. Return a command identifier or version and decide whether the UI waits for that version, shows pending state or reads a command result directly. Apply projection events idempotently and in the required order. Record a durable cursor; an in-memory last-seen marker cannot support restart. Deleted or corrected records need explicit projection behavior."
+      },
+      {
+        "title": "Rebuild and test a projection",
+        "body": "A projection test should apply duplicate input and verify it does not double-count. Test out-of-order events according to the chosen policy, a restart from the saved cursor and schema changes. Rebuild a new projection beside the old one, compare counts and representative queries, then switch readers. Separate read/write models when their needs differ enough to pay for synchronization. A small application with one ordinary CRUD shape can keep one model."
       }
     ],
     "takeaway": "Separates the write model from the read model. If a projection becomes asynchronous, explain stale reads and rebuild procedures to clients and operators. Ordinary CRUD may not need separate models. Add CQRS where read shapes and write rules diverge, rather than to make simple storage appear architectural.",
     "references": [
-      "https://martinfowler.com/bliki/CQRS.html"
+      "https://martinfowler.com/bliki/CQRS.html",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "CQRS",
     "reviewAnswer": "Separates the write model from the read model",
@@ -2673,11 +2800,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Choose this when temporal history and reconstruction are core requirements. Replay must not resend emails or charge cards. Event evolution, privacy deletion and projection rebuilds are significant costs; an audit table is often enough for a conventional service."
+      },
+      {
+        "title": "Treat event history as a durable contract",
+        "body": "An event records a business fact such as OrderAccepted, with identity, aggregate sequence and event schema version. Replaying history applies facts without sending emails or charging cards again. Validate a command against the current aggregate state, decide new events, then append with an expected stream version. A read-then-append sequence without concurrency control can accept conflicting commands. Event sourcing stores state transitions as the source of truth; a message broker alone is not that event store."
+      },
+      {
+        "title": "Plan evolution, snapshots and sensitive data",
+        "body": "An old event cannot silently change meaning when a struct is renamed. Use version-aware decoders or explicit upcasting and retain replay fixtures from historical versions. A snapshot is a performance aid tied to a known event sequence, not a replacement for missing history. Avoid embedding secrets and unnecessary personal data in immutable events; deletion and retention obligations need a deliberate design. Do not describe immutable storage as automatically satisfying every audit requirement."
+      },
+      {
+        "title": "Separate replay from external side effects",
+        "body": "An event handler updating a projection can be replayed; an external payment requires a durable idempotency key and side-effect policy. Test rebuilding an empty projection from the whole stream and compare state with incremental processing. Test conflicting expected versions and malformed historical events. Adopt event sourcing when historical reconstruction and domain behavior justify its substantial operational cost. An append-only audit log beside ordinary state may solve a simpler audit requirement more cheaply."
       }
     ],
     "takeaway": "Rebuilds authoritative state from accepted events. Choose this when temporal history and reconstruction are core requirements. Replay must not resend emails or charge cards. Event evolution, privacy deletion and projection rebuilds are significant costs; an audit table is often enough for a conventional service.",
     "references": [
-      "https://martinfowler.com/eaaDev/EventSourcing.html"
+      "https://martinfowler.com/eaaDev/EventSourcing.html",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Event-sourced state",
     "reviewAnswer": "Rebuilds authoritative state from accepted events",
@@ -2742,11 +2882,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Buffering can isolate timing, but it does not guarantee business completion. Define dead-letter handling, retry limits and observability. A transactional outbox can bridge a database commit and later publication; a plain goroutine cannot replace durable messaging."
+      },
+      {
+        "title": "Specify the delivery contract",
+        "body": "A producer commits a business change and an outbox record in one transaction. A relay publishes the record and may publish it again after a crash. The consumer therefore needs a stable event identifier and an idempotent effect. Acknowledge only after the required durable work. At-least-once delivery is not exactly-once business processing: a payment gateway, email API and local store do not share one magical commit."
+      },
+      {
+        "title": "Choose ordering, retries and a poison-message path",
+        "body": "Order events only where the business needs it, often per aggregate rather than globally. Bound retries with backoff and jitter, and route repeated failures to a monitored dead-letter path with a replay procedure. Distinguish invalid events from temporary infrastructure outages. A permanently malformed message should not block unrelated work forever. Version event schemas compatibly and include correlation identifiers without leaking tokens or personal payloads into logs."
+      },
+      {
+        "title": "Exercise the crash windows",
+        "body": "Test a crash after database commit but before publish, after publish but before marking the outbox sent, and after the consumer effect but before acknowledgement. Verify duplicates do not repeat the effect and that lag is visible in metrics. Monitor oldest unprocessed age, backlog and failure count, not only whether the worker process is alive. Use events for meaningful decoupling; a synchronous local call is clearer when a caller needs an immediate answer and no durable handoff."
       }
     ],
     "takeaway": "Repeating a message does not repeat its business effect. Buffering can isolate timing, but it does not guarantee business completion. Define dead-letter handling, retry limits and observability. A transactional outbox can bridge a database commit and later publication; a plain goroutine cannot replace durable messaging.",
     "references": [
-      "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven"
+      "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Idempotent consumer",
     "reviewAnswer": "Repeating a message does not repeat its business effect",
@@ -2811,12 +2964,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Independent ownership helps teams with different release and scaling needs. It also requires tracing, deployment automation and data consistency design. Start with a modular monolith when one team can operate it; high request volume alone is not a service-count target."
+      },
+      {
+        "title": "Draw ownership and data boundaries first",
+        "body": "A service owns a capability, its durable data and an operational responsibility. Sharing one database schema across independently deployed services often preserves tight coupling while adding network failures. Define the public API or event contract and the team that can evolve it. Prefer coarse business boundaries over a service per table. A modular monolith is a useful starting point when the same small team owns all capabilities and coordinated releases are acceptable."
+      },
+      {
+        "title": "Budget for partial failure",
+        "body": "A request may time out after the remote effect succeeds. Bound the total deadline, propagate cancellation, make retryable mutations idempotent and avoid retries at every layer. Keep cross-service transactions out of local transaction assumptions: model pending work, reconciliation or compensations explicitly. A circuit breaker can protect a struggling dependency but does not correct invalid data or guarantee delivery. Separate authentication from service authorization and protect both transport and business operations."
+      },
+      {
+        "title": "Plan extraction and rollback",
+        "body": "Choose one capability whose independent scaling, release cadence or fault isolation is measured to matter. Put an adapter behind its current contract, move ownership deliberately and define the migration source of truth. Shadow read traffic can compare results without duplicating mutations. Test backward-compatible API changes before rolling out producers and consumers separately. Observability, deploy automation, secrets, on-call and recovery are part of the design cost, not optional work after the code has been split."
       }
     ],
     "takeaway": "Adds independent ownership and partial remote failures. Independent ownership helps teams with different release and scaling needs. It also requires tracing, deployment automation and data consistency design. Start with a modular monolith when one team can operate it; high request volume alone is not a service-count target.",
     "references": [
       "https://martinfowler.com/articles/microservice-trade-offs.html",
-      "https://pkg.go.dev/context"
+      "https://pkg.go.dev/context",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Microservice boundary",
     "reviewAnswer": "Adds independent ownership and partial remote failures",
@@ -2881,12 +3047,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Broad shared services can reduce integration duplication but become release bottlenecks. Avoid a universal service that owns every domain. Microservices emphasize independent capability ownership; SOA is a broader service integration approach, so real systems can share ideas from both."
+      },
+      {
+        "title": "Design an API contract for independent clients",
+        "body": "An RPC method should express a stable business operation rather than expose a database row shape. Define identifiers, validation, cancellation and error categories, along with message evolution rules. Adding an optional field may be compatible while changing its meaning is not. Keep generated transport types at the adapter boundary if their evolution should not dictate the domain model. An interface in Go is a local language contract; it does not automatically provide a versioned remote protocol."
+      },
+      {
+        "title": "Make timeout ambiguity explicit",
+        "body": "If a client times out on Reserve, it may not know whether a reservation exists. A stable operation ID allows retry or status lookup without repeating the effect. Set one deadline and distinguish validation failure, denied access, missing resource and transient service failure. Avoid returning unbounded result lists; pagination and resource budgets belong in the contract. Streaming APIs also need backpressure and a shutdown policy."
+      },
+      {
+        "title": "Verify mixed-version deployment",
+        "body": "Run contract fixtures against old and new request shapes. Test that a server accepting a new field still handles older callers, and that clients tolerate allowed unknown fields according to the protocol. Record latency and error rate per operation without logging credentials or whole sensitive payloads. RPC or service-oriented integration can centralize a genuine shared capability, but a synchronous dependency on many services can become a distributed call chain with poor availability."
       }
     ],
     "takeaway": "Defines units, outcomes and compatibility at a boundary. Broad shared services can reduce integration duplication but become release bottlenecks. Avoid a universal service that owns every domain. Microservices emphasize independent capability ownership; SOA is a broader service integration approach, so real systems can share ideas from both.",
     "references": [
       "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
-      "https://grpc.io/docs/what-is-grpc/core-concepts/"
+      "https://grpc.io/docs/what-is-grpc/core-concepts/",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Service contract",
     "reviewAnswer": "Defines units, outcomes and compatibility at a boundary",
@@ -2951,11 +3130,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "One extra boundary helps clients with genuinely different data and release needs. If all clients need the same API, a shared endpoint may be simpler. Do not duplicate pricing or authorization policy in every BFF; client shaping is its main reason to change."
+      },
+      {
+        "title": "Aggregate for one client without moving domain ownership",
+        "body": "A backend for frontend adapts several capabilities to the screens of a specific client. It can reduce round trips, tailor pagination and hide service topology. Keep pricing, payment and authorization invariants in the owning service; a BFF should not become a second business system with conflicting rules. A mobile BFF and a web BFF can differ in response shape while using the same underlying contracts."
+      },
+      {
+        "title": "Handle fan-out without multiplying latency",
+        "body": "Call independent services concurrently under a total deadline, cap concurrency and decide which results are essential. A profile panel might allow a missing optional recommendation, while a checkout must fail if price validation is unavailable. Preserve the distinction in the response instead of returning an empty success object for every dependency failure. Cache only with a key that includes required user and permission scope; shared caching of personalized responses can leak data."
+      },
+      {
+        "title": "Test screen contracts and graceful degradation",
+        "body": "Use fixtures for complete results, one optional dependency timeout and one essential dependency failure. Verify authorization on the aggregate response and prevent internal service errors from exposing private topology. Track fan-out count and deadline exhaustion. Introduce a BFF when distinct clients actually need different composition; one frontend calling one simple API rarely needs another deployable intermediary."
       }
     ],
     "takeaway": "Shapes an API around one client’s needs. One extra boundary helps clients with genuinely different data and release needs. If all clients need the same API, a shared endpoint may be simpler. Do not duplicate pricing or authorization policy in every BFF; client shaping is its main reason to change.",
     "references": [
-      "https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends"
+      "https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Backend for frontend",
     "reviewAnswer": "Shapes an API around one client’s needs",
@@ -3020,11 +3212,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Functions suit bounded event-driven tasks and variable workloads. Long-running connections or strict latency targets may favor a continuously running service. Check the chosen platform’s actual Go runtime, resource limits and billing; serverless does not mean operations-free."
+      },
+      {
+        "title": "Keep a handler independent of a warm process",
+        "body": "Treat process memory as a disposable cache, not the authoritative record of a completed job. Reused instances may retain state between calls while new instances begin empty. Validate input and obtain a durable idempotency key for retried operations. Bound execution time, payload size and concurrency. A serverless function is a deployment unit; the same clean application service can also run in an ordinary HTTP server."
+      },
+      {
+        "title": "Design retry-safe external effects",
+        "body": "A queue-triggered handler may be invoked again after a timeout or lost acknowledgement. Persist progress and use the external provider idempotency mechanism when available. A local done map does not survive another instance. If an effect succeeds but recording success fails, the retry must reconcile rather than blindly repeat. Connection pools and downstream database capacity need limits because rapid function scaling can overwhelm a shared dependency."
+      },
+      {
+        "title": "Measure the real operational fit",
+        "body": "Observe cold and warm latency, failures, throttling, queue age and per-invocation cost. Test execution with no warmed globals and interrupted work, not only by calling the function twice inside one test process. Use serverless for bounded independently triggered work where its scaling and operations model fits. Long-lived connections, latency-sensitive steady load or complex coordination may be simpler in a service or worker."
       }
     ],
     "takeaway": "Processes bounded invocations with external durable state. Functions suit bounded event-driven tasks and variable workloads. Long-running connections or strict latency targets may favor a continuously running service. Check the chosen platform’s actual Go runtime, resource limits and billing; serverless does not mean operations-free.",
     "references": [
-      "https://docs.aws.amazon.com/lambda/latest/dg/golang-handler.html"
+      "https://docs.aws.amazon.com/lambda/latest/dg/golang-handler.html",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Serverless handler",
     "reviewAnswer": "Processes bounded invocations with external durable state",
@@ -3089,11 +3294,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Use stages when transformations compose naturally and need separate tests. Shared state between stages undermines isolation. A single expression is simpler for one trivial transformation, and unbounded channel buffers do not solve a slow downstream consumer."
+      },
+      {
+        "title": "Define stage contracts and resource bounds",
+        "body": "A stage consumes one representation and produces another: parse, normalize, validate and summarize. Start with ordinary function composition for finite in-memory data. Introduce channels only when streaming or independent work justifies coordination. Every stage needs a policy for malformed input, cancellation and output ownership. An unbounded buffer can turn temporary downstream slowness into a memory failure."
+      },
+      {
+        "title": "Propagate cancellation through the whole pipeline",
+        "body": "If a downstream consumer exits early, upstream producers must be able to stop rather than block forever on send. Pass context, select on cancellation where sends can block, and let the owner of a channel close it after all producers finish. Multiple concurrent stages may reorder results; preserve an input index if order is required. A goroutine per item is not a bounded worker pool."
+      },
+      {
+        "title": "Test pressure as well as transformation",
+        "body": "Verify a stage with empty input, invalid input, a slow consumer and cancellation halfway through. Check that completion waits for owned goroutines and that no sender is left writing to a closed channel. Benchmark representative data before adding concurrency: parsing small records in separate goroutines can cost more than a loop. Pipes and filters suit stream transformations; they are less helpful when each stage requires shared mutable domain state and distributed transactions."
       }
     ],
     "takeaway": "Composes ordered transformations with explicit handoffs. Use stages when transformations compose naturally and need separate tests. Shared state between stages undermines isolation. A single expression is simpler for one trivial transformation, and unbounded channel buffers do not solve a slow downstream consumer.",
     "references": [
-      "https://go.dev/blog/pipelines"
+      "https://go.dev/blog/pipelines",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Pipes and filters",
     "reviewAnswer": "Composes ordered transformations with explicit handoffs",
@@ -3158,6 +3376,18 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Extensions in the same process can panic, block or access shared resources; an interface is not a security sandbox. Use subprocess or RPC isolation for untrusted extensions. Native plugin loading is not supported by GopherForge’s WASI runtime."
+      },
+      {
+        "title": "Keep the extension contract narrower than the core",
+        "body": "The core owns stable policy and chooses extensions through a small interface or registry. An extension may format, validate or dispatch one capability. Register it explicitly at startup so dependencies and failure are visible. Compile-time implementations and process-isolated extensions are different operational models. Do not assume Go binary plugins are portable across all systems or supported inside the iOS sandbox; the lesson example uses ordinary linked Go values."
+      },
+      {
+        "title": "Define lifecycle and failure containment",
+        "body": "Decide when an extension initializes, whether requests may run concurrently, who closes resources and what happens if initialization fails. A panic in an in-process extension can affect the host; an interface does not create isolation. Untrusted extensions require a real sandbox or process boundary with permissions and time budgets. Version the contract when independently delivered extensions need compatibility checks."
+      },
+      {
+        "title": "Resist a universal extension API",
+        "body": "Test extensions against a shared contract, including invalid configuration and cleanup. Prefer one small extension point justified by a real variation over a generic object bag with string keys and reflection. A registry of two ordinary functions may be enough. A microkernel pays off when third-party or product-specific variation evolves independently; if every extension changes with the core, a direct function call is often easier to understand."
       }
     ],
     "takeaway": "Lets a small core invoke explicitly registered behavior. Extensions in the same process can panic, block or access shared resources; an interface is not a security sandbox. Use subprocess or RPC isolation for untrusted extensions. Native plugin loading is not supported by GopherForge’s WASI runtime.",
@@ -3228,11 +3458,24 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Use a durable queue and idempotent worker for valuable work. Record status and propagate trace identifiers so accepted jobs do not disappear operationally. A goroutine can handle disposable local work, but cannot promise completion after the process exits."
+      },
+      {
+        "title": "Make accepting work a durable promise",
+        "body": "An HTTP 202 response says work was accepted, not completed. Validate and authorize the request, allocate a job ID and persist the job before returning success. Expose a status endpoint with pending, running, succeeded and failed states. Put the relevant input or an immutable reference in durable storage. A channel living inside the web process loses queued work when that process exits."
+      },
+      {
+        "title": "Use leases, retries and idempotent work",
+        "body": "A worker claims a job for a limited lease and renews it while progressing. If it crashes, another worker can reclaim after expiry. Both may briefly believe they own the same job during a partition, so use an ownership token or fencing where the effect requires it. Bound attempts and preserve diagnostic state for exhausted jobs. A retry should resume or reconcile a durable operation rather than issue the same non-idempotent external effect twice."
+      },
+      {
+        "title": "Operate and test the backlog",
+        "body": "Monitor oldest pending age, queue depth, active leases, completion latency and exhausted retries. Test a crash after the effect but before status update, cancellation while waiting, and a worker that loses its lease. Use an outbox when job creation and an application state change must commit together. Separate web and worker deployment only when resource or scaling needs justify it; they can initially share one executable and a durable queue."
       }
     ],
     "takeaway": "Separates acceptance from eventual job completion. Use a durable queue and idempotent worker for valuable work. Record status and propagate trace identifiers so accepted jobs do not disappear operationally. A goroutine can handle disposable local work, but cannot promise completion after the process exits.",
     "references": [
-      "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/web-queue-worker"
+      "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/web-queue-worker",
+      "https://go.dev/doc/modules/layout"
     ],
     "reviewPrompt": "Durable background work",
     "reviewAnswer": "Separates acceptance from eventual job completion",
@@ -3297,12 +3540,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Choose brevity in small scopes and precision at boundaries. A long name cannot repair a confused responsibility. Keep comments for contracts, assumptions and reasons; let gofmt handle alignment rather than preserving a personal formatting convention."
+      },
+      {
+        "title": "Name the contract, not the implementation accident",
+        "body": "Prefer ReserveStock to Process and OrderID to a bare string whose meaning changes by call site. Include units when a numeric type does not make them clear; use time.Duration rather than an undocumented integer timeout. A name should tell the caller whether a method mutates, blocks or acquires a resource. Avoid repeating a package name in every exported identifier when the qualified call already supplies it. Short names remain useful for small, obvious scopes such as a loop index."
+      },
+      {
+        "title": "Make invalid states harder to pass",
+        "body": "A named type can distinguish CustomerID from OrderID at compile time, but a string alias alone does not validate content. Validate input at the boundary and construct a value that has a documented invariant. Avoid boolean flag arguments whose call-site meaning is unclear; separate operations or a small options type can be easier to read. Do not replace every primitive with a wrapper: choose types where confusing two values or forgetting validation has a real cost."
+      },
+      {
+        "title": "Review names with a caller and a failure",
+        "body": "Read a call without opening its implementation. Can you tell whether the result may be partial, who owns returned bytes and which error means missing? Rename or document the contract when the answer is unclear. Test a malformed ID and an empty value before claiming a constructor makes invalid states impossible. During a rename, keep public compatibility or provide a migration path; internal clarity and external API stability are separate concerns."
       }
     ],
     "takeaway": "Reduce ambiguity with types and precise API names. Choose brevity in small scopes and precision at boundaries. A long name cannot repair a confused responsibility. Keep comments for contracts, assumptions and reasons; let gofmt handle alignment rather than preserving a personal formatting convention.",
     "references": [
       "https://go.dev/blog/package-names",
-      "https://pkg.go.dev/time"
+      "https://pkg.go.dev/time",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Explicit units",
     "reviewAnswer": "Reduce ambiguity with types and precise API names",
@@ -3354,12 +3610,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Do not define a giant interface beside an implementation merely to mock it. Avoid typed nil pointers inside interface results, and test empty input as well as the successful path. For a local helper with one implementation, a concrete parameter may be clearer."
+      },
+      {
+        "title": "Let the consumer choose the minimum capability",
+        "body": "A handler needing Get(ctx, id) does not need a repository interface with twenty unrelated methods. Define the interface near that handler or application service, and let the concrete store satisfy it implicitly. This avoids coupling clients to methods they never call. Return concrete implementations from constructors unless an abstraction is useful to the caller. Accepting an interface is not inherently better when a function simply needs a byte slice or one callback."
+      },
+      {
+        "title": "Document behavior that method sets cannot express",
+        "body": "The type system checks signatures, not semantics. State whether a missing record is an error, whether results alias internal data, whether the value is concurrency-safe, and whether cancellation can interrupt IO. A typed nil pointer stored in an interface is not a nil interface; avoid returning it as a successful dependency. Tests should verify the same contract for fake and real implementations rather than treating a fake as proof that storage behaves correctly."
+      },
+      {
+        "title": "Introduce substitution where change is real",
+        "body": "Clock, payment and durable storage boundaries often benefit from a small substitute in a test. A pure arithmetic helper rarely needs its own interface. Keep a compile-time implementation check near an adapter when it helps detect drift, and exercise the adapter contract as well. If every interface has exactly one consumer-independent clone of a large concrete method set, reconsider whether the abstraction is protecting a real boundary or only adding navigation."
       }
     ],
     "takeaway": "States the behavior needed by its caller. Do not define a giant interface beside an implementation merely to mock it. Avoid typed nil pointers inside interface results, and test empty input as well as the successful path. For a local helper with one implementation, a concrete parameter may be clearer.",
     "references": [
       "https://go.dev/wiki/CodeReviewComments#interfaces",
-      "https://pkg.go.dev/io#ReadFull"
+      "https://pkg.go.dev/io#ReadFull",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Consumer interface",
     "reviewAnswer": "States the behavior needed by its caller",
@@ -3411,12 +3680,28 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Expose stable error categories only when they are part of the package contract. Implementation details can become accidental API commitments when wrapped. Panic is appropriate for violated programmer assumptions in some APIs, not an ordinary missing record or malformed request."
+      },
+      {
+        "title": "Classify without parsing message text",
+        "body": "Use errors.Is for stable sentinel categories and errors.As for documented structured error types. Messages can add operation context for a human but should not become machine parsing protocols. Wrap with %w only when exposing the cause is part of the API contract. Otherwise map to an application category and retain safe diagnostic context. A database missing-row error should not automatically become a permanent public dependency on the database driver.",
+        "code": "switch {\ncase errors.Is(err, ErrMissing):\n    // Map the documented absence contract at the transport boundary.\ncase errors.Is(err, context.DeadlineExceeded):\n    // Distinguish timeout from invalid input; retry only if safe.\ncase err != nil:\n    // Report a safe diagnostic once, with an operation identifier.\n}",
+        "language": "go",
+        "walkthrough": "This is a focused layout or boundary fragment, not a second standalone program. Read it together with the complete worked example above."
+      },
+      {
+        "title": "Choose the layer that can recover",
+        "body": "The layer knowing an operation is idempotent may choose a bounded retry; a low-level helper should not retry every failure blindly. A transport maps validation and authorization errors to appropriate responses without leaking SQL or credentials. Log once where the error is finally handled, while intermediate layers return useful context. An error can accompany useful partial output, so inspect the API contract before discarding data or returning early."
+      },
+      {
+        "title": "Test cancellation and the public error promise",
+        "body": "Assert errors.Is or errors.As for categories that callers are allowed to depend on, and check state was not partially committed after failure. Test a wrapped cancellation and a typed-nil implementation. Avoid comparing whole human messages unless their exact text is a deliberate contract. Panic and recover are not a substitute for expected validation errors. Do not recover a panic and silently return success; recover only at a defined boundary with a clear failed-operation result."
       }
     ],
     "takeaway": "Adds context while preserving a cause for errors.Is. Expose stable error categories only when they are part of the package contract. Implementation details can become accidental API commitments when wrapped. Panic is appropriate for violated programmer assumptions in some APIs, not an ordinary missing record or malformed request.",
     "references": [
       "https://go.dev/blog/go1.13-errors",
-      "https://pkg.go.dev/errors"
+      "https://pkg.go.dev/errors",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Error wrapping",
     "reviewAnswer": "Adds context while preserving a cause for errors.Is",
@@ -3468,12 +3753,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Copies cost memory and time, so measure large buffers before copying everywhere. A documented transfer or read-only borrowing contract may be preferable in a hot path. Mutexes protect shared access only when every relevant access follows the same lock discipline."
+      },
+      {
+        "title": "Describe ownership in the API contract",
+        "body": "Returning a slice copies its descriptor, not its backing array. A caller can mutate shared elements even when append later allocates new storage. State whether the result is borrowed, immutable by convention or owned by the caller. Clone at the boundary when independent mutation is expected. A shallow clone of a slice of pointers still shares pointed-to values, so deep-copy behavior must match the actual domain structure."
+      },
+      {
+        "title": "Choose one concurrency model for mutable state",
+        "body": "Either one goroutine owns the state and receives commands, a lock protects every relevant access, or callers receive isolated immutable snapshots. Mixing these models without a clear rule leaves races. A mutex guarding a map does not protect a slice stored in it after the method returns that slice. Return a snapshot under the lock, or keep later access inside the owner boundary. Test the aliasing case as well as running the race detector."
+      },
+      {
+        "title": "Make cleanup ownership visible",
+        "body": "The code that successfully acquires a resource should define who closes it. Defer cleanup immediately after acquisition unless a documented ownership transfer occurs. A producer closes the channel it owns; arbitrary receivers should not close it to signal cancellation. Pass context for cancellation rather than sharing a mutable stop boolean. For a library API, document whether Close waits for goroutines and whether concurrent calls are supported."
       }
     ],
     "takeaway": "Defines who may retain and mutate shared data. Copies cost memory and time, so measure large buffers before copying everywhere. A documented transfer or read-only borrowing contract may be preferable in a hot path. Mutexes protect shared access only when every relevant access follows the same lock discipline.",
     "references": [
       "https://pkg.go.dev/bytes#Clone",
-      "https://go.dev/blog/slices-intro"
+      "https://go.dev/blog/slices-intro",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Ownership boundary",
     "reviewAnswer": "Defines who may retain and mutate shared data",
@@ -3525,12 +3823,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Use functional options only when they improve an evolving API. A constructor with many independent options can hide invalid combinations; validate the final configuration before opening files or starting goroutines, and clean up partial acquisition on later failure."
+      },
+      {
+        "title": "Build a typed configuration at startup",
+        "body": "Read environment variables and files at the executable boundary, parse durations and sizes into typed values, then validate required combinations before starting workers. Pass a completed configuration value to constructors. Re-reading environment variables deep in business logic makes tests and runtime behavior unpredictable. Apply defaults explicitly, and distinguish an omitted value from a meaningful zero. Do not log raw configuration if it contains secrets."
+      },
+      {
+        "title": "Define which changes can happen at runtime",
+        "body": "Immutable configuration is simpler: restart a process to change it. If reload is required, parse and validate a whole new snapshot before atomically replacing the active one. Existing requests should see one consistent snapshot, not a mix of old and new fields. Some changes, such as a database destination, need resource lifecycle handling rather than swapping a string. Preserve the previous valid configuration when reload fails."
+      },
+      {
+        "title": "Test invalid combinations before deployment",
+        "body": "Cover an empty required address, malformed duration, negative retry count and a timeout smaller than a required operation budget. Verify secrets never appear in error text or diagnostic dumps. Constructors should fail with actionable context rather than leaving partially initialized workers alive. Functional options can help an API with many independent options, but they do not remove the need to validate incompatible choices after all options are applied."
       }
     ],
     "takeaway": "Rejects invalid combinations before acquiring resources. Use functional options only when they improve an evolving API. A constructor with many independent options can hide invalid combinations; validate the final configuration before opening files or starting goroutines, and clean up partial acquisition on later failure.",
     "references": [
       "https://go.dev/wiki/CodeReviewComments#useful-test-failures",
-      "https://pkg.go.dev/errors"
+      "https://pkg.go.dev/errors",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Validated configuration",
     "reviewAnswer": "Rejects invalid combinations before acquiring resources",
@@ -3582,12 +3893,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Add integration tests where real serialization, SQL or network contracts matter. Table shape alone does not make a test meaningful. Fuzz properties such as round-trip encoding or no panics when the input space is larger than the useful handpicked examples."
+      },
+      {
+        "title": "Derive cases from the behavior contract",
+        "body": "For a transfer, cover success, insufficient balance, missing destination, cancellation and a durable-write failure. Include a boundary such as zero or maximum allowed amount. A table is an organization tool, not a reason to make unrelated assertions share a giant struct. Give each case a name describing the behavior, and compare the public result and durable effect rather than private helper calls."
+      },
+      {
+        "title": "Use real integration points where fakes cannot prove behavior",
+        "body": "A fake repository can verify application decisions, but it cannot prove a SQL transaction rolls back or an index enforces uniqueness. Keep a focused adapter contract test with the real database in a controlled environment. Avoid sleeping to guess when concurrent work finished; synchronize using channels or an observable completion boundary. Call t.Parallel only when the case owns isolated state and does not mutate shared environment or fixtures."
+      },
+      {
+        "title": "Treat nondeterminism as a design signal",
+        "body": "Inject time and randomness where the caller needs a predictable boundary, and wait for owned goroutines before a test returns. The race detector finds executions with conflicting accesses; one clean run does not prove every possible schedule safe. A benchmark needs representative input and allocation measurements, not an architecture score. Keep a failing regression for the user-visible defect while resisting tests that merely restate the implementation line by line."
       }
     ],
     "takeaway": "Checks results and errors against a public contract. Add integration tests where real serialization, SQL or network contracts matter. Table shape alone does not make a test meaningful. Fuzz properties such as round-trip encoding or no panics when the input space is larger than the useful handpicked examples.",
     "references": [
       "https://go.dev/doc/tutorial/add-a-test",
-      "https://go.dev/doc/security/fuzz/"
+      "https://go.dev/doc/security/fuzz/",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Behavior-focused test",
     "reviewAnswer": "Checks results and errors against a public contract",
@@ -3639,12 +3963,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Run go test and go vet for correctness, race tests for exercised concurrency, and benchmarks for a suspected performance issue. A shorter function is not automatically faster or clearer. Change a boundary only after its existing users and failure behavior are understood."
+      },
+      {
+        "title": "Separate a behavior change from a structural change",
+        "body": "First capture the public behavior around the seam you will move, including failure and partial-result semantics. Rename or extract one responsibility without changing the result, then make the new feature in a separate step. Moving code and redesigning all errors at once makes a regression difficult to locate. Keep commits small enough to explain what behavior should be identical and what deliberately changed."
+      },
+      {
+        "title": "Migrate a boundary in reversible stages",
+        "body": "Place an adapter around the old implementation, move callers one at a time and compare results for safe read-only operations. For writes, choose one authoritative path; calling old and new payment implementations in parallel would duplicate effects. Keep backward-compatible data until rollback no longer depends on it. A clean package tree is not a rollback plan: durable schemas, queued events and public clients need their own compatibility strategy."
+      },
+      {
+        "title": "Use deletion as the final proof of extraction",
+        "body": "After callers use the new boundary, remove the old shared helper and inspect imports for hidden dependencies. Run focused unit and adapter tests and a small end-to-end path for the affected feature. Measure performance if the change introduces allocations, serialization or remote calls. Do not keep two permanent implementations just because both compile; unfinished migrations multiply maintenance cost and eventually let behavior diverge."
       }
     ],
     "takeaway": "Changes structure while preserving an explicit contract. Run go test and go vet for correctness, race tests for exercised concurrency, and benchmarks for a suspected performance issue. A shorter function is not automatically faster or clearer. Change a boundary only after its existing users and failure behavior are understood.",
     "references": [
       "https://go.dev/doc/tutorial/add-a-test",
-      "https://go.dev/doc/articles/race_detector"
+      "https://go.dev/doc/articles/race_detector",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Safe refactor",
     "reviewAnswer": "Changes structure while preserving an explicit contract",
@@ -3696,12 +4033,25 @@
       {
         "title": "Tradeoffs and the simpler alternative",
         "body": "Go has no class inheritance hierarchy to organize by default. Favor composition and concrete values until substitution matters. A type can satisfy an interface and still violate its semantic contract, such as discarding partial reads; test those contracts rather than counting interfaces."
+      },
+      {
+        "title": "Translate principles into Go decisions",
+        "body": "Single responsibility asks which reason for change a package owns. Interface segregation favors small consumer contracts. Dependency inversion keeps business policy independent of transport and storage details. Open/closed can mean a function value or composed strategy rather than an inheritance hierarchy. Liskov substitution means an implementation preserves the promised behavior, not merely that its methods compile. These principles are review questions, not a requirement for five new abstraction layers."
+      },
+      {
+        "title": "Check substitution with behavioral examples",
+        "body": "If a store promises that Get never mutates returned snapshots, an implementation returning an internal mutable slice violates the contract despite matching the interface. If one implementation ignores cancellation or changes missing-record semantics, callers cannot safely substitute it. Run the same contract suite against implementations. Use constructor validation to reject unsupported combinations rather than weakening the interface promise silently."
+      },
+      {
+        "title": "Balance extensibility against current complexity",
+        "body": "A small stable function is often better than a registry, factory and configurable strategy system for one use case. Introduce variation at a demonstrated seam, then keep dependencies explicit. A new requirement that changes a business rule is not automatically a failure of open/closed design. Evaluate how many files and contracts a realistic change touches, and whether the abstraction makes tests and ownership clearer. Prefer readable composition and concrete values over copying class-oriented ceremony."
       }
     ],
     "takeaway": "Requires preserving behavior as well as method signatures. Go has no class inheritance hierarchy to organize by default. Favor composition and concrete values until substitution matters. A type can satisfy an interface and still violate its semantic contract, such as discarding partial reads; test those contracts rather than counting interfaces.",
     "references": [
       "https://go.dev/wiki/CodeReviewComments#interfaces",
-      "https://pkg.go.dev/io#Reader"
+      "https://pkg.go.dev/io#Reader",
+      "https://go.dev/wiki/CodeReviewComments"
     ],
     "reviewPrompt": "Substitution in Go",
     "reviewAnswer": "Requires preserving behavior as well as method signatures",

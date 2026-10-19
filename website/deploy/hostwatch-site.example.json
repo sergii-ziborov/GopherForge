@@ -1,0 +1,8 @@
+{
+  "id": "gopherforge",
+  "name": "GopherForge",
+  "domains": ["gopherforge.app", "www.gopherforge.app"],
+  "note": "Operator integration worksheet, not a directly applied Hostwatch schema. Bind the actual node paths and an allowlisted image/deployment target using that node's supported configuration.",
+  "runtime": {"image": "localhost/gopherforge-web:2.0.0", "listen": "127.0.0.1:3047", "containerPort":3000, "memoryBytes":536870912, "healthPath":"/api/health"},
+  "analytics": {"accessLog":"/var/log/nginx/gopherforge.access.json", "errorLog":"/var/log/nginx/gopherforge.error.log", "format":"gopherforge_hostwatch", "queryStringsRecorded":false, "referrersRecorded":false, "browserTrackingScript":false, "rotationDays":14}
+}
