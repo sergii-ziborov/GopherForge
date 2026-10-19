@@ -20,17 +20,38 @@ test("web catalog is the exact native public export, with stable unique routes",
 });
 
 test("reading text, examples and checks match the current native resources", async () => {
-  const readings = await read("../../GopherForge/Resources/ReadingLessons.json");
-  assert.equal(lessons.filter(l => l.kind === "reading").length, readings.length);
+  const readings = await read(
+    "../../GopherForge/Resources/ReadingLessons.json",
+  );
+  assert.equal(
+    lessons.filter((l) => l.kind === "reading").length,
+    readings.length,
+  );
   for (const reading of readings) {
-    const exported = lessons.find(l => l.id === reading.id);
+    const exported = lessons.find((l) => l.id === reading.id);
     assert.equal(exported?.explanation, reading.introduction, reading.id);
-    const sections = reading.sections.map(section => Object.fromEntries(Object.entries(section).filter(([,value]) => value !== null)));
+    const sections = reading.sections.map((section) =>
+      Object.fromEntries(
+        Object.entries(section).filter(([, value]) => value !== null),
+      ),
+    );
     assert.deepEqual(exported.reading.sections, sections, reading.id);
     assert.equal(exported.reading.takeaway, reading.takeaway, reading.id);
-    assert.deepEqual(exported.reading.references, reading.references, reading.id);
-    assert.equal(exported.reading.quiz.correct, reading.reviewAnswer, reading.id);
-    assert.deepEqual(exported.reading.quiz.alternatives, reading.wrongAnswers, reading.id);
+    assert.deepEqual(
+      exported.reading.references,
+      reading.references,
+      reading.id,
+    );
+    assert.equal(
+      exported.reading.quiz.correct,
+      reading.reviewAnswer,
+      reading.id,
+    );
+    assert.deepEqual(
+      exported.reading.quiz.alternatives,
+      reading.wrongAnswers,
+      reading.id,
+    );
   }
 });
 test("reading self-checks have three distinct options and corrective explanations", () => {
@@ -72,5 +93,16 @@ test("architecture ratings preserve all three scenarios and support links to rea
     assert.equal(l.reading.designGuide.ratings.length, 3);
     for (const r of l.reading.designGuide.ratings)
       assert.ok(r.score >= 1 && r.score <= 5);
+  }
+});
+
+test("learning directions contain every native unit exactly once", async () => {
+  const { directions } = await import("../src/lib/course-map.ts");
+  const all = directions.flatMap((d) => [...d.units]);
+  assert.equal(new Set(all).size, all.length);
+  assert.deepEqual(new Set(all), new Set(units.map((u) => u.id)));
+  for (const d of directions) {
+    assert.ok(d.title && d.description);
+    assert.ok(d.units.length > 0);
   }
 });

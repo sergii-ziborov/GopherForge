@@ -9,18 +9,15 @@ export const metadata: Metadata = {
 };
 export default function Learn() {
   return (
-    <section className="page">
-      <div className="page-intro">
+    <section className="page learn-map-page">
+      <div className="page-intro course-map-intro">
         <p className="eyebrow">THE GO LEARNING LIBRARY</p>
         <h1>
-          Understand the code.
-          <br />
-          <em>Then make it yours.</em>
+          Your Go <em>learning map.</em>
         </h1>
         <p>
-          From your first variable to architecture decisions. The same authored
-          lessons as the app, with complete readings, highlighted examples and
-          questions you can try here.
+          Choose a direction, open a branch, and follow the lessons in order —
+          or go straight to the topic you need.
         </p>
         <div className="inline-stats">
           <span>
@@ -49,7 +46,11 @@ export default function Learn() {
           kind: l.kind,
           minutes: minutes(l),
         }))}
-        groups={units.map((u) => ({ id: u.id, title: u.title }))}
+        groups={units.map((u) => ({
+          id: u.id,
+          title: u.title,
+          summary: u.summary,
+        }))}
       />
     </section>
   );

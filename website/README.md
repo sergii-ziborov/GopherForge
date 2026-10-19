@@ -39,19 +39,43 @@ omits query values and referrers. `deploy/gopherforge.logrotate` retains 14 dail
 rotations. Client IP handling must follow the real trusted-proxy topology;
 never trust arbitrary inbound forwarded headers.
 
-An operator must provision TLS, install the proxy and rotation config, register
-the site's domains/logs in Hostwatch and configure an allowlisted image and
-deployment target for this service. `deploy/hostwatch-site.example.json` is an
-integration worksheet, not an executable Hostwatch configuration schema. The
-connected Hostwatch MCP currently has no GopherForge target, so this project
-has **not yet been deployed there**. No existing production website or DNS has
-been replaced by these files.
+Production: **https://gopherforge.app**, hosted on the existing Hetzner
+application node with Hostwatch site ID `gopherforge` and governed target
+`gopherforge-web`. Registration and DNS remain managed in Lovable; apex and
+www point to the Hetzner origin. Nginx redirects www and HTTP to the HTTPS apex.
+The previous Lovable project remains available at its lovable.app address.
 
-Before domain cutover, verify the container health endpoint, static assets,
-lesson navigation, search, self-checks, local progress, sitemap and 404 response
-on the new origin. Verify Hostwatch receives a real request and separates this
-site's traffic from other projects. Keep the previous origin available for
-rollback. DNS and TLS must support both apex and www before redirects are used.
+`deploy/provision-hostwatch.py` is the additive operator setup for this
+installation. It preserves unrelated profiles and governance, writes an atomic
+config with a timestamped backup, and registers the exact non-root deployment.
+The production profile uses UID/GID 10001, 256 MiB, half a CPU and loopback port
+3047. Hostwatch MCP performs digest/revision-checked deployments and health
+verification. `deploy/gopherforge-web.service`, the container's
+`unless-stopped` policy and the enabled Podman restart unit provide startup
+recovery. Reapply the restart policy after a governed container replacement.
+
+For a verified prebuilt standalone release on a capacity-constrained origin,
+`deploy/Dockerfile.bundle` packages `standalone/` from the release build. It
+replaces the builder's traced Sharp links with the same Sharp version installed
+for Linux. Keep the build's Git revision and catalog hash in a release receipt;
+verify the Next dependency's Sharp import and all public routes on the target.
+Build with Podman's `--format docker` to retain the image health check, and
+bound build CPU/memory. The full source Dockerfile remains the portable build
+path when build capacity is available. No credentials belong in either bundle.
+
+The installed agent tails the shared `/var/log/nginx/hostwatch.json.log` stream.
+Nginx writes this site's query-free JSON to that stream as well as the separate
+14-rotation GopherForge log; merely creating a per-site log would not feed this
+agent. Live Hostwatch traffic reads have verified requests under this site ID.
+Both apex/www certificates were issued before cutover and the new lineage was
+reconfigured to HTTP webroot renewal. Certbot's staging renewal passed, and
+`certbot.timer` remains enabled with the existing Nginx renewal hook.
+
+Before each update, inspect `deployment_preview`, keep the old revision for
+rollback, and verify health, static assets, course navigation, self-checks,
+progress, sitemap and 404 behavior. Domain rollback requires reconnecting the
+existing Lovable project and restoring its previous A records. Do not alter
+registration, unrelated DNS records, other sites or registry credentials.
 
 There is no public analytics dashboard. Analytics uses operational reverse-proxy
 logs and Hostwatch's authenticated operator view. A deployment configuration is

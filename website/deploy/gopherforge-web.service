@@ -1,0 +1,16 @@
+[Unit]
+Description=GopherForge Next.js website (Hostwatch managed image)
+Wants=network-online.target
+After=network-online.target podman.service
+RequiresMountsFor=/var/lib/containers/storage
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/podman start gopherforge-web
+ExecStop=/usr/bin/podman stop --time 10 gopherforge-web
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

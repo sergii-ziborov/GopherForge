@@ -15,7 +15,7 @@ export default function Privacy() {
         <em>Your choice.</em>
       </h1>
       <p>
-        Updated 19 October 2026. Contact:{" "}
+        Updated 20 October 2026. Contact:{" "}
         <a href="mailto:sergii.ziborov@gmail.com">sergii.ziborov@gmail.com</a>.
       </p>
       <h2>The native app</h2>
@@ -47,16 +47,16 @@ export default function Privacy() {
       </p>
       <h2>Hosting and traffic analytics</h2>
       <p>
-        The self-hosted website is designed to use Hostwatch’s infrastructure
-        and access-log analytics. The website includes no third-party
-        advertising or browser-tracking script and sets no analytics cookies.
-        The server and reverse proxy can process the time, requested path,
-        response status, duration, user agent and client IP for delivery,
-        security and aggregate traffic reporting. This is server-side
-        operational data, not a learning profile.
+        The website runs on Hetzner infrastructure and uses Hostwatch’s
+        access-log analytics. The website includes no third-party advertising or
+        browser-tracking script and sets no analytics cookies. The server and
+        reverse proxy can process the time, requested path, response status,
+        duration, user agent and client IP for delivery, security and aggregate
+        traffic reporting. This is server-side operational data, not a learning
+        profile.
       </p>
       <p>
-        The supplied deployment log format omits query strings and referrers to
+        The deployed access-log format omits query strings and referrers to
         avoid recording search terms. Log retention and access controls are
         configured by the hosting operator. Only the operator can access the
         infrastructure dashboard; the website exposes no analytics dashboard or

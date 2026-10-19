@@ -114,13 +114,16 @@ code {
   font-size: 0.88em;
   overflow-wrap: anywhere;
 }
-p code,
-li code {
+:not(pre) > code {
   background: #e7ebe4;
   padding: 0.1em 0.3em;
   border-radius: 4px;
 }
 pre code {
+  font-size: inherit;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
   overflow-wrap: normal;
 }
 button {
@@ -1048,8 +1051,8 @@ meter {
 .code-scroll pre {
   margin: 0;
   padding: 23px;
-  font-size: 13px;
-  line-height: 1.9;
+  font-size: 15px;
+  line-height: 1.8;
   tab-size: 4;
 }
 .walkthrough {
@@ -1695,7 +1698,7 @@ details p {
     font-size: 1.55rem;
   }
   .code-scroll pre {
-    font-size: 12px;
+    font-size: 14px;
     padding: 18px;
     line-height: 1.8;
   }
@@ -1908,8 +1911,9 @@ details p {
   display: none;
 }
 .visual-nodes .code-scroll pre {
-  font-size: 10px;
-  padding: 13px;
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 16px;
 }
 .visual-nodes.sequence,
 .visual-nodes.stack {
@@ -1949,6 +1953,561 @@ details p {
     grid-template-columns: 1fr;
   }
   .visual-nodes .code-scroll pre {
-    font-size: 12px;
+    font-size: 14px;
   }
+}
+
+/* Course forest: directions → units → ordered lessons. Native details keeps
+   the branch controls keyboard accessible and usable before hydration. */
+.progress-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+}
+.progress-summary .button {
+  white-space: normal;
+  text-align: left;
+  justify-self: end;
+  max-width: 100%;
+}
+.course-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+  margin-top: 32px;
+}
+.course-search {
+  display: grid;
+  gap: 9px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.course-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 15px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.progress-filter {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.progress-filter legend {
+  padding: 0;
+  margin-bottom: 9px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.progress-filter > div {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--wash);
+}
+.progress-filter button {
+  min-height: 40px;
+  padding: 9px 15px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.progress-filter button[aria-pressed="true"] {
+  background: var(--teal);
+  color: #fff;
+}
+.progress-filter button:hover:not([aria-pressed="true"]) {
+  background: #dce6dd;
+}
+.course-results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 28px;
+}
+.course-results .result-count {
+  margin: 0;
+}
+.course-results .text-button {
+  font-size: 0.75rem;
+}
+.course-forest {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 38px;
+  align-items: start;
+}
+.course-directions {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 6px;
+}
+.course-directions .eyebrow {
+  font-size: 0.59rem;
+  margin: 0 0 12px;
+}
+.course-directions > button {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 12px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+.course-directions > button[aria-pressed="true"] {
+  background: var(--wash);
+  border-color: #b9cfc1;
+}
+.course-directions > button:hover {
+  background: #edf1e8;
+}
+.direction-number {
+  flex: 0 0 23px;
+  padding-top: 2px;
+  font:
+    12px/1.4 ui-monospace,
+    monospace;
+  color: var(--teal);
+}
+.course-directions small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.66rem;
+  margin-top: 5px;
+  font-weight: 400;
+}
+.course-trees {
+  min-width: 0;
+}
+.course-tree + .course-tree {
+  margin-top: 48px;
+}
+.tree-root {
+  display: flex;
+  align-items: flex-start;
+  gap: 17px;
+}
+.tree-root-number {
+  flex: 0 0 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--teal);
+  border-radius: 12px;
+  color: #fff;
+  font:
+    14px ui-monospace,
+    monospace;
+}
+.tree-root h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.25;
+}
+.tree-root p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.79rem;
+  line-height: 1.7;
+  max-width: 60ch;
+}
+.tree-branches {
+  border-left: 2px solid #b7ccbf;
+  margin: 20px 0 0 20px;
+  padding: 0 0 3px 28px;
+}
+.tree-unit {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  border: 1px solid #cbd8cc;
+  background: var(--white);
+  border-radius: 12px;
+  min-width: 0;
+}
+.tree-unit + .tree-unit {
+  margin-top: 14px;
+}
+.tree-unit::before {
+  content: "";
+  position: absolute;
+  top: 31px;
+  left: -30px;
+  width: 28px;
+  border-top: 2px solid #b7ccbf;
+}
+.tree-unit > summary {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+  padding: 19px 18px;
+  gap: 13px;
+  border-radius: 12px;
+}
+.tree-unit > summary::-webkit-details-marker {
+  display: none;
+}
+.tree-unit > summary:hover {
+  background: #f0f4ec;
+}
+.tree-unit > summary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+.unit-node {
+  display: grid;
+  place-items: center;
+  border: 1px solid #b1cbbd;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  flex: 0 0 27px;
+  color: var(--teal);
+  background: var(--wash);
+  font:
+    17px ui-monospace,
+    monospace;
+}
+.unit-heading {
+  flex: 1;
+  min-width: 0;
+}
+.unit-heading strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.unit-heading > span {
+  display: block;
+  font-size: 0.73rem;
+  line-height: 1.65;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.unit-count {
+  flex-shrink: 0;
+  font:
+    13px ui-monospace,
+    monospace;
+  color: var(--teal);
+  text-align: right;
+}
+.unit-count small {
+  display: block;
+  font:
+    10px/1.4 var(--font-sans),
+    sans-serif;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.unit-chevron {
+  color: var(--teal);
+  flex: 0 0 16px;
+  text-align: center;
+}
+.tree-unit[open] > summary .unit-chevron {
+  transform: rotate(180deg);
+}
+.tree-unit[open] > summary {
+  border-bottom: 1px solid var(--line);
+  border-radius: 12px 12px 0 0;
+  background: #f0f4ec;
+}
+.unit-lessons {
+  list-style: none;
+  padding: 5px 17px 11px 31px;
+  margin: 0;
+}
+.unit-lessons > li {
+  margin: 0;
+  position: relative;
+  border-left: 1px solid #c6d5c9;
+  padding-left: 18px;
+}
+.unit-lessons > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 28px;
+  width: 17px;
+  border-top: 1px solid #c6d5c9;
+}
+.unit-lessons > li:last-child {
+  border-left-color: transparent;
+}
+.unit-lessons > li:last-child::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 28px;
+  left: -1px;
+  border-left: 1px solid #c6d5c9;
+}
+.tree-lesson {
+  display: flex;
+  align-items: flex-start;
+  text-decoration: none;
+  color: var(--ink);
+  gap: 12px;
+  padding: 15px 10px;
+  border-radius: 8px;
+  min-width: 0;
+}
+.tree-lesson:hover {
+  background: #f0f4ec;
+}
+.lesson-node {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 25px;
+  height: 25px;
+  border: 1px solid #c6d5c9;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--teal);
+  display: grid;
+  place-items: center;
+  font:
+    10px ui-monospace,
+    monospace;
+}
+.is-completed .lesson-node {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.tree-lesson-text {
+  flex: 1;
+  min-width: 0;
+}
+.tree-lesson-text strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 550;
+  line-height: 1.5;
+}
+.tree-lesson-text > span:not(.tree-lesson-meta) {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.65;
+}
+.tree-lesson-meta {
+  display: block;
+  margin-top: 8px;
+  color: var(--teal);
+  font:
+    10px/1.6 ui-monospace,
+    monospace;
+}
+.lesson-arrow {
+  flex: 0 0 15px;
+  color: var(--teal);
+}
+@media (max-width: 1000px) {
+  .course-forest {
+    grid-template-columns: 195px minmax(0, 1fr);
+    gap: 22px;
+  }
+  .course-directions > button {
+    padding: 11px 8px;
+  }
+  .course-controls {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .progress-filter > div {
+    width: fit-content;
+  }
+}
+@media (max-width: 760px) {
+  .progress-summary {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .progress-summary .button {
+    justify-self: start;
+  }
+  .course-forest {
+    display: block;
+  }
+  .course-directions {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 0 0 14px;
+    margin-bottom: 20px;
+  }
+  .course-directions .eyebrow {
+    display: none;
+  }
+  .course-directions > button {
+    flex: 0 0 190px;
+    padding: 12px;
+    border-color: var(--line);
+  }
+  .tree-root h2 {
+    font-size: 1.45rem;
+  }
+  .tree-root-number {
+    flex-basis: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+  .tree-root {
+    gap: 12px;
+  }
+  .tree-branches {
+    margin-left: 17px;
+    padding-left: 17px;
+  }
+  .tree-unit::before {
+    left: -19px;
+    width: 17px;
+  }
+  .tree-unit > summary {
+    padding: 15px 11px;
+    gap: 9px;
+  }
+  .unit-heading > span {
+    display: none;
+  }
+  .unit-count {
+    font-size: 11px;
+  }
+  .unit-count small {
+    font-size: 9px;
+  }
+  .unit-node {
+    flex-basis: 23px;
+    width: 23px;
+    height: 23px;
+  }
+  .unit-lessons {
+    padding: 4px 8px 10px 21px;
+  }
+  .unit-lessons > li {
+    padding-left: 8px;
+  }
+  .unit-lessons > li::before {
+    width: 8px;
+  }
+  .tree-lesson {
+    padding: 13px 7px;
+    gap: 9px;
+  }
+  .lesson-arrow {
+    display: none;
+  }
+  .tree-lesson-text strong {
+    font-size: 0.83rem;
+  }
+  .tree-lesson-text > span:not(.tree-lesson-meta) {
+    font-size: 0.74rem;
+  }
+}
+
+.learn-map-page {
+  padding-top: 38px;
+}
+.course-map-intro {
+  max-width: none;
+  margin-bottom: 24px;
+}
+.course-map-intro h1 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+.course-map-intro > p:not(.eyebrow) {
+  font-size: 0.94rem;
+  max-width: 78ch;
+}
+.course-map-intro .eyebrow {
+  margin-bottom: 16px;
+}
+.course-map-intro .inline-stats {
+  margin: 20px 0;
+  gap: 28px;
+}
+.course-map-intro .inline-stats span {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.course-map-intro .inline-stats strong {
+  font-size: 1.15rem;
+}
+.course-map-intro p.availability {
+  padding: 10px 14px;
+  max-width: none;
+  font-size: 0.76rem;
+}
+.course-map-intro + .progress-summary {
+  padding: 17px 21px;
+  margin-bottom: 0;
+}
+.course-directions > button {
+  font-size: 0.86rem;
+}
+.tree-lesson-text strong {
+  font-size: 0.94rem;
+}
+.tree-lesson-text > span:not(.tree-lesson-meta) {
+  font-size: 0.81rem;
+}
+.visual-nodes p {
+  font-size: 0.87rem;
+}
+@media (max-width: 760px) {
+  .course-map-intro .inline-stats {
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .course-map-intro .inline-stats span {
+    font-size: 0.73rem;
+  }
+  .tree-lesson-text strong {
+    font-size: 0.9rem;
+  }
+  .tree-lesson-text > span:not(.tree-lesson-meta) {
+    font-size: 0.8rem;
+  }
+}
+
+.course-search input {
+  margin-top: 0;
+  min-height: 50px;
 }

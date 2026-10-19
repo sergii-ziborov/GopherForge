@@ -1,5 +1,6 @@
 import type { Lesson } from "@/lib/course";
 import { Code } from "./Code";
+import { Prose } from "./Prose";
 export function LessonVisual({
   guide,
 }: {
@@ -17,19 +18,23 @@ export function LessonVisual({
             </span>
             <h3>{node.label}</h3>
             <Code code={node.code} actions={false} />
-            <p>{node.detail}</p>
+            <div className="visual-detail">
+              <Prose>{node.detail}</Prose>
+            </div>
           </li>
         ))}
       </ol>
-      <p className="visual-caption">{guide.caption}</p>
+      <div className="visual-caption">
+        <Prose>{guide.caption}</Prose>
+      </div>
       <div className="tradeoffs">
         <div>
           <h3>In practice</h3>
-          <p>{guide.practical}</p>
+          <Prose>{guide.practical}</Prose>
         </div>
         <div>
           <h3>Watch out</h3>
-          <p>{guide.watchOut}</p>
+          <Prose>{guide.watchOut}</Prose>
         </div>
       </div>
       <a className="text-link" href={guide.reference}>
