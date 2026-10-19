@@ -96,9 +96,67 @@ enum GoConcept {
     static let toolingContainers = "tooling.containers"
     static let toolingKubernetes = "tooling.kubernetes"
 
+    /// Specific design concepts keep a Strategy mistake from unlocking or
+    /// weakening every other behavioral pattern before it has been learned.
+    static let designLessonTags: Set<String> = [
+        "architecture.simple-monolith",
+        "architecture.layered",
+        "architecture.modular-monolith",
+        "architecture.clean-onion",
+        "architecture.vertical-slice",
+        "architecture.ddd",
+        "architecture.cqrs",
+        "architecture.event-sourcing",
+        "architecture.event-driven",
+        "architecture.microservices",
+        "architecture.soa",
+        "architecture.bff",
+        "architecture.serverless",
+        "architecture.pipes-filters",
+        "architecture.microkernel",
+        "architecture.web-queue-worker",
+        "clean.names",
+        "clean.interfaces",
+        "clean.errors",
+        "clean.ownership",
+        "clean.configuration",
+        "clean.table-tests",
+        "clean.refactoring",
+        "clean.solid",
+        "patterns.factory-method",
+        "patterns.abstract-factory",
+        "patterns.builder",
+        "patterns.prototype",
+        "patterns.singleton",
+        "patterns.adapter",
+        "patterns.bridge",
+        "patterns.composite",
+        "patterns.decorator",
+        "patterns.facade",
+        "patterns.flyweight",
+        "patterns.proxy",
+        "patterns.strategy",
+        "patterns.command",
+        "patterns.chain",
+        "patterns.iterator",
+        "patterns.mediator",
+        "patterns.memento",
+        "patterns.observer",
+        "patterns.state",
+        "patterns.template-method",
+        "patterns.visitor",
+        "patterns.interpreter",
+        "patterns.worker-pool",
+        "patterns.fan-in",
+        "patterns.cancellation",
+        "patterns.actor-owner",
+        "patterns.retry",
+        "patterns.circuit-breaker",
+    ]
+
     /// Every tag the product knows, used to validate course content and to
     /// keep the review scheduler from inventing categories at runtime.
-    static let all: Set<String> = [
+    static let all: Set<String> = Set([
         varsUnused, shortDeclaration, unusedImport, undefinedSymbol, importPath,
         missingReturn, typeAssignment, sliceCapacity, sliceBounds, sliceAliasing,
         mapZeroValue, stringRunes, methodSet, nilInterface, smallInterface,
@@ -118,5 +176,5 @@ enum GoConcept {
         runtimeGC, runtimeAllocation, runtimeScheduler, runtimeProfiling,
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
         architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
-    ]
+    ]).union(designLessonTags)
 }

@@ -20,6 +20,9 @@ struct ReadingLessonSections: View {
             Label("Read and understand · No compilation required", systemImage: "book.pages")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(tint)
+            if let guide = reading.designGuide {
+                ReadingDesignGuide(guide: guide, tint: tint)
+            }
             ForEach(Array(reading.sections.enumerated()), id: \.offset) { index, section in
                 LessonSection(title: section.title, systemImage: "text.book.closed", tint: tint) {
                     LearningProse(text: section.body)

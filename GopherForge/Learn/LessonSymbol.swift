@@ -13,6 +13,7 @@ import Foundation
 /// about closing channels looks the same wherever it appears.
 enum LessonSymbol {
     static func symbol(for lesson: Lesson) -> String {
+        if let symbol = byLesson[lesson.id] { return symbol }
         for tag in lesson.conceptTags {
             if let symbol = byConcept[tag] { return symbol }
         }
@@ -20,6 +21,78 @@ enum LessonSymbol {
         // least separates reading from building.
         return lesson.requiresCompiler ? "hammer" : "text.book.closed"
     }
+
+    // Several design lessons share a review concept; their path icons still
+    // identify the actual design instead of repeating the group icon.
+    private static let byLesson: [String: String] = [
+        "operations.docker-build": "shippingbox",
+        "operations.docker-run": "play",
+        "operations.docker-compose": "square.stack.3d.up",
+        "operations.docker-volumes": "magnifyingglass",
+        "operations.podman-runtime": "terminal",
+        "operations.container-registry": "arrow.up.doc",
+        "operations.kubernetes-contexts": "globe",
+        "operations.kubernetes-workloads": "square.stack.3d.up",
+        "operations.kubernetes-inspect": "magnifyingglass",
+        "operations.kubernetes-network": "network",
+        "operations.kubernetes-config": "slider.horizontal.3",
+        "operations.probes-and-shutdown": "heart",
+        "operations.kubernetes-apply": "gauge.with.dots.needle.50percent",
+        "operations.kubernetes-rollout": "clock.arrow.circlepath",
+        "architecture.simple-monolith": "app",
+        "architecture.layered": "square.stack.3d.up",
+        "architecture.modular-monolith": "shippingbox",
+        "architecture.clean-onion": "circle.circle",
+        "architecture.vertical-slice": "rectangle.split.3x1",
+        "architecture.ddd": "cube",
+        "architecture.cqrs": "arrow.left.arrow.right",
+        "architecture.event-sourcing": "clock.arrow.circlepath",
+        "architecture.event-driven": "bell",
+        "architecture.microservices": "network",
+        "architecture.soa": "point.3.connected.trianglepath.dotted",
+        "architecture.bff": "iphone",
+        "architecture.serverless": "bolt",
+        "architecture.pipes-filters": "line.3.horizontal.decrease",
+        "architecture.microkernel": "puzzlepiece",
+        "architecture.web-queue-worker": "tray.2",
+        "clean.names": "textformat",
+        "clean.interfaces": "puzzlepiece",
+        "clean.errors": "exclamationmark.triangle",
+        "clean.ownership": "lock.shield",
+        "clean.configuration": "slider.horizontal.3",
+        "clean.table-tests": "checkmark.seal",
+        "clean.refactoring": "arrow.triangle.2.circlepath",
+        "clean.solid": "square.stack.3d.up",
+        "patterns.factory-method": "cube.box",
+        "patterns.abstract-factory": "square.grid.2x2",
+        "patterns.builder": "hammer",
+        "patterns.prototype": "doc.on.doc",
+        "patterns.singleton": "1.circle",
+        "patterns.adapter": "arrow.2.squarepath",
+        "patterns.bridge": "link",
+        "patterns.composite": "folder",
+        "patterns.decorator": "square.stack",
+        "patterns.facade": "app",
+        "patterns.flyweight": "leaf",
+        "patterns.proxy": "hand.raised",
+        "patterns.strategy": "function",
+        "patterns.command": "play",
+        "patterns.chain": "link",
+        "patterns.iterator": "repeat",
+        "patterns.mediator": "person.3",
+        "patterns.memento": "clock.arrow.circlepath",
+        "patterns.observer": "eye",
+        "patterns.state": "arrow.triangle.branch",
+        "patterns.template-method": "doc.text",
+        "patterns.visitor": "figure.walk",
+        "patterns.interpreter": "curlybraces",
+        "patterns.worker-pool": "person.3",
+        "patterns.fan-in": "arrow.triangle.merge",
+        "patterns.cancellation": "nosign",
+        "patterns.actor-owner": "person.crop.circle",
+        "patterns.retry": "arrow.clockwise",
+        "patterns.circuit-breaker": "bolt.slash",
+    ]
 
     /// One symbol per concept the course teaches.
     static let byConcept: [String: String] = [
@@ -114,5 +187,5 @@ enum LessonSymbol {
         GoConcept.selectDefault: "arrow.uturn.forward",
         GoConcept.syncOnce: "1.circle",
         GoConcept.functionValue: "function",
-    ]
+    ].merging(byLesson) { original, _ in original }
 }

@@ -18,9 +18,10 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
 | **1.1.2 (36)** | Available in Internal QA TestFlight; Waiting for Review | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
+| **1.1.3 (37)** | Next release, development only | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 
-The current source contains the TestFlight 1.1.2 changes. They are not yet a public
-App Store release. TestFlight access is private; there is no public invitation
+The submitted 1.1.2 (36) remains in App Review. Current development source targets
+1.1.3 (37); its architecture and patterns expansion has not been uploaded or submitted. TestFlight access is private; there is no public invitation
 link. [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
@@ -37,10 +38,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public course has 47 teaching lessons and 22 question-and-answer challenges and 69 visual guides. In the 1.1.2 (36) release candidate, 45 additional
-  reading lessons bring teaching to 92 lessons in 15 units. Worked examples
-  explain runtime/GC, concurrency, HTTP/Gin, Redis, architecture, Bash, Git, Go tools, HTTP diagnostics, Linux services, Docker,
-  Compose, Podman and Kubernetes without mandatory compilation.
+- **Learn Go.** The public course has 47 teaching lessons and 22 question-and-answer challenges and 69 visual guides. Submitted build 36 contains 92 teaching lessons. Next-release development contains **145 lessons across 20 units**, including 98 reading lessons. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 practical Around Go lessons remain available. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview

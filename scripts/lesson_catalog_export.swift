@@ -24,6 +24,13 @@ enum GoLanguage { static func module(_ name:String)->String { "module \(name)\n\
         "takeaway": reading.takeaway,
         "references": reading.references.map(\.absoluteString)
        ]
+       if let guide = reading.designGuide,
+          let data = try? JSONEncoder().encode(guide),
+          let object = try? JSONSerialization.jsonObject(with: data) {
+        var content = d["reading"] as? [String:Any] ?? [:]
+        content["designGuide"] = object
+        d["reading"] = content
+       }
       }
      case let .compile(starter,test): d["kind"]="compile";d["source"]=starter;_ = test
      case let .predict(source,question,answer): d["kind"]="predict";d["source"]=source;d["question"]=question;_ = answer

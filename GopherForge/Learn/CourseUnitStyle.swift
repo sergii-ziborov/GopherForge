@@ -26,6 +26,11 @@ enum CourseUnitStyle {
         case "runtime": "cpu"
         case "services": "network"
         case "architecture": "square.stack.3d.up"
+        case "clean-code": "checkmark.seal"
+        case "patterns-creational": "cube.box"
+        case "patterns-structural": "square.stack.3d.up"
+        case "patterns-behavioral": "arrow.triangle.branch"
+        case "patterns-go": "arrow.triangle.2.circlepath"
         case "operations": "terminal"
         default: "book"
         }
@@ -46,6 +51,11 @@ enum CourseUnitStyle {
         case "runtime": GopherForgeTheme.deepBlue
         case "services": GopherForgeTheme.aqua
         case "architecture": Color(hex: 0x6B4FA8)
+        case "clean-code": Color(hex: 0x4E8F3E)
+        case "patterns-creational": GopherForgeTheme.deepBlue
+        case "patterns-structural": Color(hex: 0x6B4FA8)
+        case "patterns-behavioral": GopherForgeTheme.aqua
+        case "patterns-go": GopherForgeTheme.sky
         case "operations": Color(hex: 0x4E8F3E)
         default: GopherForgeTheme.slate
         }

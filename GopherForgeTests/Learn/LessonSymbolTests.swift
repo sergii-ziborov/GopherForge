@@ -7,6 +7,9 @@ final class LessonSymbolTests: XCTestCase {
     /// A name with a typo in it renders as nothing at all, and nothing at all
     /// looks like a deliberately blank row.
     func testEverySymbolIsARealSystemImage() {
+        for lesson in GoCourseCatalog.teachingLessons {
+            XCTAssertNotNil(UIImage(systemName: LessonSymbol.symbol(for: lesson)), lesson.id)
+        }
         for (concept, symbol) in LessonSymbol.byConcept {
             XCTAssertNotNil(
                 UIImage(systemName: symbol),

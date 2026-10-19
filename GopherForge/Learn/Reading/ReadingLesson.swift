@@ -2,6 +2,18 @@ import Foundation
 
 /// Reading material is bundled, so it never needs a compiler or a network request.
 struct ReadingLesson: Codable, Sendable, Identifiable {
+    struct DesignGuide: Codable, Sendable {
+        struct Rating: Codable, Sendable {
+            let scenario: String
+            let score: Int
+        }
+        let family: String
+        let flow: [String]
+        let strengths: [String]
+        let cautions: [String]
+        let cost: String
+        let ratings: [Rating]
+    }
     struct Section: Codable, Sendable {
         let title: String
         let body: String
@@ -26,6 +38,7 @@ struct ReadingLesson: Codable, Sendable, Identifiable {
     let wrongAnswers: [String]
     let hint: String
     let nuance: String
+    let designGuide: DesignGuide?
 
     var lesson: Lesson {
         Lesson(id: id, title: title, objective: objective, explanation: introduction,

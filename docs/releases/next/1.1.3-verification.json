@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-10-19",
+  "currentSubmission": {
+    "submissionId": "cc0142b6-1cf5-43d3-b345-d18983f315d7",
+    "submissionState": "WAITING_FOR_REVIEW",
+    "version": "1.1.2",
+    "versionState": "WAITING_FOR_REVIEW",
+    "build": "36",
+    "releaseType": "AFTER_APPROVAL"
+  },
+  "nextRelease": {
+    "version": "1.1.3",
+    "developmentBuild": "37",
+    "branch": "codex/architecture-and-patterns",
+    "uploaded": false,
+    "submittedForReview": false
+  },
+  "coverage": {
+    "teachingLessons": 145,
+    "units": 20,
+    "readingLessons": 98,
+    "newReadingLessons": 53,
+    "predictionChallenges": 22,
+    "architectureLessons": 19,
+    "cleanCodeLessons": 8,
+    "classicPatterns": 23,
+    "concurrentGoPatterns": 6,
+    "designDiagrams": 56,
+    "independentNewConcepts": 53
+  },
+  "checks": {
+    "nativeUnitTests": 67,
+    "nativeLandscapeCaptureTest": 1,
+    "nativeResult": "Passed",
+    "nativePassed": 68,
+    "nativeFailed": 0,
+    "nativeSkipped": 0,
+    "iPadInteractiveTests": 2,
+    "iPadFailed": 0,
+    "iPadSkipped": 0,
+    "examplePrograms": 53,
+    "raceCheckedPatternPrograms": 29,
+    "nativeGo": "go version go1.24.2 darwin/arm64"
+  },
+  "readingLessonsSha256": "116f69338dff158e38df63d16d0d4d2873c8467b1952431f37ab2617c5a1ea1d",
+  "savedPreviews": {
+    "architecture-code-fullscreen.png": "9b9ecda009fabcd5732a8ad4e2712897ff90c5342e0eed9ee7d31f081e00450c",
+    "architecture-comparison.png": "8b2626feb2651168ae45c2308b9f77855d08c2839edb653fe5fe2ee56e056748",
+    "architecture-landscape.png": "38a31afd52f45b0568f8c54f11fc2102fea4582685a5e459f3c1c09e1c2e3b77"
+  },
+  "limits": [
+    "Scenario ratings are editorial suitability, not performance benchmarks or popularity data.",
+    "Native examples were executed on host Go 1.24.2; no remote services or infrastructure were used.",
+    "No new Duo posture or keyboard behavior is claimed by this content change.",
+    "No next-release App Store screenshots, metadata, binary or website content have been published."
+  ],
+  "testedBundleReadingLessonsSha256": "116f69338dff158e38df63d16d0d4d2873c8467b1952431f37ab2617c5a1ea1d"
+}

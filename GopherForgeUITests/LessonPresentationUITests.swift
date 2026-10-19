@@ -146,6 +146,89 @@ final class LessonPresentationUITests: XCTestCase {
         app.launch()
     }
 
+    func testArchitectureComparisonChangesScenarioAndOpensACompleteLesson() {
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-GopherForgeSection", "learn"]
+        app.launch()
+        let unit = app.buttons["unit.architecture"]
+        XCTAssertTrue(app.waitForElement(unit, scrollingUpTo: 24))
+        unit.tap()
+        let compare = app.buttons["architecture.compare"]
+        XCTAssertTrue(app.waitForElement(compare, scrollingUpTo: 6))
+        compare.tap()
+        let scenario = app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Domain-rich application")).firstMatch
+        XCTAssertTrue(scenario.waitForExistence(timeout: 10))
+        attachScreenshot(named: "architecture-comparison-domain")
+        scenario.tap()
+        app.buttons["Small tool or CLI"].firstMatch.tap()
+        let simple = app.buttons["architecture.compare.architecture.simple-monolith"]
+        XCTAssertTrue(simple.waitForExistence(timeout: 5))
+        attachScreenshot(named: "architecture-comparison-cli")
+        simple.tap()
+        XCTAssertTrue(app.element(withIdentifier: "reading.designGuide").firstMatch.waitForExistence(timeout: 10))
+        let expand = app.buttons["Open code in full screen"].firstMatch
+        XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 18))
+        expand.tap()
+        XCTAssertTrue(app.buttons["Back"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "package main")).firstMatch.exists)
+        attachScreenshot(named: "architecture-example-complete")
+        app.buttons["Back"].firstMatch.tap()
+        XCTAssertFalse(app.buttons[AccessibilityIdentifier.lessonCheck].exists)
+    }
+
+    func testPatternDiagramFitsLandscapeAndCompletionPersists() {
+        launch("patterns.worker-pool")
+        XCTAssertTrue(app.element(withIdentifier: "reading.designGuide").firstMatch.waitForExistence(timeout: 15))
+        XCTAssertTrue(app.waitForElement(app.staticTexts["Concurrent Go pattern"].firstMatch, scrollingUpTo: 8))
+        attachScreenshot(named: "pattern-worker-pool-portrait")
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let expand = app.buttons["Open code in full screen"].firstMatch
+        XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 24))
+        let projects = app.buttons["landscape.section.projects"]
+        if projects.exists {
+            print("Landscape reading action: \(expand.frame); rail: \(projects.frame)")
+            attachScreenshot(named: "pattern-worker-pool-landscape-action")
+            XCTAssertLessThan(expand.frame.maxX, projects.frame.minX,
+                              "Reading actions must stay outside the section rail")
+        }
+        expand.tap()
+        XCTAssertTrue(app.buttons["Back"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: "pattern-worker-pool-landscape-code")
+        app.buttons["Back"].firstMatch.tap()
+        let done = app.buttons[AccessibilityIdentifier.lessonComplete]
+        let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
+        if undo.exists { undo.tap() }
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        done.tap()
+        app.terminate()
+        XCUIDevice.shared.orientation = .portrait
+        launch("patterns.worker-pool")
+        XCTAssertTrue(undo.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.element(withIdentifier: "lesson.verified").exists)
+    }
+
+    func testCaptureNativeLandscapeReadingForNextRelease() {
+        launch("patterns.worker-pool")
+        XCTAssertTrue(app.element(withIdentifier: "reading.designGuide").firstMatch.waitForExistence(timeout: 15))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let expand = app.buttons["Open code in full screen"].firstMatch
+        XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 24))
+        let rail = app.buttons["landscape.section.projects"]
+        XCTAssertTrue(rail.exists)
+        XCTAssertLessThan(expand.frame.maxX, rail.frame.minX)
+        XCTAssertFalse(app.tabBars.firstMatch.isHittable, "Use one landscape navigation surface")
+        // Host simctl captures avoid the simulator's malformed landscape
+        // XCTest attachment (rotated metadata with a clipped pixel buffer).
+        print("GF_NATIVE_FRAME_READY: design-landscape-action")
+        Thread.sleep(forTimeInterval: 8)
+        expand.tap()
+        XCTAssertTrue(app.buttons["Back"].firstMatch.waitForExistence(timeout: 5))
+        print("GF_NATIVE_FRAME_READY: design-landscape-code")
+        Thread.sleep(forTimeInterval: 8)
+    }
+
     private func attachScreenshot(named name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name

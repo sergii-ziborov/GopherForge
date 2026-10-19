@@ -26,6 +26,19 @@ struct UnitDetailView: View {
 
                 TranslationNoteCard(note: unit.translationNote, tint: tint)
 
+                if unit.id == "architecture" {
+                    NavigationLink {
+                        ArchitectureComparisonView()
+                    } label: {
+                        Label("Compare architectures", systemImage: "chart.bar.xaxis")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(16)
+                            .background(tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+                    }
+                    .accessibilityIdentifier("architecture.compare")
+                }
+
                 lessonPath
             }
             .padding(.horizontal, 18)
