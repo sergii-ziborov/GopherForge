@@ -3,10 +3,11 @@
 The compiler runs locally. Package downloads and GitHub imports need a network;
 subsequent builds use the source kept in the project.
 
-This document describes the current source, including the upcoming 1.1.1
-update. Public App Store version 1.1 still requires adding transitive modules
-separately. Version 1.1.1 (33) is waiting for App Review; 1.1.2 (34) is in
-private Internal QA TestFlight, as checked on 18 October 2026.
+This document describes the package implementation shared by the public
+1.1.1 (33) release and the submitted 1.1.2 (36), checked on 19 October 2026.
+The public 1.1 release previously required adding transitive modules separately.
+The architecture/course work for 1.1.3 is on a separate development branch;
+it does not change the archive budgets below.
 
 Add packages from inside an open project (Files sidebar or the workspace **⋯**
 menu). The all-projects list and Settings do not install into a project they
@@ -82,7 +83,64 @@ module-resolution semantics.
 **`go.work` is not implemented.** A workspace is detected and its root module
 opened; workspace semantics are not applied.
 
-## The limit worth stating
+## Archive budgets
+
+The app inspects a module ZIP before installing it. These limits are enforced
+by GopherForge, not by the Go language or the upstream module author.
+
+| Budget | Current value | What is counted |
+| --- | ---: | --- |
+| Files per module archive | **4,000** | All non-directory ZIP entries, before vendoring or platform filtering |
+| Downloaded ZIP | **96 MiB** | Compressed response bytes; checked by the bounded download |
+| Uncompressed module | **512 MiB** | Sum of uncompressed file sizes declared in the archive; extraction also checks actual sizes |
+| Automatic dependency preparation | **80 modules per pass** | Modules prepared for missing imports, using requirements already declared in `go.mod` |
+
+A MiB is 1,048,576 bytes. Directories do not count toward the 4,000-file budget,
+but tests, testdata, documentation, licences and sources for other operating
+systems do. The file-count check happens before any contents are decompressed,
+before checksum verification and before unused/platform-specific files are
+removed. A module can therefore exceed the limit even when a single imported
+package would eventually keep only a small part of it. All four budgets apply
+independently; a small ZIP can still contain too many files.
+
+### Example: modernc.org/libc
+
+`modernc.org/libc@v1.75.3` has **4,168 non-directory archive entries**. This
+exceeds the 4,000-file budget, so that version is rejected during dependency
+preparation. The reported failure occurs before the Go compiler runs; it is
+not a Go syntax error and is not evidence that device storage is full.
+
+Retrying the same version fetches the same archive and reaches the same limit.
+Choose another compatible version or a smaller dependency only if the project's
+requirements allow it, or build the project in a desktop Go environment.
+Successful downloading and checksum matching alone do not establish that a
+module can compile or run in WASI. This example does not certify Memos, SQLite
+or all of their transitive dependencies as supported.
+
+The upstream ZIP directory was checked on 19 October 2026 without unpacking
+its source; see the [Go module proxy archive](https://proxy.golang.org/modernc.org/libc/@v/v1.75.3.zip).
+
+### Memory handling for large modules
+
+Above **160 MiB uncompressed**, the implementation hashes entries one at a time
+rather than retaining the whole unpacked archive. It then selects WASI-relevant
+Go source and licence metadata. When relevant Go source exceeds **48 MiB** and
+the imported package is known, it narrows retention to that package and its
+in-module import closure. The 48 MiB value is a selection trigger, **not** a
+promise that every resulting project stays below 48 MiB. Streaming and source
+selection do not bypass the earlier 4,000-file or 512 MiB archive checks.
+
+The archive cap bounds metadata, extraction and checksum work on a mobile
+device. It remains in place. Raising it should be evaluated separately with
+representative module archives and measured device memory, cancellation and
+extraction behavior; a slightly larger file count alone does not demonstrate
+full package compatibility.
+
+Sources of truth: [GoModuleArchive.swift](../GopherForge/Packages/GoModuleArchive.swift),
+[GoModuleProxyClient.swift](../GopherForge/Packages/Network/GoModuleProxyClient.swift),
+and [GoDependencyPreparer.swift](../GopherForge/Packages/GoDependencyPreparer.swift).
+
+## Checksum verification boundary
 
 The checksum database's response is a signed note over a transparency log. This
 app reads the hashes out of it and does **not** verify the signature or the
