@@ -4,7 +4,7 @@ The compiler runs locally. Package downloads and GitHub imports need a network;
 subsequent builds use the source kept in the project.
 
 This document describes the package implementation shared by the public
-1.1.1 (33) release and the submitted 1.1.2 (36), checked on 19 October 2026.
+1.1.1 (33) release and the public 1.1.2 (36), checked on 19 October 2026.
 The public 1.1 release previously required adding transitive modules separately.
 The architecture/course work for 1.1.3 is on a separate development branch;
 it does not change the archive budgets below.

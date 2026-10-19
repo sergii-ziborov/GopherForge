@@ -14,14 +14,15 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 19 October 2026 | Changes |
 | --- | --- | --- |
-| **1.1.1 (33)** | Available on the App Store | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
+| **1.1.1 (33)** | Previous App Store release | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
-| **1.1.2 (36)** | Available in Internal QA TestFlight; Waiting for Review | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
+| **1.1.2 (36)** | Available on the App Store | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
 | **1.1.3 (37)** | Next release, development branch | Architecture comparisons, clean code and 29 design/concurrency patterns; 53 new reading lessons. |
 
-The current source contains the TestFlight 1.1.2 changes. They are not yet a public
-App Store release. TestFlight access is private; there is no public invitation
+Version 1.1.2 (36) has released automatically after approval. This branch contains
+the released native source; 1.1.3 work is kept on the development branch below.
+TestFlight access is private; there is no public invitation
 link. [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
@@ -38,8 +39,9 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public course has 47 teaching lessons and 22 question-and-answer challenges and 69 visual guides. In the 1.1.2 (36) release candidate, 45 additional
-  reading lessons bring teaching to 92 lessons in 15 units. Worked examples
+- **Learn Go.** The public 1.1.2 course has 92 lessons in 15 units, including 45
+  reading lessons, plus 22 question-and-answer challenges and the 69 original
+  visual guides. Worked examples
   explain runtime/GC, concurrency, HTTP/Gin, Redis, architecture, Bash, Git, Go tools, HTTP diagnostics, Linux services, Docker,
   Compose, Podman and Kubernetes without mandatory compilation.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
@@ -58,6 +60,12 @@ ratings, eight clean-code lessons, all 23 classic design patterns and six
 concurrent Go patterns. Worked programs, diagrams, tradeoffs and independent
 review questions accompany the new material. This development version has not
 been uploaded to TestFlight or submitted to App Review.
+
+The architecture and clean-code units have since gained 81 further sections
+across their 27 lessons. A [Next.js website and blog](https://github.com/sergii-ziborov/GopherForge/tree/codex/architecture-and-patterns/website)
+with the complete web course, self-checks and local progress is prepared and
+verified locally. Hostwatch deployment awaits an operator-configured
+GopherForge target; the new site has not replaced the current public site.
 
 [Browse the course](https://gopherforge.app/learn) ·
 [App screenshots](docs/app-store/screenshots)

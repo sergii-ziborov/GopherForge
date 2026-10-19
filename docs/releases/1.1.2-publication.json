@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-19T15:41:11.639314+00:00",
+  "version": "1.1.2",
+  "build": 36,
+  "appStoreState": "READY_FOR_SALE",
+  "releaseType": "AFTER_APPROVAL",
+  "versionId": "5e22f357-e351-440c-ac3e-c1a1595857ef",
+  "manualReleaseRequired": false,
+  "observedVia": "App Store Connect API",
+  "publicStoreVersion": "1.1.2",
+  "publicReleaseDate": "2026-10-19T08:40:26Z",
+  "storefront": "us"
+}
