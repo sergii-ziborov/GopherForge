@@ -1,0 +1,117 @@
+{
+  "checkedAt": "2026-10-19T22:32:39.100Z",
+  "url": "https://gopherforge.app",
+  "framework": "Next.js 16.4.2 App Router",
+  "sourceCommit": "0aa91cd950dc7cb64ee8d1da2b56df5a2bd0894d",
+  "publicCourseEntries": 167,
+  "teachingLessons": 145,
+  "units": 20,
+  "readings": 98,
+  "blogArticles": 5,
+  "learningMap": {
+    "directions": 5,
+    "units": 20,
+    "collapsibleBranches": true,
+    "progressFilter": "three consistent buttons; native select removed",
+    "freelyAccessible": true
+  },
+  "codeReadability": {
+    "inlinePillExcludedFromPre": true,
+    "visualCodeFontPx": 14,
+    "mobileWidth": 390,
+    "mobilePageOverflowPx": 0
+  },
+  "build": "passed",
+  "contentAndProgressTests": 10,
+  "productionHttp": {
+    "pages": 180,
+    "linksAndAnchors": "passed",
+    "health": "passed",
+    "sitemap": "passed",
+    "unknownLesson": 404,
+    "checkedAt": "2026-10-19T22:30:52.440Z"
+  },
+  "browserFlows": [
+    "search and direction filters",
+    "collapse and expand with mouse and Enter",
+    "URL filter persistence",
+    "wrong answer explanation and correct answer",
+    "completion survives reload",
+    "mobile code contrast and no page overflow"
+  ],
+  "hosting": {
+    "provider": "Hetzner",
+    "hostwatchSiteId": "gopherforge",
+    "hostwatchTargetId": "gopherforge-web",
+    "imageDigest": "sha256:1db37d10c98f5438eff0f099dca1a66a2057d19ac7cb971f0e9c5dfb6d673c33",
+    "deploymentJob": "gopherforge-web-review-20261020-01",
+    "deploymentState": "succeeded",
+    "publicationJob": "gopherforge-web-review-image-20261020-01",
+    "publicationState": "succeeded",
+    "registryManifestDigest": "sha256:7be6d46e6c59e5bc68db62c1db4cddf2613674eba40a55baa49bec5a3b196b34",
+    "loopbackPort": 3047,
+    "runtimeUser": "10001:10001",
+    "memoryMiB": 256,
+    "cpus": 0.5,
+    "readOnly": true,
+    "recovery": {
+      "restartPolicy": "unless-stopped",
+      "gopherforgeUnitEnabled": true,
+      "podmanRestartUnitEnabled": true,
+      "hostRebootTested": false
+    },
+    "dns": {
+      "manager": "Lovable",
+      "apexAndWww": "116.203.99.11",
+      "wwwRedirectsToApex": true,
+      "previousLovableProjectPreserved": true
+    },
+    "tls": {
+      "san": [
+        "gopherforge.app",
+        "www.gopherforge.app"
+      ],
+      "expires": "2027-01-17",
+      "renewal": "automatic HTTP webroot",
+      "stagingRenewalPassed": true,
+      "certbotTimerEnabled": true
+    },
+    "analytics": {
+      "liveTrafficRead": {
+        "checkedAt": "2026-10-19T22:32:09.286Z",
+        "site": "gopherforge",
+        "windowHours": 1,
+        "requests": 993,
+        "errors5xx": 0,
+        "note": "Includes deployment smoke checks and browser verification; not an estimate of human visitors."
+      },
+      "queryValuesLogged": false,
+      "browserAnalyticsSdk": false,
+      "perSiteRotations": 14,
+      "sharedAgentStream": true
+    },
+    "nginxConfigTest": "passed"
+  },
+  "hostwatchSkill": {
+    "sourceRepository": "sergii-ziborov/hostwatch-mcp",
+    "commit": "06e7392",
+    "version": "1.0.2",
+    "pushed": true,
+    "installedInstructionsUpdated": true,
+    "scope": "Authorized SSH setup followed by governed MCP deployment; no generic shell operation added."
+  },
+  "native": {
+    "version": "1.1.3",
+    "build": "37",
+    "testFlight": "private Internal QA",
+    "reviewSubmissionState": "WAITING_FOR_REVIEW",
+    "releaseType": "AFTER_APPROVAL",
+    "receipt": "../releases/1.1.3-submission.json"
+  },
+  "screenshots": [
+    "../screenshots/website-next/live-learning-tree.png",
+    "../screenshots/website-next/live-readable-code.png",
+    "../screenshots/website-next/live-learning-tree-mobile.png",
+    "../screenshots/website-next/live-readable-code-mobile.png"
+  ]
+}
