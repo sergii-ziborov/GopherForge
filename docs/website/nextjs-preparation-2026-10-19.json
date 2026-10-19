@@ -98,5 +98,7 @@
     "publicVersionLabel": "1.1.2",
     "statusCorrectionVerifiedLive": true,
     "notReplacedByNextYet": true
-  }
+  },
+  "historicalSnapshot": true,
+  "supersededBy": "publication-2026-10-20.json"
 }

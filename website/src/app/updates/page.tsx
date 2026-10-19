@@ -45,7 +45,7 @@ export default function Updates() {
       </section>
       <section className="release" id="next-release">
         <span className="release-badge muted">
-          WEB LIBRARY AVAILABLE · PRIVATE TESTFLIGHT
+          WEB LIBRARY AVAILABLE · APP REVIEW SUBMITTED
         </span>
         <h2>
           GopherForge 1.1.3 <small>build 37</small>
@@ -54,8 +54,8 @@ export default function Updates() {
           The web library now includes the expanded course: 145 teaching lessons
           in 20 units, including 98 readings, plus 22 prediction challenges. The
           native update is available to existing Internal QA testers in
-          TestFlight. App Review is being prepared; the public App Store version
-          remains 1.1.2.
+          TestFlight. Build 37 is submitted to App Review with automatic release
+          after approval; the public App Store version remains 1.1.2.
         </p>
         <ul>
           <li>

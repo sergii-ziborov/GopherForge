@@ -12,17 +12,18 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 19 October 2026 | Changes |
+| Version | Status, checked 20 October 2026 | Changes |
 | --- | --- | --- |
 | **1.1.1 (33)** | Previous App Store release | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
 | **1.1.2 (36)** | Available on the App Store | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
-| **1.1.3 (37)** | Next release, development only | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
+| **1.1.3 (37)** | Private TestFlight; Waiting for Review | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 
-Version 1.1.2 (36) has released automatically after approval. Current development source targets
-1.1.3 (37); its architecture and patterns expansion has not been uploaded or submitted. TestFlight access is private; there is no public invitation
-link. [Version history](https://gopherforge.app/updates) ·
+Version 1.1.2 (36) released automatically after approval. Version 1.1.3 (37)
+is available to existing Internal QA testers in TestFlight and is submitted to
+App Review, with automatic release after approval. TestFlight access is private;
+there is no public invitation link. [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
 The app is a one-time purchase: US $6.99, US $4.99 in Ukraine, with localized
@@ -38,7 +39,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public 1.1.2 course has 92 teaching lessons, 22 question-and-answer challenges and the 69 original visual guides. Next-release development contains **145 lessons across 20 units**, including 98 reading lessons. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 practical Around Go lessons remain available. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
+- **Learn Go.** The public 1.1.2 course has 92 teaching lessons, 22 question-and-answer challenges and the 69 original visual guides. The submitted 1.1.3 update contains **145 lessons across 20 units**, including 98 reading lessons. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 practical Around Go lessons remain available. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview
@@ -46,15 +47,15 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Try working examples.** Multi-package programs, Go-generated PNGs, and
   HTML/CSS/JavaScript projects previewed locally in WebKit.
 
-### Next release: architecture and patterns
+### Submitted update: architecture and patterns
 
-The separate [1.1.3 development branch](https://github.com/sergii-ziborov/GopherForge/tree/codex/architecture-and-patterns)
-adds 53 reading lessons. Its planned course has 145 teaching lessons across 20
+Version 1.1.3 adds 53 reading lessons. Its course has 145 teaching lessons across 20
 units, including 98 readings: 19 architecture lessons with scenario-based fit
 ratings, eight clean-code lessons, all 23 classic design patterns and six
 concurrent Go patterns. Worked programs, diagrams, tradeoffs and independent
-review questions accompany the new material. This development version has not
-been uploaded to TestFlight or submitted to App Review.
+review questions accompany the new material. The update is in private TestFlight and Waiting for Review.
+[Submission and release settings](docs/releases/1.1.3-submission.json) ·
+[Verified screenshots and product assets](docs/releases/1.1.3-assets-verified.json).
 
 The 19 architecture and eight clean-code readings now include 81 further
 sections on package structure, consistency, transactions, failure recovery,
@@ -67,8 +68,11 @@ The [new website source](website/README.md) includes the complete native-course
 export, five practical blog articles, a scenario-based architecture comparison,
 highlighted code, reading self-checks and optional local browser progress.
 It needs no registration and does not execute or upload arbitrary code.
-The Hostwatch deployment and access-log analytics configuration are prepared;
-domain migration awaits an operator-configured GopherForge deployment target.
+The site is live at **https://gopherforge.app**, on Hetzner through Hostwatch.
+The course is organized into five learning trees with collapsible units,
+readable highlighted code, consistent progress filters and mobile layouts.
+Hostwatch receives query-free access-log analytics; domain registration and DNS
+remain in Lovable. [Deployment and recovery](website/README.md).
 
 [Browse the course](https://gopherforge.app/learn) ·
 [App screenshots](docs/app-store/screenshots)

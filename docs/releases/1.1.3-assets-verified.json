@@ -1,0 +1,411 @@
+{
+  "checkedAt": "2026-10-19T22:19:53.842196+00:00",
+  "version": "1.1.3",
+  "build": "37",
+  "appSourceCommit": "79d6727",
+  "screenshotSets": [
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "3259474e-e347-4ceb-9c19-30cece62c1a1",
+      "displayType": "APP_IPAD_PRO_3GEN_11",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "e9800019-5e3c-8faf-801d-b24806584a0b",
+          "checksum": "78de6737edb72ddaff29ec0b1d9d3830",
+          "size": [
+            1668,
+            2420
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "ccc00019-5e3c-8faf-8031-e85c4287ccfa",
+          "checksum": "a1274813ea8453b706a54a34cbdd2f78",
+          "size": [
+            1668,
+            2420
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "2c5be51e-b47d-417d-9613-e1d8c48f4bc2",
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "5f800019-5e3c-8faf-800a-42f89a9b12b2",
+          "checksum": "3c9be511135b3fc0fec88ef0eeaffdda",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "82000019-5e3c-8faf-800b-49c9eb98d6d2",
+          "checksum": "16a73b4a12af18537655bcc73c71f09d",
+          "size": [
+            1170,
+            2532
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "36793f0b-b429-4a8a-80ff-d5e5aaa4b1f5",
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "9e400019-5e3c-8faf-8016-07010078b34a",
+          "checksum": "7911777dd708927888ff494bef1862d8",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "17c00019-5e3c-8faf-8036-ad00a0d9d82b",
+          "checksum": "2f31cc378ceb868e0f020fef747835a3",
+          "size": [
+            2064,
+            2752
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "85818c10-744a-4155-8761-3e06a89eb522",
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "c4000019-5e3c-8faf-8010-60c59c5b6dbc",
+          "checksum": "2f00a7680406841f1de95b844b830225",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "42400019-5e3c-8faf-800e-bd7dd0526902",
+          "checksum": "3ebadda1a01775b549212c1eaed9bac2",
+          "size": [
+            1284,
+            2778
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "c4d9c147-d05d-4ab9-ba28-18741408a3c9",
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "fbc00019-5e3c-8faf-8028-81cb073bc33a",
+          "checksum": "a02ef11b2bef6a27c0c5d855517ec81c",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "3e800019-5e3c-8faf-8031-755ac3bbc519",
+          "checksum": "1ab14d3ede7a20e9c82a50557adc6302",
+          "size": [
+            1206,
+            2622
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "9710bc69-798b-48cc-a36e-0aea1e76b566",
+      "displayType": "APP_IPHONE_DUO",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "f8000019-5e3c-8faf-8024-7395be82e7d9",
+          "checksum": "aa3dc186ae9f1d782704884cf3857e4f",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "cc400019-5e3c-8faf-8025-83f43a1acafc",
+          "checksum": "2b742d5f5be6550668b728424fe7b72d",
+          "size": [
+            2007,
+            2853
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "3d7d93c2-2723-4b17-a8f3-63a6970dce7a",
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "e8800019-5e3c-8faf-8023-a79b6321e2c8",
+          "checksum": "12c8a470756585136fdee0bca2ac0cf5",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "53800019-5e3c-8faf-8009-cce4afd29be4",
+          "checksum": "76e3f3d5152994b64905a34ad8ed6574",
+          "size": [
+            1320,
+            2868
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "eda693ad-cbbd-4d53-9c41-13e52404a24d",
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "d3800019-5e3c-8faf-8016-bb132de2364b",
+          "checksum": "3c9be511135b3fc0fec88ef0eeaffdda",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "37400019-5e3c-8faf-8015-76423eb214ce",
+          "checksum": "16a73b4a12af18537655bcc73c71f09d",
+          "size": [
+            1170,
+            2532
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "e15190b7-cb81-418b-bb9f-99bf01c09095",
+      "displayType": "APP_IPAD_PRO_3GEN_11",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "7dc00019-5e3c-8faf-8005-a7135d863312",
+          "checksum": "78de6737edb72ddaff29ec0b1d9d3830",
+          "size": [
+            1668,
+            2420
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "70000019-5e3c-8faf-803d-7e37d34322a0",
+          "checksum": "a1274813ea8453b706a54a34cbdd2f78",
+          "size": [
+            1668,
+            2420
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "2ddbee57-60ea-4f20-a9e8-25231dc636d2",
+      "displayType": "APP_IPHONE_DUO",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "b3000019-5e3c-8faf-802b-abc572cf3e57",
+          "checksum": "aa3dc186ae9f1d782704884cf3857e4f",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "28000019-5e3c-8faf-8032-034cbc5b9a16",
+          "checksum": "2b742d5f5be6550668b728424fe7b72d",
+          "size": [
+            2007,
+            2853
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "700ace9b-6fa6-40c5-835e-4c033d76d48a",
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "a0400019-5e3c-8faf-802a-586f9cf700b8",
+          "checksum": "7911777dd708927888ff494bef1862d8",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "63800019-5e3c-8faf-8005-a7afc2d50cba",
+          "checksum": "2f31cc378ceb868e0f020fef747835a3",
+          "size": [
+            2064,
+            2752
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "caaac412-29fc-4e44-8f22-e789e928f155",
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "59c00019-5e3c-8faf-8039-405fa9daba4f",
+          "checksum": "2f00a7680406841f1de95b844b830225",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "7f800019-5e3c-8faf-8021-39534cfe3e39",
+          "checksum": "3ebadda1a01775b549212c1eaed9bac2",
+          "size": [
+            1284,
+            2778
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "304ddb02-357f-402a-869b-d4034fa53847",
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "0a400019-5e3c-8faf-8037-e41395e71087",
+          "checksum": "a02ef11b2bef6a27c0c5d855517ec81c",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "20c00019-5e3c-8faf-800c-e47d35d76649",
+          "checksum": "1ab14d3ede7a20e9c82a50557adc6302",
+          "size": [
+            1206,
+            2622
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "a8494d2b-3c43-44f6-a405-2a651859f5f5",
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "03-course",
+          "id": "79c00019-5e3c-8faf-803d-4bcd5be95e39",
+          "checksum": "12c8a470756585136fdee0bca2ac0cf5",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "6e400019-5e3c-8faf-802a-2de5e4f6bb25",
+          "checksum": "76e3f3d5152994b64905a34ad8ed6574",
+          "size": [
+            1320,
+            2868
+          ]
+        }
+      ]
+    }
+  ],
+  "placements": [
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "headerAndSearchActive": true,
+      "total": 72
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "headerAndSearchActive": true,
+      "total": 72
+    }
+  ],
+  "newScreenshotCount": 28,
+  "reusedUnchangedFeatureScreenshots": 112,
+  "visuallyReviewedNewCaptures": 14,
+  "screenshots": 140,
+  "headerAndSearchActive": true,
+  "selectedBuildId": "6f3f3706-1b16-446f-afd8-cc66b710c414",
+  "versionId": "fb3a97fc-a708-4544-ad88-6766fba71ead",
+  "releaseType": "AFTER_APPROVAL",
+  "metadataReadBack": true,
+  "reviewContactPresent": true,
+  "reviewInstructionsUpdated": true,
+  "beta": "IN_BETA_TESTING",
+  "newImageDelivery": "COMPLETE"
+}
