@@ -11,6 +11,7 @@ struct CourseHeroCard: View {
     let unitCount: Int
     let verifiedCount: Int
     let isFinished: Bool
+    let resumeTitle: String?
     let onContinue: () -> Void
 
     private var fraction: Double {
@@ -18,6 +19,7 @@ struct CourseHeroCard: View {
     }
 
     private var actionTitle: String {
+        if let resumeTitle { return "Continue: \(resumeTitle)" }
         if isFinished { return "Start the course again" }
         return doneCount == 0 ? "Start the course" : "Continue where you left off"
     }
@@ -45,7 +47,7 @@ struct CourseHeroCard: View {
 
             Button(action: onContinue) {
                 HStack(spacing: 8) {
-                    Image(systemName: isFinished ? "arrow.counterclockwise" : "arrow.right")
+                    Image(systemName: isFinished && resumeTitle == nil ? "arrow.counterclockwise" : "arrow.right")
                     Text(actionTitle).font(.callout.weight(.semibold))
                 }
                 .frame(maxWidth: .infinity)

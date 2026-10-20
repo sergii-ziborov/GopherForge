@@ -13,7 +13,7 @@ struct LearnHomeView: View {
     /// meant a lesson marked complete changed nothing anybody could see until
     /// the app was relaunched.
     @Environment(LearnProgress.self) private var progress
-    @State private var learningTab = 0
+    @AppStorage("learning.lastArea.v1") private var learningTab = 0
     @State private var openedScreen: LaunchOptions.Screen?
     /// Held by identifier rather than by value: a `Lesson` carries its starter
     /// source and its hidden test, and a navigation destination wants
@@ -34,10 +34,10 @@ struct LearnHomeView: View {
         teachingLessons.count { completed.contains($0.id) }
     }
 
-    /// Where "Continue" goes: the first lesson not yet done, or the beginning
-    /// again once the course is finished.
+    /// Return to the last opened lesson, including material outside the first
+    /// unfinished unit. New learners start at the first unfinished lesson.
     private var nextLesson: Lesson? {
-        teachingLessons.first { !completed.contains($0.id) } ?? teachingLessons.first
+        progress.resumeLesson ?? teachingLessons.first { !completed.contains($0.id) } ?? teachingLessons.first
     }
 
     /// The unit the path marks as "you are here".
@@ -59,6 +59,12 @@ struct LearnHomeView: View {
             if learningTab == 1 { InterviewPrepView() } else { course }
         }
         .navigationTitle("Learn")
+        .onAppear {
+            // An explicit lesson/tool deep link takes precedence over the last tab.
+            if LaunchOptions.initialLessonID != nil || LaunchOptions.initialScreen != nil {
+                learningTab = 0
+            }
+        }
     }
 
     private var course: some View {
@@ -75,6 +81,7 @@ struct LearnHomeView: View {
                     unitCount: units.count,
                     verifiedCount: progress.compilerVerified.count,
                     isFinished: doneCount == teachingLessons.count && !teachingLessons.isEmpty,
+                    resumeTitle: progress.resumeLesson?.title,
                     onContinue: { openedLessonID = nextLesson?.id }
                 )
 

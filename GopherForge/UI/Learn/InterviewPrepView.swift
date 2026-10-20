@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct InterviewPrepView: View {
+    @Environment(LearnProgress.self) private var progress
+    @AppStorage("interview.preparation.selfAssessment.v1") private var assessment = "{}"
+    private var marks: [String: String] {
+        (try? JSONDecoder().decode([String: String].self, from: Data(assessment.utf8))) ?? [:]
+    }
     private let bank = InterviewPrepBank.shared
     @State private var topic = ""
     @State private var level = 0
@@ -26,6 +31,21 @@ struct InterviewPrepView: View {
             .padding(.horizontal)
             List {
                 Section {
+                    if let resume = progress.resumeInterview {
+                        NavigationLink {
+                            InterviewPrepDetailView(question: resume)
+                        } label: {
+                            Label {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("Continue where you left off").font(.caption).foregroundStyle(.secondary)
+                                    Text(resume.title).font(.headline)
+                                }
+                            } icon: { Image(systemName: "arrow.right.circle.fill") }
+                        }
+                        .accessibilityIdentifier("interview.continue")
+                    }
+                    Text("\(bank.questions.count { marks[$0.id] == "understood" }) of \(bank.questions.count) understood · \(bank.questions.count { marks[$0.id] == "revisit" }) to revisit")
+                        .font(.subheadline).foregroundStyle(.secondary)
                     Text("Prepare, explain, then test")
                         .font(.title2.bold())
                     Text("\(bank.questions.count) worked interview guides · \(bank.topics.count) topics · Junior to Staff / expert. No gates. Read a question, explain it aloud, then compare the reasoning. Self-assessment is separate from course completion.")
@@ -45,6 +65,12 @@ struct InterviewPrepView: View {
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(question.title).font(.headline)
+                                if question.id == progress.lastInterviewID {
+                                    Label("Your saved place", systemImage: "bookmark.fill").font(.caption).foregroundStyle(GopherForgeTheme.accent)
+                                }
+                                if let mark = marks[question.id] {
+                                    Label(mark == "understood" ? "Understood" : "Revisit", systemImage: mark == "understood" ? "checkmark.circle" : "arrow.counterclockwise").font(.caption).foregroundStyle(.secondary)
+                                }
                                 Text("\(bank.levels[question.level - 1]) · \(bank.topics.first { $0.id == question.topic }?.title ?? question.topic)")
                                     .font(.caption).foregroundStyle(.secondary)
                             }.padding(.vertical, 5)
@@ -63,6 +89,7 @@ struct InterviewPrepView: View {
 
 struct InterviewPrepDetailView: View {
     let question: InterviewPrepQuestion
+    @Environment(LearnProgress.self) private var progress
     @State private var revealed = false
     @AppStorage("interview.preparation.selfAssessment.v1") private var assessment = "{}"
     private var marks: [String: String] {
@@ -108,6 +135,7 @@ struct InterviewPrepDetailView: View {
             .padding(20).padding(.bottom, 100).frame(maxWidth: 760).frame(maxWidth: .infinity)
         }
         .transparentBottomScrollEdge()
+        .onAppear { progress.visitInterview(question.id) }
         .navigationTitle("Interview")
         .navigationBarTitleDisplayMode(.inline)
     }

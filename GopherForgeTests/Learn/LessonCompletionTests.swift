@@ -205,4 +205,42 @@ final class LessonCompletionTests: XCTestCase {
         XCTAssertFalse(reportable.isEmpty)
         XCTAssertTrue(reportable.allSatisfy { !$0.requiresCompiler })
     }
+    @MainActor
+    func testBookmarksSurviveRelaunchWithoutChangingCompletion() async throws {
+        let suite = "gopherforge.bookmark-tests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let lesson = try aSelfReportLesson()
+        let progress = LearnProgress(store: store, bookmarks: defaults)
+        await progress.markCompleted(lesson)
+        progress.visitLesson(lesson.id)
+        progress.visitInterview("algorithms.binary-search")
+        let reopened = LearnProgress(store: LearningProgressStore(storageURL: storeURL), bookmarks: defaults)
+        await reopened.refresh()
+        XCTAssertEqual(reopened.resumeLesson?.id, lesson.id)
+        XCTAssertEqual(reopened.resumeInterview?.id, "algorithms.binary-search")
+        XCTAssertTrue(reopened.isCompleted(lesson.id))
+        XCTAssertFalse(reopened.isCompilerVerified(lesson.id))
+        XCTAssertEqual(defaults.integer(forKey: "learning.lastArea.v1"), 1)
+        progress.visitLesson(lesson.id)
+        XCTAssertEqual(defaults.integer(forKey: "learning.lastArea.v1"), 0)
+    }
+
+    @MainActor
+    func testUnknownBookmarksDoNotBecomeBrokenDestinationsOrPasses() throws {
+        let suite = "gopherforge.bookmark-tests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set("removed.lesson", forKey: "learning.lastLesson.v1")
+        defaults.set("removed.guide", forKey: "learning.lastInterview.v1")
+        let progress = LearnProgress(store: store, bookmarks: defaults)
+        XCTAssertNil(progress.resumeLesson)
+        XCTAssertNil(progress.resumeInterview)
+        progress.visitLesson("missing")
+        progress.visitInterview("missing")
+        XCTAssertNil(progress.resumeLesson)
+        XCTAssertNil(progress.resumeInterview)
+        XCTAssertTrue(progress.completed.isEmpty)
+    }
+
 }

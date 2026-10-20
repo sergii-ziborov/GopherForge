@@ -25,6 +25,32 @@ final class InterviewPrepUITests: XCTestCase {
         let trace = XCTAttachment(screenshot: app.screenshot())
         trace.name = "algorithm-binary-boundary-build39"; trace.lifetime = .keepAlways; add(trace)
     }
+    func testContinueReopensLastInterviewAfterRelaunch() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-GopherForgeSection", "learn"]
+        app.launch()
+        let area = app.segmentedControls["learn.area"]
+        XCTAssertTrue(area.waitForExistence(timeout: 20))
+        area.buttons["Interview"].tap()
+        let guide = app.buttons["interview.question.language.values"]
+        XCTAssertTrue(app.waitForElement(guide, scrollingUpTo: 6))
+        guide.tap()
+        XCTAssertTrue(app.buttons["interview.prep.reveal"].waitForExistence(timeout: 10))
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(area.waitForExistence(timeout: 20))
+        XCTAssertTrue(area.buttons["Interview"].isSelected)
+        let resume = app.buttons["interview.continue"]
+        XCTAssertTrue(resume.waitForExistence(timeout: 10))
+        let savedPlace = XCTAttachment(screenshot: app.screenshot())
+        savedPlace.name = "interview-continue-after-relaunch"
+        savedPlace.lifetime = .keepAlways
+        add(savedPlace)
+        resume.tap()
+        XCTAssertTrue(app.buttons["interview.prep.reveal"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Zero values and safe APIs"].exists)
+    }
+
     func testInterviewSelfAssessmentPersistsSeparatelyFromLessons() {
         let app = XCUIApplication()
         app.launchArguments = ["-GopherForgeSection", "learn"]

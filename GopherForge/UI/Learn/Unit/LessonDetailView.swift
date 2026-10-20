@@ -125,6 +125,7 @@ struct LessonDetailView: View {
                 )
             }
         }
+        .onAppear { progress.visitLesson(lesson.id) }
         .task {
             await model.loadProgress()
             await model.prewarm()

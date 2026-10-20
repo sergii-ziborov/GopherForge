@@ -25,10 +25,42 @@ final class LearnProgress {
         Set(correctionAttempts.filter(\.succeeded).map(\.conceptTag))
     }
 
+    /// Bookmarks are independent of attempts: opening a lesson is not a pass.
+    private(set) var lastLessonID: String?
+    private(set) var lastInterviewID: String?
+    private let bookmarks: UserDefaults
+    private static let lessonBookmarkKey = "learning.lastLesson.v1"
+    private static let interviewBookmarkKey = "learning.lastInterview.v1"
+
+    var resumeLesson: Lesson? {
+        lastLessonID.flatMap { GoCourseCatalog.lesson(id: $0) }
+    }
+
+    var resumeInterview: InterviewPrepQuestion? {
+        InterviewPrepBank.shared.questions.first { $0.id == lastInterviewID }
+    }
+
+    func visitLesson(_ id: String) {
+        guard GoCourseCatalog.lesson(id: id) != nil else { return }
+        lastLessonID = id
+        bookmarks.set(id, forKey: Self.lessonBookmarkKey)
+        bookmarks.set(0, forKey: "learning.lastArea.v1")
+    }
+
+    func visitInterview(_ id: String) {
+        guard InterviewPrepBank.shared.questions.contains(where: { $0.id == id }) else { return }
+        lastInterviewID = id
+        bookmarks.set(id, forKey: Self.interviewBookmarkKey)
+        bookmarks.set(1, forKey: "learning.lastArea.v1")
+    }
+
     private let store: LearningProgressStore
 
-    init(store: LearningProgressStore = .shared) {
+    init(store: LearningProgressStore = .shared, bookmarks: UserDefaults = .standard) {
         self.store = store
+        self.bookmarks = bookmarks
+        lastLessonID = bookmarks.string(forKey: Self.lessonBookmarkKey)
+        lastInterviewID = bookmarks.string(forKey: Self.interviewBookmarkKey)
     }
 
     func refresh() async {
