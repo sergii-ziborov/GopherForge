@@ -25,12 +25,47 @@ struct CourseHeroCard: View {
     }
 
     var body: some View {
+        LearningHeroCard(
+            subtitle: "Go, for people who already program",
+            title: "\(doneCount) of \(totalCount) lessons",
+            fraction: fraction,
+            metrics: [
+                LearningHeroMetric(symbol: "flag.checkered", value: "\(unitCount)", label: "units"),
+                LearningHeroMetric(symbol: "checkmark.seal.fill", value: "\(verifiedCount)", label: "compiler-passed"),
+                LearningHeroMetric(symbol: "percent", value: "\(Int(fraction * 100))", label: "done")
+            ],
+            actionTitle: actionTitle,
+            actionSymbol: isFinished && resumeTitle == nil ? "arrow.counterclockwise" : "arrow.right",
+            actionIdentifier: AccessibilityID.courseContinue,
+            onContinue: onContinue
+        )
+    }
+}
+
+struct LearningHeroMetric {
+    let symbol: String
+    let value: String
+    let label: String
+}
+
+/// Course and Interview share the same hierarchy, spacing and progress action.
+struct LearningHeroCard: View {
+    let subtitle: String
+    let title: String
+    let fraction: Double
+    let metrics: [LearningHeroMetric]
+    let actionTitle: String
+    let actionSymbol: String
+    let actionIdentifier: String
+    let onContinue: () -> Void
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Go, for people who already program")
+                Text(subtitle)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.85))
-                Text("\(doneCount) of \(totalCount) lessons")
+                Text(title)
                     .font(.title.bold())
                     .foregroundStyle(.white)
             }
@@ -40,14 +75,15 @@ struct CourseHeroCard: View {
                 .background(.white.opacity(0.25), in: Capsule())
 
             HStack(spacing: 10) {
-                HeroMetric(symbol: "flag.checkered", value: "\(unitCount)", label: "units")
-                HeroMetric(symbol: "checkmark.seal.fill", value: "\(verifiedCount)", label: "compiler-passed")
-                HeroMetric(symbol: "percent", value: "\(Int(fraction * 100))", label: "done")
+                ForEach(metrics.indices, id: \.self) { index in
+                    let metric = metrics[index]
+                    HeroMetric(symbol: metric.symbol, value: metric.value, label: metric.label)
+                }
             }
 
             Button(action: onContinue) {
                 HStack(spacing: 8) {
-                    Image(systemName: isFinished && resumeTitle == nil ? "arrow.counterclockwise" : "arrow.right")
+                    Image(systemName: actionSymbol)
                     Text(actionTitle).font(.callout.weight(.semibold))
                 }
                 .frame(maxWidth: .infinity)
@@ -56,7 +92,7 @@ struct CourseHeroCard: View {
                 .foregroundStyle(GopherForgeTheme.deepBlue)
             }
             .buttonStyle(.plain)
-            .accessibilityIdentifier(AccessibilityID.courseContinue)
+            .accessibilityIdentifier(actionIdentifier)
         }
         .padding(18)
         .background(
@@ -106,7 +142,7 @@ struct LearnToolRow: View {
             NavigationLink {
                 ReviewView()
             } label: {
-                ToolCard(
+                LearningToolCard(
                     symbol: "arrow.trianglehead.counterclockwise",
                     title: "Review",
                     detail: "Match what you know",
@@ -119,7 +155,7 @@ struct LearnToolRow: View {
             NavigationLink {
                 PracticeHomeView()
             } label: {
-                ToolCard(
+                LearningToolCard(
                     symbol: "figure.mind.and.body",
                     title: "Fix mistakes",
                     detail: mistakesCount == 0 ? "Check what you know" : "\(mistakesCount) concepts to revisit",
@@ -132,7 +168,7 @@ struct LearnToolRow: View {
             NavigationLink {
                 AchievementsView(stats: stats)
             } label: {
-                ToolCard(
+                LearningToolCard(
                     symbol: "rosette",
                     title: "Achievements",
                     detail: "\(badgesEarned) / \(badgesTotal) earned",
@@ -145,7 +181,7 @@ struct LearnToolRow: View {
     }
 }
 
-private struct ToolCard: View {
+struct LearningToolCard: View {
     let symbol: String
     let title: String
     let detail: String

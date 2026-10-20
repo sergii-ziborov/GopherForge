@@ -65,11 +65,14 @@ final class AppStoreScreenshotUITests: XCTestCase {
 
     func testCaptureInterviewReleaseScreenshots() {
         launch(section: "learn")
-        XCTAssertTrue(app.waitForElement(app.buttons["unit.core"]))
-        captureNativeDisplayFrame("03-course-build39")
-        app.segmentedControls["learn.area"].buttons["Interview"].tap()
+        let area = app.segmentedControls["learn.area"]
+        XCTAssertTrue(area.waitForExistence(timeout: 10))
+        area.buttons["Course"].tap()
+        XCTAssertTrue(app.buttons["learn.continue"].waitForExistence(timeout: 10))
+        captureNativeDisplayFrame("03-course-build41")
+        area.buttons["Interview"].tap()
         XCTAssertTrue(app.buttons["interview.algorithms"].waitForExistence(timeout: 10))
-        captureNativeDisplayFrame("08-interview-build39")
+        captureNativeDisplayFrame("08-interview-build41")
     }
 
     func testCaptureDataStoreReleaseScreenshots() {
