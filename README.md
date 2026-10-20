@@ -18,11 +18,11 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
 | **1.1.2 (36)** | Available on the App Store | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
-| **1.1.3 (37)** | Private TestFlight; Waiting for Review | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
+| **1.1.3 (37)** | Available on the App Store | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 
-Version 1.1.2 (36) released automatically after approval. Version 1.1.3 (37)
-is available to existing Internal QA testers in TestFlight and is submitted to
-App Review, with automatic release after approval. TestFlight access is private;
+Version 1.1.3 (37) passed App Review and released automatically.
+Version 1.1.4 (38) is being verified with transparent lower scroll edges and
+24 additional data-store and production-tooling readings. TestFlight access is private;
 there is no public invitation link. [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
@@ -39,7 +39,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public 1.1.2 course has 92 teaching lessons, 22 question-and-answer challenges and the 69 original visual guides. The submitted 1.1.3 update contains **145 lessons across 20 units**, including 98 reading lessons. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 practical Around Go lessons remain available. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
+- **Learn Go.** The public 1.1.3 course has 145 teaching lessons, 22 question-and-answer challenges and the 69 original visual guides. The 1.1.4 update expands this to 169 teaching lessons across 21 units and 122 readings. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 original command-line, container and Kubernetes readings remain available alongside the 12 new MongoDB/Redis lessons. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview
@@ -47,13 +47,13 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Try working examples.** Multi-package programs, Go-generated PNGs, and
   HTML/CSS/JavaScript projects previewed locally in WebKit.
 
-### Submitted update: architecture and patterns
+### Architecture and patterns
 
 Version 1.1.3 adds 53 reading lessons. Its course has 145 teaching lessons across 20
 units, including 98 readings: 19 architecture lessons with scenario-based fit
 ratings, eight clean-code lessons, all 23 classic design patterns and six
 concurrent Go patterns. Worked programs, diagrams, tradeoffs and independent
-review questions accompany the new material. The update is in private TestFlight and Waiting for Review.
+review questions accompany the new material. Version 1.1.3 has passed review and released automatically.
 [Submission and release settings](docs/releases/1.1.3-submission.json) ·
 [Verified screenshots and product assets](docs/releases/1.1.3-assets-verified.json).
 
@@ -61,6 +61,28 @@ The 19 architecture and eight clean-code readings now include 81 further
 sections on package structure, consistency, transactions, failure recovery,
 API contracts, testing and incremental migration. Lesson IDs and saved progress
 remain unchanged.
+
+### Data stores and production tooling
+
+Version 1.1.4 adds six MongoDB and six Redis readings in **Around Go: MongoDB
+and Redis**. They cover shared clients, indexes, optimistic updates,
+transactions, cursors, pool saturation, cache-aside, pipelines, leases,
+consumer groups and latency/memory evidence. Go v2 MongoDB and go-redis v9
+examples name their pinned versions and distinguish fragments from full programs.
+Network examples run in a native development environment; WASI networking
+and the existing module archive budgets are unchanged.
+
+Packages, modules and tooling grows from two teaching lessons to **14**,
+with the three existing prediction challenges preserved. Twelve new readings
+explain version selection, checksums and private modules, workspaces, vendor,
+embedded/generated inputs, parallel tests, benchmarks, profiles, build capacity,
+toolchain/tool pins, fuzzing and startup/shutdown ownership. Every new reading
+has a flow diagram, primary references, its own matching pair and a three-choice
+review question.
+
+Native code and lessons remove the lower scroll-edge backdrop and keep extra
+end space inside scrollable content. This adds no source lines and preserves
+the embedded-versus-full-screen lesson scrolling behavior.
 
 ### Next.js website
 

@@ -163,7 +163,7 @@ struct WorkspaceView: View {
         .ignoresSafeArea(duoHingePresent ? .container : [], edges: .top)
         .ignoresSafeArea((duoHingePresent && usesLaptopLayout || isCompactPhoneLandscape || isClosedDuoLandscape) && !softwareKeyboardVisible ? .container : [], edges: .bottom)
         .environment(\.softwareKeyboardAccessoryEnabled, keyboardAccessoryEnabled)
-        .background(Color(.secondarySystemBackground).ignoresSafeArea(.container))
+        .background(Color(pane == .code ? .systemBackground : .secondarySystemBackground).ignoresSafeArea(.container))
         .toolbar(usesLaptopLayout || keyboardVisible || isCompactPhoneLandscape ? .hidden : .visible, for: .tabBar)
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {

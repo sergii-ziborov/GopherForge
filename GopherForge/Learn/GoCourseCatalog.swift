@@ -58,6 +58,9 @@ enum GoCourseCatalog {
         ReadingLessonCatalog.unit("kubernetes", title: "Around Go: Kubernetes",
             summary: "Contexts, deployments, logs, services, configuration, probes and rollbacks.",
             note: "Start with the context lesson and a disposable development cluster. Examples keep cluster and namespace explicit; replace placeholder names and images before use."),
+        ReadingLessonCatalog.unit("datastores", title: "Around Go: MongoDB and Redis",
+            summary: "Clients, queries, atomic writes, caching, streams and behavior under load.",
+            note: "Read worked native-service examples here. Run them against an isolated development database on your own machine; these lessons do not add network sockets to the app sandbox."),
     ]
 
     static var lessons: [Lesson] {

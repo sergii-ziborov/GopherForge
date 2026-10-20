@@ -6097,5 +6097,1564 @@
         }
       ]
     }
+  },
+  {
+    "id": "modules.identity-versions",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "A module is a release boundary; a package is a directory",
+    "objective": "Resolve module roots, import paths, internal visibility and major-version suffixes.",
+    "introduction": "A repository, a module and a package can be three different boundaries. Trace the module path plus the package subdirectory before changing imports. A version suffix is part of the import identity; a folder name alone does not decide which source the compiler builds.",
+    "conceptTag": "modules.identity-versions",
+    "sections": [
+      {
+        "title": "Locate the source that is actually selected",
+        "body": "Start from the working directory and inspect the active module and workspace. A nested go.mod starts another module and can make ./... skip source you expected to test. Package names need not match the final path element, although a clear correspondence usually makes code easier to read.",
+        "code": "go env GOMOD GOWORK\ngo list -f '{{.ImportPath}} => {{.Dir}}' ./...\ngo list -m",
+        "language": "bash",
+        "walkthrough": "GOMOD identifies the active module file. The package listing maps each import to a real directory, so an unexpected checkout or nested module becomes visible before you edit source."
+      },
+      {
+        "title": "Major versions have distinct identities",
+        "body": "For ordinary module-aware releases at v2 and above, /v2 is part of the module and import path. Updating a version number without updating the path is not a compatible major upgrade. Some legacy modules use +incompatible; do not copy that exception into a new module design.",
+        "code": "module example.com/catalog/v2\n\ngo 1.24.0",
+        "language": "text",
+        "walkthrough": "The root package is imported as example.com/catalog/v2; a subpackage is example.com/catalog/v2/search. The file illustrates path structure rather than asking you to fetch a nonexistent example module."
+      },
+      {
+        "title": "Keep ownership inside one dependency direction",
+        "body": "An internal directory limits which importers may reach a package; it is not an authorization boundary for running code. A package import cycle fails before the program starts. Move a small consumer-owned contract or shared value to an acyclic boundary instead of solving a cycle with init side effects.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Identify the active module and actual package directory first. Treat a new major import path as an API migration, and keep the dependency graph acyclic.",
+    "reviewPrompt": "Module and package",
+    "reviewAnswer": "One release can contain many directory packages",
+    "question": "How do a module and a package relate?",
+    "wrongAnswers": [
+      "Every source file is a separately versioned module",
+      "The repository name always determines the package identifier"
+    ],
+    "hint": "Follow go.mod, then the subdirectory of the import.",
+    "nuance": "A module versions a set of packages together. A package groups source in one directory; the repository name does not override its declared package identifier.",
+    "references": [
+      "https://go.dev/doc/code",
+      "https://go.dev/doc/modules/major-version",
+      "https://go.dev/ref/mod#module-path"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Repository",
+        "go.mod root",
+        "Package import",
+        "Versioned API"
+      ],
+      "strengths": [
+        "Resolve module roots, import paths, internal visibility and major-version suffixes."
+      ],
+      "cautions": [
+        "A module versions a set of packages together. A package groups source in one directory; the repository name does not override its declared package identifier."
+      ],
+      "cost": "Each extra module adds versioning, publishing and consumer-compatibility work; package boundaries inside one module are cheaper.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.version-graph",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Explain the selected version before running go get",
+    "objective": "Read minimal version selection and investigate a transitive upgrade without guessing.",
+    "introduction": "A direct require is not a lock on every transitive dependency. Other requirements can raise the selected version of the same module path. Diagnose the graph first, then test the change that actually enters the build; repeatedly deleting go.sum does not explain an upgrade.",
+    "conceptTag": "modules.version-graph",
+    "sections": [
+      {
+        "title": "Observe the build list",
+        "body": "go list -m all describes the selected module versions for this build. go mod graph shows requirement edges, while go mod why explains why a package or module is needed. These answer different questions; none proves that an upgraded API preserves your application behavior.",
+        "code": "go list -m all\ngo mod graph\ngo mod why -m golang.org/x/text\ngo list -m -u all",
+        "language": "bash",
+        "walkthrough": "Compare the requirement edges with the selected build list. A higher minimum from another dependency can explain a version that is newer than the one your own require line originally mentioned."
+      },
+      {
+        "title": "Change one dependency and review the result",
+        "body": "Choose a reviewed version rather than upgrading everything during an outage. go get changes the dependency graph; go install package@version installs a command separately. Inspect go.mod and go.sum together and run affected integration tests, including the error and timeout behavior of upgraded clients.",
+        "code": "go get golang.org/x/text@v0.23.0\ngo mod tidy\ngit diff -- go.mod go.sum\ngo test ./...",
+        "language": "bash",
+        "walkthrough": "This is an example of a specific upgrade in a development checkout, not a recommendation that the illustrated version is current. Inspect the resulting graph and choose an appropriate supported version for your project."
+      },
+      {
+        "title": "Avoid false fixes",
+        "body": "A replace can redirect source while leaving you unaware that CI builds something else. A retract signals a version that authors advise against; it does not erase an already selected dependency. Keep a minimal reproducer for an incompatible transitive update instead of treating a clean cache as a correctness test.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Inspect the selected graph, explain the edge that raised a version, and validate the smallest dependency change with the application behaviors it affects.",
+    "reviewPrompt": "Selected dependency version",
+    "reviewAnswer": "Other requirements can raise the selected minimum",
+    "question": "Why can a transitive module be newer than your direct requirement?",
+    "wrongAnswers": [
+      "go.sum always requests the newest release",
+      "The package name selects a random matching version"
+    ],
+    "hint": "Separate a requirement edge from the selected build list.",
+    "nuance": "The selected version for one module path must satisfy the graph’s minimum requirements. go.sum records content hashes, not a request for the newest version.",
+    "references": [
+      "https://go.dev/doc/modules/managing-dependencies",
+      "https://go.dev/ref/mod#minimal-version-selection"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Requirements",
+        "Selected graph",
+        "Reason for import",
+        "Test the delta"
+      ],
+      "strengths": [
+        "Read minimal version selection and investigate a transitive upgrade without guessing."
+      ],
+      "cautions": [
+        "The selected version for one module path must satisfy the graph’s minimum requirements. go.sum records content hashes, not a request for the newest version."
+      ],
+      "cost": "A graph change can raise transitive versions; review and regression-test the selected delta instead of counting edited require lines.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.checksums-private",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Checksums, proxies and private modules solve different problems",
+    "objective": "Diagnose downloads without leaking private paths or disabling integrity checks globally.",
+    "introduction": "A download failure may come from version discovery, credentials, a proxy, the checksum database or local cache integrity. Treat those as separate layers. A checksum records content identity; it neither proves the code is safe nor decides which version the dependency graph chooses.",
+    "conceptTag": "modules.checksums-private",
+    "sections": [
+      {
+        "title": "Inspect effective settings",
+        "body": "Read configuration before changing it. Private module patterns affect how the Go command consults public services; they do not log you in to a private repository. Use the environment and credential mechanisms approved for that repository, and keep tokens out of module URLs and command history.",
+        "code": "go env GOPROXY GOPRIVATE GONOPROXY GONOSUMDB\ngo mod download -json\ngo mod verify",
+        "language": "bash",
+        "walkthrough": "The commands distinguish download provenance and local verification from compilation. Download JSON can contain private module paths, so inspect it locally and redact paths before sharing an incident report."
+      },
+      {
+        "title": "Scope private paths narrowly",
+        "body": "GOPRIVATE is a pattern list for private module path prefixes. Configure a company-specific pattern in the environment of the developer shell and CI job. GOPROXY fallback with comma versus pipe has different failure behavior; choose deliberately instead of masking every proxy error with direct access.",
+        "code": "# Example only: replace the organization path.\nGOPRIVATE=github.com/example-company/* go mod download",
+        "language": "bash",
+        "walkthrough": "The assignment applies to this one command rather than silently altering every future shell. It still needs separately configured repository credentials and a network route to the source."
+      },
+      {
+        "title": "Keep integrity and availability separate",
+        "body": "A checksum mismatch deserves investigation of the module version, proxy and local files. Do not teach a build to accept changed content under an existing version. go.sum can include go.mod checksums for modules whose source is not used, and it may change after tidy without representing a new executable dependency.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Trace discovery, transport, credentials and checksums independently. Narrow private patterns and preserve integrity verification for public dependencies.",
+    "reviewPrompt": "go.sum",
+    "reviewAnswer": "Records verified content; it does not select versions",
+    "question": "What does a go.sum entry establish?",
+    "wrongAnswers": [
+      "That the module has no vulnerabilities",
+      "That this module version is the newest available"
+    ],
+    "hint": "Integrity, authorization and dependency selection are different layers.",
+    "nuance": "A checksum verifies the expected content of a version. It does not select that version, certify its behavior or establish that no vulnerability is known.",
+    "references": [
+      "https://go.dev/ref/mod#private-modules",
+      "https://go.dev/doc/modules/managing-dependencies"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Discover version",
+        "Fetch source",
+        "Verify content",
+        "Build selected graph"
+      ],
+      "strengths": [
+        "Diagnose downloads without leaking private paths or disabling integrity checks globally."
+      ],
+      "cautions": [
+        "A checksum verifies the expected content of a version. It does not select that version, certify its behavior or establish that no vulnerability is known."
+      ],
+      "cost": "Private fetches need reliable credentials and transport; retaining integrity checks makes failures easier to investigate.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.workspace-replace",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "A local workspace can hide a broken release",
+    "objective": "Use go.work and replace for development while checking what an independent consumer builds.",
+    "introduction": "A checkout can pass because go.work supplies a sibling module or replace points to a local directory that no consumer has. That success tests the local composition, not the published module. Keep a second path that exercises the version and files a real downstream user receives.",
+    "conceptTag": "modules.workspace-replace",
+    "sections": [
+      {
+        "title": "See the workspace and overrides",
+        "body": "Inspect the active workspace and replacements before comparing two machines. A local replacement changes source selection; a replace line in a dependency is not automatically inherited by its consumers. Avoid committing an absolute workstation path as a release dependency.",
+        "code": "go env GOWORK\ngo work edit -json\ngo list -m -json all",
+        "language": "bash",
+        "walkthrough": "The workspace JSON lists participating module directories; the module listing shows replacements used by the build. Compare these facts before assuming a compiler or operating-system bug."
+      },
+      {
+        "title": "Verify the module on its own",
+        "body": "Run checks with GOWORK=off from the module directory and build a small independent consumer using the intended release version. A workspace root with several modules is not equivalent to one module where ./... automatically promises to cover every sibling.",
+        "code": "GOWORK=off go mod tidy\nGOWORK=off go test ./...\nGOWORK=off go list -m all",
+        "language": "bash",
+        "walkthrough": "These commands deliberately ignore workspace composition. If the tests now fail, the difference is actionable: a missing requirement, an unpublished API or a dependency that only existed in the workspace."
+      },
+      {
+        "title": "Test migrations from both sides",
+        "body": "A coordinated local API change can make producer and consumer pass together while breaking older consumers. Release the producer compatibly, pin the consumer to the released version, then test that combination. Workspace convenience should not replace a compatibility matrix for separately released modules.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Use local overrides to iterate quickly, then turn them off to test the module and its published consumer contract independently.",
+    "reviewPrompt": "Workspace success",
+    "reviewAnswer": "Can depend on unpublished local replacements",
+    "question": "Why also test with GOWORK=off?",
+    "wrongAnswers": [
+      "It disables all tests that touch the filesystem",
+      "It automatically publishes every workspace module"
+    ],
+    "hint": "Compare the local composition with a separate consumer.",
+    "nuance": "GOWORK=off removes the local workspace composition. That exposes missing published requirements and APIs that only worked through sibling modules or local replacements.",
+    "references": [
+      "https://go.dev/doc/tutorial/workspaces",
+      "https://go.dev/blog/get-familiar-with-workspaces",
+      "https://go.dev/ref/mod#go-work-file"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Local modules",
+        "Workspace resolution",
+        "Isolated consumer",
+        "Published artifact"
+      ],
+      "strengths": [
+        "Use go.work and replace for development while checking what an independent consumer builds."
+      ],
+      "cautions": [
+        "GOWORK=off removes the local workspace composition. That exposes missing published requirements and APIs that only worked through sibling modules or local replacements."
+      ],
+      "cost": "Fast local iteration needs a separate isolated-consumer check to expose unpublished assumptions before release.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.vendor-embed",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Reproduce the artifact: vendor, build tags and embedded files",
+    "objective": "Check the source and assets that a clean build actually receives.",
+    "introduction": "A successful build in your checkout can depend on uncommitted generated files, platform-specific source or an asset missing from the release archive. Reproducibility concerns the whole input set: toolchain, selected modules, build constraints, generated files and embedded data.",
+    "conceptTag": "modules.vendor-embed",
+    "sections": [
+      {
+        "title": "Inspect the selected files and dependencies",
+        "body": "go list exposes which source and embedded files belong to the selected target. Build tags and GOOS/GOARCH can select different implementations. An import that works on your Mac may require cgo or assembly on another target; do not infer portability from a package download.",
+        "code": "go list -f '{{.GoFiles}} {{.IgnoredGoFiles}} {{.EmbedFiles}}' ./...\ngo list -deps ./...\ngo env GOOS GOARCH CGO_ENABLED",
+        "language": "bash",
+        "walkthrough": "The file selection is concrete evidence for the current build configuration. Repeat it for the intended target and inspect dependency code before promising portability to a restricted runtime."
+      },
+      {
+        "title": "Treat vendor as a derived dependency tree",
+        "body": "Regenerate vendor after reviewing a dependency change and check it with the corresponding go.mod. Vendor mode deliberately uses that tree instead of treating a full module cache as the source of truth. Toolchain and platform differences still matter.",
+        "code": "go mod vendor\ngo test -mod=vendor ./...\ngo build -mod=vendor ./...",
+        "language": "bash",
+        "walkthrough": "Run these in a development checkout or clean CI worktree. If module declarations and vendor metadata disagree, regenerate from the reviewed graph rather than hand-editing copied dependency source."
+      },
+      {
+        "title": "Generated and embedded inputs are release inputs",
+        "body": "go generate is explicit; go build does not run arbitrary generators for you. Check generated files or run a pinned generator in a defined build step. GopherForge currently does not preserve arbitrary non-Go embed assets while vendoring; learning native build commands here does not change that app limitation.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Build the clean release input set, not just the current working tree. Verify tags, generated files and assets, and keep vendor consistent with the reviewed graph.",
+    "reviewPrompt": "go generate",
+    "reviewAnswer": "Runs only when explicitly requested",
+    "question": "When does go build automatically run go generate?",
+    "wrongAnswers": [
+      "Before every compile of a generated package",
+      "Only when the module cache is empty"
+    ],
+    "hint": "Distinguish an explicit generation step from compilation.",
+    "nuance": "Compilation does not automatically invoke go generate. Generation is an explicit workflow step whose tool version and output need their own checks.",
+    "references": [
+      "https://pkg.go.dev/cmd/go#hdr-Generate_Go_files_by_processing_source",
+      "https://pkg.go.dev/embed",
+      "https://go.dev/ref/mod#vendoring"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Source checkout",
+        "Selected files",
+        "Dependencies and assets",
+        "Release binary"
+      ],
+      "strengths": [
+        "Check the source and assets that a clean build actually receives."
+      ],
+      "cautions": [
+        "Compilation does not automatically invoke go generate. Generation is an explicit workflow step whose tool version and output need their own checks."
+      ],
+      "cost": "Vendor and generated assets increase repository and review volume; the payoff is explicit repeatable release inputs.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.parallel-tests",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Parallel tests must own their mutable resources",
+    "objective": "Find races, test caching mistakes and shared integration fixtures before scaling concurrency.",
+    "introduction": "A test can pass alone and fail when other packages or subtests run at the same time. Shared database names, environment variables, ports and mutable globals turn isolated test intent into interference. Give every test its own resources, and distinguish a data race from a wider coordination bug.",
+    "conceptTag": "modules.parallel-tests",
+    "sections": [
+      {
+        "title": "Separate three kinds of parallelism",
+        "body": "-p controls how many packages are built or tested concurrently; -parallel controls parallel tests within one test binary; GOMAXPROCS affects Go execution parallelism. Setting all three high can overwhelm a shared database even though each individual test uses only a few connections.",
+        "code": "go test -count=1 -shuffle=on ./...\ngo test -race -count=1 ./...\ngo test -p=2 -parallel=4 ./...",
+        "language": "bash",
+        "walkthrough": "A fresh run bypasses cached test results; shuffle exposes order dependence, and the race detector observes conflicting memory accesses on executed paths. None of these alone validates distributed database invariants."
+      },
+      {
+        "title": "Give temporary resources one owner",
+        "body": "Use t.TempDir and t.Cleanup for filesystem state. Pick an OS-assigned listener port rather than a fixed global port. A test that mutates environment or process working directory must respect the testing package restrictions around parallel execution.",
+        "code": "func TestConfig(t *testing.T) {\n    dir := t.TempDir()\n    t.Setenv(\"APP_DATA\", dir)\n    // This test changes process environment; do not call t.Parallel.\n    got := os.Getenv(\"APP_DATA\")\n    if got != dir { t.Fatalf(\"APP_DATA = %q\", got) }\n}",
+        "language": "go",
+        "walkthrough": "The example is a test-file fragment importing testing and os. The test owns its directory and cleanup, and explicitly stays sequential because environment changes affect the whole process."
+      },
+      {
+        "title": "Test cancellation and resource release",
+        "body": "Assert that work exits after cancellation and that database clients, rows, bodies and temporary servers are closed. A passing result with leaked goroutines can poison later tests or exhaust CI resources. Keep a failing shuffled seed or a deterministic reproducer rather than relying on repeated lucky retries.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Make test ownership explicit, bound package and subtest parallelism separately, and use race detection as evidence on exercised paths rather than a proof of correctness.",
+    "reviewPrompt": "Parallel integration tests",
+    "reviewAnswer": "Need isolated fixtures and a shared capacity budget",
+    "question": "What prevents tests from overloading one test database?",
+    "wrongAnswers": [
+      "Increasing every pool to match the number of tests",
+      "Running with the race detector instead of managing resources"
+    ],
+    "hint": "Count clients, test binaries and parallel subtests together.",
+    "nuance": "Package test binaries and parallel subtests share downstream capacity. Isolate fixtures and bound their combined demand; the race detector does not size a database pool.",
+    "references": [
+      "https://pkg.go.dev/testing",
+      "https://go.dev/doc/articles/race_detector",
+      "https://go.dev/blog/subtests"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Isolated fixture",
+        "Bounded parallelism",
+        "Race evidence",
+        "Repeat failure"
+      ],
+      "strengths": [
+        "Find races, test caching mistakes and shared integration fixtures before scaling concurrency."
+      ],
+      "cautions": [
+        "Package test binaries and parallel subtests share downstream capacity. Isolate fixtures and bound their combined demand; the race detector does not size a database pool."
+      ],
+      "cost": "Isolation requires disposable fixtures and cleanup; parallelism still spends shared database and machine capacity.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.benchmark-load",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "A microbenchmark is not a capacity test",
+    "objective": "Measure allocations, concurrency and tail latency without mistaking closed-loop throughput for service capacity.",
+    "introduction": "An ns/op number describes one workload in one process. A production incident may instead come from pool wait, queue growth, a slow downstream service or allocation pressure. Start with the question you need to answer and preserve the workload and environment alongside the measurement.",
+    "conceptTag": "modules.benchmark-load",
+    "sections": [
+      {
+        "title": "Repeat a focused microbenchmark",
+        "body": "Select one benchmark, include allocation reporting and repeat it. Keep setup outside the timed section where that matches the production operation. Optimizing a string conversion says little about the complete HTTP-to-database request unless the conversion dominates that request.",
+        "code": "go test ./internal/codec -run='^$' -bench=BenchmarkEncode -benchmem -count=5\ngo test ./internal/codec -run='^$' -bench=BenchmarkEncode -cpu=1,2,4",
+        "language": "bash",
+        "walkthrough": "Replace the package and benchmark with real ones. Repeated measurements expose noise; CPU variants reveal scaling effects, but they do not reproduce a network load generator or a remote database."
+      },
+      {
+        "title": "Make parallel measurements honest",
+        "body": "RunParallel measures concurrent benchmark work using a closed loop. Retain observable work, avoid sharing an unsafe buffer, and define whether the benchmark measures hits, misses or both. Report failure rate, request sizes and queue limits for a service test instead of only a flattering average.",
+        "code": "var benchmarkBytes []byte\n\nfunc BenchmarkEncode(b *testing.B) {\n    input := []byte(\"catalog-item\")\n    b.ReportAllocs()\n    b.ResetTimer()\n    for i := 0; i < b.N; i++ {\n        out := append([]byte(nil), input...)\n        benchmarkBytes = out\n        if len(out) != len(input) { b.Fatal(\"short copy\") }\n    }\n}",
+        "language": "go",
+        "walkthrough": "This is a self-contained benchmark body importing testing. It intentionally includes the allocation and validates the result; use a representative payload before comparing implementations or drawing a capacity conclusion."
+      },
+      {
+        "title": "Look at the tail and overload response",
+        "body": "At a steady incoming arrival rate, a saturated service can build a queue even while successful completions look fast. Observe p50/p95/p99 together with errors, active requests, pool checkout time and recovery after a burst. An unbounded queue delays failure instead of creating capacity.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Use benchmarks to answer narrow code questions, then test the complete service with an explicit arrival rate, bounded queues and tail-latency/error measurements.",
+    "reviewPrompt": "Fast microbenchmark",
+    "reviewAnswer": "Does not establish whole-service capacity",
+    "question": "What can a low ns/op result prove about a database-backed API?",
+    "wrongAnswers": [
+      "That its p99 stays low at any request rate",
+      "That increasing goroutines will always increase throughput"
+    ],
+    "hint": "Ask which delays and failures the benchmark does not include.",
+    "nuance": "A microbenchmark measures its own loop and inputs. It may omit network, pool wait, queue growth and overload failures that dominate a real service.",
+    "references": [
+      "https://pkg.go.dev/testing#hdr-Benchmarks",
+      "https://go.dev/blog/profiling-go-programs",
+      "https://go.dev/doc/diagnostics"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Question",
+        "Representative workload",
+        "Resource evidence",
+        "Latency distribution"
+      ],
+      "strengths": [
+        "Measure allocations, concurrency and tail latency without mistaking closed-loop throughput for service capacity."
+      ],
+      "cautions": [
+        "A microbenchmark measures its own loop and inputs. It may omit network, pool wait, queue growth and overload failures that dominate a real service."
+      ],
+      "cost": "Useful measurements require representative inputs, repeated runs and separate whole-service load evidence.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.profiles-contention",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Profile CPU, allocation and waiting as different bottlenecks",
+    "objective": "Use pprof and traces to investigate latency under load instead of increasing pools blindly.",
+    "introduction": "A high-latency request does not necessarily consume much CPU. It may be waiting on a mutex, scheduling, a network response or a connection pool. Capture evidence for the same workload and time window, and choose a profile that can explain the suspected delay.",
+    "conceptTag": "modules.profiles-contention",
+    "sections": [
+      {
+        "title": "Capture a bounded benchmark profile",
+        "body": "CPU profiles show sampled execution time. Heap and allocation profiles answer different memory questions, so choose the sample type deliberately. Keep the test binary with its profiles and source revision; otherwise symbol names and comparisons can become misleading.",
+        "code": "go test ./internal/codec -run='^$' -bench=BenchmarkEncode -cpuprofile=cpu.out -memprofile=mem.out\ngo tool pprof -top cpu.out\ngo tool pprof -sample_index=alloc_space -top mem.out",
+        "language": "bash",
+        "walkthrough": "The commands create local profile artifacts and show where time or allocated bytes accumulate in the measured benchmark. They do not show every blocked request or replace pool wait metrics from a real service."
+      },
+      {
+        "title": "Trace scheduling and explicit contention",
+        "body": "Execution traces provide a timeline of goroutines and runtime activity. Block and mutex profiles need suitable runtime sampling configuration; collecting zero samples is not evidence that a service never waits. Profiling itself can affect the workload, so compare with the uninstrumented baseline.",
+        "code": "go test ./internal/service -run TestBurst -trace=trace.out\ngo tool trace trace.out\ngo test ./internal/service -run TestBurst -blockprofile=block.out -mutexprofile=mutex.out",
+        "language": "bash",
+        "walkthrough": "Replace TestBurst with a bounded representative test. Inspect overlap among waiting, CPU work and goroutine growth before changing concurrency or blaming the garbage collector."
+      },
+      {
+        "title": "Turn evidence into one falsifiable change",
+        "body": "If pool checkout dominates, inspect request arrival rate and slow operations before raising pool limits. If allocation dominates, find retained objects and hot allocation sites. Expose production profiling only through an appropriately restricted diagnostic path because profiles can reveal application data and implementation details.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Match the profile to the suspected bottleneck and compare one controlled change. CPU time, allocated bytes and waiting time are related but different measurements.",
+    "reviewPrompt": "Low CPU with high latency",
+    "reviewAnswer": "May indicate waiting, not spare request capacity",
+    "question": "Why can a slow service have a mostly idle CPU?",
+    "wrongAnswers": [
+      "Every slow request must consume one full core",
+      "The garbage collector always accounts for all request latency"
+    ],
+    "hint": "Follow where requests spend time, including queues.",
+    "nuance": "A blocked request can spend most of its time waiting while consuming little CPU. Inspect queue, pool and synchronization delays as well as execution samples.",
+    "references": [
+      "https://go.dev/doc/diagnostics",
+      "https://pkg.go.dev/runtime/pprof",
+      "https://pkg.go.dev/runtime/trace"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Latency symptom",
+        "CPU / allocation / wait",
+        "Profile and trace",
+        "One measured change"
+      ],
+      "strengths": [
+        "Use pprof and traces to investigate latency under load instead of increasing pools blindly."
+      ],
+      "cautions": [
+        "A blocked request can spend most of its time waiting while consuming little CPU. Inspect queue, pool and synchronization delays as well as execution samples."
+      ],
+      "cost": "Profiles consume sampling overhead and need matching binaries, source revisions and a representative workload.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.build-capacity",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Build concurrency also has a memory budget",
+    "objective": "Separate compiler work, runtime goroutines and caches when CI or a small machine stalls.",
+    "introduction": "A burst of parallel compilation can exhaust memory before the program you are testing even starts. Build-cache misses, many packages, cgo and simultaneous jobs change the working set. Read the exact failing phase instead of assuming every slowdown is a goroutine scheduling issue in application code.",
+    "conceptTag": "modules.build-capacity",
+    "sections": [
+      {
+        "title": "Observe rather than clear every cache",
+        "body": "GOCACHE stores build artifacts while GOMODCACHE stores downloaded modules; these are different resources. A cache hit is useful only when the input and target match. Clearing both as the first troubleshooting step can amplify an outage by forcing every job to fetch and compile again.",
+        "code": "go env GOCACHE GOMODCACHE\ngo build -x -p=2 ./...\ngo test -p=2 ./...",
+        "language": "bash",
+        "walkthrough": "The -x output reveals invoked tools and selected work. -p bounds build/test package parallelism, making it useful on constrained CI workers; it is separate from the deployed application’s connection and goroutine limits."
+      },
+      {
+        "title": "Identify the runtime and the artifact",
+        "body": "Record the toolchain, module graph, target and build flags with the binary. go version -m inspects embedded build information. Repeat a clean dependency preparation in a fresh worktree or CI job when reproducibility is the question, instead of removing shared caches that other builds are using.",
+        "code": "go version\ngo env GOOS GOARCH CGO_ENABLED\ngo build -trimpath -o ./bin/app ./cmd/app\ngo version -m ./bin/app",
+        "language": "bash",
+        "walkthrough": "The example assumes a real cmd/app package in your checkout. -trimpath removes certain local path information; it is not a substitute for pinning inputs or proving that two independently built artifacts have identical bytes."
+      },
+      {
+        "title": "Set budgets at the correct layer",
+        "body": "A container memory limit, runtime GOMEMLIMIT, compiler package parallelism and application concurrency solve different problems. GOMEMLIMIT is a soft runtime target and does not cap all process or kernel memory. Change the limit indicated by evidence; increasing all limits can move the failure to the host.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Locate the failing phase and its resource owner. Bound build jobs separately from runtime work, and retain caches and build provenance deliberately.",
+    "reviewPrompt": "go build -p",
+    "reviewAnswer": "Bounds concurrent package work, not request goroutines",
+    "question": "What does lowering go build -p primarily control?",
+    "wrongAnswers": [
+      "The maximum number of HTTP requests in the built app",
+      "The database connection pool inside every package"
+    ],
+    "hint": "The build process and the deployed service have separate budgets.",
+    "nuance": "The -p build flag limits concurrent package work in the toolchain. It does not impose a request, goroutine or database-connection limit on the compiled application.",
+    "references": [
+      "https://pkg.go.dev/cmd/go#hdr-Compile_packages_and_dependencies",
+      "https://go.dev/doc/gc-guide",
+      "https://go.dev/doc/toolchain"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Cold inputs",
+        "Parallel compiler jobs",
+        "Memory budget",
+        "Verified cached build"
+      ],
+      "strengths": [
+        "Separate compiler work, runtime goroutines and caches when CI or a small machine stalls."
+      ],
+      "cautions": [
+        "The -p build flag limits concurrent package work in the toolchain. It does not impose a request, goroutine or database-connection limit on the compiled application."
+      ],
+      "cost": "Lower package concurrency can increase build time while preventing memory exhaustion on a small worker.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.tools-toolchain",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Pin the compiler and the tools that generate your code",
+    "objective": "Distinguish application dependencies, development commands and toolchain selection.",
+    "introduction": "The binary that formats, generates or analyzes your project is part of the workflow’s input. An unpinned command on PATH can silently change generated output or lint results. Keep the intended tool version and compiler selection explicit without confusing them with the libraries your application imports.",
+    "conceptTag": "modules.tools-toolchain",
+    "sections": [
+      {
+        "title": "Read both go and toolchain directives",
+        "body": "The go directive states a module’s minimum Go version; a toolchain directive can suggest a toolchain for work on the main module. Depending on GOTOOLCHAIN, the go command may select or download another toolchain. CI should record its effective version instead of assuming PATH alone settles it.",
+        "code": "go version\ngo env GOTOOLCHAIN GOMOD GOWORK\ngo mod edit -json",
+        "language": "bash",
+        "walkthrough": "Inspect the active module and its directives together. In a restricted or offline environment, automatic toolchain downloads may not be available; prepare the required supported compiler before the build."
+      },
+      {
+        "title": "Install one reviewed command version",
+        "body": "A versioned go install command builds the selected command independently of the current module’s application dependencies. Newer Go versions also support tracking tools in go.mod; use the mechanism supported by your project toolchain and keep CI invocation consistent.",
+        "code": "go install golang.org/x/vuln/cmd/govulncheck@v1.1.4\n# Run the installed command from the configured GOBIN/PATH.\ngovulncheck ./...",
+        "language": "bash",
+        "walkthrough": "The version is an illustrative pin, not a claim that it is the latest release. Review and update tool pins deliberately; pinning avoids surprise changes but does not make an old tool permanently appropriate."
+      },
+      {
+        "title": "Generators need the same discipline",
+        "body": "Document which generated outputs belong in version control and which are produced during a clean build. Test the generated delta and avoid a generator that relies on an uncommitted local replacement. Tool updates deserve a separate diff so semantic application changes remain reviewable.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Record the effective compiler and reviewed tool versions. Keep generation reproducible and separate from ordinary library-version selection.",
+    "reviewPrompt": "Tool pin",
+    "reviewAnswer": "Makes a command version explicit, not permanently safe",
+    "question": "Why pin development commands used by CI?",
+    "wrongAnswers": [
+      "To make every future security update unnecessary",
+      "To force all application libraries to the same version number"
+    ],
+    "hint": "Reproducibility and ongoing maintenance both matter.",
+    "nuance": "A reviewed tool pin makes CI’s command input reproducible. It still needs maintenance; it neither fixes all dependencies to one version nor removes future security work.",
+    "references": [
+      "https://go.dev/doc/toolchain",
+      "https://go.dev/doc/modules/managing-dependencies#tools",
+      "https://go.dev/doc/security/vuln/"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "go directive",
+        "Toolchain selection",
+        "Pinned tools",
+        "Repeatable output"
+      ],
+      "strengths": [
+        "Distinguish application dependencies, development commands and toolchain selection."
+      ],
+      "cautions": [
+        "A reviewed tool pin makes CI’s command input reproducible. It still needs maintenance; it neither fixes all dependencies to one version nor removes future security work."
+      ],
+      "cost": "Pinned tools and compilers make output reproducible but add an explicit dependency-update responsibility.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.fuzz-vulnerability",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Test unknown inputs and check reachable vulnerabilities",
+    "objective": "Combine fuzzing, regression seeds and govulncheck without treating one green tool as complete assurance.",
+    "introduction": "Normal tests often cover the examples you already understand. Parsers and protocol boundaries also receive truncated, oversized and surprising inputs. Fuzzing explores input behavior, while vulnerability analysis asks whether known vulnerable code is reachable; the two tools answer different questions.",
+    "conceptTag": "modules.fuzz-vulnerability",
+    "sections": [
+      {
+        "title": "Choose a property with a real oracle",
+        "body": "A useful fuzz property can check round trips, bounded output, valid parsing or equivalent behavior between implementations. Avoid a property that merely repeats the implementation. Bound input size and work so one accidental huge allocation does not consume the entire test budget.",
+        "code": "func FuzzIntegerRoundTrip(f *testing.F) {\n    f.Add(\"12\")\n    f.Add(\"-1\")\n    f.Fuzz(func(t *testing.T, raw string) {\n        if len(raw) > 128 { t.Skip() }\n        n, err := strconv.Atoi(raw)\n        if err != nil { return }\n        again, err := strconv.Atoi(strconv.Itoa(n))\n        if err != nil || again != n { t.Fatal(\"integer round trip\") }\n    })\n}",
+        "language": "go",
+        "walkthrough": "The fragment imports testing and strconv and asserts a defined parse/format/parse round trip for accepted integers. Rejected strings are allowed by the parser contract. For your own parser, choose an equally explicit invariant and retain meaningful failures as regression seeds."
+      },
+      {
+        "title": "Give exploration and regression separate jobs",
+        "body": "Run a bounded fuzz campaign in a development environment and commit the small failing seed that explains a fixed bug. Ordinary go test reruns seed corpus inputs without launching an open-ended fuzz search. Vulnerability checks should use a reviewed current database and tool in connected CI.",
+        "code": "go test ./internal/parser -fuzz=FuzzIntegerRoundTrip -fuzztime=20s\ngo test ./...\ngovulncheck ./...",
+        "language": "bash",
+        "walkthrough": "The package path is illustrative and must contain the target. Fuzz time bounds the campaign; source-level vulnerability findings still need interpretation against the built artifact, call path and deployment configuration."
+      },
+      {
+        "title": "Keep the conclusion proportional to the evidence",
+        "body": "A green scan only reports what the analyzer and its current vulnerability database know. It does not inspect every operational configuration or prove the absence of new vulnerabilities. A clean fuzz run means the explored inputs did not violate the asserted properties within that budget.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Use a meaningful bounded input property, retain regression seeds and analyze dependency findings in context. No single tool replaces behavior and deployment review.",
+    "reviewPrompt": "Green analysis tools",
+    "reviewAnswer": "Report bounded evidence, not absence of every bug",
+    "question": "What does a passing bounded fuzz run establish?",
+    "wrongAnswers": [
+      "All possible inputs have been exhaustively checked",
+      "Dependency security no longer needs maintenance"
+    ],
+    "hint": "State the input budget and the property actually asserted.",
+    "nuance": "A weak property can pass even when the parser is wrong; choose an oracle tied to the contract.",
+    "references": [
+      "https://go.dev/doc/tutorial/fuzz",
+      "https://go.dev/doc/security/vuln/",
+      "https://go.dev/security/fuzz/"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Boundary input",
+        "Fuzz property",
+        "Regression seed",
+        "Dependency finding"
+      ],
+      "strengths": [
+        "Combine fuzzing, regression seeds and govulncheck without treating one green tool as complete assurance."
+      ],
+      "cautions": [
+        "A weak property can pass even when the parser is wrong; choose an oracle tied to the contract."
+      ],
+      "cost": "Fuzzing spends a bounded compute budget; vulnerability findings require a maintained database and a reachable-code interpretation.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "modules.startup-ownership",
+    "unitID": "modules",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Package initialization is not a request-time connection factory",
+    "objective": "Move fallible setup to an explicit owner and close shared resources after work drains.",
+    "introduction": "Imported packages initialize before main, and hidden setup can turn an import into a database connection, network wait or process-wide configuration decision. Make those dependencies visible at the composition root so startup, tests, retries and shutdown share a clear owner.",
+    "conceptTag": "modules.startup-ownership",
+    "sections": [
+      {
+        "title": "Keep fallible startup explicit",
+        "body": "A constructor can return an error and accept a caller-owned context; init cannot return an error to its caller. Build shared clients once, check readiness with a bounded operation, and inject them into handlers. Do not construct a new pool every time a request arrives.",
+        "code": "func run(ctx context.Context) error {\n    cfg, err := loadConfig()\n    if err != nil { return fmt.Errorf(\"config: %w\", err) }\n    store, err := openStore(ctx, cfg)\n    if err != nil { return fmt.Errorf(\"store: %w\", err) }\n    defer store.Close()\n    return serve(ctx, store)\n}",
+        "language": "go",
+        "walkthrough": "This is an application-structure fragment: loadConfig, openStore and serve belong to the application. The ordering exposes error propagation and ownership, while real shutdown must let active handlers finish before the shared store closes."
+      },
+      {
+        "title": "Audit hidden work in dependencies",
+        "body": "Look for init functions, package-level constructors, mutable registries and side-effect imports. Some registration is intentional; expensive or fallible runtime work needs a visible reason. An import cycle is a package-graph problem, not a request concurrency problem.",
+        "code": "go list -deps ./cmd/app\ngo list -f '{{.ImportPath}}: {{.Imports}}' ./internal/...\ngo test -count=1 ./...",
+        "language": "bash",
+        "walkthrough": "The commands show dependency paths and exercise a fresh test run. They do not inspect hidden effects automatically; combine the graph with reading constructors and initialization code at the boundaries you own."
+      },
+      {
+        "title": "Budget readiness and shutdown",
+        "body": "A readiness check should answer whether this instance can serve useful work, not hammer every dependency on every health probe. Stop new work, drain in-flight requests within a deadline, then close shared clients. Use a new bounded cleanup context when the request context is already canceled.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Give fallible setup, request work and cleanup explicit owners. Reuse shared clients, preserve deadlines and test startup failure and shutdown ordering.",
+    "reviewPrompt": "Shared client lifetime",
+    "reviewAnswer": "Construct once; close after owned work drains",
+    "question": "Who should own a service-wide database client?",
+    "wrongAnswers": [
+      "Each handler creates and forgets its own pool",
+      "Every imported package silently creates one in init"
+    ],
+    "hint": "Match resource lifetime to the component that uses it.",
+    "nuance": "The application component owns a shared client across requests, stops new work and drains existing work before closing it. Per-request pools multiply connection and startup costs.",
+    "references": [
+      "https://go.dev/ref/spec#Package_initialization",
+      "https://pkg.go.dev/context",
+      "https://pkg.go.dev/net/http#Server.Shutdown"
+    ],
+    "designGuide": {
+      "family": "Packages and production tooling",
+      "flow": [
+        "Load configuration",
+        "Construct shared client",
+        "Serve bounded work",
+        "Drain and close"
+      ],
+      "strengths": [
+        "Move fallible setup to an explicit owner and close shared resources after work drains."
+      ],
+      "cautions": [
+        "The application component owns a shared client across requests, stops new work and drains existing work before closing it. Per-request pools multiply connection and startup costs."
+      ],
+      "cost": "Explicit startup and drain ordering take code, but make connection ownership, failure and tests observable.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.mongo-client",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "MongoDB: one client, explicit deadlines and typed documents",
+    "objective": "Connect with the Go v2 driver and separate construction, readiness, request work and cleanup.",
+    "introduction": "MongoDB stores BSON documents and the Go driver manages discovery and pools for the deployment. A collection handle is not a new physical connection. Reuse a client across requests, model the fields the application owns, and keep network setup outside request-time package initialization.",
+    "conceptTag": "datastores.mongo-client",
+    "sections": [
+      {
+        "title": "Construct the client and probe readiness",
+        "body": "The example uses go.mongodb.org/mongo-driver/v2, with v2.3.1 as a reproducible example pin. Connect constructs the client; a successful Ping is separate evidence that a server is reachable. In a native development checkout, obtain the URI from configuration and use the deployment’s required authentication and TLS.",
+        "code": "client, err := mongo.Connect(options.Client().ApplyURI(uri).SetMaxPoolSize(16))\nif err != nil { return err }\nprobe, cancel := context.WithTimeout(ctx, 2*time.Second)\nerr = client.Ping(probe, readpref.Primary())\ncancel()\nif err != nil {\n    cleanup, stop := context.WithTimeout(context.Background(), time.Second)\n    defer stop()\n    _ = client.Disconnect(cleanup)\n    return err\n}",
+        "language": "go",
+        "walkthrough": "The fragment belongs to a startup function returning error and imports context, time, mongo, mongo/options and mongo/readpref from the v2 driver. The pool size is illustrative, not a production sizing recommendation."
+      },
+      {
+        "title": "Decode into a deliberate schema",
+        "body": "Use BSON tags and explicit field types instead of letting every layer pass an unstructured map. Validate external input before constructing a query. ErrNoDocuments is an expected absence case when the contract allows it; it is different from a timeout, authorization failure or decode error.",
+        "code": "type Note struct {\n    ID bson.ObjectID `bson:\"_id,omitempty\"`\n    Tenant string `bson:\"tenant\"`\n    Body string `bson:\"body\"`\n}\nvar note Note\nerr := notes.FindOne(ctx, bson.D{{Key: \"tenant\", Value: tenant}, {Key: \"_id\", Value: id}}).Decode(&note)\nif errors.Is(err, mongo.ErrNoDocuments) { return ErrNotFound }\nif err != nil { return fmt.Errorf(\"load note: %w\", err) }",
+        "language": "go",
+        "walkthrough": "notes is a collection from the shared client; tenant and id come from validated application inputs. The application defines ErrNotFound. An omitted tenant predicate could become a data-isolation bug even if the database query is fast."
+      },
+      {
+        "title": "Use separate lifetimes",
+        "body": "Every request operation should inherit a bounded caller context. Startup probes and final Disconnect need their own lifetimes; do not reuse an already canceled request context for cleanup. These native service snippets are reading material: GopherForge does not add remote MongoDB sockets to its WASI execution sandbox.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Reuse a configured v2 client, prove readiness separately, decode explicit BSON models and distinguish absence from infrastructure failures.",
+    "reviewPrompt": "mongo.Connect succeeds",
+    "reviewAnswer": "Does not alone prove server readiness",
+    "question": "What does a successful mongo.Connect call establish?",
+    "wrongAnswers": [
+      "Every future operation will complete within its deadline",
+      "A new client must be created for each collection operation"
+    ],
+    "hint": "Construction and a bounded server operation are separate events.",
+    "nuance": "Connect configures a client; a bounded Ping separately tests current server readiness. Neither promises that future network operations cannot fail or time out.",
+    "references": [
+      "https://www.mongodb.com/docs/drivers/go/current/connect/",
+      "https://www.mongodb.com/docs/drivers/go/current/context/",
+      "https://pkg.go.dev/go.mongodb.org/mongo-driver/v2/mongo"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "One shared client",
+        "Bounded readiness",
+        "Typed operation",
+        "Bounded cleanup"
+      ],
+      "strengths": [
+        "Connect with the Go v2 driver and separate construction, readiness, request work and cleanup."
+      ],
+      "cautions": [
+        "Connect configures a client; a bounded Ping separately tests current server readiness. Neither promises that future network operations cannot fail or time out."
+      ],
+      "cost": "One shared client owns pools and topology monitoring; each additional service instance multiplies that connection demand.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.mongo-indexes",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "MongoDB: design the query and its compound index together",
+    "objective": "Use explain evidence, tenant predicates and stable pagination rather than adding indexes blindly.",
+    "introduction": "A query that is fast with ten documents may scan a large collection after real traffic arrives. Shape the filter, sort and returned fields around an actual use case, then inspect the execution plan and the documents examined. Indexes improve selected reads while adding write, memory and maintenance cost.",
+    "conceptTag": "datastores.mongo-indexes",
+    "sections": [
+      {
+        "title": "Create an index for one access pattern",
+        "body": "In an isolated development database, consider a tenant’s newest notes. A compound index starts with tenant equality and then the chosen sort keys. Keep the tie-breaker consistent with pagination so equal timestamps do not create unstable page boundaries.",
+        "code": "db.notes.createIndex({tenant: 1, createdAt: -1, _id: -1})\ndb.notes.find({tenant: \"demo\"}, {body: 1, createdAt: 1})\n  .sort({createdAt: -1, _id: -1}).limit(20).explain(\"executionStats\")",
+        "language": "javascript",
+        "walkthrough": "These mongosh commands assume demo documents in a development database. Compare nReturned, totalKeysExamined and totalDocsExamined and inspect the winning plan; explain executionStats runs the query and can itself add load."
+      },
+      {
+        "title": "Use a stable continuation predicate",
+        "body": "For descending pagination, continue before the last (createdAt, _id) pair instead of repeatedly skipping an ever-growing number of earlier results. Match the sort and predicate with the index, and define what happens when documents change between pages.",
+        "code": "db.notes.find({tenant: \"demo\", $or: [\n  {createdAt: {$lt: ISODate(\"2026-10-01T00:00:00Z\")}},\n  {createdAt: ISODate(\"2026-10-01T00:00:00Z\"),\n   _id: {$lt: ObjectId(\"650000000000000000000001\")}}\n]}).sort({createdAt: -1, _id: -1}).limit(20)",
+        "language": "javascript",
+        "walkthrough": "The timestamp and ObjectId are example continuation values, not an offset. New writes may change a live listing; a stable ordering is not automatically a snapshot of the collection across multiple requests."
+      },
+      {
+        "title": "Verify selectivity and write cost",
+        "body": "A large limit, broad regex, missing tenant condition or incompatible sort can overwhelm a previously adequate pool. Index order, multikey behavior and collation affect usable plans. Measure representative data distribution and write latency before retaining another index; hints can hide a modeling error.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Design filter, sort, projection and continuation together, verify examined work with explain, and account for index maintenance on every write.",
+    "reviewPrompt": "An added index",
+    "reviewAnswer": "Trades selected read work for storage and write cost",
+    "question": "Why inspect explain after creating an index?",
+    "wrongAnswers": [
+      "Any index guarantees constant-time queries",
+      "Pool size determines whether every query uses its index"
+    ],
+    "hint": "Compare work examined with useful rows returned.",
+    "nuance": "The useful plan depends on filter, sort, selectivity and index shape. Explain measures examined work; a client pool setting does not guarantee index use.",
+    "references": [
+      "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+      "https://www.mongodb.com/docs/manual/tutorial/analyze-query-plan/",
+      "https://www.mongodb.com/docs/manual/reference/method/cursor.skip/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Filter and sort",
+        "Candidate index",
+        "Explain evidence",
+        "Measured write cost"
+      ],
+      "strengths": [
+        "Use explain evidence, tenant predicates and stable pagination rather than adding indexes blindly."
+      ],
+      "cautions": [
+        "The useful plan depends on filter, sort, selectivity and index shape. Explain measures examined work; a client pool setting does not guarantee index use."
+      ],
+      "cost": "Each index consumes storage, memory and write maintenance; keep it only when the measured access pattern earns that cost.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.mongo-atomic",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "MongoDB: put the invariant in the write predicate",
+    "objective": "Prevent lost updates with atomic operators and optimistic version checks.",
+    "introduction": "Reading a document, changing a field in Go and writing it back leaves a window for another request to change the same value. Memory race detection cannot find that distributed lost update. Express the allowed transition in the database predicate and inspect whether the write actually matched.",
+    "conceptTag": "datastores.mongo-atomic",
+    "sections": [
+      {
+        "title": "Update fields without replacing unrelated state",
+        "body": "Use an atomic field operator when it expresses the intended operation. A client-side read followed by replacement can lose a concurrent edit or erase fields the caller never loaded. Include ownership predicates such as the tenant in the write, not only in the earlier read.",
+        "code": "filter := bson.D{{Key: \"_id\", Value: id}, {Key: \"tenant\", Value: tenant}, {Key: \"version\", Value: expected}}\nupdate := bson.D{\n    {Key: \"$set\", Value: bson.D{{Key: \"body\", Value: body}}},\n    {Key: \"$inc\", Value: bson.D{{Key: \"version\", Value: 1}}},\n}\nresult, err := notes.UpdateOne(ctx, filter, update)\nif err != nil { return err }\nif result.MatchedCount == 0 { return ErrConflict }",
+        "language": "go",
+        "walkthrough": "This fragment assumes the shared v2 driver collection and application variables. A zero match can mean stale version or absence; map that to the application contract rather than reporting an unconditional successful save."
+      },
+      {
+        "title": "Enforce uniqueness where concurrent writers meet",
+        "body": "A preliminary find cannot guarantee that another request will not insert the same business key. Define a unique index for that invariant and handle duplicate-key errors deliberately. In multi-tenant systems, decide whether uniqueness is global or scoped to a tenant.",
+        "code": "db.notes.createIndex({tenant: 1, externalID: 1}, {unique: true})\ndb.notes.updateOne(\n  {tenant: \"demo\", externalID: \"invoice-42\"},\n  {$setOnInsert: {body: \"first value\", version: 1}},\n  {upsert: true}\n)",
+        "language": "javascript",
+        "walkthrough": "The example is a development upsert keyed by a stable external identifier. Review existing duplicate data before adding the unique index; deployment of an invariant is itself a migration that can fail."
+      },
+      {
+        "title": "Single-document atomicity has a boundary",
+        "body": "One atomic update does not make a two-document business operation atomic. Prefer a document model that contains the invariant when practical, or use a transaction with a clear cost and retry policy. Avoid promising exactly-once business effects just because the driver can retry an eligible write.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Use conditional atomic writes and database-enforced uniqueness for concurrent invariants. Treat unmatched writes and duplicate keys as meaningful outcomes.",
+    "reviewPrompt": "Zero matched updates",
+    "reviewAnswer": "Is an outcome to handle, not automatic success",
+    "question": "What must a version-checked update inspect after no driver error?",
+    "wrongAnswers": [
+      "Only whether the preceding read found a document",
+      "Whether the Go race detector reported shared memory"
+    ],
+    "hint": "No driver error does not imply that the predicate matched.",
+    "nuance": "No driver error does not mean the predicate matched. Check MatchedCount and handle an absent or stale-version document; one-document atomicity does not cover every business invariant.",
+    "references": [
+      "https://www.mongodb.com/docs/manual/core/write-operations-atomicity/",
+      "https://www.mongodb.com/docs/manual/core/index-unique/",
+      "https://www.mongodb.com/docs/drivers/go/current/crud/update/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Expected version",
+        "Conditional update",
+        "Matched result",
+        "Conflict or success"
+      ],
+      "strengths": [
+        "Prevent lost updates with atomic operators and optimistic version checks."
+      ],
+      "cautions": [
+        "No driver error does not mean the predicate matched. Check MatchedCount and handle an absent or stale-version document; one-document atomicity does not cover every business invariant."
+      ],
+      "cost": "Version conflicts become visible application outcomes; the caller needs retry, merge or user-facing conflict behavior.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.mongo-transactions",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "MongoDB transactions: retry database work, not external effects",
+    "objective": "Choose transaction boundaries, concerns and idempotency for ambiguous failures.",
+    "introduction": "A transaction can protect a multi-document invariant, but it adds coordination and can retry work. A callback that charges a card or sends email while updating documents can repeat an external effect. Keep the database transition inside the transaction and move external delivery behind an explicit durable boundary.",
+    "conceptTag": "datastores.mongo-transactions",
+    "sections": [
+      {
+        "title": "Keep session work sequential and owned",
+        "body": "The Go v2 driver’s WithTransaction callback receives the context that operations in the transaction must use. Do not share a session concurrently across goroutines or start parallel operations inside one transaction. A replica-set or supported sharded deployment is required; a standalone local server is not equivalent.",
+        "code": "session, err := client.StartSession()\nif err != nil { return err }\ndefer func() {\n    cleanup, stop := context.WithTimeout(context.Background(), time.Second)\n    defer stop()\n    session.EndSession(cleanup)\n}()\n_, err = session.WithTransaction(ctx, func(tx context.Context) (any, error) {\n    if _, err := orders.InsertOne(tx, order); err != nil { return nil, err }\n    return outbox.InsertOne(tx, event)\n})\nreturn err",
+        "language": "go",
+        "walkthrough": "The application constructs order and event with stable operation identifiers and uses collections from the same shared client. The callback contains database work only; the outbox consumer sends the external notification after commit."
+      },
+      {
+        "title": "Define what committed means for this operation",
+        "body": "Read concern, write concern and read preference affect visibility and acknowledgment. A timeout or lost response can leave the caller unsure whether a commit happened. Reconcile using the durable operation ID rather than assuming every error means nothing changed.",
+        "code": "db.orders.createIndex({operationID: 1}, {unique: true})\ndb.outbox.createIndex({eventID: 1}, {unique: true})\ndb.orders.findOne({operationID: \"checkout-demo-42\"})",
+        "language": "javascript",
+        "walkthrough": "These development commands illustrate the durable keys used for reconciliation. Unique identifiers do not on their own deliver an external effect exactly once; the receiver and delivery process also need idempotency."
+      },
+      {
+        "title": "Test the failure windows",
+        "body": "Inject a transient transaction failure, an ambiguous commit response and a consumer crash after sending but before marking delivery. Verify the resulting invariant and duplicate handling. Short transactions reduce contention; do not perform slow HTTP calls or user interaction while holding a transaction open.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "A retryable transaction callback should contain repeatable database work. Use durable operation IDs and an outbox when the business action crosses systems.",
+    "reviewPrompt": "Transaction callback retries",
+    "reviewAnswer": "Can repeat its application-side code",
+    "question": "Why keep an external payment call outside WithTransaction?",
+    "wrongAnswers": [
+      "MongoDB automatically rolls back every remote HTTP service",
+      "A shared session makes all goroutines globally sequential"
+    ],
+    "hint": "The database cannot undo an effect in another system.",
+    "nuance": "The driver can rerun the transaction callback. MongoDB cannot roll back an external payment or email, so make database work repeatable and deliver external effects through an idempotent boundary.",
+    "references": [
+      "https://www.mongodb.com/docs/drivers/go/current/crud/transactions/",
+      "https://www.mongodb.com/docs/manual/core/transactions-production-consideration/",
+      "https://www.mongodb.com/docs/manual/reference/write-concern/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Business operation ID",
+        "Transaction callback",
+        "Commit outcome",
+        "Outbox delivery"
+      ],
+      "strengths": [
+        "Choose transaction boundaries, concerns and idempotency for ambiguous failures."
+      ],
+      "cautions": [
+        "The driver can rerun the transaction callback. MongoDB cannot roll back an external payment or email, so make database work repeatable and deliver external effects through an idempotent boundary."
+      ],
+      "cost": "Transactions add coordination and contention; the outbox adds durable records, delivery workers and duplicate handling.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.mongo-cursors",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "MongoDB cursors: bound the result and close the stream",
+    "objective": "Avoid loading an unbounded collection into application memory.",
+    "introduction": "A cursor lets an application consume a result in batches; it is not permission to read the entire database without a budget. The query, projection, batch size, total limit and request deadline jointly determine network work and application memory. Check errors after iteration, not only when opening the cursor.",
+    "conceptTag": "datastores.mongo-cursors",
+    "sections": [
+      {
+        "title": "Iterate with a deadline and a total limit",
+        "body": "The v2 cursor’s Next can fail after some documents have already been decoded. Close the cursor on every path and propagate decode and cursor errors. A batch size controls transfer grouping; a total limit controls how much useful work the request is willing to perform.",
+        "code": "cursor, err := notes.Find(ctx, filter, options.Find().SetLimit(100).SetBatchSize(25))\nif err != nil { return err }\ndefer func() {\n    cleanup, stop := context.WithTimeout(context.Background(), time.Second)\n    defer stop()\n    _ = cursor.Close(cleanup)\n}()\nfor cursor.Next(ctx) {\n    var note Note\n    if err := cursor.Decode(&note); err != nil { return err }\n    if err := consume(note); err != nil { return err }\n}\nreturn cursor.Err()",
+        "language": "go",
+        "walkthrough": "The fragment assumes a bounded ctx, the application’s Note model and a consumer that does not retain every document. Cleanup gets a fresh bounded context so a canceled request does not prevent the cursor-close attempt."
+      },
+      {
+        "title": "Project only what this path needs",
+        "body": "For a list view, return a small subset rather than large embedded payloads. Calling All on an unbounded cursor can materialize the whole result and exhaust memory. BatchSize does not impose a total row limit or protect you if consume appends every document to a slice.",
+        "code": "db.notes.find({tenant: \"demo\"}, {body: 1, createdAt: 1})\n  .sort({createdAt: -1, _id: -1}).limit(100).batchSize(25)",
+        "language": "javascript",
+        "walkthrough": "The development shell query caps the result independently of the batch size. Keep a supporting index for the actual filter and sort and measure response bytes as well as document count."
+      },
+      {
+        "title": "Own downstream backpressure",
+        "body": "If documents are sent to worker goroutines, use a bounded channel and cancellation path. Otherwise a streaming query can simply move the unbounded queue into Go memory. Do not concurrently use one cursor from multiple goroutines; give iteration one owner and distribute decoded values deliberately.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Bound total work separately from batch grouping, inspect cursor.Err, close on every path, and keep downstream buffering bounded.",
+    "reviewPrompt": "Cursor batch size",
+    "reviewAnswer": "Controls batches, not the total result limit",
+    "question": "Why is a small batch size insufficient protection against memory growth?",
+    "wrongAnswers": [
+      "It makes the server ignore all query predicates",
+      "It automatically discards every decoded document"
+    ],
+    "hint": "The consumer may still retain every batch.",
+    "nuance": "Streaming only stays memory-bounded when the query and downstream consumer both have explicit limits.",
+    "references": [
+      "https://www.mongodb.com/docs/drivers/go/current/crud/query/cursor/",
+      "https://pkg.go.dev/go.mongodb.org/mongo-driver/v2/mongo#Cursor",
+      "https://www.mongodb.com/docs/drivers/go/current/crud/query/specify-return-documents/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Bounded query",
+        "Batch from server",
+        "Process one document",
+        "Check and close"
+      ],
+      "strengths": [
+        "Avoid loading an unbounded collection into application memory."
+      ],
+      "cautions": [
+        "Streaming only stays memory-bounded when the query and downstream consumer both have explicit limits."
+      ],
+      "cost": "Bounded iteration reduces retained memory but requires cursor ownership, cancellation and downstream backpressure.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.mongo-load",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "MongoDB under load: budget waiting before enlarging the pool",
+    "objective": "Separate server selection, pool checkout, query time and application queueing.",
+    "introduction": "When every operation slows down, a larger pool can multiply pressure on the same database. Investigate where the deadline is spent: waiting in the application, selecting a server, checking out a connection, creating a socket or executing a query. Count all application instances and topology servers in the capacity model.",
+    "conceptTag": "datastores.mongo-load",
+    "sections": [
+      {
+        "title": "Reuse a bounded shared client",
+        "body": "A pool is associated with a server in the topology; monitoring connections add to the total. MaxPoolSize limits active pool capacity, not the number of goroutines allowed to wait. Give operations a deadline and bound application admission so overload does not become an invisible growing queue.",
+        "code": "opts := options.Client().ApplyURI(uri).\n    SetMaxPoolSize(16).SetMaxConnecting(2).\n    SetMaxConnIdleTime(60*time.Second).SetTimeout(2*time.Second)\nclient, err := mongo.Connect(opts)\nif err != nil { return err }",
+        "language": "go",
+        "walkthrough": "These are illustrative v2 settings for a small service, not universal recommendations. Estimate total connections across all instances and topology members and compare checkout wait with query duration before changing the cap."
+      },
+      {
+        "title": "Use evidence from both client and database",
+        "body": "In a development environment, inspect operation behavior with an explain plan and server metrics. Add client-side pool and command monitoring at the application boundary; avoid logging credentials, raw documents or sensitive filter values in telemetry.",
+        "code": "db.notes.find({tenant: \"demo\"}).limit(20).explain(\"executionStats\")\ndb.serverStatus().connections\ndb.serverStatus().opcounters",
+        "language": "javascript",
+        "walkthrough": "Availability of server metrics depends on deployment permissions and product. Correlate a time window of pool checkout wait, request errors and examined documents; a lifetime counter alone cannot explain current tail latency."
+      },
+      {
+        "title": "Recover without a retry storm",
+        "body": "One overall deadline should cover queueing and attempts. Restrict retryable work and test server failover, pool saturation and slow-query recovery. Separate a deliberately slow bulk operation from latency-sensitive traffic when their budgets differ, and prefer fixing an inefficient query to adding thousands of waiting goroutines.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Bound admission and waiting as well as sockets, then tune using correlated request, pool and query evidence. More connections do not repair an overloaded database.",
+    "reviewPrompt": "Larger connection pool",
+    "reviewAnswer": "Can increase pressure without reducing the bottleneck",
+    "question": "What should precede a pool-size increase during high latency?",
+    "wrongAnswers": [
+      "Adding an unbounded goroutine for every queued operation",
+      "Retrying every failed write forever"
+    ],
+    "hint": "Find the stage that consumes the operation deadline.",
+    "nuance": "Client pool capacity, waiting goroutines and total deployment connections are different quantities.",
+    "references": [
+      "https://www.mongodb.com/docs/drivers/go/current/connect/connection-options/connection-pools/",
+      "https://www.mongodb.com/docs/drivers/go/current/context/",
+      "https://www.mongodb.com/docs/manual/reference/command/serverStatus/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Admission budget",
+        "Pool checkout",
+        "Indexed operation",
+        "Latency and failure evidence"
+      ],
+      "strengths": [
+        "Separate server selection, pool checkout, query time and application queueing."
+      ],
+      "cautions": [
+        "Client pool capacity, waiting goroutines and total deployment connections are different quantities."
+      ],
+      "cost": "Admission limits trade immediate overload rejection for bounded waiting; tuning requires client and server telemetry together.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.redis-client",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Redis: share the client and distinguish a miss from an outage",
+    "objective": "Configure go-redis deadlines, connection budgets and explicit cache-miss behavior.",
+    "introduction": "Redis is often used as a low-latency data-structure service, but the network, client pool and command cost still exist. Create a shared client, keep a bounded operation context and distinguish redis.Nil from transport failures. A missing optional cache entry and an unavailable required store have different application contracts.",
+    "conceptTag": "datastores.redis-client",
+    "sections": [
+      {
+        "title": "Construct one client with explicit example budgets",
+        "body": "This lesson uses github.com/redis/go-redis/v9 with v9.16.0 as an example pin. PoolSize and MaxActiveConns are distinct knobs; do not assume a pool’s preferred retained size is a universal hard ceiling. Confirm options against the pinned version rather than copying future-version defaults.",
+        "code": "rdb := redis.NewClient(&redis.Options{\n    Addr: addr, PoolSize: 16, MaxActiveConns: 16,\n    PoolTimeout: 200*time.Millisecond,\n    DialTimeout: time.Second, ReadTimeout: time.Second, WriteTimeout: time.Second,\n    ContextTimeoutEnabled: true, MaxRetries: -1,\n})\n// One application owner closes rdb after in-flight work drains.",
+        "language": "go",
+        "walkthrough": "The values illustrate a bounded small-client configuration, with automatic retries disabled so policy is visible. Production TLS, authentication and addresses come from configuration; re-enable suitable retries only with an overall operation budget and duplicate-effect analysis."
+      },
+      {
+        "title": "Handle absence explicitly",
+        "body": "redis.Nil represents a missing key for a GET, not a dead server. Preserve other errors so a caller can apply the intended fallback or failure policy. A fallback that recomputes expensive data on every transport failure can overwhelm the primary database during a Redis outage.",
+        "code": "value, err := rdb.Get(ctx, key).Result()\nswitch {\ncase errors.Is(err, redis.Nil):\n    return loadFromOrigin(ctx, key)\ncase err != nil:\n    return \"\", fmt.Errorf(\"cache read: %w\", err)\ndefault:\n    return value, nil\n}",
+        "language": "go",
+        "walkthrough": "This is a helper returning string and error. The application supplies a bounded ctx and loadFromOrigin; the example deliberately surfaces infrastructure failure instead of silently starting unlimited origin requests."
+      },
+      {
+        "title": "Keep version and workload assumptions visible",
+        "body": "Later client versions can change pooling and pipeline behavior. Pin and test the version used by the service, including cancellation and saturation. These native network examples are not executable Redis access inside the app’s WASI sandbox; they teach the surrounding Go service environment.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Reuse the client, configure bounded waiting and handle value, miss and outage separately. Fallback and retry behavior are application decisions, not invisible conveniences.",
+    "reviewPrompt": "redis.Nil from GET",
+    "reviewAnswer": "Means the key is absent, not a connection outage",
+    "question": "How should a GET cache miss differ from a transport error?",
+    "wrongAnswers": [
+      "Treat both as evidence that Redis lost every key",
+      "Assume both guarantee an origin database request will be cheap"
+    ],
+    "hint": "Choose behavior for each error class.",
+    "nuance": "redis.Nil from GET means this key is absent. A transport failure is a different result; unlimited fallback work during an outage can overwhelm the origin.",
+    "references": [
+      "https://redis.io/docs/latest/develop/clients/go/",
+      "https://redis.io/docs/latest/develop/clients/go/produsage/",
+      "https://pkg.go.dev/github.com/redis/go-redis/v9"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Shared client",
+        "Bounded operation",
+        "Value / miss / failure",
+        "Deliberate fallback"
+      ],
+      "strengths": [
+        "Configure go-redis deadlines, connection budgets and explicit cache-miss behavior."
+      ],
+      "cautions": [
+        "redis.Nil from GET means this key is absent. A transport failure is a different result; unlimited fallback work during an outage can overwhelm the origin."
+      ],
+      "cost": "Shared pools save connection setup; their total size, retries and waiting must fit the deployment’s capacity budget.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.redis-cache",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Redis cache-aside: TTLs do not solve concurrent fills",
+    "objective": "Design expiry, invalidation, negative caching and stampede control deliberately.",
+    "introduction": "A cache duplicates another source of truth, so freshness and ownership must be explicit. Cache-aside reads can miss together, all query the origin and then repopulate the same key. TTL bounds one kind of staleness; it does not prevent a stampede or make a read-modify-write sequence correct.",
+    "conceptTag": "datastores.redis-cache",
+    "sections": [
+      {
+        "title": "Set value and expiration together",
+        "body": "Use one SET operation with expiry when creating an expiring value. A separate SET followed by EXPIRE leaves a failure window where the key can survive without the intended lifetime. An ordinary later SET can also change existing TTL behavior, so decide the overwrite policy.",
+        "code": "redis-cli SET demo:product:42 '{\"name\":\"tea\"}' EX 60\nredis-cli GET demo:product:42\nredis-cli TTL demo:product:42",
+        "language": "bash",
+        "walkthrough": "Run against an isolated development Redis using the demo namespace. TTL reports remaining expiry state, not freshness relative to a database update that happened after the value was cached."
+      },
+      {
+        "title": "Bound concurrent misses",
+        "body": "Coalesce identical in-process fills and independently bound the total number of origin calls. A per-key singleflight group only coordinates callers in this process; many service replicas can still miss together. Optional TTL jitter spreads expirations but does not guarantee a global rate limit.",
+        "code": "_, err := rdb.Set(ctx, key, encoded, 60*time.Second).Result()\nif err != nil { return fmt.Errorf(\"cache fill: %w\", err) }\n// A bounded loader owns misses; do not start one goroutine per waiting caller.",
+        "language": "go",
+        "walkthrough": "The fragment shows the atomic value-plus-expiry client operation after an origin load. It does not implement coalescing or cross-process coordination; those policies belong to the loader boundary and must be tested separately."
+      },
+      {
+        "title": "Handle stale and missing data as distinct cases",
+        "body": "Negative caching can reduce repeated absent-item lookups, but use a short deliberate lifetime and a representation distinct from a real value. A database update followed by cache deletion can race with an older in-flight fill. Use versioned keys or another coherent invalidation design when that stale-write window is unacceptable.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Set TTL atomically, bound origin fills and define the acceptable stale window. TTL, coalescing and invalidation address different failure modes.",
+    "reviewPrompt": "Cache TTL",
+    "reviewAnswer": "Does not prevent misses from flooding the origin",
+    "question": "What extra protection does a cache-aside loader need during a burst of misses?",
+    "wrongAnswers": [
+      "Only a longer TTL on keys that have not been created yet",
+      "One unlimited goroutine for every origin request"
+    ],
+    "hint": "Consider the empty-cache path, including all replicas.",
+    "nuance": "In-process coalescing does not coordinate other replicas or make invalidation races disappear.",
+    "references": [
+      "https://redis.io/docs/latest/commands/set/",
+      "https://pkg.go.dev/golang.org/x/sync/singleflight",
+      "https://redis.io/docs/latest/commands/ttl/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Lookup",
+        "Bounded origin fill",
+        "Publish with TTL",
+        "Invalidate or expire"
+      ],
+      "strengths": [
+        "Design expiry, invalidation, negative caching and stampede control deliberately."
+      ],
+      "cautions": [
+        "In-process coalescing does not coordinate other replicas or make invalidation races disappear."
+      ],
+      "cost": "Caching adds duplicate state, invalidation and miss coordination; measure saved origin work against stale-data risk.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.redis-pipeline",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Redis pipelines save round trips; they are not transactions",
+    "objective": "Bound command batches, inspect command errors and separate batching from atomicity.",
+    "introduction": "Pipelining lets a client send multiple commands without waiting for every individual round trip. It can improve throughput for independent work, but it does not make the group indivisible. Large batches also retain commands and replies in memory and can worsen latency for other work.",
+    "conceptTag": "datastores.redis-pipeline",
+    "sections": [
+      {
+        "title": "Batch independent work",
+        "body": "Queue a small known batch and inspect the returned command objects. An error from Exec needs interpretation alongside each command result. A connection failure can leave the caller uncertain which writes the server executed; a batch is not an automatic rollback boundary.",
+        "code": "pipe := rdb.Pipeline()\na := pipe.Get(ctx, \"demo:a\")\nb := pipe.Get(ctx, \"demo:b\")\n_, err := pipe.Exec(ctx)\nif err != nil && !errors.Is(err, redis.Nil) { return err }\nfor _, cmd := range []*redis.StringCmd{a, b} {\n    if cmd.Err() != nil && !errors.Is(cmd.Err(), redis.Nil) { return cmd.Err() }\n}",
+        "language": "go",
+        "walkthrough": "This fragment batches two independent reads and tolerates missing keys explicitly. A write pipeline needs its own partial-outcome and retry policy; replaying all writes after an ambiguous error can duplicate effects."
+      },
+      {
+        "title": "Choose atomicity separately",
+        "body": "MULTI/EXEC groups commands atomically with respect to interleaving, but runtime command errors do not provide relational-database rollback. WATCH adds optimistic checks and can require a whole retry. A Lua script can perform a short conditional transition, but expensive scripts block other work on the server execution path.",
+        "code": "redis-cli <<'REDIS'\nMULTI\nSET demo:a 1\nINCR demo:count\nEXEC\nREDIS",
+        "language": "bash",
+        "walkthrough": "The heredoc sends all commands through one redis-cli connection against an isolated development instance. Starting separate redis-cli processes for MULTI and EXEC would not create one transaction; connection ownership is part of the protocol."
+      },
+      {
+        "title": "Set a memory and latency budget for batches",
+        "body": "Cap commands and total encoded bytes, not only the number of business items. Measure batch duration, reply sizes and tail latency while other clients work. Client versions may use separate pipeline pools, so inspect the pinned version when calculating deployment-wide connection limits.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Batch bounded independent work to reduce round trips, and choose atomicity and retry semantics explicitly. Inspect partial outcomes rather than assuming Exec implies rollback.",
+    "reviewPrompt": "Redis pipeline",
+    "reviewAnswer": "Batches round trips without making the group atomic",
+    "question": "What does pipelining guarantee about the whole batch?",
+    "wrongAnswers": [
+      "Every earlier write rolls back if a later command errors",
+      "No other client can execute a command between its commands"
+    ],
+    "hint": "Transport batching and a transactional boundary are different.",
+    "nuance": "MULTI/EXEC does not roll back already executed commands after a runtime command error.",
+    "references": [
+      "https://redis.io/docs/latest/develop/using-commands/pipelining/",
+      "https://redis.io/docs/latest/develop/using-commands/transactions/",
+      "https://pkg.go.dev/github.com/redis/go-redis/v9#Pipeliner"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Bounded batch",
+        "One network exchange",
+        "Per-command result",
+        "Partial-failure policy"
+      ],
+      "strengths": [
+        "Bound command batches, inspect command errors and separate batching from atomicity."
+      ],
+      "cautions": [
+        "MULTI/EXEC does not roll back already executed commands after a runtime command error."
+      ],
+      "cost": "Batches reduce network round trips while retaining command/reply memory and increasing ambiguous partial-outcome work.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.redis-coordination",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Redis counters and leases need atomic transitions and ownership",
+    "objective": "Avoid split increment/expiry races and unsafe lock deletion.",
+    "introduction": "A counter with a timeout and a temporary ownership key look small, but concurrent requests and pauses expose their failure windows. Put dependent steps in one short atomic transition and distinguish an expired lease from a durable guarantee that only one worker can ever act.",
+    "conceptTag": "datastores.redis-coordination",
+    "sections": [
+      {
+        "title": "Make a fixed-window counter transition atomic",
+        "body": "INCR followed by EXPIRE in separate operations can leave a counter without expiry if the client fails between them. A short script can attach expiry only when the counter is first created. This is an anchored fixed-window example, not a smooth sliding-window limiter.",
+        "code": "counter := redis.NewScript(`\nlocal n = redis.call(\"INCR\", KEYS[1])\nif n == 1 then redis.call(\"PEXPIRE\", KEYS[1], ARGV[1]) end\nreturn n\n`)\nn, err := counter.Run(ctx, rdb, []string{\"demo:rate\"}, 1000).Int64()\nif err != nil { return err }\nif n > 100 { return ErrLimited }",
+        "language": "go",
+        "walkthrough": "The go-redis script API passes one explicitly named development key and a positive window in milliseconds. This example permits 100 events in a window anchored at the first increment; ErrLimited is an application error. Define unavailable-store behavior separately."
+      },
+      {
+        "title": "A lease must be released only by its owner",
+        "body": "SET key token NX PX can create a temporary lease. Release by checking the stored token and deleting in the same atomic operation, not by a GET and later DEL. Generate a unique token for each acquisition; a stale owner must not remove a new owner’s lease.",
+        "code": "release := redis.NewScript(`\nlocal current = redis.call(\"GET\", KEYS[1])\nif current == ARGV[1] then\n  return redis.call(\"DEL\", KEYS[1])\nend\nreturn 0\n`)\n// token is unique to this successful SET key token NX PX acquisition.\ndeleted, err := release.Run(ctx, rdb, []string{key}, token).Int64()\nif err != nil { return err }\n_ = deleted // 0 means the lease no longer belongs to this acquisition.",
+        "language": "go",
+        "walkthrough": "The script compares the acquisition token inside the server before deletion. It solves that release race, but a paused worker may still continue after its lease expires; a protected resource may need fencing or another stronger ownership mechanism."
+      },
+      {
+        "title": "Explain the failure model before calling it a lock",
+        "body": "An acknowledgment can be lost, a lease can expire during a pause and failover can change which writes survive. A Redis key alone is not a proof of exclusive business execution across failures. Use resource-side idempotency, version checks or fencing when duplicate work could violate an invariant.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Make dependent counter steps atomic and release leases by token. Design the downstream invariant for pauses, ambiguity and expired ownership.",
+    "reviewPrompt": "Expired lease",
+    "reviewAnswer": "Does not stop a paused former owner from continuing",
+    "question": "Why can a resource still need fencing after a lease expires?",
+    "wrongAnswers": [
+      "Redis pauses every process that previously held the key",
+      "A unique token prevents all network failures"
+    ],
+    "hint": "A key’s lifetime and a process’s execution lifetime differ.",
+    "nuance": "Expiry changes the Redis key, not the execution state of an old process. A paused former owner can resume after a new owner starts; the protected resource may need fencing.",
+    "references": [
+      "https://redis.io/docs/latest/commands/incr/",
+      "https://redis.io/docs/latest/develop/programmability/eval-intro/",
+      "https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Atomic transition",
+        "Ownership token",
+        "Expiry or result",
+        "Downstream invariant"
+      ],
+      "strengths": [
+        "Avoid split increment/expiry races and unsafe lock deletion."
+      ],
+      "cautions": [
+        "Expiry changes the Redis key, not the execution state of an old process. A paused former owner can resume after a new owner starts; the protected resource may need fencing."
+      ],
+      "cost": "Atomic scripts add protocol and recovery complexity; a lease is weaker than a durable resource-side ownership guarantee.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.redis-streams",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Redis Streams: acknowledge after the durable effect",
+    "objective": "Understand consumer groups, pending entries, redelivery and bounded retention.",
+    "introduction": "A consumer group tracks delivery and acknowledgment, not automatic exactly-once application effects. A worker may crash after updating another database but before XACK. Redelivery is useful recovery, so the handler must recognize an operation it has already applied.",
+    "conceptTag": "datastores.redis-streams",
+    "sections": [
+      {
+        "title": "Read new entries with one group",
+        "body": "In an isolated development instance, create a stream and group and append a demonstration event. XREADGROUP with > asks for new entries for this group. Acknowledge only after the application’s durable effect succeeds.",
+        "code": "redis-cli XGROUP CREATE demo:events workers 0 MKSTREAM\nredis-cli XADD demo:events '*' operationID order-42 kind created\nredis-cli XREADGROUP GROUP workers worker-1 COUNT 10 STREAMS demo:events '>'",
+        "language": "bash",
+        "walkthrough": "Replace worker names per process and retain the stream entry ID returned by the read. The demonstration group starts from 0 intentionally; starting at $ instead changes whether existing history is delivered."
+      },
+      {
+        "title": "Inspect and reclaim pending entries",
+        "body": "A delivered but unacknowledged entry remains pending for the group. Inspect pending work and use a supported reclaim mechanism after an appropriate idle threshold. A slow healthy worker and a dead worker can look alike, so claiming work must not assume the old consumer has physically stopped.",
+        "code": "redis-cli XPENDING demo:events workers\nredis-cli XAUTOCLAIM demo:events workers worker-2 60000 0-0 COUNT 10\n# After the effect succeeds, acknowledge its actual returned entry ID:\n# redis-cli XACK demo:events workers 1710000000000-0",
+        "language": "bash",
+        "walkthrough": "XAUTOCLAIM requires a compatible server version and returns a continuation cursor as well as claimed entries. Iterate with explicit work bounds; the sample acknowledgment ID is a placeholder, not a success shortcut."
+      },
+      {
+        "title": "Keep delivery, retention and durability distinct",
+        "body": "Deduplicate the operation at the durable destination and treat replay as a normal path. Configure stream trimming so it does not discard work that still matters to consumers. Acknowledgment does not itself specify Redis persistence, replication acknowledgment or recovery guarantees; test those separately for the deployment.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Acknowledge after a durable idempotent effect, recover pending work deliberately, and budget retention and storage independently of consumer-group delivery.",
+    "reviewPrompt": "Crash before XACK",
+    "reviewAnswer": "Can cause redelivery after an effect already happened",
+    "question": "Why must a stream consumer make its external effect idempotent?",
+    "wrongAnswers": [
+      "Consumer groups roll back all external databases on failure",
+      "Reading with > guarantees an entry is delivered only once forever"
+    ],
+    "hint": "The worker can fail between the effect and acknowledgment.",
+    "nuance": "The effect may commit before a worker crashes without acknowledging. Redelivery can then repeat it; pending-entry recovery needs destination-side idempotency.",
+    "references": [
+      "https://redis.io/docs/latest/commands/xreadgroup/",
+      "https://redis.io/docs/latest/commands/xautoclaim/",
+      "https://redis.io/docs/latest/commands/xack/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Read group entry",
+        "Apply idempotent effect",
+        "Acknowledge",
+        "Recover pending work"
+      ],
+      "strengths": [
+        "Understand consumer groups, pending entries, redelivery and bounded retention."
+      ],
+      "cautions": [
+        "The effect may commit before a worker crashes without acknowledging. Redelivery can then repeat it; pending-entry recovery needs destination-side idempotency."
+      ],
+      "cost": "Consumer groups need retention, pending-work recovery, idempotent effects and explicit storage durability.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "datastores.redis-load",
+    "unitID": "datastores",
+    "afterLessonID": null,
+    "beforeLessonID": null,
+    "title": "Redis under load: hot keys, memory pressure and ambiguous retries",
+    "objective": "Inspect server latency and memory while bounding client work and retry amplification.",
+    "introduction": "Redis command latency can rise because of expensive commands, a hot key, big values, persistence work, network delay or waiting in the client. A low average hides queues and timeout bursts. Correlate request errors with server and client evidence before increasing goroutines or connection limits.",
+    "conceptTag": "datastores.redis-load",
+    "sections": [
+      {
+        "title": "Use focused observation commands",
+        "body": "In an authorized development environment, inspect memory, command statistics and recent slow commands. SLOWLOG measures server command execution, not every network or client-pool delay. Keep raw keys and command arguments out of broadly shared diagnostics when they may contain user data.",
+        "code": "redis-cli INFO memory\nredis-cli INFO stats\nredis-cli INFO commandstats\nredis-cli SLOWLOG GET 10\nredis-cli LATENCY LATEST",
+        "language": "bash",
+        "walkthrough": "Metrics and latency monitoring availability depend on server configuration and permissions. Compare the same time window with client pool wait and request p99; a quiet SLOWLOG does not prove that callers were fast."
+      },
+      {
+        "title": "Scan incrementally and cap batch work",
+        "body": "KEYS can block while traversing a large keyspace. SCAN divides that work into cursor-driven steps, but it is not a snapshot, COUNT is a hint and keys may appear more than once. Keep downstream handling idempotent and avoid moving all returned keys into one giant slice.",
+        "code": "redis-cli SCAN 0 MATCH 'demo:*' COUNT 100\n# Continue with the returned cursor until it is 0.\nredis-cli MEMORY USAGE demo:product:42",
+        "language": "bash",
+        "walkthrough": "A single SCAN call is not a complete inventory. Even incremental maintenance needs rate and time budgets; do not run an unbounded sweep simply because each individual command looks small."
+      },
+      {
+        "title": "Define storage and retry guarantees",
+        "body": "Eviction policy and persistence determine whether a value can disappear and what survives failure. Replication is not automatically synchronous durability. Retrying INCR after a lost response may apply the effect twice; use an operation identifier and a suitable atomic protocol when duplicate effects are unacceptable. Bound retries within one deadline and measure recovery after overload.",
+        "code": null,
+        "language": null,
+        "walkthrough": null
+      }
+    ],
+    "takeaway": "Separate client wait from server execution, keep maintenance incremental and design for eviction, persistence and ambiguous write outcomes. More concurrency is not a repair for a hot bottleneck.",
+    "reviewPrompt": "Quiet SLOWLOG",
+    "reviewAnswer": "Does not exclude client-pool or network latency",
+    "question": "Why can callers time out while SLOWLOG shows no slow commands?",
+    "wrongAnswers": [
+      "Redis always measures the full HTTP request path",
+      "SCAN COUNT imposes an exact global rate limit"
+    ],
+    "hint": "Locate waiting before and after server command execution.",
+    "nuance": "SLOWLOG measures server execution. Callers can still wait for a client connection or network response; retries can then amplify load or repeat an ambiguous write.",
+    "references": [
+      "https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/",
+      "https://redis.io/docs/latest/commands/scan/",
+      "https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/",
+      "https://redis.io/docs/latest/operate/oss_and_stack/management/replication/"
+    ],
+    "designGuide": {
+      "family": "Around Go: data stores",
+      "flow": [
+        "Client wait",
+        "Command work",
+        "Memory and persistence",
+        "Bounded recovery"
+      ],
+      "strengths": [
+        "Inspect server latency and memory while bounding client work and retry amplification."
+      ],
+      "cautions": [
+        "SLOWLOG measures server execution. Callers can still wait for a client connection or network response; retries can then amplify load or repeat an ambiguous write."
+      ],
+      "cost": "Latency and eviction policies trade memory, availability and persistence work; client concurrency cannot remove a hot-key bottleneck.",
+      "ratings": []
+    }
   }
 ]

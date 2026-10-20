@@ -41,6 +41,12 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     /// Workspace and full-screen editors own their vertical scrolling.
     var scrollsVertically = true
 
+    /// End-of-file breathing room belongs to the text, not a fixed bottom
+    /// panel. Embedded snippets keep their natural height inside the lesson.
+    static func textInsets(scrollsVertically: Bool) -> UIEdgeInsets {
+        UIEdgeInsets(top: 12, left: 8, bottom: scrollsVertically ? 120 : 24, right: 8)
+    }
+
     func makeUIView(context: Context) -> CodeEditorView {
         // TextKit 1 on purpose: the gutter positions each number from a line
         // fragment, and NSLayoutManager is the API that hands those over.
@@ -55,7 +61,10 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         textView.smartDashesType = .no
         textView.smartInsertDeleteType = .no
         textView.backgroundColor = .clear
-        textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 24, right: 8)
+        textView.textContainerInset = Self.textInsets(scrollsVertically: scrollsVertically)
+        if #available(iOS 26.0, *) {
+            textView.bottomEdgeEffect.isHidden = true
+        }
         let usesPresentationAccessory = externalKeyboardAccessory || !softwareKeyboardAccessoryEnabled
         textView.inputAssistantItem.leadingBarButtonGroups = []
         textView.inputAssistantItem.trailingBarButtonGroups = []
@@ -84,6 +93,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         context.coordinator.parent = self
         textView.isScrollEnabled = scrollsVertically
         textView.alwaysBounceVertical = scrollsVertically
+        let insets = Self.textInsets(scrollsVertically: scrollsVertically)
+        if textView.textContainerInset != insets { textView.textContainerInset = insets }
         editor.gutter.fontSize = fontSize
         editor.gutter.markedLines = markedLines
 

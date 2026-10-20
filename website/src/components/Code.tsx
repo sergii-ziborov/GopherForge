@@ -10,6 +10,7 @@ const languages = new Set([
   "dockerfile",
   "text",
   "sql",
+  "javascript",
 ]);
 export async function Code({
   code,

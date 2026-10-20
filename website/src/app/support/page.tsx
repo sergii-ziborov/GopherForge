@@ -127,13 +127,14 @@ export default function Support() {
       <section className="reading-section">
         <h2>App and web availability</h2>
         <p>
-          <strong>1.1.2 (36) is available on the App Store.</strong> Automatic
-          release after approval has completed. It includes 92 teaching lessons
-          in 15 units, plus 22 prediction challenges.
+          <strong>1.1.3 (37) is available on the App Store.</strong> Automatic
+          release after approval has completed. It includes 145 teaching lessons
+          in 20 units, plus 22 prediction challenges.
         </p>
         <p>
-          The expanded 1.1.3 architecture course is available in this web
-          library now and is still being prepared for the native app. Web
+          The expanded architecture, MongoDB, Redis and tooling course is
+          available here now. Native 1.1.3 is available on the App Store; the newer
+          data-store and tooling additions are being prepared for 1.1.4. Web
           progress stays in this browser and is independent of app progress. Web
           completion marks are self-reported; this site does not compile
           arbitrary source.

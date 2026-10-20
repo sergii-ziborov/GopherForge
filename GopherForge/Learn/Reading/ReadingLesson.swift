@@ -73,6 +73,11 @@ enum ReadingLessonCatalog {
             lessons.append(lesson)
             lessons += all.filter { $0.unitID == unit.id && $0.afterLessonID == lesson.id }.map(\.lesson)
         }
+        // Supplemental readings continue the unit after its original compiler
+        // exercises. Existing anchored lessons retain their exact positions.
+        lessons += all.filter {
+            $0.unitID == unit.id && $0.afterLessonID == nil && $0.beforeLessonID == nil
+        }.map(\.lesson)
         return CourseUnit(id: unit.id, title: unit.title, summary: unit.summary,
                           translationNote: unit.translationNote, lessons: lessons)
     }

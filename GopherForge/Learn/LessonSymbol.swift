@@ -12,6 +12,33 @@ import Foundation
 /// product already shares with the compiler and the review queue, so a lesson
 /// about closing channels looks the same wherever it appears.
 enum LessonSymbol {
+    private static let environmentSymbols: [String: String] = [
+        "modules.identity-versions": "shippingbox",
+        "modules.version-graph": "arrow.triangle.branch",
+        "modules.checksums-private": "checkmark.shield",
+        "modules.workspace-replace": "square.stack.3d.up",
+        "modules.vendor-embed": "doc.zipper",
+        "modules.parallel-tests": "checkmark.seal",
+        "modules.benchmark-load": "gauge.with.dots.needle.50percent",
+        "modules.profiles-contention": "waveform.path.ecg",
+        "modules.build-capacity": "cpu",
+        "modules.tools-toolchain": "wrench.and.screwdriver",
+        "modules.fuzz-vulnerability": "ladybug",
+        "modules.startup-ownership": "power",
+        "datastores.mongo-client": "externaldrive",
+        "datastores.mongo-indexes": "magnifyingglass",
+        "datastores.mongo-atomic": "checkmark.shield",
+        "datastores.mongo-transactions": "arrow.triangle.2.circlepath",
+        "datastores.mongo-cursors": "list.bullet",
+        "datastores.mongo-load": "gauge.with.dots.needle.50percent",
+        "datastores.redis-client": "externaldrive",
+        "datastores.redis-cache": "clock",
+        "datastores.redis-pipeline": "square.stack.3d.up",
+        "datastores.redis-coordination": "lock",
+        "datastores.redis-streams": "tray.full",
+        "datastores.redis-load": "waveform.path.ecg",
+    ]
+
     static func symbol(for lesson: Lesson) -> String {
         if let symbol = byLesson[lesson.id] { return symbol }
         for tag in lesson.conceptTags {
@@ -188,4 +215,5 @@ enum LessonSymbol {
         GoConcept.syncOnce: "1.circle",
         GoConcept.functionValue: "function",
     ].merging(byLesson) { original, _ in original }
+        .merging(environmentSymbols) { original, _ in original }
 }

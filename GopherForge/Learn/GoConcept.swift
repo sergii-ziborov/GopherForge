@@ -96,6 +96,34 @@ enum GoConcept {
     static let toolingContainers = "tooling.containers"
     static let toolingKubernetes = "tooling.kubernetes"
 
+    /// Each new environment topic has its own review evidence.
+    static let environmentLessonTags: Set<String> = [
+        "modules.identity-versions",
+        "modules.version-graph",
+        "modules.checksums-private",
+        "modules.workspace-replace",
+        "modules.vendor-embed",
+        "modules.parallel-tests",
+        "modules.benchmark-load",
+        "modules.profiles-contention",
+        "modules.build-capacity",
+        "modules.tools-toolchain",
+        "modules.fuzz-vulnerability",
+        "modules.startup-ownership",
+        "datastores.mongo-client",
+        "datastores.mongo-indexes",
+        "datastores.mongo-atomic",
+        "datastores.mongo-transactions",
+        "datastores.mongo-cursors",
+        "datastores.mongo-load",
+        "datastores.redis-client",
+        "datastores.redis-cache",
+        "datastores.redis-pipeline",
+        "datastores.redis-coordination",
+        "datastores.redis-streams",
+        "datastores.redis-load",
+    ]
+
     /// Specific design concepts keep a Strategy mistake from unlocking or
     /// weakening every other behavioral pattern before it has been learned.
     static let designLessonTags: Set<String> = [
@@ -176,5 +204,5 @@ enum GoConcept {
         runtimeGC, runtimeAllocation, runtimeScheduler, runtimeProfiling,
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
         architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
-    ]).union(designLessonTags)
+    ]).union(designLessonTags).union(environmentLessonTags)
 }

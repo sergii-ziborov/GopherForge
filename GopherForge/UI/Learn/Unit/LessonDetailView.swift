@@ -105,10 +105,12 @@ struct LessonDetailView: View {
                 }
             }
             .padding(16)
+            .padding(.bottom, 80)
             .frame(maxWidth: 760)
             .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
+        .transparentBottomScrollEdge()
         .accessibilityIdentifier("lesson.page")
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)

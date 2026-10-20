@@ -187,8 +187,9 @@ export default function Home() {
               </Link>
             </div>
             <p className="small-note">
-              App Store version 1.1.2 is available now. The web course includes
-              newer 1.1.3 architecture readings coming to the app.
+              App Store version 1.1.3 is available now. The web course includes
+              the latest architecture, MongoDB, Redis and production-tooling
+              readings. Native availability is listed in the version history.
             </p>
           </div>
         </div>

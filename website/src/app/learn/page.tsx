@@ -31,9 +31,9 @@ export default function Learn() {
           </span>
         </div>
         <p className="availability">
-          The library includes the expanded 1.1.3 course, available here now.
-          The current App Store app is 1.1.2; these newer architecture lessons
-          are coming to the app.
+          The web library includes the latest MongoDB, Redis and production
+          tooling lessons. These additions are being prepared for native 1.1.4.
+          See the version history for App Store and TestFlight availability.
         </p>
       </div>
       <CourseBrowser

@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.1.2 is available on the App Store. Explore the expanded web course and upcoming native architecture and clean-code lessons.",
+    "GopherForge 1.1.3 is available on the App Store. Explore new MongoDB, Redis and production-tooling lessons and the next native update.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -15,47 +15,53 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
-      <section className="release" id="coming-next">
-        <span className="release-badge">AVAILABLE ON THE APP STORE</span>
-        <h2 id="v112">
-          GopherForge 1.1.2 <small>build 36</small>
+      <section className="release" id="v114">
+        <span className="release-badge muted">
+          WEB AVAILABLE · NEXT NATIVE UPDATE
+        </span>
+        <h2>
+          GopherForge 1.1.4 <small>build 38</small>
         </h2>
         <p>
-          The approved version has released automatically. The course has 92
-          teaching lessons across 15 units, alongside 22 prediction challenges.
+          The library now has 169 teaching lessons in 21 units, including 122
+          readings, plus 22 prediction challenges. New material is available on
+          the web; the native update is in testing.
         </p>
         <ul>
           <li>
-            25 practical Around Go lessons: command line (11), containers (6)
-            and Kubernetes (8).
+            Six MongoDB lessons: shared clients, query indexes, atomic writes,
+            transaction retries, cursor ownership and pool saturation.
           </li>
           <li>
-            Actual commands, Bash and YAML highlighting, worked examples and
-            pitfalls.
+            Six Redis lessons: bounded clients, cache-aside, pipelines, leases,
+            consumer groups, memory pressure and ambiguous write outcomes.
           </li>
           <li>
-            Explicit Finish review action, smaller learned-pair boards and
-            multi-round sessions.
+            Twelve additional module/tooling readings: version graphs, private
+            modules, workspaces, vendor and embed, parallel tests, benchmarks,
+            profiles, build capacity, pinned tools, fuzzing and startup
+            ownership.
           </li>
           <li>
-            Conventional iPhone landscape controls stay fixed when the keyboard
-            opens.
+            Native code and lessons gain scrollable end space and a transparent
+            lower edge around the floating navigation controls.
           </li>
         </ul>
+        <Link className="button" href="/learn?direction=tooling">
+          Explore Around Go →
+        </Link>
       </section>
       <section className="release" id="next-release">
         <span className="release-badge muted">
-          WEB LIBRARY AVAILABLE · APP REVIEW SUBMITTED
+          AVAILABLE ON THE APP STORE
         </span>
         <h2>
           GopherForge 1.1.3 <small>build 37</small>
         </h2>
         <p>
-          The web library now includes the expanded course: 145 teaching lessons
-          in 20 units, including 98 readings, plus 22 prediction challenges. The
-          native update is available to existing Internal QA testers in
-          TestFlight. Build 37 is submitted to App Review with automatic release
-          after approval; the public App Store version remains 1.1.2.
+          This native update includes the expanded course: 145 teaching lessons
+          in 20 units, including 98 readings, plus 22 prediction challenges. The update has passed App Review and released automatically.
+          Version 1.1.3 is the current public App Store version.
         </p>
         <ul>
           <li>
@@ -91,6 +97,34 @@ export default function Updates() {
         <Link className="button" href="/learn">
           Explore the expanded course →
         </Link>
+      </section>
+      <section className="release" id="coming-next">
+        <span className="release-badge">PREVIOUS RELEASE</span>
+        <h2 id="v112">
+          GopherForge 1.1.2 <small>build 36</small>
+        </h2>
+        <p>
+          The approved version has released automatically. The course has 92
+          teaching lessons across 15 units, alongside 22 prediction challenges.
+        </p>
+        <ul>
+          <li>
+            25 practical Around Go lessons: command line (11), containers (6)
+            and Kubernetes (8).
+          </li>
+          <li>
+            Actual commands, Bash and YAML highlighting, worked examples and
+            pitfalls.
+          </li>
+          <li>
+            Explicit Finish review action, smaller learned-pair boards and
+            multi-round sessions.
+          </li>
+          <li>
+            Conventional iPhone landscape controls stay fixed when the keyboard
+            opens.
+          </li>
+        </ul>
       </section>
       <section className="release">
         <span className="eyebrow">RELEASED 18 OCTOBER 2026</span>

@@ -37,6 +37,51 @@ final class AppStoreScreenshotUITests: XCTestCase {
         app = nil
     }
 
+    func testEditorEndSpaceAndTransparentLowerEdge() {
+        launch(section: "projects")
+        openTemplate("worker-pool")
+        expectSource()
+        resetOpeningDock()
+        let editor = app.textViews[AccessibilityIdentifier.editor]
+        let original = editor.value as? String
+        editor.swipeUp()
+        editor.swipeUp()
+        XCTAssertEqual(editor.value as? String, original, "End space must not change source")
+        captureNativeDisplayFrame("38-editor-end-space")
+        app.buttons["pane.terminal"].tap()
+        let command = app.textFields["terminal.input"]
+        XCTAssertTrue(command.waitForExistence(timeout: 10))
+        command.tap()
+        app.buttons["pane.code"].tap()
+        editor.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: 90, dy: 120)).tap()
+        let hide = app.buttons[AccessibilityIdentifier.hideKeyboard]
+        XCTAssertTrue(hide.waitForExistence(timeout: 10))
+        XCTAssertLessThanOrEqual(hide.frame.minY - editor.frame.maxY, 12)
+        captureNativeDisplayFrame("38-editor-keyboard")
+        hide.tap()
+        XCTAssertTrue(hide.waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.tabBars.buttons["Learn"].waitForExistence(timeout: 10))
+    }
+
+    func testCaptureDataStoreReleaseScreenshots() {
+        launch(section: "projects")
+        openTemplate("worker-pool")
+        expectSource()
+        resetOpeningDock()
+        captureNativeDisplayFrame("00-code-build38")
+        launch(section: "learn")
+        XCTAssertTrue(app.waitForElement(app.buttons["unit.core"]))
+        captureNativeDisplayFrame("03-course-build38")
+        let databases = app.buttons["unit.datastores"]
+        XCTAssertTrue(app.waitForElement(databases, scrollingUpTo: 30))
+        databases.tap()
+        let lesson = app.buttons["lesson.datastores.mongo-client"]
+        XCTAssertTrue(app.waitForElement(lesson, scrollingUpTo: 8))
+        lesson.tap()
+        XCTAssertTrue(app.waitForElement(app.buttons["Open code in full screen"].firstMatch, scrollingUpTo: 16))
+        captureNativeDisplayFrame("09-around-go-build38")
+    }
+
     func testCaptureExpandedCourseScreenshot() {
         XCUIDevice.shared.orientation = .portrait
         launch(section: "learn")

@@ -11,6 +11,7 @@ struct ReadingLessonSections: View {
         case "yaml": .yaml
         case "dockerfile": .dockerfile
         case "json": .json
+        case "javascript": .javascript
         default: .plain
         }
     }
@@ -37,7 +38,7 @@ struct ReadingLessonSections: View {
             LessonSection(title: "Remember", systemImage: "lightbulb", tint: tint) {
                 LearningProse(text: reading.takeaway)
             }
-            if ["operations", "containers", "kubernetes", "services"].contains(reading.unitID) {
+            if ["operations", "containers", "kubernetes", "datastores", "modules", "services"].contains(reading.unitID) {
                 Text("Read these examples here; run shell commands, containers and network services in your own development environment.")
                     .font(.footnote).foregroundStyle(.secondary)
             }

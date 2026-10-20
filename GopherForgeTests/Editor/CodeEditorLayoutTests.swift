@@ -22,7 +22,7 @@ final class CodeEditorLayoutTests: XCTestCase {
     /// version of this file passed against the broken editor.
     private func makeEditor(text: String) -> CodeEditorView {
         let textView = UITextView(usingTextLayoutManager: false)
-        textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 24, right: 8)
+        textView.textContainerInset = SyntaxCodeEditor.textInsets(scrollsVertically: true)
         textView.textContainer.widthTracksTextView = false
         textView.textContainer.lineBreakMode = .byClipping
         textView.textContainer.size = SyntaxCodeEditor.unboundedContainerSize
@@ -65,6 +65,19 @@ final class CodeEditorLayoutTests: XCTestCase {
             "a line longer than the pane should widen the text view so the "
                 + "horizontal scroll view has something to scroll"
         )
+    }
+
+    func testEndOfFileCanScrollAboveFloatingControlsWithoutAddingSourceLines() {
+        let source = (1...100).map { "// source line \($0)" }.joined(separator: "\n")
+        let editor = makeEditor(text: source)
+        let text = editor.textView
+        text.layoutManager.ensureLayout(for: text.textContainer)
+        text.setContentOffset(CGPoint(x: 0, y: max(0, text.contentSize.height - text.bounds.height)), animated: false)
+        let end = text.caretRect(for: text.endOfDocument)
+        XCTAssertGreaterThanOrEqual(text.bounds.maxY - end.maxY, 96)
+        XCTAssertEqual(text.text, source, "Scroll room must not insert editable blank lines")
+        XCTAssertEqual(SyntaxCodeEditor.textInsets(scrollsVertically: false).bottom, 24,
+                       "Embedded examples still scroll with their lesson page")
     }
 
     func testTheGutterNumbersSourceLinesRatherThanRowsOnScreen() {

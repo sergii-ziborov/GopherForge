@@ -244,6 +244,7 @@ struct ContentView: View {
             }
         }
         .tabViewStyle(.tabBarOnly)
+        .toolbarBackground(.hidden, for: .tabBar)
     }
 
     private var tabSelection: Binding<AppSection> {
@@ -260,6 +261,17 @@ struct ContentView: View {
         case .build: WorkspaceView()
         case .learn: LearnHomeView()
         case .settings: SettingsView()
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func transparentBottomScrollEdge() -> some View {
+        if #available(iOS 26.0, *) {
+            scrollEdgeEffectHidden(true, for: .bottom)
+        } else {
+            self
         }
     }
 }

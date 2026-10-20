@@ -8,6 +8,33 @@ final class LessonPresentationUITests: XCTestCase {
         app = XCUIApplication()
     }
 
+    func testDataStoreReadingsExpandAndPreserveCompletion() {
+        XCUIDevice.shared.orientation = .portrait
+        for id in ["datastores.mongo-client", "datastores.redis-client", "modules.version-graph"] {
+            launch(id)
+            XCTAssertTrue(app.element(withIdentifier: "reading.designGuide").firstMatch.waitForExistence(timeout: 15))
+            let expand = app.buttons["Open code in full screen"].firstMatch
+            XCTAssertTrue(app.waitForElement(expand, scrollingUpTo: 14))
+            attachScreenshot(named: "expanded-environment-\(id)")
+            expand.tap()
+            let back = app.buttons["Back"].firstMatch
+            XCTAssertTrue(back.waitForExistence(timeout: 5))
+            attachScreenshot(named: "expanded-environment-code-\(id)")
+            back.tap()
+            let done = app.buttons[AccessibilityIdentifier.lessonComplete]
+            let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
+            if undo.exists { undo.tap() }
+            XCTAssertTrue(done.waitForExistence(timeout: 5))
+            done.tap()
+            XCTAssertTrue(undo.waitForExistence(timeout: 5))
+            app.terminate()
+            launch(id)
+            XCTAssertTrue(undo.waitForExistence(timeout: 10))
+            undo.tap()
+            app.terminate()
+        }
+    }
+
     func testDiagramAndPracticalNotesAreVisible() {
         launch("generics.constraints")
         XCTAssertTrue(app.element(withIdentifier: "lesson.diagram.generics.constraints").firstMatch.waitForExistence(timeout: 20))
