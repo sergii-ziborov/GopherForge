@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-10-20T15:00:57.074152+00:00",
+  "checkedAt": "2026-10-20T20:24:51.549649+00:00",
   "appId": "6809702319",
   "version": "1.1.5",
-  "build": "40",
-  "buildId": "d657a697-162b-47d3-a0eb-ff27e7e2d71f",
-  "appSourceCommit": "0dc1ce7",
-  "submissionId": "db2cd2a2-0de0-469a-b605-9f06dc97fbc2",
+  "build": "41",
+  "buildId": "fd44714a-480a-4ab9-be00-8fd3c47571da",
+  "appSourceCommit": "a5fc9f8",
+  "submissionId": "1affe413-1162-4347-8426-1098416f6fc1",
   "submissionState": "WAITING_FOR_REVIEW",
   "versionId": "ea313694-a91c-4447-807a-d56979d93d65",
   "versionState": "WAITING_FOR_REVIEW",
@@ -15,7 +15,10 @@
   "screenshots": 55,
   "screenshotSets": 6,
   "headerAndSearchActive": true,
-  "progressTestsPassed": 22,
+  "checksPassed": 25,
+  "updatedScreenshots": 11,
+  "supersededBuild": "40",
   "agentGuides": 8,
-  "submitted": true
+  "submitted": true,
+  "supersedesBuild": "40"
 }

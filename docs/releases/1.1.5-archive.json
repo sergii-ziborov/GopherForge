@@ -1,9 +1,9 @@
 {
   "version": "1.1.5",
-  "build": "40",
-  "appSourceCommit": "0dc1ce7",
-  "sizeBytes": 59465998,
-  "ipaSHA256": "d0a2134adf0b285ff05ef46ad00381b96d6122eaf98e82616bcb661808f3cf53",
+  "build": "41",
+  "appSourceCommit": "a5fc9f8",
+  "sizeBytes": 59504065,
+  "ipaSHA256": "0291d6d8bcbcd05336602a4a6164b8eb6d76175645248ecf98b9cb04eee65749",
   "minimumOSVersion": "18.0",
   "deviceFamily": [
     1,
@@ -15,5 +15,6 @@
   "interviewSHA256": "3e562422b151f14cb442023950d71205df7b8493ef49d831c987ced2672c30d4",
   "readingsSHA256": "ba3f488481c5da59e75fa836a428108426ab9e642e165da6a300edd890810409",
   "resumeKeysPresentInBinary": true,
-  "validation": "passed"
+  "validation": "passed",
+  "supersedesBuild": "40"
 }

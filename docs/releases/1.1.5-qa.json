@@ -1,60 +1,29 @@
 {
+  "version": "1.1.5",
+  "build": "41",
+  "appSourceCommit": "a5fc9f8",
+  "device": "iPhone 13 / iOS 26.5",
   "result": "Passed",
-  "passedTests": 22,
+  "passedTests": 25,
   "failedTests": 0,
   "skippedTests": 0,
-  "unitTests": 19,
-  "uiTests": 3,
-  "device": "iPhone 13, iOS 26.5",
-  "initialRun": {
-    "bundle": "build/resume40/progress-gate.xcresult",
-    "passed": 21,
-    "failed": 1
-  },
-  "resolvedUITest": {
-    "bundle": "build/resume40/interview-retry.xcresult",
-    "passed": 1,
-    "failed": 0,
-    "explanation": "Test search required the entire first lazy-list row inside the viewport, then overscrolled past it. Using the existing row and XCTest native tap completed both launch/relaunch and exact Continue destination assertions. No app source changed for the rerun."
-  },
-  "checks": [
-    "Lesson completion and compiler verification survive reopening",
-    "Last course and interview bookmarks remain independent",
-    "Unknown bookmarks do not become destinations or passes",
-    "More than 500 attempts retain completion and compiler badges",
-    "Interview self-assessment persists separately from course progress",
-    "Course Continue reopens the completed reading after terminate/relaunch",
-    "Interview selection and exact Continue guide survive terminate/relaunch"
+  "uiTests": [
+    "Continue reopens the saved interview after relaunch",
+    "Course and Interview header parity and topic navigation",
+    "Algorithm boundary trace",
+    "Interview self-assessment persists",
+    "Search, empty results and reset filters"
   ],
-  "version": "1.1.5",
-  "build": "40",
-  "appSourceCommit": "0dc1ce7",
-  "agents": {
-    "checkedOn": "2026-10-20",
-    "area": "Learn > Interview > Go with coding agents",
-    "guides": 8,
-    "ids": [
-      "ai.workflow",
-      "ai.codex",
-      "ai.claude",
-      "ai.cursor",
-      "ai.api-validation",
-      "ai.security",
-      "ai.concurrency-review",
-      "ai.interview-ethics"
-    ],
-    "appWebIdentical": true,
-    "sha256": "3e562422b151f14cb442023950d71205df7b8493ef49d831c987ced2672c30d4",
-    "officialReferencesChecked": [
-      "https://developers.openai.com/codex/guides/agents-md",
-      "https://code.claude.com/docs/en/best-practices",
-      "https://cursor.com/docs/rules"
-    ],
-    "contentChangesRequired": false,
-    "scope": "Using coding agents to develop Go; no runtime AI provider integration is claimed."
-  },
-  "screenshots": {
-    "course": "build/resume40/attachments/B4EE2D52-9122-48F9-B14F-BD62B07E5BBC.png",
-    "interview": "build/resume40/retry-attachments/F91048DC-39AA-4F21-9B5C-3352CC4A31EE.png"
-  }
+  "catalogTests": 3,
+  "initialRun": "Four UI checks passed. The empty-result test expected an exact system title; the real system label includes the query. Corrected the test predicate and reran it successfully.",
+  "progressStorage": "Existing bookmark, completion and self-assessment keys retained; no data migration.",
+  "courseRegressionTests": 17,
+  "courseRegression": "Course Continue reopens a completed reading after relaunch; lesson completion/bookmark storage tests passed.",
+  "visualVerification": [
+    "iPhone light and dark",
+    "iPad 13 light",
+    "Open Duo light"
+  ],
+  "nativeImageCapture": "Install build 41 and capture its actual native framebuffer; XCTest comparison attachments verify Course/Interview alignment.",
+  "supersedesBuild": "40"
 }

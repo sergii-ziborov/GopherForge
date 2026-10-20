@@ -586,6 +586,13 @@ final class AppStoreScreenshotUITests: XCTestCase {
         // A view can exist while its navigation/rotation animation is still
         // committing to the native framebuffer.
         Thread.sleep(forTimeInterval: 2)
+        // XCTest may launch an isolated copy while simctl still sees the
+        // ordinary installation. Keep the tested UI as evidence too; a host
+        // framebuffer capture must verify the installed build and active area.
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
         print("GF_NATIVE_FRAME_READY: \(name)")
         fflush(stdout)
         let requested = ProcessInfo.processInfo.environment["GF_CAPTURE_HOLD_SECONDS"].flatMap(Double.init) ?? 30
