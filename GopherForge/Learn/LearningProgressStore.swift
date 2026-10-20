@@ -54,11 +54,26 @@ actor LearningProgressStore {
 
     func record(_ attempt: LessonAttempt) throws {
         var current = try state()
-        current.attempts.append(attempt)
-        if current.attempts.count > maximumAttempts {
-            current.attempts = Array(current.attempts.suffix(maximumAttempts))
-        }
+        current.attempts = retainedAttempts(current.attempts + [attempt])
         try persist(current)
+    }
+
+    /// Recent failures may age out; a completed lesson and its compiler proof
+    /// must survive. Keep both the latest pass and latest verified pass so a
+    /// later hand tick cannot erase a compiler badge when history is trimmed.
+    private func retainedAttempts(_ attempts: [LessonAttempt]) -> [LessonAttempt] {
+        guard attempts.count > maximumAttempts else { return attempts }
+        var latestPass: [String: Int] = [:]
+        var latestVerified: [String: Int] = [:]
+        for (index, attempt) in attempts.enumerated() where attempt.succeeded {
+            latestPass[attempt.lessonID] = index
+            if attempt.isCompilerVerified { latestVerified[attempt.lessonID] = index }
+        }
+        var keep = Set(latestPass.values).union(latestVerified.values)
+        for index in attempts.indices.reversed() where keep.count < maximumAttempts {
+            keep.insert(index)
+        }
+        return keep.sorted().map { attempts[$0] }
     }
 
     func mastery() throws -> [ConceptMastery] {

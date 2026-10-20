@@ -8,6 +8,31 @@ final class LessonPresentationUITests: XCTestCase {
         app = XCUIApplication()
     }
 
+    func testCourseContinueReopensCompletedReadingAfterRelaunch() {
+        launch("collections.slice-walkthrough")
+        let done = app.buttons[AccessibilityIdentifier.lessonComplete]
+        let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
+        XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 15))
+        if undo.exists { undo.tap() }
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        done.tap()
+        XCTAssertTrue(undo.waitForExistence(timeout: 5))
+        app.terminate()
+        app.launchArguments = ["-GopherForgeSection", "learn"]
+        app.launch()
+        let area = app.segmentedControls["learn.area"]
+        XCTAssertTrue(area.waitForExistence(timeout: 20))
+        XCTAssertTrue(area.buttons["Course"].isSelected)
+        let resume = app.buttons["learn.continue"]
+        XCTAssertTrue(resume.waitForExistence(timeout: 10))
+        XCTAssertTrue(resume.label.contains("Continue:"))
+        attachScreenshot(named: "course-continue-after-relaunch-build40")
+        resume.tap()
+        XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(undo.waitForExistence(timeout: 10), "Continue must reopen the completed reading, not a different unfinished lesson")
+        undo.tap()
+    }
+
     func testDataStoreReadingsExpandAndPreserveCompletion() {
         XCUIDevice.shared.orientation = .portrait
         for id in ["datastores.mongo-client", "datastores.redis-client", "modules.version-graph"] {

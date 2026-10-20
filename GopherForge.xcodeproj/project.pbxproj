@@ -488,6 +488,7 @@
 		0C44D1B6FF174E0839CFA6E0 /* GoPackageSearchClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPackageSearchClient.swift; sourceTree = "<group>"; };
 		0C54DC1E1683F78DAE46A9E0 /* GoTestResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoTestResult.swift; sourceTree = "<group>"; };
 		0CDE43A3AFAA953558889645 /* UnitDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitDetailView.swift; sourceTree = "<group>"; };
+		0D9E8CC1FAD3A0295BA45F79 /* 1.1.4-archive.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.4-archive.json"; sourceTree = "<group>"; };
 		0DB7E8153D21D7C05046302B /* 00-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "00-code.png"; sourceTree = "<group>"; };
 		0E067382E7713BC4ADC0D732 /* LocalProjectLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalProjectLoaderTests.swift; sourceTree = "<group>"; };
 		0E1AC8A872A060E0349028D4 /* MistakeReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MistakeReviewView.swift; sourceTree = "<group>"; };
@@ -514,6 +515,7 @@
 		17D63153279EAE706B877DE5 /* ConcurrencyScenarioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyScenarioView.swift; sourceTree = "<group>"; };
 		184396A957BEAFC36B663AC0 /* MistakeReviewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MistakeReviewTests.swift; sourceTree = "<group>"; };
 		189E4BDA009F6C65F75E541B /* SpotTheBugRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotTheBugRound.swift; sourceTree = "<group>"; };
+		190C6E1403022862B15B90E7 /* 08-interview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "08-interview.png"; sourceTree = "<group>"; };
 		19CF15AFF5E6E4F70480D208 /* screenshot-order.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "screenshot-order.json"; sourceTree = "<group>"; };
 		1A76B986623B2FF427B4659F /* GoModParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoModParserTests.swift; sourceTree = "<group>"; };
 		1ABF2533B4C8A4EB45E91B7C /* GoExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExample.swift; sourceTree = "<group>"; };
@@ -537,6 +539,7 @@
 		1FAAE635546F852144ACCE12 /* architecture-landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "architecture-landscape.png"; sourceTree = "<group>"; };
 		1FCF73520646FAE9E1B42DF4 /* ConcurrencyTraceReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyTraceReader.swift; sourceTree = "<group>"; };
 		1FF7EA3BF7DBD259A65CB642 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
+		200B07BAF6A320C18EB8D23A /* study-resume.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "study-resume.md"; sourceTree = "<group>"; };
 		21B3F24B601B33666EFB232C /* GitHubRepositoryImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubRepositoryImporter.swift; sourceTree = "<group>"; };
 		21B4C1C24243BB57C939B0FD /* GitHubRepositoryImporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubRepositoryImporterTests.swift; sourceTree = "<group>"; };
 		21BC0F5EBD7E36DBE2751DDE /* 08-site.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "08-site.png"; sourceTree = "<group>"; };
@@ -643,8 +646,10 @@
 		51F22DB1612224AD1FDE20B7 /* InterviewPrep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewPrep.swift; sourceTree = "<group>"; };
 		539AB09D0C0BE153266F5091 /* GoToolchainLocatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToolchainLocatorTests.swift; sourceTree = "<group>"; };
 		53B6068EA12200F7E0CA3448 /* PracticeRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeRun.swift; sourceTree = "<group>"; };
+		53B7B28F9337B2C0CECBE1C2 /* 08-interview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "08-interview.png"; sourceTree = "<group>"; };
 		53D9E3BF8EC990FDC4673D4F /* GoExampleLibraryCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibraryCore.swift; sourceTree = "<group>"; };
 		544351AED13B6EB866B8B22D /* ProjectCompatibilityReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCompatibilityReport.swift; sourceTree = "<group>"; };
+		5479ED60F8D258335831A77A /* publication-2026-10-20-interview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "publication-2026-10-20-interview.json"; sourceTree = "<group>"; };
 		54DEFF62DDC7B9C765AAD895 /* 01-compiler.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "01-compiler.png"; sourceTree = "<group>"; };
 		55BA00FF9B101AB7DC4C147D /* GzipStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipStream.swift; sourceTree = "<group>"; };
 		561A45FE7DBE0B929409F1A1 /* Toolchain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Toolchain; path = build/Resources/Toolchain; sourceTree = SOURCE_ROOT; };
@@ -665,6 +670,7 @@
 		5EB5C73B1A251D3C36BF0BEE /* 1.1.3-architecture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "1.1.3-architecture.md"; sourceTree = "<group>"; };
 		5ED90EB27487141122B21EE8 /* ProjectFilingDraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFilingDraftTests.swift; sourceTree = "<group>"; };
 		5F271D0803E96B81B54EF541 /* GoPlanFailureReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPlanFailureReader.swift; sourceTree = "<group>"; };
+		5F778945FAE9E909A613CFB1 /* 1.1.4-qa.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.4-qa.json"; sourceTree = "<group>"; };
 		606F229FF44646C952B38588 /* GoCourseCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoCourseCatalog.swift; sourceTree = "<group>"; };
 		60843E89B5D0C7AEEC576AE3 /* GoChecksumDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoChecksumDatabase.swift; sourceTree = "<group>"; };
 		608AC0FFF995AD70A897ED7E /* GoPackageStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPackageStorageTests.swift; sourceTree = "<group>"; };
@@ -714,6 +720,7 @@
 		76A47211ECD3C721CF4D1143 /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
 		76EDD2305F1D7C559CAF3429 /* 1.1.2-build35.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.2-build35.json"; sourceTree = "<group>"; };
 		771E7F973422A89C604313F0 /* GoExampleProjectGinCafe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleProjectGinCafe.swift; sourceTree = "<group>"; };
+		77824AB350CFE3FD7DD1E71C /* 08-interview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "08-interview.png"; sourceTree = "<group>"; };
 		79235EED0E4D3FB6C361A5EC /* GoExampleLibraryConcurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleLibraryConcurrency.swift; sourceTree = "<group>"; };
 		79732B19BD87F55DC83A2DEC /* IdiomFindingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdiomFindingListView.swift; sourceTree = "<group>"; };
 		7981BAC65421EBD7EB48225C /* 11-problems.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "11-problems.png"; sourceTree = "<group>"; };
@@ -721,8 +728,10 @@
 		7A972BD83E502587AFBBE02F /* 1.1.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = 1.1.md; sourceTree = "<group>"; };
 		7AFB2AE89D6F0B5353D58CC6 /* module-limits-website.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "module-limits-website.png"; sourceTree = "<group>"; };
 		7B30881EB0B739EC4B812E22 /* 1.1-layout-checks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "1.1-layout-checks.md"; sourceTree = "<group>"; };
+		7B94812D64F3C6DE3455CF68 /* publication-2026-10-20-resume.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "publication-2026-10-20-resume.json"; sourceTree = "<group>"; };
 		7C2EA5A3E9238DE9E50FBC06 /* live-home.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "live-home.png"; sourceTree = "<group>"; };
 		7C6E695DA769DD6900500437 /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
+		7CB0B9FC1385E6760CF4EC70 /* 08-interview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "08-interview.png"; sourceTree = "<group>"; };
 		7D3972B4120A64FE8AB658A5 /* ProjectLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLibrary.swift; sourceTree = "<group>"; };
 		7D9C2330DE58B9B6137B1CC7 /* 00-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "00-code.png"; sourceTree = "<group>"; };
 		7DEB90227C5662A0511723F8 /* WorkspaceToolbarActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbarActions.swift; sourceTree = "<group>"; };
@@ -754,6 +763,7 @@
 		87EDB8F5654AD75393D3B09C /* TarLongNameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TarLongNameTests.swift; sourceTree = "<group>"; };
 		88068649C11B39B5F69850FE /* CourseUnitCollectionsMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitCollectionsMore.swift; sourceTree = "<group>"; };
 		89F61A7E2945C834274D1EBC /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
+		8AA900778BA0D07F5916919E /* 1.1.4-submission.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.4-submission.json"; sourceTree = "<group>"; };
 		8AD34FB4183DF63DD00C20EF /* GopherForgeTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GopherForgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B67F371C72CE619591EF4C1 /* NavigatorFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorFlowUITests.swift; sourceTree = "<group>"; };
 		8BA2E3C45B03EE5A6E311132 /* ThirdPartyNotices.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ThirdPartyNotices.md; sourceTree = "<group>"; };
@@ -965,6 +975,7 @@
 		DE2CF47036FF6940829D3BAF /* QuizSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizSession.swift; sourceTree = "<group>"; };
 		DE6DCE4E1BD4D93E7797DFC6 /* SpotTheBugSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotTheBugSession.swift; sourceTree = "<group>"; };
 		DE8D1F9CF206319E738BCE86 /* SourceFileBadgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFileBadgeTests.swift; sourceTree = "<group>"; };
+		DF05E61EA135DCC1656281A5 /* 1.1.4-assets-verified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.4-assets-verified.json"; sourceTree = "<group>"; };
 		DF1FB4D593467060C4E889CE /* ProjectLibraryLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLibraryLocation.swift; sourceTree = "<group>"; };
 		DF9A93DB7A5F3608B6EFAB03 /* GitHubRepositoryReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubRepositoryReference.swift; sourceTree = "<group>"; };
 		E04CF03D4625D32C310EFBC6 /* NewProjectDraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProjectDraftTests.swift; sourceTree = "<group>"; };
@@ -976,6 +987,7 @@
 		E2DAFA28CBE2460ED83D3CF5 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
 		E35A18010C1F51514B4CCA77 /* live-learning-tree-mobile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "live-learning-tree-mobile.png"; sourceTree = "<group>"; };
 		E3C3987E99D274363DC18576 /* LessonHintCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonHintCatalogTests.swift; sourceTree = "<group>"; };
+		E418D4419FFD8876923B270D /* 1.1.3-release.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.3-release.json"; sourceTree = "<group>"; };
 		E471E8E11A1A1ED5C7555D5B /* CoursePathLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursePathLayout.swift; sourceTree = "<group>"; };
 		E4818C6C0B196DCC13954FE0 /* FolderBudgetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderBudgetTests.swift; sourceTree = "<group>"; };
 		E4A5DD243872D873DA39B8D9 /* ReadingLessons.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ReadingLessons.json; sourceTree = "<group>"; };
@@ -985,6 +997,7 @@
 		E8668D5D9F543B45435B9A3C /* 09-examples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "09-examples.png"; sourceTree = "<group>"; };
 		E8813D7E4AC434D74F56FEC6 /* 04-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "04-lesson.png"; sourceTree = "<group>"; };
 		E9581BF999B46CFFE4A37177 /* 03-course.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-course.png"; sourceTree = "<group>"; };
+		EA564728FF192BF4B913CA90 /* 08-interview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "08-interview.png"; sourceTree = "<group>"; };
 		EA654F230BF1582733E5FB93 /* CourseUnitStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitStyle.swift; sourceTree = "<group>"; };
 		EAAE947259CED7356AF7F0D0 /* WasmSandboxPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WasmSandboxPolicy.swift; sourceTree = "<group>"; };
 		EAC6980EFA0BC23080581BDC /* 1.1.2-publication.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.2-publication.json"; sourceTree = "<group>"; };
@@ -1164,7 +1177,12 @@
 				72268040B3E042B72A126D8A /* 1.1.2-operations.md */,
 				EAC6980EFA0BC23080581BDC /* 1.1.2-publication.json */,
 				D365C616F00F63E73DF24F11 /* 1.1.3-assets-verified.json */,
+				E418D4419FFD8876923B270D /* 1.1.3-release.json */,
 				D8FE6D7169AED07E8D6E4D28 /* 1.1.3-submission.json */,
+				0D9E8CC1FAD3A0295BA45F79 /* 1.1.4-archive.json */,
+				DF05E61EA135DCC1656281A5 /* 1.1.4-assets-verified.json */,
+				5F778945FAE9E909A613CFB1 /* 1.1.4-qa.json */,
+				8AA900778BA0D07F5916919E /* 1.1.4-submission.json */,
 				7A972BD83E502587AFBBE02F /* 1.1.md */,
 				3D8513AA007A3250E6A8DD3A /* next */,
 			);
@@ -1528,6 +1546,7 @@
 				9BF2845C735E1917B97E7D74 /* 05-lab.png */,
 				CC0F385AC2399673F3C1E305 /* 06-projects.png */,
 				D50588A3365FB29B8638BA63 /* 07-graphics.png */,
+				53B7B28F9337B2C0CECBE1C2 /* 08-interview.png */,
 				46EC4337A25B6FC1DC284CC3 /* 08-site.png */,
 				09E165A58A5C9EDFDE812F51 /* 09-around-go.png */,
 				FDE9AA0BA176E0B055D83BD0 /* 09-examples.png */,
@@ -1572,6 +1591,7 @@
 				1EEA2B089F58AA5BFC8A3144 /* 05-lab.png */,
 				50DAAC0789337809BD554479 /* 06-projects.png */,
 				1B68D8721E9951B3EB458453 /* 07-graphics.png */,
+				190C6E1403022862B15B90E7 /* 08-interview.png */,
 				21BC0F5EBD7E36DBE2751DDE /* 08-site.png */,
 				9B4CA2A635B7940DB43F3D44 /* 09-around-go.png */,
 				0F7A3D9972196B70CD57C031 /* 09-examples.png */,
@@ -1681,12 +1701,15 @@
 				E59269859BEAA2D33BE1D9D4 /* lessons.json */,
 				EC2CAD27B2301F1BC045E671 /* nextjs-preparation-2026-10-19.json */,
 				9B1191773157F3013CFCEBE2 /* publication-2026-10-19.json */,
+				5479ED60F8D258335831A77A /* publication-2026-10-20-interview.json */,
+				7B94812D64F3C6DE3455CF68 /* publication-2026-10-20-resume.json */,
 				8F6D857F8137C1D16C996417 /* publication-2026-10-20.json */,
 				3ACDB7C3146F7FAC5E3855E1 /* site-1.1-build20-duo.jpg */,
 				AA10E8DA2862AC258E16019E /* site-1.1-duo-gallery.png */,
 				9E4D623838EB289416D68C7D /* site-1.1-home.png */,
 				7FDE23AED7F54C03980924DC /* site-1.1-lesson.png */,
 				4DE75D43C6982C2179B1506D /* site-1.1-review.png */,
+				200B07BAF6A320C18EB8D23A /* study-resume.md */,
 			);
 			path = website;
 			sourceTree = "<group>";
@@ -1813,6 +1836,7 @@
 				A2CECD3554BB67F63B9FD0C1 /* 05-lab.png */,
 				7C6E695DA769DD6900500437 /* 06-projects.png */,
 				FF9A1E48AAEC3EFDE9B4C41E /* 07-graphics.png */,
+				7CB0B9FC1385E6760CF4EC70 /* 08-interview.png */,
 				14DD4EC5F4DC6A55A1F1BEB8 /* 08-site.png */,
 				E0DD175D6C065D48DE755992 /* 09-around-go.png */,
 				7449557FEEF51133F4046BEF /* 09-examples.png */,
@@ -2015,6 +2039,7 @@
 				AB495B3168283BFD4E4B2048 /* 05-lab.png */,
 				AF008BD4432AF255ABE233A3 /* 06-projects.png */,
 				226EE85C8E956D89665D0EBA /* 07-graphics.png */,
+				77824AB350CFE3FD7DD1E71C /* 08-interview.png */,
 				A3835B03DEFD0405FB319C96 /* 08-site.png */,
 				2F4BEBD47BBB749191AE1417 /* 09-around-go.png */,
 				1245CE46933D765410BC1C96 /* 09-examples.png */,
@@ -2098,6 +2123,7 @@
 				9142078AFB3A614F4BD86676 /* 05-lab.png */,
 				35599580F956A43D91D212BC /* 06-projects.png */,
 				9E267E6D7581F5F576B0A955 /* 07-graphics.png */,
+				EA564728FF192BF4B913CA90 /* 08-interview.png */,
 				032462B19C25B7EFF5A2E0F9 /* 08-site.png */,
 				A73FE06BF2A7E6AF3BF7A553 /* 09-around-go.png */,
 				E8668D5D9F543B45435B9A3C /* 09-examples.png */,
@@ -3188,7 +3214,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3202,7 +3228,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForge;
 				PRODUCT_NAME = GopherForge;
 				SDKROOT = iphoneos;
@@ -3300,14 +3326,14 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForge.Share;
 				PRODUCT_NAME = GopherForgeShare;
 				SDKROOT = iphoneos;
@@ -3417,7 +3443,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3431,7 +3457,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForge;
 				PRODUCT_NAME = GopherForge;
 				SDKROOT = iphoneos;
@@ -3446,7 +3472,7 @@
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
@@ -3460,7 +3486,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForge;
 				PRODUCT_NAME = GopherForge;
 				SDKROOT = iphoneos;
@@ -3474,14 +3500,14 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForge.Share;
 				PRODUCT_NAME = GopherForgeShare;
 				SDKROOT = iphoneos;
@@ -3496,14 +3522,14 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = GopherForgeShare/GopherForgeShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				INFOPLIST_FILE = GopherForgeShare/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForge.Share;
 				PRODUCT_NAME = GopherForgeShare;
 				SDKROOT = iphoneos;

@@ -243,4 +243,27 @@ final class LessonCompletionTests: XCTestCase {
         XCTAssertTrue(progress.completed.isEmpty)
     }
 
+    func testHistoryTrimmingPreservesCompletionAndCompilerProofAfterReopening() async throws {
+        let reading = try aSelfReportLesson()
+        let exercise = try aCompileLesson()
+        try await store.record(LessonAttempt(lessonID: reading.id, succeeded: true,
+                                            compileAttempts: 0, compilerVerified: false))
+        try await store.record(LessonAttempt(lessonID: exercise.id, succeeded: true,
+                                            compileAttempts: 1, compilerVerified: true))
+        for _ in 0..<510 {
+            try await store.record(LessonAttempt(lessonID: exercise.id, succeeded: false,
+                                                compileAttempts: 1, compilerVerified: true))
+        }
+        let reopened = LearningProgressStore(storageURL: storeURL)
+        let completed = try await reopened.completedLessonIDs()
+        let verified = try await reopened.compilerVerifiedLessonIDs()
+        let attempts = try await reopened.attempts()
+        XCTAssertEqual(completed, [reading.id, exercise.id])
+        XCTAssertEqual(verified, [exercise.id])
+        XCTAssertEqual(attempts.count, 500)
+        try await reopened.clearSelfReportedCompletion(lessonID: reading.id)
+        let afterUndo = try await LearningProgressStore(storageURL: storeURL).completedLessonIDs()
+        XCTAssertEqual(afterUndo, [exercise.id])
+    }
+
 }
