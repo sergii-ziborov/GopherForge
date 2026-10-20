@@ -11,14 +11,15 @@ Updated 20 October 2026.
 - Browser reloads and new tabs use localStorage; same-tab custom events and cross-tab storage events refresh summaries. Unknown material IDs never become Continue links. Invalid data or blocked storage cannot prevent reading.
 - No account or cloud synchronization. Native and web progress are independent. Clearing this site's browser data removes local progress. Privacy documentation describes all stored study information.
 
-## Native application (next build after 39)
+## Native application (1.1.5, build 40)
 
 - Existing attempt history and interview self-assessments retain their formats.
+- Trimming recent attempt history keeps each lesson's latest successful attempt and compiler-verification evidence, so continued practice cannot age a completion or badge out of storage.
 - LearnProgress stores last lesson and last interview guide as separate versioned UserDefaults keys. Merely opening material never records a pass.
 - Course Continue shows the last opened lesson title and opens that lesson. Without a bookmark it uses the existing first-unfinished-lesson fallback.
 - Interview has a Continue row, understood / revisit counts and a saved-place label. The selected Course / Interview segment survives relaunch.
 - Explicit lesson or tool launch destinations take precedence over the saved segment. Unknown saved IDs are ignored.
-- Submitted App Store 1.1.4 (39) remains unchanged and Waiting for Review; these native changes are for a subsequent build.
+- App Store 1.1.4 (39) was confirmed Ready for Distribution before preparing 1.1.5. The new submission is recorded separately in the release receipt.
 
 ## Verification
 

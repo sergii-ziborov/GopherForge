@@ -33,7 +33,10 @@ final class InterviewPrepUITests: XCTestCase {
         XCTAssertTrue(area.waitForExistence(timeout: 20))
         area.buttons["Interview"].tap()
         let guide = app.buttons["interview.question.language.values"]
-        XCTAssertTrue(app.waitForElement(guide, scrollingUpTo: 6))
+        // The first row can straddle the bottom edge beneath the resume card.
+        // XCTest scrolls it into view when tapped; a full-page search gesture
+        // can skip that row and then continue away from it in the lazy list.
+        XCTAssertTrue(guide.waitForExistence(timeout: 10))
         guide.tap()
         XCTAssertTrue(app.buttons["interview.prep.reveal"].waitForExistence(timeout: 10))
         app.terminate()

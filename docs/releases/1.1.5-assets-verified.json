@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-20T14:42:12.340152+00:00",
+  "version": "1.1.5",
+  "build": "40",
+  "versionId": "ea313694-a91c-4447-807a-d56979d93d65",
+  "screenshots": 55,
+  "sets": [
+    {
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_DUO",
+      "images": 5,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    }
+  ],
+  "headerAndSearchActive": true,
+  "creative": [
+    {
+      "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+      "state": "ACTIVE",
+      "imageState": "APPROVED",
+      "size": [
+        2880,
+        1920
+      ]
+    },
+    {
+      "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+      "state": "ACTIVE",
+      "imageState": "APPROVED",
+      "size": [
+        3840,
+        1646
+      ]
+    }
+  ],
+  "metadataMatchesSavedSource": true,
+  "reviewContactComplete": true,
+  "accountRequired": false,
+  "screenshotsReuse": "Accurate feature screenshots inherited from released 1.1.4; editor, course, Interview and algorithm content are unchanged."
+}
