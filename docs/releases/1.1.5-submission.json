@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-20T15:00:57.074152+00:00",
+  "appId": "6809702319",
+  "version": "1.1.5",
+  "build": "40",
+  "buildId": "d657a697-162b-47d3-a0eb-ff27e7e2d71f",
+  "appSourceCommit": "0dc1ce7",
+  "submissionId": "db2cd2a2-0de0-469a-b605-9f06dc97fbc2",
+  "submissionState": "WAITING_FOR_REVIEW",
+  "versionId": "ea313694-a91c-4447-807a-d56979d93d65",
+  "versionState": "WAITING_FOR_REVIEW",
+  "releaseType": "AFTER_APPROVAL",
+  "testFlightState": "IN_BETA_TESTING",
+  "testFlightGroup": "Internal QA",
+  "screenshots": 55,
+  "screenshotSets": 6,
+  "headerAndSearchActive": true,
+  "progressTestsPassed": 22,
+  "agentGuides": 8,
+  "submitted": true
+}

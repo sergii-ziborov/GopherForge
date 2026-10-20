@@ -20,6 +20,7 @@ Updated 20 October 2026.
 - Interview has a Continue row, understood / revisit counts and a saved-place label. The selected Course / Interview segment survives relaunch.
 - Explicit lesson or tool launch destinations take precedence over the saved segment. Unknown saved IDs are ignored.
 - App Store 1.1.4 (39) was confirmed Ready for Distribution before preparing 1.1.5. The new submission is recorded separately in the release receipt.
+- Build 40 is available to the existing Internal QA TestFlight group. Version 1.1.5 was submitted with automatic release after approval; see `docs/releases/1.1.5-submission.json`.
 
 ## Verification
 
