@@ -1,0 +1,438 @@
+[
+  {
+    "slug": "gopherforge-go-learning-workbench-continue",
+    "title": "GopherForge expands: a Go learning path you can return to",
+    "description": "Inside our expanded Go course, interview preparation, coding-agent guides and Continue workflow, with a clear distinction between web, App Store and TestFlight availability.",
+    "category": "GopherForge",
+    "eventDate": "2026-10-20",
+    "publishedAt": "2026-10-20",
+    "modifiedAt": "2026-10-20",
+    "imagePrefix": "launch",
+    "sections": [
+      {
+        "title": "A larger library needs a smaller next step",
+        "id": "a-larger-library-needs-a-smaller-next-step",
+        "body": "A learning library can grow faster than a learner’s ability to navigate it. That is the problem behind this GopherForge update. More material helps only when a returning reader can recover the context of the last session, understand what the next exercise is testing, and find a related explanation without starting the search again. The expansion brings the Go course, architecture discussions, production tooling and interview preparation into a more connected path. Continue is the small piece of navigation that makes that larger collection manageable.\n\nAs of 20 October 2026, GopherForge 1.1.4 is the public App Store release. Version 1.1.5, build 40, adds the latest native Continue work and is in TestFlight and waiting for App Review. These are different availability states. A feature demonstrated in the beta should not be mistaken for a feature already delivered to every App Store customer. The [version history](/updates) records that distinction. The corresponding web learning and Continue experience is available without an account.\n\nThis article explains the learning workflow and its limits. It is our product update, written by GopherForge, rather than an independent review or a promise that one application replaces a complete development environment."
+      },
+      {
+        "title": "What is now in the course",
+        "id": "what-is-now-in-the-course",
+        "body": "The shared catalog contains 191 course items across 21 units: 169 teaching lessons and exercises plus 22 prediction challenges. There are 122 longer readings. The separate Interview area contains 88 worked preparation guides across 12 topics, with four levels of difficulty. Eight interactive algorithm labs include 24 scenarios and 111 computed steps. Those numbers describe the current catalog; they do not mean that reading every page is the right first milestone for every learner.\n\nStart with [Learn Go](/learn) if you need to build a mental model of values, control flow, slices, interfaces and concurrency. Use the Interview map when you want to practise explaining a constraint aloud. Use the architecture material when a working program has become difficult to change. Each route has a different job, and it is reasonable to move between them as a practical question arises.\n\nThe map presents related ideas as branches. A branch is useful because it supplies context: a lesson on ownership belongs near the operations that acquire, share and release a resource. A flat list can tell you that a page exists, but a visible relationship helps explain why you might need it next."
+      },
+      {
+        "title": "Learn, predict, run, explain",
+        "id": "learn-predict-run-explain",
+        "body": "A productive session can be short. Read one explanation, predict a result before running the program, then compare the observed result with the model you wrote down. Finally, explain the difference in your own words. The explanation is the part that turns a successful run into something you can reuse when the input changes.\n\nConsider a slice exercise. Printing a length and capacity once is easy. Explaining why appending a value may change the backing array requires reasoning about ownership, aliases and the operation being performed. Change one assumption after the first successful run: keep a second slice that shares the array, append through the first, then observe which values are still shared. The lesson becomes a small experiment rather than a memorised output.\n\nThe same pattern works for error handling. Write the expected failure first. Decide what information the caller needs and what detail belongs in a log. Run a failing case, inspect the error chain, and then explain whether retrying is safe. A green check is useful evidence, but the ability to transfer the reasoning to a changed constraint is the real learning objective."
+      },
+      {
+        "title": "Continue restores a place, not a claim of mastery",
+        "id": "continue-restores-a-place-not-a-claim-of-mastery",
+        "body": "On the web, the study bookmark records the last course lesson or interview guide and the relevant section. It is stored in the current browser. The home page and study maps can therefore offer a concrete Continue link, rather than asking the reader to remember an identifier or scroll through a long catalog. Existing completion and self-assessment state remains separate from the bookmark.\n\nThat separation matters. Opening a lesson should not silently mark it as understood. Reaching the bottom should not imply that code compiled successfully. A bookmark says where you were; an assessment says what you believe you can explain; a compiler result says what a specific program did. Keeping these meanings distinct helps avoid a reassuring progress indicator that hides unfinished work.\n\nThe native application also persists learning progress and the last study destination locally. Version 1.1.5 makes returning to that destination easier. Web progress and native progress currently remain independent. There is no account-based synchronisation between the browser and the app. Clearing browser storage, using another browser profile or reinstalling without restoring local data can change what is available to Continue."
+      },
+      {
+        "title": "Interview preparation should expose the reasoning",
+        "id": "interview-preparation-should-expose-the-reasoning",
+        "body": "An interview answer is rarely improved by adding more terminology. It improves when the candidate identifies the constraint, states an assumption and works through a boundary case. The [Interview preparation area](/interview) is organised around that process. A guide includes the question, a strong answer, a common trap, an exercise, a worked solution and a follow-up that changes the original conditions.\n\nFor an algorithm question, step through a small input before discussing complexity. If a sliding window shrinks, identify the invariant that requires it to shrink. If a breadth-first traversal uses a queue, explain what is enqueued and why a node is not processed repeatedly. The interactive traces are there to make state changes visible, not to animate a conclusion that the reader must accept on trust.\n\nAfter understanding an example, choose a counterexample: an empty input, repeated values, a disconnected graph, a missing key or a cancelled request. Interview preparation becomes more useful when a reader learns to ask these questions without a prompt. A worked answer is a starting point for that habit, not a script that should be recited unchanged."
+      },
+      {
+        "title": "Coding agents belong in the engineering workflow",
+        "id": "coding-agents-belong-in-the-engineering-workflow",
+        "body": "Eight guides address Go work with coding agents, including Codex, Claude and Cursor. They cover workflow design, API validation, security, concurrency review and honest interview practice. Start with the [agent workflow guide](/interview/ai.workflow), then compare the guides for [Codex](/interview/ai.codex), [Claude](/interview/ai.claude) and [Cursor](/interview/ai.cursor). The material is about reviewing generated changes in a Go repository, not about treating a particular model as an authority on your dependency versions.\n\nA useful task for an agent has a bounded objective and an observable result. Ask for a table-driven test around a failing case, a small refactor with unchanged behaviour, or an explanation of a race that points to the ownership of shared data. Provide the pinned toolchain and module versions. Require the agent to distinguish a test it actually ran from a test it merely recommends.\n\nReview generated code at the boundaries. Does a goroutine stop when its parent request is cancelled? Is a database client shared for the intended lifetime? Does a retry duplicate a side effect? Does an API exist in the version recorded in go.mod? These are ordinary engineering questions, and generated code needs the same answers as code written manually."
+      },
+      {
+        "title": "Around Go connects code to its environment",
+        "id": "around-go-connects-code-to-its-environment",
+        "body": "Production behaviour often depends on a boundary outside a function. A database pool limits concurrent work. A container has a memory budget. Kubernetes may send a termination signal while requests are active. A module proxy can be unavailable during a build. Around Go connects those operational questions to the code that must respond to them.\n\nThe expanded material includes MongoDB and Redis, Docker and Kubernetes, shell commands, modules and tooling. MongoDB discussions cover shared clients, indexes, atomic writes, transaction retries, cursor ownership and saturation. Redis discussions cover bounded clients, cache-aside, pipelines, leases, consumer groups and memory pressure. The emphasis is on consequences: what can time out, what can be repeated, and what consumes a scarce resource while waiting.\n\nThese topics are best studied alongside a concrete failure. For example, an otherwise correct request handler can become unreliable when it starts more work than a connection pool can serve. Measure where time is spent before increasing a limit. The [course map](/learn?direction=tooling) lets readers move from a symptom into the surrounding operational concepts without pretending that a single command fixes every deployment."
+      },
+      {
+        "title": "The native workbench has explicit boundaries",
+        "id": "the-native-workbench-has-explicit-boundaries",
+        "body": "GopherForge includes an offline native Go workbench. The bundled toolchain in this release is Go 1.27.1; this announcement does not claim that the app already embeds the newer Go 1.27.3 patch. Our separate [security update analysis](/news/go-1-27-3-security-patch-deployment) discusses why runtime versions and rebuilt artifacts need to be tracked independently. A mobile release has its own build and review lifecycle.\n\nThe workbench uses a WASI environment with documented restrictions. It does not provide cgo, general guest networking or an unrestricted shell. Package loading also has resource limits. In particular, a module containing more than 4,000 retained files can be rejected even when the module is valid Go code. A dependency with thousands of platform-specific files may therefore behave differently here from a desktop installation.\n\nThe [package limits reference](/support#package-limits) explains the practical boundary. A failed import should be a clear diagnostic, not a hidden condition that leaves the learner guessing. For networking services, native integrations or unusually large dependency graphs, use an appropriate desktop or server environment and carry the same reasoning and tests across."
+      },
+      {
+        "title": "Pricing, access and the right starting point",
+        "id": "pricing-access-and-the-right-starting-point",
+        "body": "The web lessons and preparation guides are freely readable without registration. The native app is a one-time paid purchase, listed at $6.99 USD in the US storefront; local prices and taxes can differ. There is no subscription required to read the web course. Check the App Store listing for the price and availability in your region.\n\nChoose a starting point that matches the question in front of you. New to the language? Read a Go core branch and run the smallest example. Preparing for an interview? Pick one guide and explain it without looking at the worked answer. Maintaining a service? Begin with the resource or failure boundary you are investigating. Interested in editor changes? Read our [VS Code update analysis](/news/vscode-go-0-58-editor-upgrade) and the [gopls refactoring discussion](/news/gopls-interactive-refactoring-go).\n\nA useful learning tool reduces the distance between confusion and the next experiment. The expansion gives that experiment more context; Continue makes it easier to resume. The aim is a library that remains usable as it grows, with clear availability, honest progress and examples that help you understand a program you will have to maintain yourself."
+      }
+    ],
+    "sources": [
+      {
+        "title": "GopherForge release history",
+        "url": "https://gopherforge.app/updates"
+      },
+      {
+        "title": "GopherForge on the App Store",
+        "url": "https://apps.apple.com/app/id6809702319"
+      },
+      {
+        "title": "Open-source project and limits",
+        "url": "https://github.com/sergii-ziborov/GopherForge"
+      }
+    ],
+    "related": [
+      "vscode-go-0-58-editor-upgrade",
+      "go-1-27-3-security-patch-deployment"
+    ],
+    "wordCount": 1758
+  },
+  {
+    "slug": "vscode-go-0-58-editor-upgrade",
+    "title": "Go for VS Code 0.58.0: upgrade the editor without losing the contract",
+    "description": "The official Go extension gains LSP 3.18 support and changes to diagnostics, interface stubs and struct tags. A practical guide to reviewing the upgrade in a Go repository.",
+    "category": "Tooling",
+    "eventDate": "2026-10-20",
+    "publishedAt": "2026-10-20",
+    "modifiedAt": "2026-10-20",
+    "imagePrefix": "vscode",
+    "sections": [
+      {
+        "title": "The release and the boundary it changes",
+        "id": "the-release-and-the-boundary-it-changes",
+        "body": "The official Go extension for Visual Studio Code released version 0.58.0 on 20 October 2026. Its release notes list support for LSP 3.18, more precise diagnostic deduplication, interactive interface-stub generation and changed struct-tag prompts. Windows attach-process discovery also moves away from deprecated wmic. These are editor integration changes, so an upgrade deserves a quick workflow check even when your application source has not changed.\n\nDiagnostic deduplication now considers the starting column as well as the starting line and severity. Generate Interface Stubs uses gopls interactive refactoring, while a legacy command remains available. Struct-tag commands prompt unless configuration supplies the choices; the previous default json,omitempty behaviour is removed. Removing tags no longer means removing every tag by default. Trace logging also needs the appropriate channel level and server trace setting. See the [release notes](https://github.com/golang/vscode-go/releases/tag/v0.58.0) for the exact configuration names.\n\nThe rest of this article is our recommended validation workflow and original examples. The practical question is how an editor-generated change crosses an application boundary, especially when the change is small enough to look harmless in a diff."
+      },
+      {
+        "title": "Record the stack before diagnosing it",
+        "id": "record-the-stack-before-diagnosing-it",
+        "body": "A Go editing session involves several versions. The editor hosts an extension, the extension communicates with gopls, and gopls loads a module with a selected Go toolchain. Tests may run locally, in a container or in CI. When one of these layers changes, symptoms can look like a source-code problem even when the disagreement is between environments.\n\nBefore upgrading a team workspace, record the current extension version, gopls version and output of go version. Read go.mod and any workspace configuration. Identify whether the editor and terminal operate in the same directory and whether a remote development environment has its own tools. This is a small inventory, but it makes a report such as “the editor reports an error that CI does not” reproducible.\n\nAfter the upgrade, open a representative package and let loading complete. Compare one diagnostic with the command-line result rather than clearing every cache at once. If the command line and editor disagree, isolate the selected module, build tags and toolchain first. Changing multiple settings simultaneously destroys the evidence needed to understand which layer was responsible."
+      },
+      {
+        "title": "More diagnostics do not always mean more failures",
+        "id": "more-diagnostics-do-not-always-mean-more-failures",
+        "body": "A diagnostic points to a location and a concern. Two concerns on the same line can still be distinct if they point to different expressions. A user who has learned to interpret a line-level marker as a single problem may therefore notice a different presentation after an editor upgrade. The correct response is to inspect the locations and messages before concluding that the compiler has become stricter.\n\nTry a deliberately small example with several expressions on one line. Expand it into separate lines and compare the messages. Then fix one expression and observe which diagnostic disappears. This exercise separates presentation from program semantics. It also helps when an agent is using editor diagnostics as feedback: the agent should preserve the message and location instead of reporting only an aggregate count.\n\nDo not measure source quality by the number of visible markers alone. A missing diagnostic can be a presentation problem, while an extra diagnostic can be newly visible evidence of an existing problem. The meaningful check is whether the actual program compiles and whether the relevant tests express the behaviour you intend."
+      },
+      {
+        "title": "Struct tags are an external data contract",
+        "id": "struct-tags-are-an-external-data-contract",
+        "body": "A struct tag can affect JSON names and omission rules. That makes a generated tag a change to an external representation, even if no function body changes. Imagine an API where a client distinguishes an absent field from a field explicitly set to zero. Adding an omission option without checking the wire format can silently change what the client receives.\n\nUse a tiny contract test around the exact value that matters. Test an empty value, a nonempty value and a value whose zero representation has business meaning. Compare the encoded bytes or decode into a representation that preserves the distinction you need. Do not use a broad snapshot that reviewers habitually approve without reading; make the intended names and presence rules visible in the assertion.\n\n```go\npackage contract\n\nimport (\n    \"encoding/json\"\n    \"testing\"\n)\n\nfunc TestAttemptCountRemainsPresent(t *testing.T) {\n    type Reply struct {\n        Attempts int `json:\"attempts\"`\n    }\n    got, err := json.Marshal(Reply{})\n    if err != nil { t.Fatal(err) }\n    if string(got) != `{\"attempts\":0}` {\n        t.Fatalf(\"wire contract changed: %s\", got)\n    }\n}\n```\n\nThis is an illustrative complete test. Its purpose is to make a zero-value contract explicit, not to prescribe the right omission rule for every API."
+      },
+      {
+        "title": "Review tags by consumer, not just by field",
+        "id": "review-tags-by-consumer-not-just-by-field",
+        "body": "The same struct may be read by more than one library. JSON encoding, a database driver, configuration loading and validation can each interpret their own tag namespace. A bulk edit should therefore start by identifying the consumer of each tag. Deleting a database tag while intending to change JSON can alter persistence behaviour even if HTTP tests still pass.\n\nPrefer separate transport and persistence types when their contracts are genuinely different. That is an architectural choice with a maintenance cost, so do not create duplicate types merely to satisfy a style rule. Instead, make the mapping visible at the boundary and test the transformations that protect compatibility. The [architecture course](/architectures) discusses why a boundary is useful only when it reduces a concrete form of coupling.\n\nFor a tag removal command, inspect the resulting diff before running another refactor. Confirm the namespace you intended to remove, search for custom marshaling and consider embedded fields. A generated edit is quick to produce; reviewing the consumers is what prevents that speed from becoming a compatibility incident."
+      },
+      {
+        "title": "A generated interface stub is unfinished behaviour",
+        "id": "a-generated-interface-stub-is-unfinished-behaviour",
+        "body": "An interface implementation has two separate properties: its method set can satisfy the compiler, and its method bodies can honour the contract. Generating stubs helps with the first property. It does not decide ownership, cancellation, retries, transaction semantics or the meaning of an empty result. Review the implementation with those questions in mind before treating a successful compile as completion.\n\nA small interface defined by a consumer is often easier to test than a broad interface copied from an implementation. Start with the operation the caller actually needs. Write a test for a successful response and a test for the failure the caller must handle. Then implement only that contract. If a generated method panics or returns a placeholder value, keep the task visibly unfinished until that behaviour is replaced.\n\nThis is especially relevant when working with a coding agent. Ask the agent to identify generated placeholders and explain which tests cover each method. The [API validation guide](/interview/ai.api-validation) applies the same discipline to methods invented from memory: verify the pinned dependency and inspect the actual signature before writing an implementation around it."
+      },
+      {
+        "title": "Validate one workflow end to end",
+        "id": "validate-one-workflow-end-to-end",
+        "body": "Pick a familiar package for a small upgrade rehearsal. Introduce a temporary local mistake, observe the diagnostic, correct it, run a focused test and inspect the diff. Next, invoke a code action on a disposable branch and undo it after reviewing the output. This checks the complete editor loop without turning the production codebase into a test fixture.\n\nUse commands appropriate to the repository. A focused package test gives fast feedback; the wider required test gate checks integration. Where supported, the race detector can expose an exercised data race, but a passing race run does not prove the absence of all concurrency defects. The Go testing documentation explains the test harness, while repository instructions should define the required scope.\n\nKeep generated files and source changes separate when that makes review easier. If upgrading a tool rewrites many unrelated files, stop and find the reason before accepting the bulk change. A small editor upgrade should not become an accidental migration of formatting, APIs and dependencies in the same unreviewable commit."
+      },
+      {
+        "title": "Use traces to answer a specific question",
+        "id": "use-traces-to-answer-a-specific-question",
+        "body": "Verbose language-server traces can help diagnose a missing code action or an unexpected response, but they should answer a bounded question. First write down what you expected the editor to request and what happened instead. Reproduce the problem with the smallest useful file, then collect the trace around that action. An endless log from a busy workspace is difficult to interpret.\n\nReview traces before sharing them. File paths, source fragments and workspace details may be present. Keep the time window short and avoid publishing a raw session from a private repository. If you can reproduce the problem in a public minimal module, the report becomes safer to share and easier for maintainers to investigate.\n\nOnce the issue is understood, restore ordinary logging. Diagnostic settings are part of the environment you maintain, not an extra feature that must stay enabled forever. Record the tool versions with the report so that a future reader can distinguish a fixed issue from a configuration mismatch."
+      },
+      {
+        "title": "Upgrade automation needs an observable result",
+        "id": "upgrade-automation-needs-an-observable-result",
+        "body": "Teams increasingly ask agents to update editor and tooling configuration. Give that work a concrete acceptance criterion: a known package loads, a specific refactor is available, a focused test passes and no unintended source change remains. Require a record of which commands actually ran. A plan to run tests is not evidence that the upgrade works.\n\nThe [coding-agent workflow](/interview/ai.workflow) recommends bounding both the task and the review surface. An agent can assemble the version inventory and propose the smallest configuration change, while a reviewer checks the external contract. If the task touches JSON tags, the review should include encoded output; if it touches concurrency, the review should include ownership and cancellation.\n\nDo not make an editor extension responsible for runtime safety. The editor can expose information and automate syntax-aware operations. The application still needs explicit invariants, tests and deployment checks. That distinction keeps a productive tool useful without giving it authority over decisions it cannot observe."
+      },
+      {
+        "title": "A practical acceptance checklist",
+        "id": "a-practical-acceptance-checklist",
+        "body": "Before finishing the upgrade, confirm the selected toolchain and language server, open the intended module and compare one diagnostic with the command line. Exercise a code action in a reversible change. Inspect generated tags and method bodies. Run the repository’s required tests and read the final diff. Record any configuration that deliberately preserves an older workflow.\n\nFor further study, read our [interactive refactoring analysis](/news/gopls-interactive-refactoring-go), then practise explaining a small interface in [Interview](/interview). If the upgrade exposes a dependency or toolchain mismatch, the [security maintenance workflow](/news/go-1-27-3-security-patch-deployment) provides a complementary inventory approach. These are connected skills: knowing where an edit was generated, what contract it changes and how that change reaches a running program.\n\nThe useful outcome of an editor release is a clearer engineering loop. You should be able to make a change, inspect the evidence, test the behaviour and explain the result. Version 0.58.0 supplies new integration behaviour; the review process turns that behaviour into a dependable daily workflow."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Official Go extension 0.58.0 release notes",
+        "url": "https://github.com/golang/vscode-go/releases/tag/v0.58.0"
+      },
+      {
+        "title": "encoding/json contract reference",
+        "url": "https://pkg.go.dev/encoding/json"
+      },
+      {
+        "title": "Go testing package",
+        "url": "https://pkg.go.dev/testing"
+      },
+      {
+        "title": "Go Code Review Comments",
+        "url": "https://go.dev/wiki/CodeReviewComments"
+      }
+    ],
+    "related": [
+      "gopls-interactive-refactoring-go",
+      "gopherforge-go-learning-workbench-continue"
+    ],
+    "wordCount": 1781
+  },
+  {
+    "slug": "go-1-27-3-security-patch-deployment",
+    "title": "Go 1.27.3 and 1.26.10: turn a security patch into deployed evidence",
+    "description": "The 19 October Go patches address crypto/x509. Here is a practical inventory, rebuild, test and rollout workflow without inventing vulnerability details.",
+    "category": "Security",
+    "eventDate": "2026-10-19",
+    "publishedAt": "2026-10-20",
+    "modifiedAt": "2026-10-20",
+    "imagePrefix": "security",
+    "sections": [
+      {
+        "title": "What the official release confirms",
+        "id": "what-the-official-release-confirms",
+        "body": "The Go release history records Go 1.27.3 and Go 1.26.10 on 19 October 2026. Both include security fixes in crypto/x509. That is the confirmed scope used here. This article does not assign a CVE, severity, exploit condition or affected deployment pattern that is not stated in the cited release information. Consult the [official release history](https://go.dev/doc/devel/release) and linked milestones for the authoritative details as they develop.\n\nFor a service owner, a patch announcement opens an operational question: which running artifacts were built with the affected toolchain, and how will replacement artifacts reach users? Updating a developer laptop answers only one part of that question. Build workers, cached container layers, scheduled jobs and long-lived command-line binaries may follow different update paths.\n\nThe workflow below is our maintenance guidance, illustrated with commands and review questions. It should be adapted to your release process, exposure and required change controls. The objective is evidence connecting a patched toolchain to a specific deployed artifact, rather than a reassuring version number in an unrelated terminal."
+      },
+      {
+        "title": "Begin with artifacts and owners",
+        "id": "begin-with-artifacts-and-owners",
+        "body": "Make a short inventory of the programs you operate. Include the API service, background workers, scheduled maintenance tools and administrative binaries. For each one, identify an owner, a source revision, a build path and the deployed artifact identifier. A service with no known owner is harder to patch because nobody can make a defensible decision about its acceptance tests or rollback.\n\nDistinguish a source repository from its outputs. One repository can produce several binaries, and those binaries may be deployed on different schedules. Likewise, a container image can contain an application binary built somewhere else. Updating the final image’s operating-system packages does not demonstrate that the embedded Go binary was rebuilt with a new standard library.\n\nStart with the systems whose ownership and deployment path you understand. Record uncertainty explicitly for the rest. A small table that says “build toolchain unknown; owner assigned to investigate” is more useful than marking every service patched because a shared base image changed. The inventory becomes the work queue and later provides the evidence for closing it."
+      },
+      {
+        "title": "Inspect both the build environment and the binary",
+        "id": "inspect-both-the-build-environment-and-the-binary",
+        "body": "The Go tool can report its own version and inspect build information stored in a binary. These observations answer different questions. The first describes the toolchain you invoked; the second describes an artifact. Preserve both when they are relevant to a patch investigation, along with the artifact’s immutable identifier.\n\n```bash\n# Run in the intended build environment.\ngo version\ngo env GOTOOLCHAIN\n\n# Inspect a specific Go binary; replace this example path.\ngo version -m ./bin/service\n```\n\nTreat the output as evidence with a scope. A local binary is not necessarily the binary in the running container. A container tag is not necessarily immutable. Compare a digest or another reliable release identifier with deployment state, and make the relationship explicit in the release record.\n\nThe runtime/debug package also exposes build information to Go programs. If your service already has a private diagnostic endpoint or startup log, an intentionally chosen subset can help identify the running build. Avoid publishing private module paths or complete environment details unnecessarily. The goal is to answer operational questions, not to turn diagnostics into an uncontrolled inventory of internal infrastructure."
+      },
+      {
+        "title": "Toolchain selection must be reproducible",
+        "id": "toolchain-selection-must-be-reproducible",
+        "body": "A project’s selected toolchain can depend on the environment and the module’s directives. The [Go toolchains documentation](https://go.dev/doc/toolchain) explains how the go command chooses a toolchain and how automatic selection works. Read that behaviour in the context of your build, especially when a workstation and CI seem to disagree about the version in use.\n\nPin or otherwise record the approved build inputs using the mechanisms your team maintains. A reproducible build recipe is more valuable than a one-time manual command that nobody can repeat. Confirm the selected version inside the actual build job instead of assuming that changing a workstation setting changed the remote worker.\n\nCheck caches deliberately. A cache can save time while still using an old builder image or an already-produced binary. You do not need to delete every cache reflexively; you need to know which inputs control the output and prove that the replacement artifact was produced with the intended toolchain. Keep dependency upgrades separate unless they are required for the patch, so the review remains focused."
+      },
+      {
+        "title": "Test certificate behaviour with realistic assumptions",
+        "id": "test-certificate-behaviour-with-realistic-assumptions",
+        "body": "The crypto/x509 package deals with certificates and verification. A patch in this area should prompt you to identify the certificate-related behaviour your application actually relies on. That can include outbound connections, internal certificate chains or explicit verification code. Read the package documentation rather than assuming every certificate operation uses identical rules on every platform.\n\nUse representative test fixtures that are safe to keep in the repository. Include the chain structure and verification inputs that matter to your service. Do not copy production private keys into a test suite. A fixture should explain what it represents and why the expected result is correct, so that future maintainers can distinguish an intentional rejection from a regression.\n\nAvoid weakening verification to make a failing test pass. If a patch exposes a previously hidden assumption, investigate the trust configuration and expected identity. A maintenance change should improve the evidence around the boundary. It should not remove the boundary in order to preserve a green status indicator."
+      },
+      {
+        "title": "Separate correctness checks from rollout checks",
+        "id": "separate-correctness-checks-from-rollout-checks",
+        "body": "A unit test demonstrates behaviour under the conditions it exercises. An integration test checks a wider interaction. A rollout check asks whether the intended artifact is running and whether its operational signals remain acceptable. These are complementary forms of evidence, and none should silently substitute for the others.\n\nRun the repository’s required tests with the patched toolchain. Include the relevant certificate or connection tests and any build targets that differ from the developer default. Where the application supports multiple operating systems or architectures, make clear which targets were rebuilt and tested. A successful Linux build does not automatically validate every supported target.\n\nThen define the operational acceptance criteria before deployment. Choose signals tied to the service: connection failures, request errors, startup success, certificate verification failures or another relevant indicator. Write down the observation period and the response to an unexpected result. A canary that nobody watches is merely a smaller deployment, not a meaningful safety check."
+      },
+      {
+        "title": "Rebuild once, promote the reviewed artifact",
+        "id": "rebuild-once-promote-the-reviewed-artifact",
+        "body": "Where your delivery process permits it, build an artifact once and promote that reviewed artifact through environments. This reduces the chance that production receives a different output from the one tested in staging. Record the source revision, toolchain, build job and artifact identifier together. The record should be easy to find during an incident.\n\nFor containers, distinguish the source build image from the final runtime image and the registry manifest from a mutable tag. The exact mechanics depend on your platform, but the underlying question is stable: can you point from the running workload to the artifact that passed the required gate? If not, improve that relationship before declaring the maintenance complete.\n\nKeep rollback practical. Retain the previous known artifact and the configuration needed to restore it. A security-related rollback may have its own risk tradeoff, so decide who can make that decision and how an investigation will proceed. The important point is to make the fallback concrete rather than relying on a vague promise that the old build can be recreated later."
+      },
+      {
+        "title": "Vulnerability tooling complements the release record",
+        "id": "vulnerability-tooling-complements-the-release-record",
+        "body": "The Go vulnerability documentation describes tools and databases for identifying known vulnerabilities relevant to a program. Use the recommended tooling as part of the evidence, with its version and database state understood. A vulnerability report and a release announcement answer related but different questions: one describes known issues in a context, while the other describes a published fix.\n\nA clean report is not a universal proof of safety. Tooling can only report within its model and available information. Conversely, a match needs interpretation: determine the affected code, relevant call paths and the artifact being analysed. Record the conclusion with enough detail that another engineer can review it without repeating every step from memory.\n\nFor dependency work, the [module management documentation](https://go.dev/doc/modules/managing-dependencies) is a useful companion. Keep module changes deliberate and inspect go.mod and go.sum diffs. A rushed blanket upgrade can introduce unrelated behaviour and make a focused security patch harder to validate. Small, explained changes make both review and incident response more reliable."
+      },
+      {
+        "title": "Embedded toolchains have a separate delivery lifecycle",
+        "id": "embedded-toolchains-have-a-separate-delivery-lifecycle",
+        "body": "A product that embeds a compiler or runtime has to ship that component through its own release process. GopherForge currently bundles Go 1.27.1 in the native release discussed in our [product update](/news/gopherforge-go-learning-workbench-continue). This article reports the upstream patches; it does not imply that writing about them has already updated the application’s embedded toolchain.\n\nThe same distinction applies to desktop tools, build appliances and packaged developer environments. Inventory the embedded component, determine the relevant exposure and plan an appropriate rebuild and product release. Track that work explicitly. Customers need accurate version information rather than an announcement that conflates upstream availability with downstream delivery.\n\nFor a learner, this is a valuable architecture lesson. A dependency crosses several boundaries before it reaches a user: source selection, compilation, packaging, review and deployment. Understanding those boundaries makes it easier to reason about why an apparently simple version bump can require several separate checks."
+      },
+      {
+        "title": "Close the task with verifiable evidence",
+        "id": "close-the-task-with-verifiable-evidence",
+        "body": "A complete maintenance record should identify what was rebuilt, what passed, what was deployed and what remains uncertain. Include the immutable artifact, the selected toolchain, the relevant test results and the observation that the intended workload is running. If some secondary binary still needs work, leave it visibly open with an owner.\n\nUse this incident-free maintenance opportunity to improve the next update. Can a new engineer discover the toolchain used by a running service? Can a scheduled job be rebuilt without recovering a departed employee’s workstation? Can the team distinguish a patched build from a retagged old image? These questions often reveal more useful follow-up work than adding another status badge.\n\nContinue with [Around Go](/learn?direction=tooling) for operational context, or practise explaining deployment evidence in [Interview](/interview). For the editor side of the toolchain, see the [VS Code upgrade workflow](/news/vscode-go-0-58-editor-upgrade). A patch reaches users through a chain of concrete actions; the engineering task is to make every link in that chain observable."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Official Go release history",
+        "url": "https://go.dev/doc/devel/release"
+      },
+      {
+        "title": "Go toolchain selection",
+        "url": "https://go.dev/doc/toolchain"
+      },
+      {
+        "title": "crypto/x509 reference",
+        "url": "https://pkg.go.dev/crypto/x509"
+      },
+      {
+        "title": "Inspecting runtime build information",
+        "url": "https://pkg.go.dev/runtime/debug#ReadBuildInfo"
+      },
+      {
+        "title": "Go vulnerability management",
+        "url": "https://go.dev/doc/security/vuln/"
+      },
+      {
+        "title": "Managing dependencies",
+        "url": "https://go.dev/doc/modules/managing-dependencies"
+      }
+    ],
+    "related": [
+      "gopherforge-go-learning-workbench-continue",
+      "dapr-1-19-rc4-go-service-boundaries"
+    ],
+    "wordCount": 1723
+  },
+  {
+    "slug": "dapr-1-19-rc4-go-service-boundaries",
+    "title": "Dapr 1.19 RC4: what Go teams should test at service boundaries",
+    "description": "The 16 October Dapr release candidate is a reason to rehearse actor lifecycle, metrics access, deadlines and retries. A practical test plan for Go services.",
+    "category": "Cloud native",
+    "eventDate": "2026-10-16",
+    "publishedAt": "2026-10-20",
+    "modifiedAt": "2026-10-20",
+    "imagePrefix": "dapr",
+    "sections": [
+      {
+        "title": "A release candidate is an invitation to validate",
+        "id": "a-release-candidate-is-an-invitation-to-validate",
+        "body": "Dapr Runtime 1.19.0-rc.4 was published on 16 October 2026. It is a release candidate, not evidence that the stable 1.19 release has shipped. The cited notes include an actor lifecycle fix that evicts an application actor instance before activation, metrics listen-address handling for sentry, operator and injector, a restriction of metrics endpoints to GET and HEAD, and reserved integration-test ports below the ephemeral range. Check the [RC4 release page](https://github.com/dapr/dapr/releases/tag/v1.19.0-rc.4) for the precise changes.\n\nThose items provide useful prompts for a Go team’s rehearsal. A lifecycle change deserves a lifecycle test. A metrics-access change deserves an observability check. A test-port change is a reminder that integration environments have resource assumptions of their own. None of these observations means every application is affected in the same way.\n\nThe rest of this article is our proposed validation plan and architectural analysis. Use an isolated environment that resembles the relevant parts of production. Do not replace a stable runtime merely because an RC exists or because a planned release date appears in a tracking issue."
+      },
+      {
+        "title": "Draw the actual request path",
+        "id": "draw-the-actual-request-path",
+        "body": "Before selecting tests, draw the path a request takes. Identify the client, Go application, sidecar, destination service and any state store or broker involved. Mark the points where work can queue, fail, be cancelled or be repeated. This drawing should describe your deployment, not an idealised diagram copied from a product overview.\n\nThe Dapr service-invocation documentation and Go SDK reference describe the supported integration. Read them against the versions you intend to test. An application can use a runtime capability without transferring all responsibility for the application’s semantics to that runtime. The code still needs a clear answer for what an error means and whether an operation may safely be attempted again.\n\nFor a simple read request, an interrupted response may be inconvenient. For a command that charges an account or reserves stock, an interrupted response can leave the caller uncertain whether the side effect happened. The network boundary creates that uncertainty. A sidecar can help implement policies, but it cannot infer the business meaning of a repeated command."
+      },
+      {
+        "title": "Treat deadlines as one budget",
+        "id": "treat-deadlines-as-one-budget",
+        "body": "A request deadline represents the time available to finish useful work for a caller. If each layer starts a fresh independent timeout, the total operation can exceed the caller’s intended budget. The practical design question is how cancellation and remaining time are carried across each hop, and what work stops when that budget is exhausted.\n\nIn Go, begin with the incoming context and derive a narrower deadline only when the operation needs it. Release timer resources when the operation completes. Check the SDK and protocol behaviour for propagation rather than assuming a context in one process automatically controls every remote operation. Instrument the boundaries so a timeout can be attributed to waiting, transport or actual service work.\n\nFor a test, make the destination deliberately slow and cancel the caller early. Observe the Go handler, sidecar and destination separately. Does local work stop? Does the remote operation stop or continue? Is the result recorded consistently? A useful test documents the actual behaviour and its consequence, rather than declaring that cancellation works because one function returned an error."
+      },
+      {
+        "title": "Bound retries before a dependency becomes slow",
+        "id": "bound-retries-before-a-dependency-becomes-slow",
+        "body": "Retries spend capacity. During a partial failure, several layers can each repeat an operation and multiply the load on the dependency that is already struggling. Before enabling a policy, identify which layer owns retries, which errors are eligible and how many attempts fit inside the request budget. Include the time spent waiting between attempts.\n\nDapr documents resiliency timeout and retry policies, but the right values depend on the operation and service constraints. Use those references to understand the mechanism, then choose a bounded policy that your service can explain. A retry on a safe lookup has different consequences from a retry on an externally visible mutation.\n\nBuild a test in which the destination fails the first attempt and succeeds on the next. Count actual calls, not just final successful responses. Then test persistent failure and verify that attempts stop. Repeat under concurrent load within a controlled budget. The goal is to discover amplification before a real outage teaches the same lesson at a much larger scale."
+      },
+      {
+        "title": "Idempotency belongs with the side effect",
+        "id": "idempotency-belongs-with-the-side-effect",
+        "body": "An idempotency key is useful only when the system that performs the side effect gives the key a precise meaning. Decide its scope, lifetime and relationship to the request payload. If the same key arrives with a different command, define whether that is rejected. If a process crashes after committing the effect but before replying, define how a later attempt retrieves the prior outcome.\n\nDo not treat an in-memory map of recent requests as a complete solution for a distributed deployment. Multiple replicas and restarts change the ownership of that state. The durable record and the side effect may need a shared transaction or another carefully designed consistency relationship. The appropriate mechanism depends on the state system and the operation.\n\nA good failure test interrupts the response after the effect is recorded. The client then retries the same logical request. Verify the resulting state, the returned outcome and the number of effects. This exercise connects the runtime retry policy to application semantics instead of testing the policy in isolation."
+      },
+      {
+        "title": "Actor lifecycle tests need visible state transitions",
+        "id": "actor-lifecycle-tests-need-visible-state-transitions",
+        "body": "For an application using actors, make lifecycle transitions observable in the test harness. Identify when an instance is created, activated, deactivated or discarded, and what resources it owns. Then exercise the transition relevant to your application with a known runtime version. The RC notes tell you where to look; they do not replace an application-specific expectation.\n\nAvoid adding broad logging of business data simply to observe lifecycle behaviour. Use bounded test identifiers and counters that show which instance handled an operation. Make teardown deterministic so a failed test does not leave resources that contaminate the next test. If a test occasionally passes because a prior instance remains alive, the test is not describing a stable contract.\n\nAlso distinguish in-memory state from persisted state. An instance lifecycle transition can affect local resources without implying a change in durable business records. Write assertions for both where relevant. This is the kind of boundary question that makes a [Go architecture discussion](/architectures) practical rather than a comparison of diagram styles."
+      },
+      {
+        "title": "Metrics are part of the rollout contract",
+        "id": "metrics-are-part-of-the-rollout-contract",
+        "body": "A deployment can remain reachable while losing the signals an operator needs to understand it. Include metrics access in the rehearsal. Confirm the intended listen address, the expected scrape method and the network path used by the collector. Test from the collector’s position rather than only from inside the service container.\n\nSeparate an endpoint’s availability from the interpretation of its values. A successful scrape does not prove that labels are stable or that an alert still measures the intended event. Compare a small known workload before and after the runtime change, and verify that the relevant signal changes in the expected direction. Keep high-cardinality request identifiers out of ordinary metric labels.\n\nFor an RC experiment, preserve a short record of the runtime version, configuration and observed metrics path. If the collector stops scraping, you should be able to tell whether the failure is address binding, network policy, method handling or application startup. That record makes a useful report to maintainers and a reusable regression check for your own team."
+      },
+      {
+        "title": "Resource limits change the shape of failure",
+        "id": "resource-limits-change-the-shape-of-failure",
+        "body": "A service that works with one request can fail when queues grow, pools saturate or memory becomes scarce. A runtime upgrade rehearsal should include a bounded concurrency test with an explicit stop condition. Measure active work and waiting work separately. Increasing concurrency without observing queues can hide the mechanism behind a single latency number.\n\nInclude the application’s dependency clients in the model. A Go handler may be waiting for MongoDB or Redis while the sidecar is still accepting work. Timeouts at the outer layer do not automatically release every inner resource. The [Around Go material](/learn?direction=tooling) connects these concerns to client lifetimes, cursor ownership and pool pressure.\n\nChoose test limits that protect the shared environment. A controlled saturation test does not need to become an uncontrolled stress test. Define the maximum request rate, duration, memory budget and cleanup procedure. The useful result is a documented failure boundary and a recovery observation, not the largest number a machine can briefly display."
+      },
+      {
+        "title": "Integrate containers and Kubernetes deliberately",
+        "id": "integrate-containers-and-kubernetes-deliberately",
+        "body": "A local container rehearsal can verify packaging, ports and startup assumptions. A Kubernetes rehearsal adds scheduling, probes, service discovery, termination and network policy. These are different environments, so state which one supplied each piece of evidence. Do not label a local success as a complete cluster validation.\n\nFor shutdown, start a request and then terminate the workload through the same mechanism used in deployment. Observe admission of new work, completion or cancellation of in-flight work and resource cleanup. Record whether the grace period is sufficient for the behaviour your service promises. If a request can be retried elsewhere, connect that observation back to idempotency.\n\nKeep the runtime change separate from unrelated image, configuration and infrastructure migrations when possible. A small rollout surface makes a failure easier to diagnose and a rollback easier to execute. If multiple changes are required together, describe that dependency explicitly and test the combination you will actually deploy."
+      },
+      {
+        "title": "A useful RC report explains a reproducible boundary",
+        "id": "a-useful-rc-report-explains-a-reproducible-boundary",
+        "body": "When the rehearsal finds a problem, reduce it to the smallest useful reproducer. Include the runtime and SDK versions, relevant configuration, expected outcome and actual outcome. Prefer a bounded example with synthetic data over a raw dump from a private service. A report that another engineer can run is more actionable than a screenshot of an unexplained timeout.\n\nBefore moving to a stable release, repeat the required gate against the actual stable artifact. An RC test is valuable preparation, but it is not proof about an artifact that has not been tested. Retain the known-good deployment identifier and confirm the rollback path. Promotion should be a concrete action with an owner and an observable result.\n\nFor interview practice, explain why a timeout can leave a write outcome ambiguous and why a retry can multiply load. For implementation practice, trace one request across the [course’s operational topics](/learn?direction=tooling). The strongest lesson from an RC is often a clearer understanding of your own system’s boundaries: who owns the work, how long it can live, and what evidence tells you it finished."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Dapr Runtime 1.19.0-rc.4",
+        "url": "https://github.com/dapr/dapr/releases/tag/v1.19.0-rc.4"
+      },
+      {
+        "title": "Dapr Go SDK",
+        "url": "https://docs.dapr.io/developing-applications/sdks/go/"
+      },
+      {
+        "title": "Service invocation overview",
+        "url": "https://docs.dapr.io/developing-applications/building-blocks/service-invocation/service-invocation-overview/"
+      },
+      {
+        "title": "Resiliency timeout policies",
+        "url": "https://docs.dapr.io/operations/resiliency/policies/timeouts/"
+      },
+      {
+        "title": "Resiliency retry policies",
+        "url": "https://docs.dapr.io/operations/resiliency/policies/retries/"
+      },
+      {
+        "title": "Go context reference",
+        "url": "https://pkg.go.dev/context"
+      }
+    ],
+    "related": [
+      "go-1-27-3-security-patch-deployment",
+      "gopls-interactive-refactoring-go"
+    ],
+    "wordCount": 1762
+  },
+  {
+    "slug": "gopls-interactive-refactoring-go",
+    "title": "Interactive refactoring in gopls: make the decision before the edit",
+    "description": "The Go team’s 16 October article explains interactive refactoring. We examine how to review interfaces, generics and tags while keeping shipped features separate from previews.",
+    "category": "Language tools",
+    "eventDate": "2026-10-16",
+    "publishedAt": "2026-10-20",
+    "modifiedAt": "2026-10-20",
+    "imagePrefix": "gopls",
+    "sections": [
+      {
+        "title": "The news is a conversation with the tool",
+        "id": "the-news-is-a-conversation-with-the-tool",
+        "body": "On 16 October 2026, the Go team published an article about interactive refactoring in gopls. It describes operations that ask for the programmer’s choices before producing an edit, including interface work and struct tags. The article discusses gopls 0.24.0, whose release tag appeared on 15 October. Supporting VS Code integration was already available in the 0.56 series; this is not a capability first invented by today’s 0.58 extension release.\n\nKeep the status of each example clear. Interface and tag support predates 0.24, while the newer discussion includes generic-interface work. Moving a declaration is presented as a preview, and changing a signature is a future direction. An example in a forward-looking article is not a promise that every editor can perform that operation today. Read the [Go team’s article](https://go.dev/blog/interactive-refactoring) and [0.24 release notes](https://go.dev/gopls/release/v0.24.0) for the exact feature boundaries.\n\nOur analysis focuses on the engineering decision behind a refactor. An interactive prompt can make that decision easier to express, but the developer still needs to know what behaviour should remain stable and what evidence will demonstrate it."
+      },
+      {
+        "title": "State the invariant before selecting a code action",
+        "id": "state-the-invariant-before-selecting-a-code-action",
+        "body": "A refactor is easier to review when its intended invariant is written down first. For example: callers should observe the same JSON fields, cancellation should still stop the same work, or a consumer should require only the same two operations from a dependency. That sentence gives the reviewer a reason to reject an attractive but unrelated change.\n\nWithout an invariant, a code action can become a design decision by accident. The tool offers a valid transformation, the diff compiles, and the team accepts a broader interface or an altered representation without discussing it. Syntax-aware tooling is valuable precisely because it can make edits quickly; speed increases the need to make the intended boundary explicit.\n\nUse a small disposable branch or an otherwise reversible working state for exploration. Apply one operation, inspect the result and compare it with the invariant. If the operation touches more of the repository than expected, stop and understand the scope. Do not stack several automated transformations until the original reason for the change is hard to recover."
+      },
+      {
+        "title": "Interfaces should describe a consumer’s need",
+        "id": "interfaces-should-describe-a-consumer-s-need",
+        "body": "An interface can make a dependency easier to substitute, but it can also preserve accidental complexity if it simply mirrors a large implementation. Before generating one, identify the consumer that needs the abstraction. Which operations does that consumer actually call? Which error semantics does it depend on? Who owns any resource returned by those operations?\n\nA small interface is not automatically a good interface. A single method can still hide an unclear contract, especially when it returns a cursor, stream or callback whose lifetime is ambiguous. Name the operation in terms of the consumer’s purpose and document the behaviour that the type system cannot express. A test double is useful only if it follows those same semantics.\n\nAfter generating an implementation stub, search for placeholder behaviour and review each method body. A method set that satisfies the compiler can still panic, ignore a context or return a misleading empty value. Link the method to a specific test that demonstrates its intended behaviour. This is where a mechanical edit becomes an implemented contract."
+      },
+      {
+        "title": "Generic interfaces need concrete examples",
+        "id": "generic-interfaces-need-concrete-examples",
+        "body": "Generics can express useful relationships between types, but a generic declaration is not an explanation of why those relationships are needed. Write two concrete use cases before abstracting. If the second case requires a different ownership model or error contract, sharing a type parameter may not be the most important design problem.\n\nWhen reviewing a generated generic interface, inspect the constraints, method signatures and the places where type arguments are selected. Ask what a caller can do with the promised operations. A constraint that merely permits a broad family of types may not express the operation the implementation actually performs. Conversely, a narrow constraint can make a generally useful function unnecessarily difficult to reuse.\n\nKeep the first test small and concrete. Use ordinary values that make the result easy to inspect, then add a second type only when it demonstrates the intended generality. The [Go specification](https://go.dev/ref/spec) is the reference for language rules; an editor prompt should help express those rules, not replace understanding of them."
+      },
+      {
+        "title": "Tags move a refactor across a data boundary",
+        "id": "tags-move-a-refactor-across-a-data-boundary",
+        "body": "A tag change can alter encoding or persistence without changing the visible control flow. That is why a prompt asking for tag names and options should be treated as a contract decision. Identify the library that reads the tag and the external representation that depends on it before accepting a generated edit.\n\nFor JSON, choose an example whose zero value matters. Test whether the field remains present and whether its name is stable. For persistence, consider the stored shape and compatibility with existing records. If one type serves multiple boundaries, inspect all relevant tag namespaces rather than assuming a JSON-oriented command is the only consumer of the declaration.\n\nOur [VS Code 0.58 upgrade analysis](/news/vscode-go-0-58-editor-upgrade) includes a small encoding contract test. Use that pattern as a starting point, then adapt the assertion to the representation your application promises. A generated tag that looks idiomatic can still be wrong for a client that relies on a particular field being present."
+      },
+      {
+        "title": "Separate moving code from moving responsibility",
+        "id": "separate-moving-code-from-moving-responsibility",
+        "body": "A declaration can move between files or packages while appearing unchanged to a casual reader. Yet a package move can affect import direction, visibility and the place where dependencies are created. That makes a future move-declaration tool interesting, but it does not make package design an automatic operation. Remember that the cited article presents this work as a preview.\n\nBefore moving a declaration manually or with tooling, draw the imports before and after. Identify whether an implementation detail becomes exported merely to make the move compile. Check whether tests now require a wider package boundary or a new dependency. A clean-looking directory tree is not useful if it creates a harder dependency cycle or exposes a private contract.\n\nThe [architecture learning area](/architectures) offers a useful lens: choose boundaries according to the changes and failure modes you need to contain. Moving a declaration is one possible implementation step. The design decision is who should know about it and which direction the dependency should point."
+      },
+      {
+        "title": "Test behaviour at the affected boundary",
+        "id": "test-behaviour-at-the-affected-boundary",
+        "body": "Choose tests that correspond to the refactor’s stated invariant. If the change concerns encoding, inspect encoded data. If it concerns cancellation, start work and cancel it. If it concerns an interface, exercise the consumer through both the real implementation and an appropriate test double where that comparison is meaningful.\n\nDo not write a test that simply repeats the generated implementation. Such a test can preserve the same mistake in two places and still pass. Prefer an observable input and result or a clearly stated state transition. A table-driven test is useful when the cases represent different conditions, not when every row is a cosmetic variation of the same happy path.\n\nRun a focused test early and the repository’s required gate before completing the change. Keep the result scoped to what actually ran. A successful package test is valuable evidence about that package; it is not a claim that every platform, integration and deployment path has been validated. Clear test reporting makes automated assistance easier to trust and review."
+      },
+      {
+        "title": "Interactive does not mean identical in every editor",
+        "id": "interactive-does-not-mean-identical-in-every-editor",
+        "body": "A language server and an editor client negotiate capabilities. Even when a server supports an operation, the client may need specific integration to present a prompt and apply the result. Check your actual editor, extension and language-server versions before diagnosing a missing action as a broken Go module.\n\nUse a minimal example in the intended workspace. Confirm that package loading succeeded and that the cursor or selection is in a place where the action is applicable. If the action remains unavailable, compare the documented client support with the versions in use. A screenshot of a command from another editor is not enough to establish that your client should expose the same workflow.\n\nWhen reporting a problem, include the operation, the selection, the expected result and a small reproducer. Keep private source and credentials out of traces. Our [editor upgrade checklist](/news/vscode-go-0-58-editor-upgrade) describes a bounded way to collect this evidence without changing every setting or clearing every cache at once."
+      },
+      {
+        "title": "Coding agents should explain the transformation",
+        "id": "coding-agents-should-explain-the-transformation",
+        "body": "An agent can help prepare a refactor by finding consumers, identifying tests and proposing a small sequence of edits. Give it the invariant and ask for the review surface before implementation. For example, ask which JSON contracts depend on a declaration or which goroutines own a resource that an interface returns.\n\nAfter the edit, require the agent to explain the changed boundary and identify the commands it actually ran. A model can produce a convincing description of a test that never executed, so keep the evidence concrete. Review the diff yourself at the places where behaviour is external: encoding, storage, concurrency and errors.\n\nThe [Go coding-agent workflow](/interview/ai.workflow) and [concurrency review guide](/interview/ai.concurrency-review) apply the same principle. Automation is most useful when it reduces mechanical work while making decisions more visible. It becomes less useful when it hides a large change behind a confident summary and a compiler result that does not test the contract."
+      },
+      {
+        "title": "Try a small refactoring lab",
+        "id": "try-a-small-refactoring-lab",
+        "body": "Take a small Go package with one consumer and one concrete dependency. Write down the two operations the consumer needs, including error and ownership semantics. Add a focused test for the current behaviour. Then explore an interface-oriented code action supported by your actual tools, or perform the equivalent small edit manually.\n\nInspect the generated method set, replace any placeholders, run the test and compare the final diff with the original invariant. Next, change one requirement: perhaps cancellation must stop a long operation, or a returned stream must be closed by the caller. Decide whether the interface still communicates the contract. This second step exposes whether the abstraction helps with change rather than merely satisfying a style preference.\n\nFinish by explaining the result aloud in [Interview preparation](/interview), or return to the relevant [course branch](/learn). The useful skill is a deliberate loop: select a bounded change, answer the design question, review the proposed edit, apply it and test the behaviour. Interactive refactoring makes the conversation with the tool richer; understanding the program remains the developer’s job."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Interactive refactoring in gopls — The Go Blog",
+        "url": "https://go.dev/blog/interactive-refactoring"
+      },
+      {
+        "title": "gopls 0.24.0 release notes",
+        "url": "https://go.dev/gopls/release/v0.24.0"
+      },
+      {
+        "title": "Go language specification",
+        "url": "https://go.dev/ref/spec"
+      },
+      {
+        "title": "Go testing reference",
+        "url": "https://pkg.go.dev/testing"
+      },
+      {
+        "title": "Go Code Review Comments",
+        "url": "https://go.dev/wiki/CodeReviewComments"
+      }
+    ],
+    "related": [
+      "vscode-go-0-58-editor-upgrade",
+      "gopherforge-go-learning-workbench-continue"
+    ],
+    "wordCount": 1761
+  }
+]

@@ -1,3 +1,4 @@
+import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -19,9 +20,15 @@ export async function generateMetadata({
   const { id } = await params;
   const l = lessonByID.get(id);
   return {
-    title: l?.title ?? "Lesson not found",
+    title: l ? `${l.title} — Go lesson` : "Lesson not found",
     description: l?.objective,
     alternates: { canonical: lessonURL(id) },
+    openGraph: {
+      title: l?.title,
+      description: l?.objective,
+      url: lessonURL(id),
+      type: "article",
+    },
   };
 }
 export default async function LessonPage({
@@ -38,9 +45,42 @@ export default async function LessonPage({
   const guide = l.reading?.designGuide;
   return (
     <div className="lesson-layout">
+      <Breadcrumbs
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Learn Go", path: "/learn" },
+          { name: l.unitTitle, path: `/learn/units/${l.unitID}` },
+          { name: l.title, path: lessonURL(id) },
+        ]}
+      />
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@type": "LearningResource",
+          name: l.title,
+          description: l.objective,
+          url: "https://gopherforge.app" + lessonURL(id),
+          inLanguage: "en",
+          isAccessibleForFree: true,
+          learningResourceType:
+            l.kind === "predict" ? "Practice problem" : "Lesson",
+          educationalUse: "Self-study",
+          timeRequired: `PT${minutes(l)}M`,
+          isPartOf: {
+            "@type": "Course",
+            name: l.unitTitle,
+            url: `https://gopherforge.app/learn/units/${l.unitID}`,
+          },
+          provider: {
+            "@type": "Organization",
+            name: "GopherForge",
+            url: "https://gopherforge.app",
+          },
+        }}
+      />
       <StudyBookmark area="course" id={id} />
       <aside className="lesson-toc">
-        <Link href={`/learn?unit=${l.unitID}`} className="back">
+        <Link href={`/learn/units/${l.unitID}`} className="back">
           ← {l.unitTitle}
         </Link>
         <p className="eyebrow">IN THIS LESSON</p>

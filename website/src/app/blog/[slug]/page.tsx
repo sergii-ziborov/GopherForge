@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { dateLabel } from "@/lib/news";
 import { posts } from "@/lib/posts";
 import { lessonByID, lessonURL } from "@/lib/course";
 import { Prose } from "@/components/Prose";
@@ -49,7 +50,7 @@ export default async function Article({
         <h1>{p.title}</h1>
         <p className="article-lede">{p.description}</p>
         <p className="article-byline">
-          Serhii Ziborov · <time dateTime={p.date}>19 October 2026</time>
+          Serhii Ziborov · <time dateTime={p.date}>{dateLabel(p.date)}</time>
         </p>
       </header>
       {p.sections.map((s, i) => (

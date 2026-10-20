@@ -1,0 +1,15 @@
+[Unit]
+Description=Refresh licensed Go news and deliver the last good cache to GopherForge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /srv/apps/gopherforge/news-feed/run.sh
+TimeoutStartSec=90
+Nice=15
+MemoryMax=160M
+CPUQuota=25%
+UMask=0022
+StandardOutput=journal
+StandardError=journal

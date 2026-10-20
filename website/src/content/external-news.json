@@ -1,0 +1,2696 @@
+{
+  "schema": 1,
+  "checkedAt": "2026-10-20T15:38:33.168678+00:00",
+  "sourceFeed": "https://go.dev/blog/feed.atom",
+  "entries": [
+    {
+      "id": "3fdb8d8d9ee7a383",
+      "title": "Interactive refactoring in gopls",
+      "author": "Hongxiang Jiang",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/interactive-refactoring",
+      "publishedAt": "2026-10-16T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Interactive refactoring in gopls" },
+        { "kind": "p", "text": "Hongxiang Jiang 16 October 2026" },
+        {
+          "kind": "p",
+          "text": "When editing code in a modern IDE or editor, developers rely on its refactoring features to automate common transformations. Today, we are excited to introduce interactive refactoring in gopls, powered by a new capability we are proposing for the Language Server Protocol (LSP) that brings dynamic, multi-step dialogs directly into your favorite editor. Crucially, we designed this capability (in collaboration with the Dart team) not just for Go, but as an open standard for all programming languages and editor ecosystems. Working support is already available in gopls v0.24.0 and the official Go extension for VS Code v0.56.0."
+        },
+        { "kind": "h3", "text": "What is the Language Server Protocol (LSP)?" },
+        {
+          "kind": "p",
+          "text": "The LSP is an open standard that decouples language-specific features from specific text editors. As you navigate and edit code, your editor (such as VS Code, Neovim, or Emacs) and a language server (like gopls) engage in a continuous JSON-RPC exchange to provide features like autocomplete, hover documentation, diagnostics, and code actions."
+        },
+        { "kind": "h3", "text": "Multi-step code transformation" },
+        {
+          "kind": "p",
+          "text": "Today, almost every code transformation in the LSP is like a function of no parameters: you trigger the operation, and the server immediately computes the edits. (Renaming a symbol is the sole exception: because it is a function of one parameter, the desired new name, it required its own dedicated PrepareRename RPC in the protocol.)"
+        },
+        { "kind": "p", "text": "\"Add struct tags\", without questions" },
+        {
+          "kind": "p",
+          "text": "The language server must deduce the user’s intent from context alone, namely the cursor position and the enclosing syntax tree. When that context is not enough, the server is forced into one of two choices: apply a one-size-fits-all default, or refrain from offering the transformation altogether. The limitation lies not in gopls’s ability to compute the necessary edits, but in the LSP’s lack of a mechanism for language servers to ask the user for input."
+        },
+        {
+          "kind": "p",
+          "text": "For many transformations, this parameterless model works well. But many others need additional input from the user: which struct tags to add and in what naming convention, which interface to implement, which file to move a declaration to. Without a way to ask, gopls could only guess—“Add struct tags”, for example, always produced json tags in camelCase—or not offer the refactoring at all. With interactive refactoring, language servers can now easily provide new operations with one or more parameters."
+        },
+        { "kind": "p", "text": "\"Add struct tags\", with questions" },
+        {
+          "kind": "p",
+          "text": "While some language extensions have worked around this limitation by embedding custom, language-specific dialog logic directly into individual editors, doing so leaves behind other editors (such as Neovim and Emacs) that stick strictly to the LSP with minimal custom client code. More importantly, editor-specific workarounds go against the fundamental purpose of the LSP: to decouple language-specific features from editors so that each server improvement benefits every client."
+        },
+        {
+          "kind": "p",
+          "text": "Our LSP interactive refactoring proposal (microsoft/language-server-protocol#1164) solves this by establishing a standard mechanism for language servers to collect user input before computing text edits. For Go developers, this unlocks a suite of long-awaited refactorings, including:"
+        },
+        { "kind": "li", "text": "golang/go#70583: Move Declaration" },
+        { "kind": "li", "text": "golang/go#38028: Change Signature" },
+        { "kind": "li", "text": "golang/vscode-go#1547: Implement Interface" },
+        { "kind": "li", "text": "golang/vscode-go#2002: Modify Struct Tags" },
+        { "kind": "p", "text": "among many others." },
+        { "kind": "h2", "text": "Interactive refactorings in action" },
+        {
+          "kind": "p",
+          "text": "Adding and removing struct tags (gopls v0.23.0)"
+        },
+        {
+          "kind": "p",
+          "text": "When configuring serialization formats, developers frequently need custom tags and casing conventions. Previously, running “Add struct tags” unconditionally injected json tags using camelCase formatting."
+        },
+        { "kind": "p", "text": "With interactive refactoring:" },
+        {
+          "kind": "li",
+          "text": "Place your cursor on any struct definition and select the “Add struct tags” code action."
+        },
+        {
+          "kind": "li",
+          "text": "An input dialog appears, pre-filled with json, allowing you to customize any combination of tags (such as json,yaml,db)."
+        },
+        {
+          "kind": "li",
+          "text": "A second dialog lets you select your desired naming convention (such as camelCase, snake_case, or PascalCase)."
+        },
+        {
+          "kind": "li",
+          "text": "Gopls generates and applies the formatted struct tags across your type definition."
+        },
+        { "kind": "p", "text": "Interactive \"Add struct tags\" in VS Code" },
+        { "kind": "p", "text": "Here is the before-and-after transformation:" },
+        {
+          "kind": "pre",
+          "text": "type UserProfile struct {\n    ID        int64\n    FirstName string\n    LastName  string\n    EmailAddr string\n}\n"
+        },
+        {
+          "kind": "pre",
+          "text": "type UserProfile struct {\n    ID        int64  `json:\"id\" db:\"id\"`\n    FirstName string `json:\"first_name\" db:\"first_name\"`\n    LastName  string `json:\"last_name\" db:\"last_name\"`\n    EmailAddr string `json:\"email_addr\" db:\"email_addr\"`\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Similarly, “Remove struct tags” now asks you for the specific tag keys you wish to delete (for example, removing only db tags while preserving the json tag), rather than wiping out all struct tags indiscriminately."
+        },
+        {
+          "kind": "p",
+          "text": "Interactive \"Remove struct tags\" in VS Code"
+        },
+        {
+          "kind": "p",
+          "text": "Implementing interfaces with dynamic symbol search"
+        },
+        {
+          "kind": "p",
+          "text": "When creating a type to satisfy an interface, developers previously had to copy the interface declaration and manually turn it into a set of methods on the receiver type (or rely on external tools like impl by manually typing the receiver and qualifying the name of the interface)."
+        },
+        {
+          "kind": "p",
+          "text": "Since gopls v0.23.0, with interactive refactoring:"
+        },
+        {
+          "kind": "li",
+          "text": "Place your cursor on any concrete type and select the “Add methods to X to implement an interface…” code action."
+        },
+        {
+          "kind": "li",
+          "text": "A text entry field appears, inviting you to choose the name of an interface type. It makes dynamic queries to gopls to auto-complete names of types in your workspace and the standard library (for example, maphash.Hasher)."
+        },
+        {
+          "kind": "li",
+          "text": "If the selected interface has type parameters, gopls asks for a concrete type argument for each type parameter (such as Foo)."
+        },
+        {
+          "kind": "li",
+          "text": "Gopls generates complete method stubs with appropriate receiver names and instantiated method signatures."
+        },
+        {
+          "kind": "p",
+          "text": "Interactive \"Add methods to implement an interface...\" in VS Code"
+        },
+        {
+          "kind": "pre",
+          "text": "type Foo struct{}\n\ntype MyHasher struct{}\n"
+        },
+        {
+          "kind": "pre",
+          "text": "type Foo struct{}\n\ntype MyHasher struct{}\n\n// Equal implements [maphash.Hasher].\nfunc (m *MyHasher) Equal(x Foo, y Foo) bool {\n    panic(\"unimplemented\")\n}\n\n// Hash implements [maphash.Hasher].\nfunc (m *MyHasher) Hash(*maphash.Hash, Foo) {\n    panic(\"unimplemented\")\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Moving declarations across files and packages (preview)"
+        },
+        {
+          "kind": "p",
+          "text": "Moving declarations manually by cutting and pasting can easily break references and requires tedious import cleanup across multiple files. While scheduled for an upcoming gopls release, our working implementation already demonstrates how interactive file selection streamlines cross-file and cross-package moves:"
+        },
+        {
+          "kind": "li",
+          "text": "Place your cursor on any top-level declaration and select the “Move declaration X” code action."
+        },
+        {
+          "kind": "li",
+          "text": "A file picker dialog lets you choose an existing destination .go file or specify a new file path."
+        },
+        {
+          "kind": "li",
+          "text": "Gopls moves the declaration along with its dependent declarations (such as unexported helpers or methods) while leaving unrelated symbols in place, updates references across your workspace, and cleans up imports in both the source and destination files."
+        },
+        { "kind": "p", "text": "Interactive \"Move declaration\" in VS Code" },
+        {
+          "kind": "p",
+          "text": "In the example below, we move the type Foo from package from to package to. Its method Print and the unexported constant bar, which only Foo uses, move along with it, while the unrelated function Baz stays behind:"
+        },
+        {
+          "kind": "pre",
+          "text": "// from/from.go\npackage from\n\nimport (\n    \"fmt\"\n    \"strings\"\n)\n\nconst bar = \"bar\"\n\n// Doc comment for Foo\ntype Foo struct{}\n\nfunc (f Foo) Print() {\n    fmt.Println(bar)\n}\n\nfunc Baz() string {\n    return strings.ToUpper(\"baz\")\n}\n"
+        },
+        {
+          "kind": "pre",
+          "text": "// from/from.go\npackage from\n\nimport \"strings\"\n\nfunc Baz() string {\n    return strings.ToUpper(\"baz\")\n}\n\n// to/to.go\npackage to\n\nimport \"fmt\"\n\nconst bar = \"bar\"\n\n// Doc comment for Foo\ntype Foo struct{}\n\nfunc (f Foo) Print() {\n    fmt.Println(bar)\n}\n"
+        },
+        { "kind": "p", "text": "Slaying the dragon (gopls v0.24.0)" },
+        {
+          "kind": "p",
+          "text": "As a demonstration of multi-step interactive dialogs and a self-contained test case for client editor implementations, gopls v0.24.0 offers a “Slay the dragon” code action when you place your cursor on a package-level variable named dragonSlayer (for example, var dragonSlayer string). Happy hunting!"
+        },
+        { "kind": "h2", "text": "What’s on the Horizon" },
+        {
+          "kind": "p",
+          "text": "Interactive refactoring establishes a foundational capability in gopls, opening up several exciting directions on our roadmap:"
+        },
+        {
+          "kind": "li",
+          "text": "Change signature refactoring (#38028): Adding, removing, or reordering function parameters across a workspace requires input that cannot be deduced from syntax alone, such as the new parameter order or the default argument expression to insert at existing call sites. Interactive forms allow gopls to collect these details before rewriting the declaration and all call sites."
+        },
+        {
+          "kind": "li",
+          "text": "Interactive conflict resolution: When a code transformation encounters naming collisions, identifier shadowing, or ambiguous references, gopls can ask the user for guidance, such as asking for permission to proceed or offering to rename conflicting symbols on the fly."
+        },
+        {
+          "kind": "li",
+          "text": "Interactive commands beyond code edits: Because interactivity is modeled at the LSP command layer, it naturally generalizes to non-edit server operations that require user configuration, such as configuring test or benchmark runs with profiling flags (CPU, memory, tracing)."
+        },
+        { "kind": "h2", "text": "Getting Started and Sharing Feedback" },
+        {
+          "kind": "p",
+          "text": "Interactive refactoring is available in gopls v0.24.0 and vscode-go v0.56.0 (with proof-of-concept client integrations also explored for Neovim and Emacs)."
+        },
+        {
+          "kind": "p",
+          "text": "We would love to hear your thoughts as we continue refining interactive code actions in gopls:"
+        },
+        {
+          "kind": "li",
+          "text": "For general feedback or feature requests, file an issue on the Go issue tracker."
+        },
+        {
+          "kind": "li",
+          "text": "To read the full technical specification—including the stateless form protocol design and alternative approaches we explored—or to join the discussion with the broader LSP community, check out the LSP Interactive Code Actions design document and the ongoing conversation in microsoft/language-server-protocol#1164."
+        },
+        {
+          "kind": "p",
+          "text": "(Special thanks to Alan Donovan, Alex Putman, Brian Wilkerson, Danny Tuppeny, Hana Kim, Madeline Kalil, Peter Weinberger, and Robert Findley for their insights, discussions, feedback, and collaboration on this work.)"
+        },
+        { "kind": "p", "text": "Happy refactoring!" },
+        {
+          "kind": "p",
+          "text": "Previous article: Better HTTP/1 connection reuse Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/gopls",
+        "https://microsoft.github.io/language-server-protocol/",
+        "https://go.dev/gopls/release/v0.24.0",
+        "https://go.googlesource.com/proposal/+/refs/heads/master/design/76331-lsp-interactive-refactoring.md",
+        "https://github.com/microsoft/language-server-protocol/issues/1164",
+        "https://go.dev/issue/70583",
+        "https://go.dev/issue/38028",
+        "https://github.com/golang/vscode-go/issues/1547",
+        "https://github.com/golang/vscode-go/issues/2002",
+        "https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#command",
+        "https://github.com/golang/vscode-go/releases/tag/v0.56.0",
+        "https://github.com/h9jiang/neovim/tree/interactive-refactoring",
+        "https://go-review.googlesource.com/c/tools/+/800220",
+        "https://go.dev/issue/new",
+        "https://go.dev/blog/http-connection-reuse",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 1462,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Introducing interactive refactoring in gopls and the LSP: a new capability that brings dynamic, multi-step refactorings into your favorite editor."
+    },
+    {
+      "id": "1adae70ed0107eb3",
+      "title": "Better HTTP/1 connection reuse",
+      "author": "Nicholas Husin and Damien Neil",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/http-connection-reuse",
+      "publishedAt": "2026-10-14T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Better HTTP/1 connection reuse" },
+        {
+          "kind": "p",
+          "text": "Nicholas Husin and Damien Neil 14 October 2026"
+        },
+        { "kind": "p", "text": "Take a look at the following function:" },
+        {
+          "kind": "pre",
+          "text": "func getStatus(url string) (int, error) {\n    resp, err := http.Get(url)\n    if err != nil {\n        return 0, err\n    }\n    defer resp.Body.Close()\n    return resp.StatusCode, nil\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "It sends a GET request to url and returns the HTTP status code."
+        },
+        {
+          "kind": "p",
+          "text": "Using HTTP/1 (GODEBUG=http2client=0), calling this function 100 times against index.golang.org takes ~710 milliseconds on Go 1.26 on my machine. On Go 1.27, the same program takes ~150 milliseconds."
+        },
+        {
+          "kind": "p",
+          "text": "That is almost 5 times faster! How is such a drastic performance difference possible?"
+        },
+        { "kind": "h2", "text": "The cost of establishing HTTP connections" },
+        {
+          "kind": "p",
+          "text": "To understand the difference, consider what happens on the network when we make an HTTP request."
+        },
+        {
+          "kind": "p",
+          "text": "Go’s net/http package supports HTTP/1.0, HTTP/1.1, and HTTP/2. All three run over TCP, and usually over TLS when talking to HTTPS endpoints. Making a request over a new connection looks something like this:"
+        },
+        {
+          "kind": "li",
+          "text": "TCP handshake (1 RTT): the client sends a SYN packet, the server replies with SYN-ACK, and the client replies with ACK. Because the client can send the first TLS message alongside that final ACK, establishing the TCP connection takes 1 round-trip time (RTT)."
+        },
+        {
+          "kind": "li",
+          "text": "TLS handshake (2 RTT): next, a TLS handshake exchanges encryption keys and verifies the server’s identity; using TLS 1.2, this takes 2 RTT."
+        },
+        {
+          "kind": "li",
+          "text": "HTTP request: with the keys exchanged, HTTP requests can finally be sent after a total of 3 RTT."
+        },
+        {
+          "kind": "p",
+          "text": "These round trips (plus some CPU time spent on TLS handshakes) add up quickly. In cross-region communications, one-way latencies often reach or exceed the 50 ms (100 ms RTT) shown in the diagram above. Compared to the 300 ms spent just setting up the connection, the HTTP request itself can be cheap to serve, taking only a little over 1 RTT when bandwidth is plentiful or the HTTP response is small."
+        },
+        {
+          "kind": "p",
+          "text": "Even in more favorable conditions, opening a new connection can still be expensive. Our opening benchmark queries index.golang.org, which is distributed worldwide and supports TLS 1.3. This means that latency is relatively low, and the TLS handshake can actually finish in just 1 RTT. Even so, the performance difference is still very noticeable."
+        },
+        { "kind": "h2", "text": "Connection reuse" },
+        {
+          "kind": "p",
+          "text": "To avoid paying this setup cost on every request, HTTP clients and servers try to reuse existing connections across multiple requests when possible. The mechanics of this differ based on the HTTP version:"
+        },
+        {
+          "kind": "li",
+          "text": "HTTP/1.0: while not part of the official specification, clients and servers often opt into connection reuse by sending a Connection: keep-alive header. Reuse continues until either endpoint omits the header or sends a Connection: close header."
+        },
+        {
+          "kind": "li",
+          "text": "HTTP/1.1: connections are persistent by default, and can be reused for subsequent requests and responses unless either side declares otherwise by sending a Connection: close header."
+        },
+        {
+          "kind": "li",
+          "text": "HTTP/2: multiple requests and responses can be multiplexed over a single TCP connection."
+        },
+        { "kind": "h2", "text": "When connection reuse fails" },
+        {
+          "kind": "p",
+          "text": "In HTTP/1 (both HTTP/1.0 and HTTP/1.1), multiple requests and responses on the same connection are sent sequentially on the wire. If two GET requests are sent to index.golang.org over the same TCP connection, the responses arrive as a single stream of bytes:"
+        },
+        {
+          "kind": "p",
+          "text": "As shown in the diagram, net/http.Get reads and parses the status line and headers from the byte stream to populate net/http.Response, then returns immediately. The response body remains unread on the connection and is consumed only as the caller reads from net/http.Response.Body."
+        },
+        {
+          "kind": "p",
+          "text": "Because responses are sent back-to-back on the same stream, net/http can only find the start of the next response after the current response body has been read to the very end (as determined by the Content-Length or Transfer-Encoding header)."
+        },
+        {
+          "kind": "p",
+          "text": "Now look back at our example program, where we never read resp.Body:"
+        },
+        {
+          "kind": "pre",
+          "text": "func getStatus(url string) (int, error) {\n    resp, err := http.Get(url)\n    if err != nil {\n        return 0, err\n    }\n    defer resp.Body.Close()\n    return resp.StatusCode, nil\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Through Go 1.26, when resp.Body.Close is called, net/http sees that there is still an unread response body. Realizing that it cannot reuse the connection, it abandons the existing connection and creates new connections for its next requests, causing it to repeatedly incur the cost of establishing new connections."
+        },
+        {
+          "kind": "p",
+          "text": "(HTTP/2 does not have this problem. Because it multiplexes streams of frames over a single connection rather than sending responses strictly back-to-back, an unread response body on one stream does not block other requests from sharing the connection.)"
+        },
+        { "kind": "h2", "text": "Where failed connection reuse hurts" },
+        {
+          "kind": "p",
+          "text": "This subtlety of HTTP/1 connection reuse can cause silent performance degradation in seemingly innocuous code."
+        },
+        {
+          "kind": "p",
+          "text": "As in our opening example, a client might only care about an API response’s status code. However, the API endpoint it is talking to might send bodies that provide more detailed but ultimately unused information, such as {\"success\": true, \"message\": \"update processed\"}. This will unfortunately cause connection reuse to fail."
+        },
+        {
+          "kind": "p",
+          "text": "Even programs that do read the response body can run into this issue if they stop just short of the end of the body. For example, encoding/json.Decoder stops reading as soon as it sees the closing } of a JSON object. If a server sends a JSON response terminated with a newline, decoding the JSON object will leave the newline still unread. The connection cannot be reused for a new request until that newline is consumed. Thus, a healthy connection might end up being abandoned, even though it was only a single byte away from being reusable."
+        },
+        { "kind": "h2", "text": "The manual solution" },
+        {
+          "kind": "p",
+          "text": "The unread body problem has been a long-standing sharp edge. Over the years, many Go developers came up with their own workarounds. Most commonly, this is done by draining the response body prior to closing it:"
+        },
+        {
+          "kind": "pre",
+          "text": "func getStatus(url string) (int, error) {\n    resp, err := http.Get(url)\n    if err != nil {\n        return 0, err\n    }\n    drainAndCloseBody(resp.Body)\n    return resp.StatusCode, nil\n}\n\nfunc drainAndCloseBody(body io.ReadCloser) {\n    io.Copy(io.Discard, body) // Drain the response body before closing it.\n    body.Close()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "While this works for small responses, if the unread body is large, establishing a new TCP connection can be faster than downloading and discarding the rest of the body. A better approach is to cap the number of bytes we are willing to drain:"
+        },
+        {
+          "kind": "pre",
+          "text": "func drainAndCloseBody(body io.ReadCloser) {\n    io.CopyN(io.Discard, body, 256<<10) // Only drain up to 256 KB.\n    body.Close()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "However, a server might send a response body that trickles in slowly, so we also need to cap the time we spend draining:"
+        },
+        {
+          "kind": "pre",
+          "text": "func drainAndCloseBody(body io.ReadCloser) {\n    drainDone := make(chan struct{}, 1)\n    go func() {\n        io.CopyN(io.Discard, body, 256<<10) // Only drain up to 256 KB.\n        drainDone <- struct{}{}\n    }()\n    // Only spend at most 50 ms trying to drain the response body.\n    select {\n    case <-drainDone:\n    case <-time.After(50 * time.Millisecond):\n        // If we reach the 50 ms timeout, body.Close will run and interrupt the\n        // io.CopyN, preventing goroutine leaks.\n    }\n    body.Close()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Of course, we also do not want to block for up to 50 milliseconds when closing a response body. Instead, we can drain the body asynchronously in the background and let it race against subsequent requests:"
+        },
+        {
+          "kind": "pre",
+          "text": "func drainAndCloseBody(body io.ReadCloser) {\n    drainDone := make(chan struct{}, 1)\n    go func() {\n        io.CopyN(io.Discard, body, 256<<10) // Only drain up to 256 KB.\n        drainDone <- struct{}{}\n    }()\n    go func() {\n        // Only spend at most 50 ms trying to drain the response body.\n        select {\n        case <-drainDone:\n            // If the drain can finish before a new request is sent, the\n            // connection will be reused; otherwise, a new connection is\n            // created, and the current connection will be put in a pool of\n            // idle connections, potentially being reused for another future\n            // request.\n        case <-time.After(50 * time.Millisecond):\n            // If we reach the 50 ms timeout, body.Close will run and interrupt\n            // the io.CopyN, preventing goroutine leaks.\n        }\n        body.Close()\n    }()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "As we can see, draining response bodies safely is surprisingly tricky and cumbersome. Worse, as the practice of draining response bodies spread, some nuances were often lost. This has led to misunderstandings such as attempting to drain response bodies for HTTP/2 connections, when doing so is unnecessary."
+        },
+        { "kind": "h2", "text": "The current state and conclusion" },
+        {
+          "kind": "p",
+          "text": "Starting in Go 1.27, net/http.Transport automatically does everything we have implemented in the code above: it will asynchronously drain an unread HTTP/1 response body for up to 50 ms or 256 KB. It also implements additional optimizations; for example, when a response contains the Connection: close header, draining the body is guaranteed to be wasted work, and it therefore skips doing so. Note that this behavior might evolve in future versions of Go, as other possible enhancements become apparent."
+        },
+        {
+          "kind": "p",
+          "text": "As a general best practice, we now recommend that users simply close their HTTP bodies once they no longer need them, like in our original example:"
+        },
+        {
+          "kind": "pre",
+          "text": "func getStatus(url string) (int, error) {\n    resp, err := http.Get(url)\n    if err != nil {\n        return 0, err\n    }\n    defer resp.Body.Close()\n    return resp.StatusCode, nil\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Go is all about simplicity. Let your code stay clean and simple, and let net/http deal with the complexities on your behalf."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Interactive refactoring in gopls Previous article: Arch-specific SIMD in Go Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://index.golang.org",
+        "https://go.dev/pkg/net/http",
+        "https://go.dev/pkg/net/http#Get",
+        "https://go.dev/pkg/net/http#Response",
+        "https://go.dev/pkg/net/http#Response.Body",
+        "https://go.dev/pkg/encoding/json#Decoder",
+        "https://go.dev/pkg/net/http#Transport",
+        "https://go.dev/blog/interactive-refactoring",
+        "https://go.dev/blog/archsimd",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 1497,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 includes a change to the HTTP client that can make programs sending many sequential HTTP/1 requests significantly faster."
+    },
+    {
+      "id": "d0b5a21ce836ebc1",
+      "title": "Arch-specific SIMD in Go",
+      "author": "Junyang Shao and David Chase",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/archsimd",
+      "publishedAt": "2026-10-02T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Arch-specific SIMD in Go" },
+        { "kind": "p", "text": "Junyang Shao and David Chase 2 October 2026" },
+        {
+          "kind": "p",
+          "text": "Since Go 1.26, we have supported an experimental amd64 SIMD API. Now in Go 1.27, we support two more architectures: arm64 and wasm."
+        },
+        {
+          "kind": "p",
+          "text": "The new APIs can be accessed by setting GOEXPERIMENT=simd when building a program. They are defined in the simd/archsimd package."
+        },
+        {
+          "kind": "p",
+          "text": "archsimd is the lower-level infrastructure that simd builds on, essentially the intrinsics layer in other languages. For exotic operations that only exist on a specific architecture, users can access them by transitioning from simd to archsimd (via ToArch and <Types>FromArch). For details, please refer to the simd blog post."
+        },
+        {
+          "kind": "p",
+          "text": "For readers with prior knowledge of SIMD intrinsics in other languages, you might find that our archsimd API does not directly mirror the underlying hardware instructions:"
+        },
+        {
+          "kind": "li",
+          "text": "We give our APIs sensible names: e.g., instead of _mm512_slli_epi64, we just call it ShiftAllLeft."
+        },
+        {
+          "kind": "li",
+          "text": "We leave some architecture details to compiler optimizations rather than exposing them in the API: e.g., instead of _mm512_maskz_add_ps(m, x, y), we optimize x.Add(y).Masked(m) into the same instruction."
+        },
+        {
+          "kind": "p",
+          "text": "These design decisions make our APIs smaller and more accessible, and they also happily make the simd implementation much easier."
+        },
+        {
+          "kind": "p",
+          "text": "For readers without prior knowledge of SIMD intrinsics, we hope our low-level API is a natural and pleasant journey for you."
+        },
+        {
+          "kind": "p",
+          "text": "Please share your feedback and comments. Anything about usability, performance, etc., is appreciated. The parent issue for this project is #73787."
+        },
+        { "kind": "h2", "text": "What is SIMD" },
+        {
+          "kind": "p",
+          "text": "SIMD stands for Single Instruction, Multiple Data. SIMD instructions operate on wide registers (128-bit, 256-bit, or more) containing multiple 8- to 64-bit elements, performing operations across all elements in parallel. Wider registers and parallel execution provide a significant performance boost to algorithms that can take advantage of them."
+        },
+        {
+          "kind": "p",
+          "text": "Until now, anyone who wanted to use SIMD in Go had to endure the friction of writing assembly language. The new archsimd package is here to change that."
+        },
+        { "kind": "h2", "text": "Goals" },
+        {
+          "kind": "p",
+          "text": "The goal is to support as many SIMD instructions across different architectures as possible. Currently, we have amd64, arm64, and wasm available. Our amd64 support has the largest API surface, covering AVX, AVX2, and many AVX-512 extensions. Our arm64 support currently covers NEON, with SVE and some SVE2 already on the way. Our wasm support is also mostly complete, thanks to its well-defined 128-bit SIMD abstraction."
+        },
+        {
+          "kind": "p",
+          "text": "Some users might be interested in matrix extensions on certain architectures, such as AMX and SME. We haven’t fully settled on how to represent matrices effectively in Go, so they are not yet supported, but we might support them in the future."
+        },
+        { "kind": "h2", "text": "API Design and Naming" },
+        { "kind": "h3", "text": "Types" },
+        {
+          "kind": "p",
+          "text": "The architecture-specific SIMD API is imported from simd/archsimd. archsimd uses distinct struct types, such as Float32x4, Int32x8, or Uint8x16, to signal the shape and element type of each vector, and defines operations as methods on those types. At this moment, archsimd supports only fixed-width vector extensions. Scalable vector extensions like arm64 SVE and RVV will have different struct types to represent vectors. Mask types also come with vector-like shapes, e.g., Mask32x4."
+        },
+        { "kind": "h3", "text": "Methods" },
+        {
+          "kind": "p",
+          "text": "Across different vector widths, element types, and architectures, we use the same method name whenever operations are semantically identical:"
+        },
+        {
+          "kind": "li",
+          "text": "Regardless of vector width or architecture, element-wise addition is simply x.Add(y); the type of x determines which instruction to emit. Instead of 18 different function names for addition, there is only one method name."
+        },
+        {
+          "kind": "li",
+          "text": "When instructions on different architectures look similar at a glance but differ in edge-case behavior, we give them distinct names so differences don’t silently bite you. For example, 16-byte table lookup on amd64 (VPSHUFB) zeros the output byte when the index is negative (index < 0) and wraps modulo 16 otherwise, so we call it PermuteOrZero. On arm64 NEON (VTBL) and wasm (i8x16.swizzle), any out-of-range index (index < 0 || index >= 16) zeros the output byte, so we call it LookupOrZero."
+        },
+        {
+          "kind": "li",
+          "text": "On amd64, many 256-bit and 512-bit instructions operate independently within 128-bit lanes rather than across the entire register. We explicitly suffix those methods with Grouped (such as InterleaveLoGrouped or PermuteOrZeroGrouped) to make the 128-bit lane boundary obvious."
+        },
+        {
+          "kind": "p",
+          "text": "Methods require a receiver value, which doesn’t work for creating a vector from memory or a scalar. For those, archsimd provides package-level functions named with the target vector type:"
+        },
+        {
+          "kind": "li",
+          "text": "Slices (the default): In Go 1.27, loading and storing slices use the shortest names: archsimd.LoadFloat32x4(s []float32) Float32x4 and x.Store(s []float32). For tail elements that may be shorter than a full vector, archsimd.LoadFloat32x4Part(s []float32) (Float32x4, int) zero-fills the remaining lanes and returns the number of elements loaded, paired with x.StorePart(s []float32) int."
+        },
+        {
+          "kind": "li",
+          "text": "Arrays and Broadcasts: Fixed-size array pointers use the Array suffix (archsimd.LoadFloat32x4Array(y *[4]float32) and x.StoreArray(y *[4]float32)), and archsimd.BroadcastFloat32x4(v float32) broadcasts a scalar to all lanes."
+        },
+        { "kind": "h3", "text": "Type Reinterpretation" },
+        {
+          "kind": "p",
+          "text": "Reinterpretations are type casts without any cost. SIMD algorithms frequently reinterpret bits across element types and widths."
+        },
+        {
+          "kind": "p",
+          "text": "In the Go 1.26 experiment, we implemented this with As<Type> methods, which suffered from a quadratic explosion of type pairs and couldn’t generalize to width-agnostic vectors in simd or SVE."
+        },
+        {
+          "kind": "p",
+          "text": "In Go 1.27, we replace them with composable zero-cost conversions:"
+        },
+        {
+          "kind": "li",
+          "text": "ToBits() reinterprets a signed integer or float vector as an unsigned integer vector of the same element width (e.g., Int32x4.ToBits() -> Uint32x4), and BitsToInt32() / BitsToFloat32() converts back."
+        },
+        {
+          "kind": "li",
+          "text": "ReshapeToUint<W>s() on unsigned vectors changes the element width within the same register width. For example, if x is an archsimd.Uint8x16, then x.ReshapeToUint32s().BitsToFloat32() reinterprets the bits of x as an archsimd.Float32x4 at zero runtime cost."
+        },
+        { "kind": "h3", "text": "Masks" },
+        {
+          "kind": "p",
+          "text": "Different architectures encode vector masks very differently, e.g. k mask registers on AVX-512, full vector bitmasks on AVX/AVX2, NEON, and wasm, and predicate registers on SVE. To hide this hardware detail, archsimd provides opaque Mask types (such as Mask32x4) matching each vector shape:"
+        },
+        {
+          "kind": "li",
+          "text": "Comparisons like x.Greater(y) produce a Mask."
+        },
+        {
+          "kind": "li",
+          "text": "x.Masked(m) zeros elements where m is false, and x.IfElse(m, y) (which replaces Merge from Go 1.26) selects elements from x where m is true and from y where m is false."
+        },
+        {
+          "kind": "li",
+          "text": "The compiler peepholes mask operations with the surrounding instructions: on AVX-512, x.Add(y).Masked(m) or x.Add(y).IfElse(m, z) compiles into a single zero-masked or merge-masked VPADD instruction; on AVX2, NEON, or wasm, it lowers to the appropriate bitwise AND or blend/bitselect instruction."
+        },
+        { "kind": "h2", "text": "Examples" },
+        {
+          "kind": "p",
+          "text": "Portable algorithms like inner product can easily be implemented using the portable simd package, as shown in the companion simd blog post. However, we still expose archsimd to tap into exotic, architecture-specific instructions that do not fit into a portable intersection API, or instructions that can simply do things faster than what simd provides."
+        },
+        {
+          "kind": "p",
+          "text": "On amd64, the GFNI extension exposes GaloisFieldAffineTransform operations. Putting aside what a Galois Field is, these operations do a simple thing:"
+        },
+        {
+          "kind": "pre",
+          "text": "// Each element of A is interpreted as a matrix of 8 rows of vectors of 8 bits.\n// Each element of x is interpreted as a vector of 8 bits.\n// The b argument is likewise a vector of 8 bits.\n// The result is z[i] = (A[i/8] * x[i]) + b.\n//\n// The matrix * and vector + follow the usual rules for linear algebra,\n// but based on AND and XOR for scalar * and +\n//\n// Asm: VGF2P8AFFINEQB, CPU Feature: AVX512GFNI\nfunc (x Uint8x16) GaloisFieldAffineTransform(A Uint64x2, b uint8) Uint8x16\n"
+        },
+        {
+          "kind": "p",
+          "text": "Each 8x8 bit matrix A is packed row-by-row into a single uint64. Because any linear combination or permutation of the 8 bits within a byte can be written as an 8x8 bit matrix, this single instruction is a Swiss Army knife for byte-level bit manipulation."
+        },
+        {
+          "kind": "p",
+          "text": "For example, reversing the bit order of every byte (bits.Reverse8) normally requires nibble lookup tables, masks, shifts, and ORs in SIMD. With GaloisFieldAffineTransform, we can simply multiply each byte by the 8x8 anti-diagonal identity matrix (0x8040201008040201) to reverse all 8 bits of 64 bytes at a time in a single instruction:"
+        },
+        {
+          "kind": "pre",
+          "text": "/*\n    Anti-diagonal 8x8 bit matrix (0x8040201008040201):\n    [ 0 0 0 0 0 0 0 1 ]   [ x7 ]   [ x0 ]\n    [ 0 0 0 0 0 0 1 0 ]   [ x6 ]   [ x1 ]\n    [ 0 0 0 0 0 1 0 0 ]   [ x5 ]   [ x2 ]\n    [ 0 0 0 0 1 0 0 0 ] * [ x4 ] = [ x3 ]\n    [ 0 0 0 1 0 0 0 0 ]   [ x3 ]   [ x4 ]\n    [ 0 0 1 0 0 0 0 0 ]   [ x2 ]   [ x5 ]\n    [ 0 1 0 0 0 0 0 0 ]   [ x1 ]   [ x6 ]\n    [ 1 0 0 0 0 0 0 0 ]   [ x0 ]   [ x7 ]\n*/\nfunc ReverseBits(dst, src []uint8) {\n    if !archsimd.X86.AVX512GFNI() {\n        // A slow fallback emulation impl, details omitted.\n        slowReverseBits(dst, src)\n        return\n    }\n    if len(src) > len(dst) {\n        // Make sure src and dst are the same size\n        src = src[:len(dst)]\n    }\n    revMatrix := archsimd.BroadcastUint64x8(0x8040201008040201)\n    var v archsimd.Uint8x64\n    var i int\n    for i = 0; i < len(src)-v.Len()+1; i += v.Len() {\n        v = archsimd.LoadUint8x64(src[i : i+v.Len()])\n        v.GaloisFieldAffineTransform(revMatrix, 0).Store(dst[i : i+v.Len()])\n    }\n    if i < len(src) {\n        v, _ = archsimd.LoadUint8x64Part(src[i:])\n        v.GaloisFieldAffineTransform(revMatrix, 0).StorePart(dst[i:])\n    }\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Another example is matrix transpose. On amd64, the permutation instructions are shaped in a non-portable way, so using simd is cumbersome and might incur emulations. An efficient implementation can be written more directly in archsimd. The example below transposes an 8-by-8 matrix of 32-bit integers in registers on amd64 using AVX2’s 128-bit lane-grouped interleaves (InterleaveLoGrouped, InterleaveHiGrouped) and cross-lane permutations (ConcatPermuteScalarsGrouped, ConcatPermute128Scalars):"
+        },
+        {
+          "kind": "pre",
+          "text": "func Transpose8(a0, a1, a2, a3, a4, a5, a6, a7 archsimd.Int32x8) (\n    b0, b1, b2, b3, b4, b5, b6, b7 archsimd.Int32x8) {\n    if !archsimd.X86.AVX2() {\n        // A slow fallback emulation impl, details omitted.\n        return slowTranspose8(a0, a1, a2, a3, a4, a5, a6, a7)\n    }\n    /*\n            LOW  HIGH\n        a0: abcd efgh\n        a1: ijkl mnop\n        a2: qrst uvwx\n        a3: 0123 4567\n        a4: ABCD EFGH\n        a5: IJKL MNOP\n        a6: QRST UVWX\n        a7: 89yz YZ$@\n    */\n    t0 := a0.InterleaveLoGrouped(a1) // t0 = aibj emfn\n    t1 := a0.InterleaveHiGrouped(a1) // t1 = ckdl gohp\n    t2 := a2.InterleaveLoGrouped(a3) // t2 = q0r1 u4v5\n    t3 := a2.InterleaveHiGrouped(a3) // t3 = s2t3 w6x7\n    t4 := a4.InterleaveLoGrouped(a5) // t4 = AIBJ EMFN\n    t5 := a4.InterleaveHiGrouped(a5) // t5 = CKDL GOHP\n    t6 := a6.InterleaveLoGrouped(a7) // t6 = Q8R9 UYVZ\n    t7 := a6.InterleaveHiGrouped(a7) // t7 = SyTz W$X@\n\n    a0 = t0.ConcatPermuteScalarsGrouped(0, 1, 4, 5, t2) // a0 = aiq0 emu4\n    a1 = t0.ConcatPermuteScalarsGrouped(2, 3, 6, 7, t2) // a1 = bjr1 fnv5\n    a2 = t1.ConcatPermuteScalarsGrouped(0, 1, 4, 5, t3) // a2 = cks2 gow6\n    a3 = t1.ConcatPermuteScalarsGrouped(2, 3, 6, 7, t3) // a3 = dlt3 hpx7\n    a4 = t4.ConcatPermuteScalarsGrouped(0, 1, 4, 5, t6) // a4 = AIQ8 EMUY\n    a5 = t4.ConcatPermuteScalarsGrouped(2, 3, 6, 7, t6) // a5 = BJR9 FNVZ\n    a6 = t5.ConcatPermuteScalarsGrouped(0, 1, 4, 5, t7) // a6 = CKSy GOW$\n    a7 = t5.ConcatPermuteScalarsGrouped(2, 3, 6, 7, t7) // a7 = DLTz HPX@\n\n    b0 = a0.ConcatPermute128Scalars(0, 2, a4) // b0 = aiq0 AIQ8\n    b1 = a1.ConcatPermute128Scalars(0, 2, a5) // b1 = bjr1 BJR9\n    b2 = a2.ConcatPermute128Scalars(0, 2, a6) // b2 = cks2 CKSy\n    b3 = a3.ConcatPermute128Scalars(0, 2, a7) // b3 = dlt3 DLTz\n    b4 = a0.ConcatPermute128Scalars(1, 3, a4) // b4 = emu4 EMUY\n    b5 = a1.ConcatPermute128Scalars(1, 3, a5) // b5 = fnv5 FNVZ\n    b6 = a2.ConcatPermute128Scalars(1, 3, a6) // b6 = gow6 GOW$\n    b7 = a3.ConcatPermute128Scalars(1, 3, a7) // b7 = hpx7 HPX@\n\n    return\n}\n"
+        },
+        { "kind": "h2", "text": "Good Practices" },
+        {
+          "kind": "p",
+          "text": "When walking through the examples above, you might have a few questions:"
+        },
+        {
+          "kind": "li",
+          "text": "What is archsimd.X86.AVX512GFNI(), and can I omit it?"
+        },
+        {
+          "kind": "li",
+          "text": "Why is the strided loop written as i = 0; i < len(src)-v.Len()+1; i += v.Len(), instead of i = 0; i + v.Len() <= len(src); i += v.Len()?"
+        },
+        {
+          "kind": "li",
+          "text": "Why does Transpose8 take 8 vector parameters rather than a struct or an [8]archsimd.Int32x8 array?"
+        },
+        {
+          "kind": "p",
+          "text": "At first glance these choices might look like minor stylistic preferences, but each of them is chosen for an important performance or correctness reason:"
+        },
+        {
+          "kind": "p",
+          "text": "CPU feature checks (archsimd.X86.*, archsimd.ARM64.*)"
+        },
+        {
+          "kind": "p",
+          "text": "On amd64, we provide runtime feature checks like archsimd.X86.AVX(), AVX2(), AVX512(), and extension checks like AVX512GFNI() or AVX512VNNI(); on arm64, NEON is always available, and we provide checks for optional extensions like archsimd.ARM64.PMULL(), SVE(), and SVE2(). The compiler doesn’t know ahead of time whether the machine running your binary supports optional SIMD extensions. If you don’t guard your SIMD code with the appropriate feature check, your program may crash with SIGILL on hardware that lacks the instruction."
+        },
+        {
+          "kind": "p",
+          "text": "Just as importantly, CPU feature checks act as compiler optimization hints. For example, AVX-512 supports hardware merge-masking on instruction outputs. How the compiler lowers x.Add(y).IfElse(m, z) on a 128-bit or 256-bit vector depends on which CPU features are known to be available. If the code is not guarded by archsimd.X86.AVX512(), the compiler must conservatively emit a vector VPADD followed by a VPBLEND instruction. Inside an if archsimd.X86.AVX512() block, however, the compiler knows AVX-512 is available and fuses the sequence into a single merge-masked AVX-512 VPADD instruction."
+        },
+        { "kind": "p", "text": "Bounds check elimination in strided loops" },
+        {
+          "kind": "p",
+          "text": "How you write the loop bound determines whether the compiler’s prove pass can eliminate slice bounds checks inside the loop. In i + v.Len() <= len(src), the addition i + v.Len() could theoretically overflow to a negative int if len(src) were near math.MaxInt, which prevents the compiler from proving that i is always non-negative and in-bounds. Writing i < len(src)-v.Len()+1 avoids that potential overflow, allowing the loop body to compile with zero bounds checks."
+        },
+        {
+          "kind": "p",
+          "text": "Keeping vectors in registers (avoiding large composite types)"
+        },
+        {
+          "kind": "p",
+          "text": "Transpose8 passes 8 vector parameters rather than a struct of 8 fields or an [8]archsimd.Int32x8 array because Go’s ABI and SSA backend currently place large composite types in memory rather than in registers (a known issue tracked at #24416). Because SIMD vectors are 16 to 64 bytes each, spilling them to the stack hurts performance much more than spilling scalar values. This applies to both function parameters and local variables, so avoid wrapping SIMD vectors inside large arrays or structs in hot loops. There are ongoing efforts to promote composite memory accesses back into registers, which have not yet landed in Go 1.27."
+        },
+        { "kind": "h2", "text": "Trying it out" },
+        {
+          "kind": "p",
+          "text": "In Go 1.27, GOEXPERIMENT=simd supports amd64 (AVX, AVX2, and AVX-512), arm64 (NEON), and wasm (WebAssembly 128-bit SIMD) out of the box. Whether you are on an Intel/AMD machine, an arm64 server or Apple Silicon Mac (M1/M2/M3/M4), or targeting WebAssembly, you can try archsimd natively right away:"
+        },
+        {
+          "kind": "pre",
+          "text": "GOEXPERIMENT=simd go test simd/archsimd/...\n"
+        },
+        {
+          "kind": "p",
+          "text": "You can also cross-test wasm (or amd64 via Rosetta emulation on Apple Silicon) by setting GOARCH:"
+        },
+        {
+          "kind": "pre",
+          "text": "# Run wasm SIMD tests using a WASI runtime:\nGOOS=wasip1 GOARCH=wasm GOEXPERIMENT=simd go test simd/archsimd/...\n\n# Or run amd64 AVX2 tests on Apple Silicon via Rosetta:\nGOARCH=amd64 GOEXPERIMENT=simd go test simd/archsimd/...\n"
+        },
+        {
+          "kind": "p",
+          "text": "We’re interested in all sorts of feedback! Early users have already helped us catch bugs (such as #77582) and identify places where code generation or API ergonomics could be improved. We tried hard to pick clear, consistent names and cover the most useful instructions, but archsimd is a massive API surface and there is always room to improve."
+        },
+        { "kind": "h2", "text": "Future work" },
+        {
+          "kind": "p",
+          "text": "For Go 1.28 and beyond, we are actively working on completing arm64 SVE and SVE2 support in archsimd (introducing width-agnostic scalable vector types like archsimd.Float32s backed directly by hardware SVE registers and predicates) and wiring it into simd. We also plan to expand archsimd to additional architectures such as riscv64, ppc64, s390x, and loong64, improve register promotion for composite types, and continue filling in instructions and compiler optimizations based on community feedback."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Better HTTP/1 connection reuse Previous article: Platform-independent SIMD in Go Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/blog/simd-experiment",
+        "https://go.dev/issue/73787",
+        "https://go.dev/issue/24416",
+        "https://go.dev/issue/77582",
+        "https://go.dev/blog/http-connection-reuse",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 2574,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 introduces experimental arch-specific SIMD vector APIs"
+    },
+    {
+      "id": "e69a2844d3d1c8d3",
+      "title": "Platform-independent SIMD in Go",
+      "author": "David Chase and Junyang Shao",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/simd-experiment",
+      "publishedAt": "2026-09-24T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Platform-independent SIMD in Go" },
+        {
+          "kind": "p",
+          "text": "David Chase and Junyang Shao 24 September 2026"
+        },
+        {
+          "kind": "p",
+          "text": "Go 1.26 and 1.27 include experimental APIs for Single Instruction Multiple Data (SIMD) operations. SIMD is a native feature of many modern CPUs that allows software to perform uniform operations across vectors of data very quickly, such as adding 8 pairs of float64 values in a single instruction. It can significantly speed up many computationally-intensive tasks, ranging from cryptography to data processing to AI. In fact, Go’s Green Tea garbage collector even makes use of SIMD to accelerate scanning memory for live objects."
+        },
+        {
+          "kind": "p",
+          "text": "Prior to these new experimental APIs, the only way to access this functionality from Go was by writing Go assembly. This was only worth it for truly performance-critical compute kernels, which meant plenty of software that could benefit from SIMD simply left a lot of the CPU unused."
+        },
+        {
+          "kind": "p",
+          "text": "Go 1.26 introduced a SIMD API for amd64, and Go 1.27 added APIs for arm64 (specifically NEON) and wasm. However, a basic challenge for a SIMD API is the enormous variation between platforms, not simply in what operations they support, but even in how vectors are represented. Some platforms provide fixed-size vectors, typically between 128 bits and 512 bits, while on others the vector size isn’t known at build time and must be queried when the program starts. To provide full access to the breadth of these platforms, these APIs live in an architecture-dependent archsimd package."
+        },
+        {
+          "kind": "p",
+          "text": "But Go 1.27 goes beyond these architecture-dependent APIs and introduces an experimental, fully portable, platform- and size-agnostic SIMD interface, loosely based on Highway for C++. The goal is to support write-once near-asm-performance “simd” code on platforms with SIMD support, and to provide a competent emulation on those platforms that do not (yet) have SIMD support. The simd package currently supports AVX, AVX2, and AVX512 on amd64, NEON on arm64, and wasm’s SIMD instructions."
+        },
+        {
+          "kind": "h2",
+          "text": "Motivation: variation among SIMD architectures"
+        },
+        {
+          "kind": "p",
+          "text": "SIMD architectures vary in several dimensions. Some provide a single fixed vector size (wasm, PowerPC, and s390x, 128 bits). Some provide several fixed vector sizes (amd64, with 128, 256, and 512; loong64 with 128 and 256). Riscv64 supports vectors of unspecified size between 128 and 65536 bits, though the length is limited to powers of 2. Arm64 supports one fixed size (128 bits, NEON), and one variable size (128-2048 bits, powers of two only, SVE). On a given instance of a particular architecture, determining what sizes that particular instance happens to support requires feature checks: amd64, but is it AVX, AVX2, or AVX512? Arm64, but is it NEON or SVE? If SVE, how large? Which variant of SVE: SVE, SVE2, or SVE2.1?"
+        },
+        {
+          "kind": "p",
+          "text": "Different SIMD architectures vary in how they handle vector masking. For vectors, if-then-else across a vector can be implemented with masks; do the operation, but only assign the result (or load, or store) where the mask is “true”. Some SIMD variants do not provide masks; all operations work across all elements, and “masking” is done with vector bitmasks and vector boolean operations (wasm, AVX, AVX2, NEON). Some provide special mask registers, with one bit governing operations on one vector element (AVX512 and RVV). Others (SVE) allocate one bit per vector byte, but the least-significant bit of each element’s mask bits governs masked operations. AVX2 also supports masked loads and stores, but using a plain vector as the mask, and with the most-significant bit governing the operation."
+        },
+        {
+          "kind": "p",
+          "text": "A third source of variation is in the operations themselves. Each architecture provides its own primitives for rearranging vector elements; some require constant inputs, others support variable inputs. Different SIMD architectures support different crypto-related operations. Even basic arithmetic can have varying support; for example wasm lacks comparisons for vectors of 64-bit integers. Even for a given vector length on a particular architecture, instruction support depends on “features” that must be checked."
+        },
+        {
+          "kind": "p",
+          "text": "Even though Go’s architecture-dependent archsimd package was designed to be as uniform as possible across architectures, many of these quirks remain, and make designing, writing, and testing code for multiplatform SIMD onerous. We could do more in the archsimd package to make the different architectures appear more similar, but we can only go so far without compromising efficiency."
+        },
+        { "kind": "h2", "text": "Overview" },
+        {
+          "kind": "p",
+          "text": "The new simd package hides these differences by removing fixed-size vectors from the type system, and by only supporting those operations that are in the intersection of all the different platforms, and fills gaps in the intersection with efficient emulation in terms of other SIMD instructions. The goal is a set of operations that is"
+        },
+        {
+          "kind": "li",
+          "text": "adequate to support many data processing algorithms that benefit from a vectorized implementation (but are not tied to a particular vector size),"
+        },
+        {
+          "kind": "li",
+          "text": "is as efficient as assembly language when the source code operations match the underlying hardware,"
+        },
+        { "kind": "li", "text": "is otherwise emulated as well as possible," },
+        {
+          "kind": "li",
+          "text": "and is easy to read and understand (even/especially if an LLM ends up writing the code)."
+        },
+        {
+          "kind": "p",
+          "text": "On platforms that lack SIMD instructions or that lack support in archsimd, all of the operations are emulated, so that code written using the simd package will always run."
+        },
+        {
+          "kind": "p",
+          "text": "To use this experimental package, set GOEXPERIMENT=simd at build time, just like using the experimental archsimd package."
+        },
+        {
+          "kind": "p",
+          "text": "The simd vector types are just capitalized, plural, primitive types, for example simd.Uint8s or simd.Float32s. Vectors are loaded from and stored to slices, for example:"
+        },
+        {
+          "kind": "pre",
+          "text": "// innerProduct returns the inner product of x and y.\nfunc innerProduct(x, y []float32) float32 {\n    var a simd.Float32s\n    var i int\n    for i = 0; i < len(x)-a.Len()+1; i += a.Len() {\n        u := simd.LoadFloat32s(x[i : i+a.Len()])\n        v := simd.LoadFloat32s(y[i : i+a.Len()])\n        a = u.MulAdd(v, a)\n    }\n    if i < len(x) {\n        u, _ := simd.LoadFloat32sPart(x[i:])\n        v, _ := simd.LoadFloat32sPart(y[i:])\n        a = u.MulAdd(v, a)\n    }\n    return sum(a)\n}\n// sum returns scalar sum of elements of x.\nfunc sum(x simd.Float32s) float32 {\n    s := make([]float32, x.Len())\n    x.Store(s)\n    var r float32\n    for _, e := range s {\n        r += e\n    }\n    return r\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "This example also shows one of the limitations of the first experimental release of this package; because there’s no common way to sum across all the elements of a vector, it’s not supported by simd in Go 1.27, though ReduceSum will appear in the next release so sum can be replaced with just simd.ReduceSum."
+        },
+        {
+          "kind": "p",
+          "text": "SIMD comparisons produce mask values, which are specific to the corresponding vector element width, so that comparisons of Int8s produce Mask8s, etc., and mask values can be used to select and filter vectors."
+        },
+        {
+          "kind": "h2",
+          "text": "Supported simd package operations as of Go 1.27"
+        },
+        {
+          "kind": "p",
+          "text": "In this table, V and U are vector types, M is a mask type, E is a scalar type, and W is a width."
+        },
+        { "kind": "h3", "text": "Package-Level Load / Broadcast Functions" },
+        {
+          "kind": "p",
+          "text": "| Function | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| LoadV([]E) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| LoadVPart([]E) (V, int) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| BroadcastV(E) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        { "kind": "h3", "text": "Store/String operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method(...) | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| Store(s []E) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| StorePart(s []E) int | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| String() string | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        { "kind": "h3", "text": "Arithmetic operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method(...) V | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        { "kind": "p", "text": "| Abs() V | Y | Y | Y | | | | | | Y | Y" },
+        {
+          "kind": "p",
+          "text": "| Add(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| AddSaturated(y V) V | Y | Y | | | Y | Y | | | |"
+        },
+        { "kind": "p", "text": "| Average(y V) V | | | | | Y | Y | | | |" },
+        { "kind": "p", "text": "| Div(y V) V | | | | | | | | | Y | Y" },
+        {
+          "kind": "p",
+          "text": "| IfElse(mask MaskWs, y V) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Len() int | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Masked(mask MaskWs) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Max(y V) V | Y | Y | Y | | Y | Y | Y | | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Min(y V) V | Y | Y | Y | | Y | Y | Y | | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Mul(y V) V | Y | Y | Y | | Y | Y | Y | | Y | Y"
+        },
+        { "kind": "p", "text": "| MulAdd(y V, z V) V | | | | | | | | | Y | Y" },
+        { "kind": "p", "text": "| Neg() V | Y | Y | Y | Y | | | | | Y | Y" },
+        {
+          "kind": "p",
+          "text": "| Not() V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| Or(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        { "kind": "p", "text": "| Sqrt() V | | | | | | | | | Y | Y" },
+        {
+          "kind": "p",
+          "text": "| Sub(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| SubSaturated(y V) V | Y | Y | | | Y | Y | | | |"
+        },
+        {
+          "kind": "p",
+          "text": "| Xor(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        { "kind": "h3", "text": "Boolean and vector masking operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method(...) V | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| And(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| AndNot(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| CarrylessMultiplyEven(y V) V | | | | | | | | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| CarrylessMultiplyOdd(y V) V | | | | | | | | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| IfElse(mask MaskWs, y V) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Masked(mask MaskWs) V | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Not() V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| Or(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| Xor(y V) V | Y | Y | Y | Y | Y | Y | Y | Y | |"
+        },
+        { "kind": "h3", "text": "Comparison operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method(...) M | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| Equal(y V) MaskWs | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Greater(y V) MaskWs | Y | Y | Y | Y | | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| GreaterEqual(y V) MaskWs | Y | Y | Y | Y | | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| Less(y V) MaskWs | Y | Y | Y | Y | | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| LessEqual(y V) MaskWs | Y | Y | Y | Y | | Y | Y | Y | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| NotEqual(y V) MaskWs | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y"
+        },
+        { "kind": "h3", "text": "Conversion operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method(...) U | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| ConvertToFloatW() FloatWs | | | Y | | | | | | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ConvertToIntW() IntWs | | | | | Y | Y | Y | Y | Y |"
+        },
+        {
+          "kind": "p",
+          "text": "| ConvertToUintW() UintWs | Y | Y | Y | Y | | | | | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ToMask() (to MaskWs) | Y | Y | Y | Y | | | | | |"
+        },
+        { "kind": "h3", "text": "Mask Methods" },
+        {
+          "kind": "p",
+          "text": "| (m M).Method(...) M) | Mask8s | Mask16s | Mask32s | Mask64s"
+        },
+        { "kind": "p", "text": "| And(y M) M | Y | Y | Y | Y" },
+        { "kind": "p", "text": "| Or(y V) V | Y | Y | Y | Y" },
+        { "kind": "p", "text": "| String() string | Y | Y | Y | Y" },
+        { "kind": "p", "text": "| ToIntWs() (to IntWs) | Y | Y | Y | Y" },
+        { "kind": "h3", "text": "Shift and rotate operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method() V | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| RotateAllLeft(dist uint64) V | | Y | Y | Y | | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| RotateAllRight(dist uint64) V | | Y | Y | Y | | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ShiftAllLeft(dist uint64) V | | Y | Y | Y | | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ShiftAllRight(dist uint64) V | | Y | Y | | | Y | Y | Y | |"
+        },
+        { "kind": "h3", "text": "Zero-cost reshaping operations" },
+        {
+          "kind": "p",
+          "text": "| (x V).Method(...) U | Int8s | Int16s | Int32s | Int64s | Uint8s | Uint16s | Uint32s | Uint64s | Float32s | Float64s"
+        },
+        {
+          "kind": "p",
+          "text": "| ToBits() UintWs | Y | Y | Y | Y | | | | | Y | Y"
+        },
+        {
+          "kind": "p",
+          "text": "| ReshapeToUint8s() Uint8s | | | | | | Y | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ReshapeToUint16s() Uint16s | | | | | Y | | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ReshapeToUint32s() Uint32s | | | | | Y | Y | | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| ReshapeToUint64s() Uint64s | | | | | Y | Y | Y | | |"
+        },
+        {
+          "kind": "p",
+          "text": "| BitsToFloatW() FloatWs | | | | | | | Y | Y | |"
+        },
+        {
+          "kind": "p",
+          "text": "| BitsToIntW() IntWs | | | | | Y | Y | Y | Y | |"
+        },
+        { "kind": "h2", "text": "Transition to/from platform-specific code" },
+        {
+          "kind": "p",
+          "text": "It may happen that the simd package is too limited for all parts of a particular application, or that we have not yet provided an adequate emulation for some necessary feature. For that case, the simd package supports transition to and from architecture-specific SIMD. Each vector type in the simd package has a conversion method ToArch() returning an any. That any can be type-asserted to one of the architecture-specific types for a platform. To convert back, use one of the simd.<SimdType>FromArch functions. For portable code this creates an obligation to write architecture-specific code for each of the platforms, including an emulation."
+        },
+        {
+          "kind": "p",
+          "text": "Here’s a complete example for a method/function that is currently missing, but should be added in Go 1.28. Suppose your algorithm needs Int8s.OnesCount() (which simd in Go 1.27 lacks). Rather than rewriting the entire algorithm for each platform, it’s possible to just implement the missing operation."
+        },
+        {
+          "kind": "p",
+          "text": "First, for amd64, which lacks the instruction for AVX and AVX2, but not AVX512:"
+        },
+        {
+          "kind": "pre",
+          "text": "//go:build goexperiment.simd && amd64\npackage simd_test\nimport (\n    \"simd\"\n    \"simd/archsimd\"\n)\nvar popcnt4x16 = [16]int8{0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4}\nvar popcnt4x32 = [32]int8{\n    0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,\n    0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,\n}\n// OnesCount returns the number of one bits for each element.\nfunc OnesCount(v simd.Int8s) simd.Int8s {\n    switch x := v.ToArch().(type) {\n    case archsimd.Int8x16:\n        lut := archsimd.LoadInt8x16Array(&popcnt4x16)\n        mask0f := archsimd.BroadcastInt8x16(0x0f)\n        lo := x.And(mask0f)\n        hi := x.ToBits().ReshapeToUint16s().ShiftAllRight(4).\n                ReshapeToUint8s().BitsToInt8().And(mask0f)\n        return simd.Int8sFromArch(lut.PermuteOrZero(lo).\n                Add(lut.PermuteOrZero(hi)))\n    case archsimd.Int8x32:\n        lut := archsimd.LoadInt8x32Array(&popcnt4x32)\n        mask0f := archsimd.BroadcastInt8x32(0x0f)\n        lo := x.And(mask0f)\n        hi := x.ToBits().ReshapeToUint16s().ShiftAllRight(4).\n                ReshapeToUint8s().BitsToInt8().And(mask0f)\n        return simd.Int8sFromArch(lut.PermuteOrZeroGrouped(lo).\n                Add(lut.PermuteOrZeroGrouped(hi)))\n    case archsimd.Int8x64:\n        return simd.Int8sFromArch(x.OnesCount())\n    default:\n        // GODEBUG=simd=0 emulation\n        return OnesCountEmulated(v)\n    }\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The interface conversion and type switch look like they should be inefficient, but the compiler-side implementation of simd specializes code and optimizes away the type switch."
+        },
+        {
+          "kind": "p",
+          "text": "NEON and Wasm both support Int8s.OnesCount(), so their implementation is much simpler, though it still uses Int8s.ToArch and Int8sFromArch."
+        },
+        {
+          "kind": "pre",
+          "text": "//go:build goexperiment.simd && (wasm || arm64)\npackage simd_test\nimport (\n    \"simd\"\n    \"simd/archsimd\"\n)\n// OnesCount returns the number of one bits for each element.\nfunc OnesCount(v simd.Int8s) simd.Int8s {\n    // TODO when SVE is added, this won't work\n    switch x := v.ToArch().(type) {\n    case archsimd.Int8x16:\n        return simd.Int8sFromArch(x.OnesCount())\n    default:\n        // GODEBUG=simd=0 emulation\n        return OnesCountEmulated(v)\n    }\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Don’t forget that some people don’t have hardware SIMD support:"
+        },
+        {
+          "kind": "pre",
+          "text": "//go:build goexperiment.simd && !(amd64 || wasm || arm64)\n\npackage simd_test\nimport (\n    \"simd\"\n)\n// OnesCount returns the number of one bits for each element.\nfunc OnesCount(v simd.Int8s) simd.Int8s {\n    return OnesCountEmulated(v)\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "And to complete the exercise, a separate emulation function shared as a fallback across all implementations:"
+        },
+        {
+          "kind": "pre",
+          "text": "//go:build goexperiment.simd\npackage simd_test\nimport (\n    \"simd\"\n)\n// OnesCountEmulated returns the number of one bits for each element.\nfunc OnesCountEmulated(v simd.Int8s) simd.Int8s {\n    a := [2]uint64{}\n    v.ToBits().ReshapeToUint64s().Store(a[:])\n    a0, a1 := a[0], a[1]\n    m1 := uint64(0x5555555555555555)\n    m2 := uint64(0x3333333333333333)\n    m4 := uint64(0x0f0f0f0f0f0f0f0f)\n    a0 = (a0 & m1) + ((a0 >> 1) & m1)\n    a1 = (a1 & m1) + ((a1 >> 1) & m1)\n    a0 = (a0 & m2) + ((a0 >> 2) & m2)\n    a1 = (a1 & m2) + ((a1 >> 2) & m2)\n    a0 = (a0 & m4) + ((a0 >> 4) & m4)\n    a1 = (a1 & m4) + ((a1 >> 4) & m4)\n    a[0], a[1] = a0, a1\n    return simd.LoadUint64s(a[:]).ReshapeToUint8s().BitsToInt8()\n}\n"
+        },
+        { "kind": "h2", "text": "API intersection and method emulation" },
+        {
+          "kind": "p",
+          "text": "Whatever operations the simd package offers need to run acceptably well on most architectures. As a first step, any operation that is supported everywhere, can easily be supported on simd. This tends to include loads, stores, arithmetic, and comparisons (but not all comparisons!)."
+        },
+        {
+          "kind": "p",
+          "text": "A naive intersection across SIMD methods from different architectures still leaves plenty of holes. These are filled by adding emulations to the various architecture-specific archsimd APIs. These APIs already contain many trivial emulations to simplify life for Go programmers; signed and unsigned integer addition use the same instruction, but in the same way that Go supports the + operator for both int and uint, the archsimd package provides both Int8x16.Add(Int8x16) and Uint8x16.Add(Uint8x16), even though those compile to the same instruction. Modern programming languages also don’t expect programmers to know how to implement floating point negation and absolute value with bit fiddling, so archsimd implements that where necessary, or “emulates” if you look at it just so."
+        },
+        {
+          "kind": "p",
+          "text": "There are many emulations that require just 2 or 3 instructions; for example, some architectures support only a same-value shift distance across vector elements, while others support a different shift distance for each vector element. To support scalar shifting in simd, we emulate scalar shift with vector shift. Some architectures lack some unsigned comparisons–these are just signed comparison, plus two XORs with a constant."
+        },
+        {
+          "kind": "p",
+          "text": "Not all missing instructions are that simple. The “carryless multiply” instruction is important to cryptography and CRC checksumming, but it isn’t always supported. Leaving that out of the simd API would prevent its use for some important algorithms. Therefore, we provide an emulation, and because one important use is in crypto, its run time does not vary depending on its inputs."
+        },
+        {
+          "kind": "p",
+          "text": "In other cases, rather than implement a primitive instruction like “add pairs” (also called “horizontal addition”), for the simd package in the next release we will provide the higher level operation that add pairs is usually used for, which is sum reduction. This also helps insulate users from vector-length dependence; even given the hardware instruction for adding pairs, the number of reduction steps depends on the vector length."
+        },
+        {
+          "kind": "p",
+          "text": "The constraint of supporting all platforms, including ones that we predict will appear in archsimd within the next year or so, forces a somewhat conservative approach to which methods we add to simd. Riscv64, ppc64, s390x, and loong64 all have their own SIMD extensions."
+        },
+        { "kind": "h2", "text": "GODEBUG settings" },
+        {
+          "kind": "p",
+          "text": "On platforms where there is some hardware support, behavior can be modified with GODEBUG, to make it easier to test simd-using code with various hardware configurations. You can set the GODEBUG environment variable prior to executing your program."
+        },
+        {
+          "kind": "p",
+          "text": "In Go 1.27, levels of SIMD support are roughly described by vector length:"
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=0 means use emulation for SIMD operations even if the hardware support is available."
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=128 means use 128-bit vectors and their features. If the features aren’t available, panic immediately."
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=256 means use 256-bit vectors and their features, if possible."
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=512 means use 512-bit vectors and their features, if possible."
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=+128 means use 128-bit vectors and their features even if some features are not supported. If unsupported instructions are used, the code will panic, but if they are not it may still run. An example of this is Raspberry Pi, which supports NEON but lacks PMULL (carryless multiply)."
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=+256 means use 256-bit vectors and their features even if some features are not supported. If unsupported instructions are used, the code will panic, but if they are not it may still run. An example of this is Apple Silicon’s amd64 emulation, which supports AVX2 but not VPCLMULQDQ (again, carryless multiply)."
+        },
+        {
+          "kind": "li",
+          "text": "GODEBUG=simd=+512 means use 512-bit vectors, even if some features are not supported."
+        },
+        { "kind": "h2", "text": "Implementation details" },
+        {
+          "kind": "p",
+          "text": "If you are debugging code that uses simd, or even just look at a stack trace, you will notice some weird extra types and methods. The reason is that simd is both a package, an internal implementation package, and some AST rewriting in the front end of the compiler."
+        },
+        {
+          "kind": "p",
+          "text": "The AST rewrite creates multiple specialized copies of functions, variables, and types that mention simd types, where simd types are replaced with references to size-specialized types in simd/internal/bridge. Each of these bridge types is defined as an archsimd type, but with a restricted set of methods. The specialized functions, variables, and types acquire a suffix of the form @simdNNN, where NNN is either a vector length (128, 256, or 512) or 0, indicating emulation. Functions that mention simd internally, but not in their signature, are converted to wrappers that switch on the SIMD level detected at program start, and call the appropriate specialized version of that function. Specialized functions call other specialized functions directly without dispatch overhead (and perhaps with inlining). This rewrite strategy was chosen as a compromise between code duplication and SIMD performance; the overhead is hoisted as high as necessary to avoid dispatch within SIMD computations, but not higher. If SIMD dispatch appears “too low” in a computation, a gratuitous mention of a simd type will move it upwards, as in this example:"
+        },
+        {
+          "kind": "pre",
+          "text": "func BenchmarkVpsumdSIMD(b *testing.B) {\n    // mention \"simd\" so the benchmark loop calls specialized vpsumd3 directly\n    var _ simd.Uint64s\n    var w, x, y, z uint64 = ... // magic constants omitted.\n    var lo, hi uint64\n    for b.Loop() {\n        // vpsumd3 does simd stuff, but lacks a simd signature,\n        // so that it can be compared with non-SIMD emulations.\n        lo, hi = vpsumd3(w, x, y, z)\n    }\n    sinkLo, sinkHi = lo, hi\n}\n"
+        },
+        { "kind": "h2", "text": "What’s coming" },
+        {
+          "kind": "p",
+          "text": "We plan to publish a blog post describing archsimd in greater detail soon."
+        },
+        {
+          "kind": "p",
+          "text": "For Go 1.28, we intend to add SVE support to archsimd, and also hope to add that to simd. More importantly, we hope to add additional SIMD operations to those that the simd package already supports (e.g., OnesCount, mask operations, reduction operations, vector shuffling operations). Go 1.28 will also include a small number of “feature variants” to avoid downgrading all the way to full emulation for platforms that have a hardware vector implementation but just lack one or a few operations, such as Raspberry Pi."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Arch-specific SIMD in Go Previous article: Size-Specialized Memory Allocation Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/blog/greenteagc",
+        "https://google.github.io/highway/en/master/index.html",
+        "https://go.dev/blog/archsimd",
+        "https://go.dev/blog/size-specialized-allocations",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 4104,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 adds an experimental platform-agnostic SIMD API"
+    },
+    {
+      "id": "9a5e32c4f3995891",
+      "title": "Size-Specialized Memory Allocation",
+      "author": "Michael Matloob",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/size-specialized-allocations",
+      "publishedAt": "2026-09-16T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Size-Specialized Memory Allocation" },
+        { "kind": "p", "text": "Michael Matloob 16 September 2026" },
+        {
+          "kind": "p",
+          "text": "Go 1.27 includes faster memory allocation for allocations of 80 bytes or fewer. Allocations can be up to 20-30% faster, making allocation-heavy programs up to 1% faster. The Go runtime improves the performance of those allocations by adding specialized functions that are used to allocate certain sizes. These specialized functions can then make certain assumptions that make them faster and easier to optimize. This blog post will explain how this works and how it makes your programs faster."
+        },
+        {
+          "kind": "p",
+          "text": "Heap allocations are created by the runtime’s mallocgc function, which requires the size of the allocation and whether it contains pointers. When the compiler determines that an object escapes to the heap or otherwise needs to be dynamically allocated, it inserts a call to newobject, which is a simple wrapper function that extracts the size of the object and whether it contains pointers and passes those to mallocgc."
+        },
+        {
+          "kind": "p",
+          "text": "These two pieces of information determine most of the work that the allocator needs to do. The size is important because the allocator defines ranges of sizes called “size classes”. For most allocations that are not too large and not too small, it will return a block of memory from a list of free objects that are all sized to the maximum size of the size class. So, for instance, size class 3 is 17-24 bytes. So whether you allocate 17 bytes or 24 bytes, the allocator will give you the next free 24 byte object available in its list of 24 byte objects. Below is a table of the size ranges of each of the size classes up to 80 bytes. There are separate sets of free lists, which we call spans, depending on whether the allocation has pointers, because of the bookkeeping we need to do for the garbage collector."
+        },
+        { "kind": "p", "text": "| Size class | Range of sizes" },
+        { "kind": "p", "text": "| 1 | 1-8 bytes" },
+        { "kind": "p", "text": "| 2 | 9-16 bytes" },
+        { "kind": "p", "text": "| 3 | 17-24 bytes" },
+        { "kind": "p", "text": "| 4 | 25-32 bytes" },
+        { "kind": "p", "text": "| 5 | 33-48 bytes" },
+        { "kind": "p", "text": "| 6 | 49-64 bytes" },
+        { "kind": "p", "text": "| 7 | 65-80 bytes" },
+        {
+          "kind": "p",
+          "text": "Because the size class and whether the allocation contains pointers determine which span we allocate from, the allocator has a type called the span class, whose value encodes both: it’s defined as sizeClass<<1 | noPointers. When implementing size-specialized malloc it was clear that it made the most sense to specialize on these span classes because much of the behavior of the allocator was determined by the span class."
+        },
+        {
+          "kind": "p",
+          "text": "We generate a specialized mallocgc variant for every span class. For instance, the function that allocates pointer-free objects in size class 3 is called mallocgcSmallNoScanSC3. Small means not tiny or large, NoScan means it has no pointers, and SC3 means size class 3 (17-24 bytes). Specialized functions are designed to be as simple as possible and cannot handle every corner case during allocation. When they detect such a case, such as when the GC is active, they fall back to a more generic allocation routine."
+        },
+        {
+          "kind": "p",
+          "text": "So we end up with a new specialized mallocgc function for the tiny case (always no pointers) and one for each non-tiny span class: the non-pointer spans of size class 2 and above, and the pointer spans of size class 1 and above. These specialized mallocgc variants themselves are faster than calling mallocgc, but the benefits of specializing decrease as the sizes get larger: the allocation often gets dominated by needing to clear the memory, and at some point the rest of the work of allocation becomes negligible. And it’s not enough to just be faster than mallocgc! With size-specialized allocation, when the compiler knows which span class it needs to allocate for, it can directly insert a call to the specialized function instead of the call to newobject. But the compiler often doesn’t know which span class is being allocated when code is generated: think slices of dynamic length. Since the compiler can’t determine the size of the allocation, it will keep the call to mallocgc, and mallocgc itself has to determine whether a specialized function is available, which one it is, and then needs to call it. So the performance of the specialized function has to be high enough that even with the overhead of a dynamic call it’s still faster."
+        },
+        {
+          "kind": "p",
+          "text": "This overhead issue isn’t the only problem. If it were, then we could create larger specialized functions, and have them reserved for the compiler to insert them when the size is known at compile-time. And if we didn’t call them dynamically we wouldn’t have to pay the dynamic overhead. But each specialized function that’s added increases the sizes of the executables produced by the compiler, and, more importantly, takes up precious instruction cache space. The single mallocgc function is often in the instruction cache because of how frequently allocations happen. If we have too many specialized functions and they’re not available in the cache, the overhead to retrieve the specialized code into the cache can cancel out any benefits. And the more specialized allocation code that’s in the icache, the more it crowds out the user code, making it slower to fetch and run user code. Doing a bunch of benchmarks stopping at different size classes, we determined that stopping at 80 bytes was the sweet spot."
+        },
+        {
+          "kind": "p",
+          "text": "Of course, adding more specialized functions means more code to maintain. If each function were hand-written, the code in the specialized functions could easily drift apart and go out of sync. To help with this, we broke out the common parts of the specialized functions and wrote an inliner using the standard library go/ast package to parse and format and the golang.org/x/tools/go/ast/astutil package to manipulate the ASTs. The common parts of the functions are all written in standard Go code that is built and typechecked with the rest of the runtime to allow our tools to catch issues, but they are mostly just stubs for the inliner."
+        },
+        {
+          "kind": "p",
+          "text": "So we were able to measure improvements in the size-specialized allocation functions, but why are they actually faster? The most apparent optimization is in clearing memory. The memory returned by mallocgc does not always need to be zeroed, but it often does, and doing so can often take up most of the time of the allocation. The memory clearing function memclrNoHeapPointers is written in highly-optimized assembly, but we could do better for the smaller clears. In a specialized function, if the size of the clear is constant, the compiler can replace calls to memclrNoHeapPointers with code to directly produce the instructions to clear the memory. The allocation can then skip a function call and some branches. This makes a difference for the really small allocations, but as they get bigger, the function call overhead becomes negligible."
+        },
+        {
+          "kind": "p",
+          "text": "While faster memory clearing provides the biggest improvement, there are some other tricks that are also possible in the specialized functions: Since they are specialized per span-class, the function doesn’t need to calculate the span class when retrieving the span. And because the size of the allocation is a constant, the compiler is able to do some optimizations to speed up the bookkeeping necessary for the allocation. One such case is with marking where the pointers are in the allocated memory. The specialized functions could also manually inline several of their helper functions. The Go compiler can inline code, but it avoids inlining functions that it considers too large. We can override that in the generated code by inserting the function bodies into the callers. With the generator we can produce copies of each of the bodies without needing to worry about each of the copies drifting. And we could move code that handled less common cases, such as the runtime debugging flags, into the slow path functions to make the specialized functions smaller."
+        },
+        {
+          "kind": "p",
+          "text": "While we hope this explanation of size-specialized allocation is interesting, you as a Go programmer don’t need to think about any of this when writing your code. Memory allocations will just be a little faster, with the biggest benefits going to some of the most common allocation sizes, especially the 16 and 24 byte allocations. These allocations are some of the most common because they consist of two or three 64-bit values, so they include allocations for things such as interface values and strings which have two values, or slices which have three. We spent a lot of time tuning the behavior of size specialized malloc and making sure the impact of the instruction cache effects will be minimal: we were originally planning to release size-specialized allocation in Go 1.26 but decided to wait an extra release to do extra tuning and cut down the additional code size as much as we could."
+        },
+        {
+          "kind": "p",
+          "text": "All you need to do to get the improved performance from size specialized allocations in your programs is to build them with Go 1.27. If you’re interested in more concrete actions you can take to improve memory allocation and garbage collection performance, please read the Go Garbage Collector Optimization Guide."
+        },
+        {
+          "kind": "p",
+          "text": "Although we are confident that size-specialized allocation should not cause regressions in your code, if necessary, you can build your programs using GOEXPERIMENT=nosizespecializedmalloc to disable it. If you do need to do this to solve an issue you’re experiencing with size-specialized allocation, please file an issue at go.dev/issue/new so we can investigate it."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Platform-independent SIMD in Go Previous article: Goroutine Leak Profiles Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/pkg/go/ast",
+        "https://go.dev/pkg/golang.org/x/tools/go/ast/astutil",
+        "https://go.dev/doc/gc-guide#Optimization_guide",
+        "https://go.dev/issue/new",
+        "https://go.dev/blog/simd-experiment",
+        "https://go.dev/blog/goroutine-leak-profiles",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 1570,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 improves performance of small allocations using size-specialized allocation functions."
+    },
+    {
+      "id": "979d992208b0be74",
+      "title": "Goroutine Leak Profiles",
+      "author": "Vlad Saioc",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/goroutine-leak-profiles",
+      "publishedAt": "2026-09-02T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Goroutine Leak Profiles" },
+        { "kind": "p", "text": "Vlad Saioc 2 September 2026" },
+        {
+          "kind": "p",
+          "text": "Go’s concurrency features are powerful and easy to use, but that same ease can sometimes lead even seasoned developers to make mistakes. Fortunately, the Go ecosystem comes equipped with useful tools for debugging, e.g., the race detector, but even existing tools may miss some concurrency bugs, such as the topic of this article, the goroutine leak."
+        },
+        {
+          "kind": "p",
+          "text": "Goroutines synchronize or exchange information via shared concurrency primitives, e.g., channels, locks, and wait groups. While communicating, goroutines often block on these primitives, as in, wait until some condition is met; ubiquitous examples include waiting to acquire a held mutex, or receive a message over a channel. Goroutines can also block on operating system operations, like reading from a network socket or a file."
+        },
+        {
+          "kind": "p",
+          "text": "We may consider a goroutine leaked if it is blocked, but the conditions needed to unblock it can never be met. Over time, an accumulation of leaked goroutines degrades performance through excessive memory usage (by the leaked goroutines themselves or the memory they reference), as well as CPU usage from the garbage collector, especially if GOMEMLIMIT is in use."
+        },
+        {
+          "kind": "p",
+          "text": "Goroutine leaks can be notoriously difficult to detect. In unit testing, the most significant breakthroughs include the open-source library goleak, which can instrument individual tests to signal any un-terminated goroutines after the test wraps up as suspicious. Similarly, Go 1.25 introduced the synctest package to the standard library; it can significantly improve the quality of unit tests in concurrent code by giving Go developers more control over the ordering of concurrent events in order to reliably test hard-to-reproduce scenarios."
+        },
+        {
+          "kind": "p",
+          "text": "Unfortunately, neither approach can check for goroutine leaks in production systems, especially at larger scales, which may behave in ways unaccounted for by tests. Goroutine profiles are a rudimentary way to check for operations that block too many goroutines, or analyze growth trends. However, goroutine profiles cannot distinguish between goroutines which are leaked, and those which are temporarily blocked in high numbers by design, e.g., as caused by increased traffic in a microservice. Likewise, leaks which are low in number may slip by undetected for many years."
+        },
+        {
+          "kind": "p",
+          "text": "Go 1.27 introduces the goroutine leak profiler, a flexible and lightweight mechanism for finding goroutine leaks in running Go programs, including production systems. Unlike previous approaches, which require human analysis, this mechanism is precise and generates little-to-no false positives. The trade-off is that it is limited to a subset of goroutine leaks: goroutines permanently blocked on channels or primitives in the sync package. Luckily for us, this already covers a very large subset of goroutine leaks, as we’ll see in our examples."
+        },
+        {
+          "kind": "p",
+          "text": "In the following sections, we showcase how to use the feature, followed by some additional examples of detectable leaks, and a description of the underlying implementation and trade-offs."
+        },
+        { "kind": "h2", "text": "Example: concurrent workers" },
+        {
+          "kind": "p",
+          "text": "Consider a function that processes work items concurrently:"
+        },
+        {
+          "kind": "pre",
+          "text": "type result struct {\n    res workResult\n    err error\n}\n\nfunc processWorkItems(ws []workItem) ([]workResult, error) {\n    // Process work items in parallel, aggregating results in ch.\n    ch := make(chan result)\n    for _, w := range ws {\n        go func() {\n            res, err := processWorkItem(w)\n            ch <- result{res, err}\n        }()\n    }\n\n    // Collect the results from ch, or return an error if one is found.\n    var results []workResult\n    for range len(ws) {\n        r := <-ch\n        if r.err != nil {\n            // This early return may cause goroutine leaks.\n            return nil, r.err\n        }\n        results = append(results, r.res)\n    }\n    return results, nil\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Because ch is an unbuffered channel, each worker goroutine blocks when sending its result until the main goroutine receives from the channel. If processWorkItems returns early due to an error, the receiving loop terminates, and all remaining sender goroutines block forever."
+        },
+        {
+          "kind": "p",
+          "text": "This example is emblematic of a common mistake discovered in real Go programs, including Uber production services. Let’s see how we can find these leaks by using the new goroutine leak profiler."
+        },
+        { "kind": "h3", "text": "Debugging with the goroutine leak profiler" },
+        {
+          "kind": "p",
+          "text": "The profile is available through the runtime/pprof package, as the goroutineleak profile type, or by installing the profile handlers defined by the net/http/pprof package. If you already have net/http/pprof set up in your service, then you don’t need to do anything else! The profile will be automatically made available for collection at the /debug/pprof/goroutineleak endpoint on whatever host and port the handlers are installed."
+        },
+        {
+          "kind": "p",
+          "text": "Let’s put our concurrency bug in context and set up the net/http/pprof package. This way, you can try it yourself!"
+        },
+        {
+          "kind": "pre",
+          "text": "package main\n\nimport (\n    \"errors\"\n    \"log\"\n    \"net/http\"\n    _ \"net/http/pprof\"\n    \"time\"\n)\n\ntype workItem int\ntype workResult int\n\nfunc processWorkItem(w workItem) (workResult, error) {\n    time.Sleep(10 * time.Millisecond)\n    if w == 5 {\n        return 0, errors.New(\"simulated error\")\n    }\n    return workResult(w * 2), nil\n}\n\ntype result struct {\n    res workResult\n    err error\n}\n\nfunc processWorkItems(ws []workItem) ([]workResult, error) {\n    ch := make(chan result)\n    for _, w := range ws {\n        go func() {\n            res, err := processWorkItem(w)\n            ch <- result{res, err}\n        }()\n    }\n\n    var results []workResult\n    for range len(ws) {\n        r := <-ch\n        if r.err != nil {\n            return nil, r.err\n        }\n        results = append(results, r.res)\n    }\n    return results, nil\n}\n\nfunc main() {\n    // Start pprof server\n    go func() {\n        log.Println(http.ListenAndServe(\"localhost:6060\", nil))\n    }()\n\n    // Repeatedly trigger the leak\n    for {\n        items := []workItem{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}\n        _, err := processWorkItems(items)\n        if err != nil {\n            log.Printf(\"Error processing items: %v\", err)\n        }\n\n        time.Sleep(time.Second)\n    }\n}\n"
+        },
+        { "kind": "p", "text": "Build the program above, then run it:" },
+        { "kind": "pre", "text": "$ go build -o leaky\n$ ./leaky\n" },
+        { "kind": "h3", "text": "Collecting the profile" },
+        {
+          "kind": "p",
+          "text": "It won’t take long for the program to start accumulating leaks, which you can then view by using the web UI at http://localhost:6060/debug/pprof."
+        },
+        {
+          "kind": "p",
+          "text": "Alternatively, you can collect the goroutine leak profile using curl, and then examine it with go tool pprof:"
+        },
+        {
+          "kind": "pre",
+          "text": "$ curl http://localhost:6060/debug/pprof/goroutineleak > leak.prof\n$ go tool pprof leak.prof\nType: goroutineleak\nTime: 2026-03-01 13:19:49 UTC\nEntering interactive mode (type \"help\" for commands, \"o\" for options)\n(pprof) list processWorkItems\nTotal: 116\nROUTINE ======================== main.processWorkItems.func1 in .../main.go\n         0        116 (flat, cum)   100% of Total\n         .          .     31:           go func() {\n         .          .     32:                   res, err := processWorkItem(w)\n         .        116     33:                   ch <- result{res, err}\n         .          .     34:           }()\n"
+        },
+        {
+          "kind": "p",
+          "text": "The profile reveals the goroutines leaked at ch <- result{res, err} (line 33), pinpointing the culprit operation. Notably, the longer the program is running, the larger the number of leaked goroutines."
+        },
+        { "kind": "h3", "text": "Addressing the leak" },
+        {
+          "kind": "p",
+          "text": "This leak can be simply fixed by giving ch a buffer:"
+        },
+        { "kind": "pre", "text": "ch := make(chan result, len(ws))\n" },
+        {
+          "kind": "p",
+          "text": "This allows all the work item goroutines to send a message without blocking in the event of a premature return of processWorkItems."
+        },
+        {
+          "kind": "p",
+          "text": "We list more real-world examples in this section."
+        },
+        { "kind": "h2", "text": "Implementation" },
+        {
+          "kind": "p",
+          "text": "This section is for those interested how leak detection works under the hood of the goroutine leak profiler. For details strictly pertaining to performance overhead and limitations, skip ahead to this section."
+        },
+        { "kind": "h3", "text": "Core concept" },
+        {
+          "kind": "p",
+          "text": "Let’s start with an initial observation: if a goroutine is blocked over some concurrency primitive that no other goroutine has access to (in this case, via a reference in memory), then it is obviously leaked. This is already a strong lead, we can generalize it further into a definition for when a goroutine is not leaked, a property we term as liveness. We formally define liveness, an inductive property as follows:"
+        },
+        { "kind": "p", "text": "A goroutine is live if:" },
+        {
+          "kind": "li",
+          "text": "it is not blocked by a concurrency primitive, or"
+        },
+        {
+          "kind": "li",
+          "text": "at least one concurrency primitive that blocks it is referenced by another live goroutine."
+        },
+        {
+          "kind": "p",
+          "text": "In the trivial case, goroutines which are not blocked are obviously not leaked. In the inductive case, the underlying assumption is that any goroutine which is not leaked may eventually use concurrency primitives it references to unblock any other goroutines blocked by those primitives."
+        },
+        {
+          "kind": "p",
+          "text": "To find all live goroutines, we start from the obviously live unblocked goroutines and trace any references they hold, i.e., through their local variables, to find the concurrency primitives they have access to. We then incrementally include any goroutines blocked over those primitives as live, and repeat the process until no additional live goroutines are discovered."
+        },
+        {
+          "kind": "p",
+          "text": "Fortunately for us, the Go runtime already computes memory reachability through the garbage collector (GC), so the next step is to adapt the GC to suit our purposes. You can quickly compare the two GCs with the following diagrams:"
+        },
+        {
+          "kind": "p",
+          "text": "A complete overhaul of the GC is not necessary. The Go runtime uses a concurrent tri-color mark-and-sweep garbage collector, (now with the Green Tea variant!), so its MO already neatly aligns with our goals. Only a few key changes are needed:"
+        },
+        {
+          "kind": "li",
+          "text": "In the initial phases, the regular GC marks all goroutines (and global variables) as reachable, such that they would never be considered garbage, i.e., they are mark roots. We change it to instead only include unblocked goroutines, since these are guaranteed to be live."
+        },
+        {
+          "kind": "li",
+          "text": "This is followed by the marking phase, where the GC traces objects referenced (transitively) by the mark roots, and marks them as usable memory. Even though we do not modify this phase directly, the changes in step 1. implicitly ensure that the GC only marks memory referenced by live goroutines."
+        },
+        {
+          "kind": "li",
+          "text": "The marking phase is finalized by inspecting all the blocked goroutines not included as mark roots in step 1. If a goroutine is blocked by at least one concurrency primitive that has been marked in step 2., it is added as a mark root, and the GC resumes the marking phase from step 2. This coincides with the inductive step in the definition of liveness."
+        },
+        {
+          "kind": "li",
+          "text": "Once all live goroutines have been discovered, any goroutine which has not been added as a mark root has its status set to leaked."
+        },
+        {
+          "kind": "li",
+          "text": "The marking phase then resumes one last time with all the leaked goroutines added as mark roots, allowing the GC to mark all the memory it would have marked during a regular run."
+        },
+        {
+          "kind": "p",
+          "text": "Once the GC cycle is complete, the goroutine leak profiler picks up like in a regular goroutine profile, and filters for strictly leaked goroutines."
+        },
+        { "kind": "h3", "text": "Limitations" },
+        {
+          "kind": "p",
+          "text": "The examples above demonstrate the usefulness of goroutine leak profiles. Nevertheless, the garbage collector has some limitations that may lead it to miss leaks:"
+        },
+        {
+          "kind": "p",
+          "text": "Memory overreach: if a concurrency primitive is consistently reachable through global variables or runnable goroutines, then goroutines blocking on it are never reported as leaked, even if that concurrency primitive is never used in the future."
+        },
+        {
+          "kind": "p",
+          "text": "This can be alleviated by better regimenting access to concurrency primitive references, and more clearly delineating their lifecycle."
+        },
+        {
+          "kind": "p",
+          "text": "Non-standard blocking: For the sake of correctness, goroutine leak detection is strictly limited to Go first-class concurrency primitives, which includes: channel send and receive operations (including over nil channels), blocking select statements, i.e., with no default case, up to, and including select statements with no cases, and members of the sync package, specifically Mutex, RWMutex, WaitGroup and Cond."
+        },
+        {
+          "kind": "p",
+          "text": "Goroutines blocked for any other reason, e.g., file and network IO, or direct system calls are never considered as leaked. This likewise applies for custom, user-defined concurrency, e.g., spin locks, unless they rely on the primitives outlined above for their underlying implementation."
+        },
+        {
+          "kind": "p",
+          "text": "Non-determinism: leaks can be detected only after they have occurred, but cannot be otherwise predicted, so reproducing and diagnosing leaks in flaky programs continues to be a challenge. For the best results, we encourage mixing approaches, by using goroutine leak profiles at various layers, up to, and including production, as well as comprehensive test suites instrumented with goleak and synctest."
+        },
+        { "kind": "h3", "text": "Performance impact" },
+        {
+          "kind": "p",
+          "text": "Goroutine leak detection is carefully designed to minimize performance impact, but there are, nevertheless, some costs."
+        },
+        {
+          "kind": "p",
+          "text": "While memory overhead is negligible, only limited to small additions required for bookkeeping, goroutine leak detection can be slower than the regular GC. This is best illustrated through a pathological case we call the “daisy-chain”: In this leak-free example, runnable goroutine G₀ has a reference to primitive P₁ which blocks G₁, and so on."
+        },
+        {
+          "kind": "p",
+          "text": "This implies that proving liveness for some Pᵢ₊₁, requires proving liveness for Pᵢ, which introduces two costs:"
+        },
+        {
+          "kind": "li",
+          "text": "The GC marking phase is effectively serialized relative to the order in which goroutines can be scanned, as all the memory reachable from some Pᵢ must be marked before Pᵢ₊₁ can be added as a root."
+        },
+        {
+          "kind": "li",
+          "text": "The inspection currently checks all blocked goroutines at the end of each marking round, for a worst-case of O(n²) steps for one GC cycle, where n is the total number of goroutines."
+        },
+        {
+          "kind": "p",
+          "text": "While the second point can eventually be optimized for, the first point is an intrinsic limitation of leak detection that cannot be circumvented."
+        },
+        {
+          "kind": "p",
+          "text": "Regardless, we remind the reader that, unless configured otherwise via runtime flags, the GC still operates concurrently with user code. Furthermore, if a goroutine leak can be observed at some point in time, then it can also be observed at any future point during the same execution. Periodic profiling infrastructures can therefore tune profiling frequency, e.g., every 4 hours, to minimize overhead at virtually no cost in leak detection capabilities."
+        },
+        { "kind": "h2", "text": "Acknowledgements" },
+        {
+          "kind": "p",
+          "text": "Goroutine leak detection is the result of a research collaboration between Aarhus University, Washington University in St. Louis, and Uber, as presented in “Dynamic Partial Deadlock Detection and Recovery via Garbage Collection” (Saioc et al., ASPLOS 2025)."
+        },
+        {
+          "kind": "p",
+          "text": "The transition from academic prototype to actual Go feature was made possible with the guidance of Michael Knyszek and Michael Pratt on the Go team at Google, and PJ Malloy (@thepudds)."
+        },
+        { "kind": "h2", "text": "Additional examples" },
+        {
+          "kind": "p",
+          "text": "The following are coding patterns that lead to leaks, as observed in industrial-scale codebases and open source projects, in ascending order of complexity."
+        },
+        {
+          "kind": "p",
+          "text": "You can quickly test drive the goroutine leak detector on them in the Go playground, as well as experiment with your own leaks."
+        },
+        { "kind": "h3", "text": "Example: Double send" },
+        {
+          "kind": "p",
+          "text": "Some of the simplest leaks occur when more messages are sent over a channel than expected. Below, a goroutine is expected to send one message to the main goroutine over an unbuffered channel. However, the return statement is missing after the send operation in the error case. For every error, the sender will, therefore, attempt to send two messages, which causes a leak."
+        },
+        {
+          "kind": "pre",
+          "text": "func DoubleSend() {\n    ch := make(chan any)\n    go func(err error) {\n        if err != nil {\n            // In case of an error, send nil.\n            ch <- nil\n            // Return statement is missing.\n        }\n        // Otherwise, continue with normal behaviour.\n        // This send is still executed, which causes a leak in the error case.\n        ch <- struct{}{}\n    }(fmt.Errorf(\"error\"))\n    // Receive only one message.\n    <-ch\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "While the profile does not explicitly highlight the missing return as the cause, it at least directs you to the faulty function, by highlighting the leaking send operation."
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list DoubleSend\nTotal: 1\nROUTINE ======================== main.DoubleSend.func1 in .../main.go\n         0          1 (flat, cum)   100% of Total\n         .          .    118:   go func(err error) {\n         .          .    119:           if err != nil {\n         .          .    121:                   ch <- nil\n         .          .    123:           }\n         .          1    126:           ch <- struct{}{}\n         .          .    127:   }(fmt.Errorf(\"error\"))\n         .          .    129:   <-ch\n"
+        },
+        {
+          "kind": "p",
+          "text": "This leak can be addressed simply by adding a return statement after the send operation in the error case."
+        },
+        { "kind": "h3", "text": "Example: Early return" },
+        {
+          "kind": "p",
+          "text": "The inverse situation is just as common, where the receiver omits communication on some control flow paths, in what is effectively a simplified version of the introductory example."
+        },
+        {
+          "kind": "pre",
+          "text": "// Incoming error simulates an error produced internally.\nfunc EarlyReturn(err error) {\n    ch := make(chan any)\n\n    // Create a worker goroutine.\n    go func() {\n        // Send something to the channel.\n        // Leaks if the parent goroutine terminates early.\n        ch <- struct{}{}\n    }()\n\n    if err != nil {\n        // The parent goroutine quits too early in case of an error.\n        // Sender leaks.\n        return\n    }\n\n    // Receive is only executed if there is no error.\n    <-ch\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The goroutine leak is exposed by the profile:"
+        },
+        {
+          "kind": "pre",
+          "text": "ROUTINE ======================== main.EarlyReturn.func1 in .../main.go\n         0          1 (flat, cum)   100% of Total\n         .          .    140:   go func() {\n         .          1    143:           ch <- struct{}{}\n         .          .    144:   }()\n         .          .    145:\n         .          .    146:   if err != nil {\n"
+        },
+        {
+          "kind": "p",
+          "text": "The leak can be addressed by giving ch a buffer of size 1."
+        },
+        { "kind": "h3", "text": "Example: Timeout" },
+        {
+          "kind": "p",
+          "text": "A variation of the Early return pattern above involves contexts and non-deterministic choice (select statements):"
+        },
+        {
+          "kind": "pre",
+          "text": "func Timeout(ctx context.Context) {\n    // An unbuffered channel is used to coordinate\n    // a worker and parent thread\n    ch := make(chan any)\n\n    // Create worker goroutine\n    go func() {\n        // Perform some work then signal to the parent thread.\n        ch <- struct{}{}\n    }()\n\n    // Wait for message from worker or context\n    // to be cancelled or timed out.\n    select {\n    case <-ch: // Receive message from worker\n    case <-ctx.Done():\n        // Sender leaks because there is no\n        // future rendezvous over the channel.\n    }\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "If the context is cancelled before the sender synchronizes with the parent, the sender will leak:"
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list Timeout\nTotal: 10\nROUTINE ======================== main.Timeout.func1.1 in .../main.go\n         0         10 (flat, cum)   100% of Total\n         .          .    198:           go func() {\n         .         10    201:                   ch <- struct{}{}\n         .          .    202:           }()\n"
+        },
+        {
+          "kind": "p",
+          "text": "As in the previous example, the fix is to give the channel buffer of size 1."
+        },
+        { "kind": "h3", "text": "Example: Range over channel without closing" },
+        {
+          "kind": "p",
+          "text": "Iterating over channels by using range allows you to repeatedly receive values from a channel in a loop. Once the channel is closed and all values that have been enqueued in the channel’s buffer have been received, the loop exits."
+        },
+        {
+          "kind": "p",
+          "text": "Importantly, if the channel is never closed, a range loop will block the executing goroutine forever. Omitting the close operation is a common mistake, as below:"
+        },
+        {
+          "kind": "pre",
+          "text": "// Incoming list of items and the number of workers.\nfunc noCloseRange(list []any, workers int) {\n    // Create a channel that distributes work items.\n    ch := make(chan any)\n\n    // Create the worker goroutines.\n    for i := 0; i < workers; i++ {\n        go func() {\n            // Each worker pulls items from the channel\n            // and then processes it.\n            for item := range ch {\n                // Process each item\n                _ = item\n            }\n        }()\n    }\n\n    // Queue items to the workers by using the channel.\n    for _, item := range list {\n        // The parent leaks by sending an item if workers == 0\n        // or if all the workers panic, but the panic is recovered.\n        ch <- item\n    }\n    // Otherwise, the channel is never closed, so workers\n    // leak once there are no more items left to process.\n}\n\n...\ngo noCloseRange([]any{1, 2, 3}, 3) // Leaks all 3 workers\n"
+        },
+        {
+          "kind": "p",
+          "text": "A goroutine leak profile for such a program would include the following:"
+        },
+        {
+          "kind": "pre",
+          "text": "Type: goroutineleak\n(pprof) list noCloseRange.func1\nTotal: 4\nROUTINE ======================== main.noCloseRange.func1 in .../main.go\n         0          3 (flat, cum) 75.00% of Total\n         .          .     82:           go func() {\n         .          3     84:                   for item := range ch {\n         .          .     86:                           _ = item\n         .          .     87:                   }\n         .          .     88:           }()\n"
+        },
+        {
+          "kind": "p",
+          "text": "We see the 3 workers blocked at the range ch operation, which gives an ample hint as to the cause of the leak. The leak can be addressed by simply closing the channel once all messages have been sent:"
+        },
+        {
+          "kind": "pre",
+          "text": "    for _, item := range list {\n        ch <- item\n    }\n    // All items have been sent. It is now safe to close.\n    close(ch)\n"
+        },
+        {
+          "kind": "p",
+          "text": "Bonus! Eagle-eyed readers may have spotted another potential leak in this example, if the number of workers is mistakenly set to zero, which will lead the parent sender to leak:"
+        },
+        {
+          "kind": "pre",
+          "text": "go noCloseRange([]any{1, 2, 3}, 0) // Sender leaks with 0 workers\n"
+        },
+        { "kind": "p", "text": "This is also captured by the profile:" },
+        {
+          "kind": "pre",
+          "text": "(pprof) list noCloseRange$\nTotal: 4\nROUTINE ======================== main.noCloseRange in .../main.go\n         0          1 (flat, cum) 25.00% of Total\n         .          .     76:func noCloseRange(list []any, workers int) {\n...\n         .          .     92:   for _, item := range list {\n         .          1     95:           ch <- item\n         .          .     96:   }\n"
+        },
+        {
+          "kind": "p",
+          "text": "While workers > 0 can be assumed to hold in realistic production systems, goroutine leak profiles can nevertheless be used to implicitly monitor for off-chance violations without conservative workers <= 0 checks."
+        },
+        { "kind": "h3", "text": "Example: Method contract violations" },
+        {
+          "kind": "p",
+          "text": "The patterns seen so far have been relatively constrained in their lexical scope. However, as functionality is spread out across functions, methods and packages, and implementations are obfuscated by interfaces, the difficulty of manually detecting leaks drastically increases."
+        },
+        {
+          "kind": "p",
+          "text": "Such a case is exemplified in this section, with the custom worker type that embeds two channel fields, ch and done and creates a looping goroutine with its Start method that reads from both channels with a select statement. Said goroutine can only be terminated by receiving a message through the done channel, which is closed by the Stop method."
+        },
+        {
+          "kind": "p",
+          "text": "The Start method can be invoked any number of times, but if it is invoked at least once, Stop should eventually be called."
+        },
+        {
+          "kind": "p",
+          "text": "As a result, Start and Stop form an implicit contract that dictates the order in which the methods should be invoked. Breaking that contract can lead to undesirable behavior, in this case, goroutine leaks:"
+        },
+        {
+          "kind": "pre",
+          "text": "func MethodContractViolation() {\n    items := make([]any, 10)\n    // Create a new worker\n    w := NewWorker()\n\n    // Start worker\n    w.Start()\n\n    // Operate on worker\n    for _, item := range items {\n        w.AddToQueue(item)\n    }\n    // Exits without calling ’Stop’.\n}\n\ntype worker struct {\n    ch   chan any\n    done chan any\n}\n\ntype Worker interface {\n    Start()\n    Stop()\n    AddToQueue(item any)\n}\n\nfunc NewWorker() Worker {\n    return &worker{\n        ch:   make(chan any),\n        done: make(chan any),\n    }\n}\n\n// Start spawns a background goroutine that extracts items pushed to the queue.\nfunc (w *worker) Start() {\n    go func() {\n        for {\n            select {\n            case <-w.ch: // Normal workflow\n            case <-w.done:\n                return // Shut down\n            }\n        }\n    }()\n}\n\nfunc (w *worker) Stop() {\n    // Allows goroutine created by Start to terminate\n    close(w.done)\n}\n\nfunc (w *worker) AddToQueue(item any) {\n    w.ch <- item\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "This issue is further exacerbated in practice, where such custom types are only exported as interfaces, in this case, through the non-descript Worker type. Clients may not even be aware of the underlying implementation and, consequently, violate the implicit contract without realizing."
+        },
+        {
+          "kind": "p",
+          "text": "Fortunately, soliciting a goroutine leak profile can reveal the defect:"
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list Start\nTotal: 1\nROUTINE ======================== main.(*worker).Start.func1 in .../main.go\n         0          1 (flat, cum)   100% of Total\n         .          .    266:   go func() {\n         .          .    267:           for {\n         .          1    268:                   select {\n         .          .    269:                   case <-w.ch:\n         .          .    270:                   case <-w.done:\n         .          .    271:                           return\n"
+        },
+        {
+          "kind": "p",
+          "text": "Naturally, the fix involves following the trail to the Start call and adding an invocation of Stop."
+        },
+        { "kind": "h3", "text": "Example (Cockroach): Missing unlock" },
+        {
+          "kind": "p",
+          "text": "The following example is taken from CockroachDB. It involves acquiring and releasing a lock in a loop, but forgetting to unlock it before executing a break statement:"
+        },
+        {
+          "kind": "pre",
+          "text": "type Gossip struct {\n    mu     sync.Mutex\n    closed bool\n}\n\nfunc (g *Gossip) bootstrap() {\n    for {\n        g.mu.Lock()\n        if g.closed {\n            // Missing g.mu.Unlock\n            break\n        }\n        g.mu.Unlock()\n    }\n}\n\nfunc Cockroach584() {\n    g := &Gossip{\n        closed: true,\n    }\n    // ...\n    g.bootstrap()\n    g.bootstrap() // Causes a leak\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "In such a case, the goroutine will leak when failing to acquire the lock."
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list Gossip\nTotal: 1\nROUTINE ======================== main.(*Gossip).bootstrap in .../main.go\n         0          1 (flat, cum)   100% of Total\n         .          .    165:func (g *Gossip) bootstrap() {\n         .          .    166:   for {\n         .          1    167:           g.mu.Lock()\n         .          .    168:           if g.closed {\n         .          .    170:                   break\n         .          .    171:           }\n         .          .    172:           g.mu.Unlock()\n"
+        },
+        {
+          "kind": "p",
+          "text": "Adding a call to Unlock before the break addresses the issue."
+        },
+        {
+          "kind": "h3",
+          "text": "Example (etcd): Unexpected channel operation orderings"
+        },
+        {
+          "kind": "p",
+          "text": "This example, found in etcd, shows how an unexpected ordering between channel operations can lead to a goroutine leak:"
+        },
+        {
+          "kind": "pre",
+          "text": "type node struct {\n    status chan chan struct{}\n    stop   chan struct{}\n    done   chan struct{}\n}\n\nfunc (n *node) Status() struct{} {\n    c := make(chan struct{})\n    n.status <- c\n    return <-c\n}\n\nfunc (n *node) run() {\n    for {\n        select {\n        case c := <-n.status:\n            c <- struct{}{}\n        case <-n.stop:\n            close(n.done)\n            return\n        }\n    }\n}\n\nfunc (n *node) Stop() {\n    select {\n    case n.stop <- struct{}{}:\n    case <-n.done:\n        return\n    }\n    <-n.done\n}\n\nfunc Etcd6857() {\n    n := &node{\n        status: make(chan chan struct{}),\n        stop:   make(chan struct{}),\n        done:   make(chan struct{}),\n    }\n    go n.run()\n    go n.Status()\n    go n.Stop()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The run method fires a loop which expects to repeatedly receive messages over the status channel (sent by invoking the Status method). At the same time, it can also receive one message over the stop channel (sent via the Stop method), at which point it closes the done channel and exits. The Stop method itself then waits to receive message over done, which is unblocked once done is closed."
+        },
+        {
+          "kind": "p",
+          "text": "A leak may occur if the run, Status, and Stop methods run concurrently. The Stop and run goroutines can synchronize and exit without receiving the message issued by Status, causing it to block forever."
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list Status\nTotal: 8\nROUTINE ======================== main.(*node).Status in .../main.go\n         0          8 (flat, cum)   100% of Total\n         .          .     16:func (n *node) Status() struct{} {\n         .          .     17:   c := make(chan struct{})\n         .          8     18:   n.status <- c\n         .          .     19:   return <-c\n         .          .     20:}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Wrapping the send to status in a select statement where the other case branch tries to receive a message over done allows the goroutine running to Status to gracefully exit if it lost the race with a Stop call."
+        },
+        {
+          "kind": "h3",
+          "text": "Example (Kubernetes): Mutual blocking between channels and mutexes"
+        },
+        {
+          "kind": "p",
+          "text": "This example occurs in Kubernetes, as a result of mixing channels and locks:"
+        },
+        {
+          "kind": "pre",
+          "text": "type Connection struct {\n    closeChan chan bool\n}\n\ntype idleAwareFramer struct {\n    resetChan chan bool\n    writeLock sync.Mutex\n    conn      *Connection\n}\n\nfunc (i *idleAwareFramer) monitor() {\n    var resetChan = i.resetChan\n    for range i.conn.closeChan {\n        i.writeLock.Lock()\n        close(resetChan)\n        i.resetChan = nil\n        i.writeLock.Unlock()\n        break\n    }\n}\n\nfunc (i *idleAwareFramer) WriteFrame() {\n    i.writeLock.Lock()\n    defer i.writeLock.Unlock()\n    if i.resetChan == nil {\n        return\n    }\n    i.resetChan <- true\n}\n\nfunc NewIdleAwareFramer() *idleAwareFramer {\n    return &idleAwareFramer{\n        resetChan: make(chan bool),\n        conn: &Connection{\n            closeChan: make(chan bool),\n        },\n    }\n}\n\nfunc Kubernetes6632() {\n    i := NewIdleAwareFramer()\n\n    go func() {\n        i.conn.closeChan <- true\n    }()\n    go i.monitor()\n    go i.WriteFrame()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The goroutine running WriteFrame may acquire the idle-aware framer lock, followed by sending a message over the resetChan channel, while the monitor goroutine waits to receive a message over the closeChan channel. Once a message has been dispatched, the monitor goroutine will attempt to acquire the same lock. However, since there isn’t any traffic over resetChan, the send operation blocks forever, preventing the monitor goroutine from releasing the lock. This, in turn, causes both goroutines to leak."
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list AwareFramer\nTotal: 200\nROUTINE ======================== main.(*idleAwareFramer).WriteFrame in .../main.go\n         0        100 (flat, cum) 50.00% of Total\n         .          .     32:func (i *idleAwareFramer) WriteFrame() {\n         .          .     33:   i.writeLock.Lock()\n         .          .     34:   defer i.writeLock.Unlock()\n         .          .     35:   if i.resetChan == nil {\n         .          .     36:           return\n         .          .     37:   }\n         .        100     38:   i.resetChan <- true\n         .          .     39:}\nROUTINE ======================== main.(*idleAwareFramer).monitor in .../main.go\n         0        100 (flat, cum) 50.00% of Total\n         .          .     21:func (i *idleAwareFramer) monitor() {\n         .          .     22:   var resetChan = i.resetChan\n         .          .     23:   for range i.conn.closeChan {\n         .        100     24:           i.writeLock.Lock()\n         .          .     25:           close(resetChan)\n"
+        },
+        {
+          "kind": "p",
+          "text": "The fix is to set up a separate goroutine after a message is received over closeChan in the monitor goroutine that drains the resetChan before attempting to acquire the lock."
+        },
+        { "kind": "h3", "text": "Example (Moby): Misusing sync.WaitGroup" },
+        {
+          "kind": "p",
+          "text": "The following example in Moby showcases how wait groups may cause leaks:"
+        },
+        {
+          "kind": "pre",
+          "text": "type Manager struct {\n    plugins []int\n}\n\nfunc (pm *Manager) init() {\n    var group sync.WaitGroup\n    group.Add(len(pm.plugins))\n    for _, p := range pm.plugins {\n        go func(p int) {\n            defer group.Done()\n        }(p)\n        group.Wait() // Block here\n    }\n}\n\nfunc Moby25384() {\n    pm := &Manager{\n        plugins: []int{1, 2},\n    }\n    go pm.init()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The group wait group increments its counter depending on the number of plugins held by the plugin manager pm, then iterates over each plugin and spawns a goroutine. Each goroutine decrements the counter once it finishes its task with the Done method. However, group erroneously invokes Wait inside the loop body, instead of after it! This will cause any goroutine running the init method when the manager has more than one plugin to leak."
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list init\nTotal: 1\nROUTINE ======================== main.(*Manager).init in .../main.go\n         0          1 (flat, cum)   100% of Total\n         .          .     17:   group.Add(len(pm.plugins))\n         .          .     18:   for _, p := range pm.plugins {\n         .          .     19:           go func(p int) {\n         .          .     20:                   defer group.Done()\n         .          .     21:           }(p)\n         .          1     22:           group.Wait() // Block here\n         .          .     23:   }\n"
+        },
+        {
+          "kind": "p",
+          "text": "This can be easily addressed by moving the Wait outside the loop."
+        },
+        {
+          "kind": "h3",
+          "text": "Example (Moby): Mutual blocking between channels and mutexes"
+        },
+        {
+          "kind": "p",
+          "text": "Another example in Moby showcases a mixed channel-lock leak:"
+        },
+        {
+          "kind": "pre",
+          "text": "type (\n    State struct {\n        Health *Health\n    }\n    Container struct {\n        sync.Mutex\n        State *State\n    }\n\n    Store struct {\n        ctr *Container\n    }\n\n    Daemon struct {\n        containers Store\n    }\n\n    Health struct {\n        stop chan struct{}\n    }\n)\n\nfunc (d *Daemon) StateChanged() {\n    c := d.containers.ctr\n    c.Lock()\n    d.updateHealthMonitorElseBranch(c)\n    defer c.Unlock()\n}\n\nfunc (d *Daemon) updateHealthMonitorElseBranch(c *Container) {\n    c.State.Health.CloseMonitorChannel()\n}\n\nfunc (s *Health) CloseMonitorChannel() {\n    if s.stop != nil {\n        s.stop <- struct{}{}\n    }\n}\n\nfunc monitor(c *Container, stop chan struct{}) {\n    for {\n        select {\n        case <-stop:\n            return\n        default:\n            handleProbeResult(c)\n        }\n    }\n}\n\nfunc handleProbeResult(c *Container) {\n    c.Lock()\n    defer c.Unlock()\n    // Additional work...\n}\n\nfunc NewDaemonAndContainer() (*Daemon, *Container) {\n    c := &Container{\n        State: &State{&Health{\n            stop: make(chan struct{}),\n        }},\n    }\n    d := &Daemon{Store{c}}\n    return d, c\n}\n\nfunc Moby28462() {\n    d, c := NewDaemonAndContainer()\n    go monitor(c, c.State.Health.stop)\n    go d.StateChanged()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The goroutine invoking StateChanged may acquire the lock of the container stored by the daemon, then invoke the updateHealthMonitorElseBranch method on the daemon, which attempts to send a message over the stop channel of the container. However, the goroutine running monitor may fail to receive a message over stop, if the message is not already in-flight, and instead unblock by picking the default case of the select statement. This will lead it to try to acquire the same container lock that is already held by the StateChanged goroutine, leading both goroutines to leak."
+        },
+        {
+          "kind": "pre",
+          "text": "(pprof) list .CloseMonitorChannel\nTotal: 2\nROUTINE ======================== main.(*Health).CloseMonitorChannel in .../main.go\n         0          1 (flat, cum) 50.00% of Total\n         .          .     66:func (s *Health) CloseMonitorChannel() {\n         .          .     67:   if s.stop != nil {\n         .          1     68:           s.stop <- struct{}{}\n         .          .     69:   }\n         .          .     70:}\n(pprof) list main.handleProbeResult\nTotal: 2\nROUTINE ======================== main.handleProbeResult in .../main.go\n         0          1 (flat, cum) 50.00% of Total\n         .          .     83:func handleProbeResult(c *Container) {\n         .          1     84:   c.Lock()\n         .          .     85:   // Additional work...\n         .          .     86:   defer c.Unlock()\n         .          .     87:}\n"
+        },
+        {
+          "kind": "p",
+          "text": "The fix is to close the stop channel instead of sending a message over it. Since closing a channel is not a blocking operation, the StateChanged goroutine is then able to release the lock. In turn, this unblocks the monitor goroutine, which may now terminate by picking unblocked <-stop case branch in the select statement on the next loop iteration."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Size-Specialized Memory Allocation Previous article: Generic Methods Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/tour/concurrency/1",
+        "https://go.dev/doc/articles/race_detector",
+        "https://github.com/uber-go/goleak",
+        "https://go.dev/blog/testing-time",
+        "https://go.dev/pkg/sync",
+        "https://go.dev/pkg/runtime/pprof",
+        "https://go.dev/pkg/net/http/pprof",
+        "https://go.dev/blog/goroutine-leak-profiles#examples",
+        "https://go.dev/blog/goroutine-leak-profiles#limitations",
+        "https://go.dev/doc/gc-guide",
+        "https://go.dev/blog/greenteagc",
+        "https://dl.acm.org/doi/pdf/10.1145/3676641.3715990",
+        "https://github.com/thepudds",
+        "https://go.dev/play/p/S4Uw66sMbpj-",
+        "https://go.dev/tour/concurrency/4",
+        "https://github.com/cockroachdb/cockroach/pull/584",
+        "https://github.com/cockroachdb/cockroach",
+        "https://github.com/etcd-io/etcd/pull/6857",
+        "https://github.com/etcd-io/etcd",
+        "https://github.com/kubernetes/kubernetes/pull/6632",
+        "https://github.com/kubernetes/kubernetes",
+        "https://github.com/moby/moby/pull/25384",
+        "https://github.com/moby/moby",
+        "https://github.com/moby/moby/pull/28462",
+        "https://go.dev/blog/size-specialized-allocations",
+        "https://go.dev/blog/generic-methods",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 5109,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 includes new goroutine leak profiles."
+    },
+    {
+      "id": "c9fa1e2377e309ba",
+      "title": "Generic Methods",
+      "author": "Mark Freeman",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/generic-methods",
+      "publishedAt": "2026-08-26T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Generic Methods" },
+        { "kind": "p", "text": "Mark Freeman 26 August 2026" },
+        {
+          "kind": "p",
+          "text": "Generics was a profound change for Go—it fundamentally expanded the kinds of programs that gophers could write by adding type parameters to the language."
+        },
+        {
+          "kind": "p",
+          "text": "One could now express generic types and functions in Go. These constructs decreased the need for specialized data types and functions, reducing program verbosity and improving the ergonomics of the language in those cases."
+        },
+        {
+          "kind": "p",
+          "text": "To illustrate, different kinds of linked lists could now be condensed into a single type definition:"
+        },
+        {
+          "kind": "pre",
+          "text": "// before Go 1.18\ntype ListOfInts struct {\n    elem int\n    next *ListOfInts\n}\ntype ListOfStrings struct {\n    elem string\n    next *ListOfStrings\n}\n// ...\n\n// after Go 1.18\ntype List[E any] struct {\n    elem E\n    next *List[E]\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Likewise, sorting different kinds of ordered data could be expressed as a single function:"
+        },
+        {
+          "kind": "pre",
+          "text": "// before Go 1.18\nfunc SortInts(s []int) { /* ... */ }\nfunc SortStrings(s []string) { /* ... */ }\n// ...\n\n// after Go 1.18\nfunc Sort[E cmp.Ordered](s []E) { /* ... */ }\n"
+        },
+        { "kind": "p", "text": "However, no such capability came to methods." },
+        {
+          "kind": "p",
+          "text": "The generics proposal reasoned that because generic interface methods are difficult to implement efficiently (discussed later), it didn’t make sense to add type parameters to non-interface (or “concrete”) methods either. In that view, methods are primarily the means of implementing an interface."
+        },
+        {
+          "kind": "p",
+          "text": "Go 1.27 takes a different view and consequently adds generic methods to Go. In this post, we’ll explain this change of view and demonstrate some uses of this new feature."
+        },
+        { "kind": "h2", "text": "Methods for organization" },
+        {
+          "kind": "p",
+          "text": "Methods enable organizing functionality around types. To illustrate, let’s reconsider the linked list from above (adding some conveniences):"
+        },
+        {
+          "kind": "pre",
+          "text": "type List[E any] struct {\n    elem E\n    next *List[E]\n}\nfunc NewList[E any](elems ...E) List[E] { /* ... */ }\nfunc (List[E]) String() string { /* ... */ }\n"
+        },
+        {
+          "kind": "p",
+          "text": "Suppose that one wanted to map this structure to hold a value of some other type, like a string. A method like ToString would do:"
+        },
+        {
+          "kind": "pre",
+          "text": "func (List[E]) ToString(f func(E) string) List[string] { /* ... */ }\n"
+        },
+        {
+          "kind": "p",
+          "text": "By providing a “transform” function f, ToString can be customized with “off-the-shelf” routines."
+        },
+        {
+          "kind": "p",
+          "text": "For example, strconv.Itoa might work for a List[int]:"
+        },
+        {
+          "kind": "pre",
+          "text": "func main() {\n    fmt.Println(NewList(1, 2, 3).ToString(strconv.Itoa)) // [1 2 3]\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "For a List[[]byte], more options come to mind (depending on the use case):"
+        },
+        {
+          "kind": "pre",
+          "text": "func main() {\n    l := NewList([]byte(\"Hallo Welt\"), []byte(\"Helló világ\"))\n    fmt.Println(l.ToString(hex.EncodeToString))                 // [48616c6c6f2057656c74 48656c6cc3b32076696cc3a167]\n    fmt.Println(l.ToString(base64.StdEncoding.EncodeToString))  // [SGFsbG8gV2VsdA== SGVsbMOzIHZpbMOhZw==]\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Note that parameterizing List allowed generalization of the source type, but not the destination type, since that depends on the transformation being applied. This might be reasonable with just a single destination type, but what if there were many?"
+        },
+        {
+          "kind": "p",
+          "text": "In Go 1.18, a generic function could be used for this:"
+        },
+        {
+          "kind": "pre",
+          "text": "// after Go 1.18\nfunc MapList[E, R any](l List[E], f func(E) R) List[R] { /* ... */ }\n"
+        },
+        {
+          "kind": "p",
+          "text": "But using a function has the disadvantage of moving MapList into the package scope—if many data types support mapping operations, things could get crowded. Furthermore, chained calls must be written “inside out”:"
+        },
+        {
+          "kind": "pre",
+          "text": "func main() {\n    fmt.Println(MapList(MapList(NewList(0, 2, 4), add(2)), divideBy(2))) // [1 2 3]\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Because Go 1.18 didn’t support generic methods, we needed a generic function as a workaround. This is now remedied in Go 1.27:"
+        },
+        {
+          "kind": "pre",
+          "text": "// after Go 1.27\nfunc (List[E]) Map[R any](f func(E) R) List[R] { /* ... */ }\n"
+        },
+        {
+          "kind": "p",
+          "text": "This is compact, expressive, and locally scoped. Additionally, chained calls are more readable, as they can be written more naturally from left to right:"
+        },
+        {
+          "kind": "pre",
+          "text": "func main() {\n    fmt.Println(NewList(0, 2, 4).Map(add(2)).Map(divideBy(2))) // [1 2 3]\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Prefer the “inside out” form? A method expression can convert any method, including a generic one, into its function equivalent. Thus, a function call structure can be recovered if desired:"
+        },
+        {
+          "kind": "pre",
+          "text": "func main() {\n    f := List[int].Map[int]\n    fmt.Println(f(f(NewList(0, 2, 4), add(2)), divideBy(2))) // [1 2 3]\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Generic methods, like other generics in Go, must be instantiated (either explicitly or implicitly) before they are used (called or converted to a function)."
+        },
+        { "kind": "h2", "text": "Decoupling things" },
+        {
+          "kind": "p",
+          "text": "If one views methods also as an organizational tool, then Go 1.18’s reasoning appears overly restrictive. While a generic concrete method can’t help implement an interface (without generic interface methods), it can still be useful for code organization. In other words, these concerns can be decoupled."
+        },
+        {
+          "kind": "p",
+          "text": "To elaborate, let’s consider a simple interface:"
+        },
+        {
+          "kind": "pre",
+          "text": "type I interface {\n    M()\n}\ntype T struct{}                   // a struct, not an interface\nfunc (T) M[P any]() { /* ... */ } // a generic *concrete* method\n"
+        },
+        {
+          "kind": "p",
+          "text": "Here, T.M is parameterized by P. Any instantiation of T.M would result in a method signature identical to that of I.M:"
+        },
+        { "kind": "pre", "text": "func main() {\n    T{}.M[int]()\n}\n" },
+        {
+          "kind": "p",
+          "text": "Both T.M[int] and I.M have the signature func M(). However, this doesn’t mean T implements I. Interface implementation is a property of a (possibly instantiated) type, not of any particular method. Importantly, T does not declare T.M[int], but rather its generic (and thus uninstantiated) counterpart T.M."
+        },
+        {
+          "kind": "p",
+          "text": "For T.M to participate in interface implementation, there would need to exist a suitable generic method I.M:"
+        },
+        {
+          "kind": "pre",
+          "text": "type I interface {\n    M[P any]() // a generic *interface* method\n}\ntype T struct{}\nfunc (T) M[P any]() { /* ... */ }\n"
+        },
+        {
+          "kind": "p",
+          "text": "Since the Go 1.27 syntax doesn’t allow interface methods to declare type parameters, this code is impossible to write."
+        },
+        {
+          "kind": "p",
+          "text": "But why can’t Go have generic interface methods? To understand, a bit of a detour is needed."
+        },
+        { "kind": "h2", "text": "The trouble with generic interface methods" },
+        {
+          "kind": "p",
+          "text": "An interface value is a box that can hold some other value—the boxed value can be of any type, as long as that type implements the interface. This means that the declared methods on the type are a superset of those declared on the interface."
+        },
+        { "kind": "p", "text": "To illustrate, T implements I below:" },
+        {
+          "kind": "pre",
+          "text": "type I interface {\n    M()\n}\ntype T struct{}\nfunc (T) M() { /* ... */ }\n"
+        },
+        { "kind": "p", "text": "One can call methods on interface values:" },
+        {
+          "kind": "pre",
+          "text": "func main() {\n    F(T{})\n}\n\nfunc F(i I) {\n    i.M() // \"backed\" by T.M\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Above, it’s easy to observe that the call to i.M will be routed to T.M. But in more complex programs, the relation between an interface value method call and its possible targets is significantly less obvious. This relation typically spans across packages, making it difficult or impossible to deduce in the general case."
+        },
+        {
+          "kind": "p",
+          "text": "To illustrate, let’s introduce a package boundary:"
+        },
+        {
+          "kind": "pre",
+          "text": "// -- package main --\nimport \"p\"\n\nfunc main() {\n    p.F(T{})\n}\ntype T struct{}\nfunc (T) M() { /* ... */ }\n\n// -- package p --\nfunc F(i I) {\n    i.M()\n}\ntype I interface {\n    M()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Because the two packages are compiled separately, the main package won’t know how p.F uses T{}. To ensure the existence of any method that p.F might call, the compiler generates code for all non-generic methods of a type at its declaration (or instantiation). That way, regardless of what p.F does with T{}, the necessary code will exist at runtime."
+        },
+        { "kind": "p", "text": "Now, suppose that I.M were generic:" },
+        {
+          "kind": "pre",
+          "text": "// -- package main --\nimport \"p\"\n\nfunc main() {\n    p.F(T{})\n}\ntype T struct{}\nfunc (T) M[P any]() { /* ... */ }\n\n// -- package p --\nfunc F(i I) {\n    i.M[int]()\n}\ntype I interface {\n    M[P any]()\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Again, the main package won’t know how p.F uses T{}—including how it might instantiate T.M. To handle any usage of T{} inside p.F, the compiler would need to instantiate T.M with every possible type argument."
+        },
+        {
+          "kind": "p",
+          "text": "This is impractical with Go’s approach to instantiation, wherein the compiler generates specific code for each method based on the type arguments. If method arguments were “boxed” (i.e. passed as values of their constraint interfaces), each instantiation would share the same code. This would avoid having too many instantiations at the cost of indirect call overhead—even for direct calls to instantiated methods."
+        },
+        { "kind": "h2", "text": "Conclusion" },
+        {
+          "kind": "p",
+          "text": "Go 1.27 introduces type parameters on concrete methods—this feature has been highly desired by the Go community, as it permits more ergonomic and readable code. Although we can’t support generic interface methods, we decided that allowing type parameters for concrete methods was still worthwhile."
+        },
+        {
+          "kind": "p",
+          "text": "We hope you enjoy using Go’s generic methods and find helpful ways to use them in your projects!"
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Goroutine Leak Profiles Previous article: Go 1.27 is released Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/issue/43651",
+        "https://go.dev/blog/generic-methods#the-trouble-with-generic-interface-methods",
+        "https://go.dev/blog/goroutine-leak-profiles",
+        "https://go.dev/blog/go1.27",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 1364,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 adds generic methods—a highly desired language feature."
+    },
+    {
+      "id": "b106111e9875f086",
+      "title": "Go 1.27 is released",
+      "author": "Nicholas Husin, on behalf of the Go team",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/go1.27",
+      "publishedAt": "2026-08-19T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Go 1.27 is released" },
+        {
+          "kind": "p",
+          "text": "Nicholas Husin, on behalf of the Go team 19 August 2026"
+        },
+        {
+          "kind": "p",
+          "text": "Today the Go team is pleased to release Go 1.27. You can find its binary archives and installers on the download page."
+        },
+        {
+          "kind": "p",
+          "text": "Go 1.27 brings major enhancements across the language, toolchain, runtime, and standard library. Below are some of the key highlights."
+        },
+        { "kind": "h2", "text": "Language changes" },
+        {
+          "kind": "p",
+          "text": "Go 1.27 introduces three notable updates to the language specification."
+        },
+        {
+          "kind": "p",
+          "text": "First, generic methods are now supported. For example, see math/rand/v2.Rand:"
+        },
+        {
+          "kind": "pre",
+          "text": "// Prior to Go 1.27, a separate method on Rand had to be added for each type\n// (unsigned integer methods omitted for brevity).\nfunc (r *Rand) Int32N(n int32) int32\nfunc (r *Rand) Int64N(n int64) int64\nfunc (r *Rand) IntN(n int) int\n\n// Go 1.27 adds a new generic method that works for all integer types.\nfunc (r *Rand) N[Int intType](n Int) Int\n"
+        },
+        {
+          "kind": "p",
+          "text": "Second, a key in a struct literal may now be any valid field selector for the struct type, allowing fields in nested or embedded structs to be initialized directly:"
+        },
+        {
+          "kind": "pre",
+          "text": "type Habitat struct {\n    Burrow string\n}\n\ntype Gopher struct {\n    Name    string\n    Habitat // Embedded struct.\n}\n\n// Go 1.27 allows using Burrow as a key directly.\ng := Gopher{\n    Name:   \"Gopher\",\n    Burrow: \"Burrow #42\",\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Finally, function type inference has been generalized to apply in all assignment contexts. Generic functions can now be used without explicit type arguments in composite literals, type conversions, and channel sends:"
+        },
+        {
+          "kind": "pre",
+          "text": "func GenericFormatter[T any](v T) string {\n    return fmt.Sprintf(\"value: %v\", v)\n}\n\ntype IntFormatter func(int) string\n\n// Go 1.27 infers T = int in composite literals, conversions, and channel sends.\nformatters := []IntFormatter{GenericFormatter}\nfn := IntFormatter(GenericFormatter)\nch := make(chan IntFormatter, 1)\nch <- GenericFormatter\n"
+        },
+        { "kind": "h2", "text": "Tool improvements" },
+        {
+          "kind": "li",
+          "text": "go fix includes several new modernizers: atomictypes, embedlit, slicesbackward, and unsafefuncs."
+        },
+        {
+          "kind": "li",
+          "text": "go doc now supports package@version queries such as go doc example.com/pkg@v1.2.3."
+        },
+        {
+          "kind": "li",
+          "text": "go mod tidy now automatically consolidates multiple require blocks in go.mod into a standard direct and indirect two-block structure."
+        },
+        { "kind": "h2", "text": "Performance and runtime" },
+        {
+          "kind": "li",
+          "text": "Size-specialized memory allocation reduces small object (<80B) allocation costs by up to 30%, improving overall performance by ~1% for allocation-heavy programs."
+        },
+        {
+          "kind": "li",
+          "text": "The goroutineleak profile in runtime/pprof is now generally available, allowing automatic detection of permanently blocked goroutines."
+        },
+        { "kind": "h2", "text": "Standard library additions" },
+        {
+          "kind": "li",
+          "text": "encoding/json/v2 provides high-level JSON processing with configurable options and stricter defaults, alongside encoding/json/jsontext for low-level streaming. The existing encoding/json package is now backed by the v2 implementation for faster unmarshaling while maintaining backwards compatibility."
+        },
+        {
+          "kind": "li",
+          "text": "crypto/mldsa implements the post-quantum ML-DSA signature scheme (FIPS 204), integrated into crypto/x509 and crypto/tls."
+        },
+        {
+          "kind": "li",
+          "text": "uuid provides native support for generating and parsing UUIDs."
+        },
+        {
+          "kind": "li",
+          "text": "simd and architecture-specific simd/archsimd provide experimental SIMD support."
+        },
+        {
+          "kind": "li",
+          "text": "net/http/httptest adds NewTestServer, providing an in-memory fake network suitable for use with the testing/synctest package."
+        },
+        {
+          "kind": "p",
+          "text": "Please read the Go 1.27 release notes for the complete list of changes and details."
+        },
+        {
+          "kind": "p",
+          "text": "Over the next few weeks, follow-up blog posts will cover some of the topics relevant to Go 1.27 in more detail. Check back later to read those posts."
+        },
+        {
+          "kind": "p",
+          "text": "Thanks to everyone who contributed to this release by writing code, filing bugs, trying out experimental additions, and testing release candidates. As always, if you notice any problems, please file an issue."
+        },
+        { "kind": "p", "text": "We hope you enjoy using Go 1.27!" },
+        {
+          "kind": "p",
+          "text": "Next article: Generic Methods Previous article: Introducing the pkg.go.dev API Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/dl/",
+        "https://go.dev/doc/go1.27#language",
+        "https://go.dev/pkg/math/rand/v2#Rand",
+        "https://go.dev/ref/spec#Composite_literals",
+        "https://go.dev/ref/spec#Selectors",
+        "https://go.dev/doc/go1.27#go-fix",
+        "https://go.dev/pkg/golang.org/x/tools/go/analysis/passes/modernize",
+        "https://go.dev/doc/go1.27#go-doc",
+        "https://go.dev/doc/go1.27#go-mod-tidy",
+        "https://go.dev/doc/go1.27#faster-memory-allocation",
+        "https://go.dev/doc/go1.27#goroutineleak-profiles",
+        "https://go.dev/pkg/runtime/pprof",
+        "https://go.dev/doc/go1.27#jsonv2",
+        "https://go.dev/pkg/encoding/json",
+        "https://go.dev/doc/go1.27#crypto_mldsa",
+        "https://go.dev/pkg/crypto/x509",
+        "https://go.dev/pkg/crypto/tls",
+        "https://go.dev/doc/go1.27#uuid",
+        "https://go.dev/doc/go1.27#simd",
+        "https://go.dev/doc/go1.27#archsimd",
+        "https://go.dev/doc/go1.27#nethttphttptestpkgnethttphttptest",
+        "https://go.dev/pkg/net/http/httptest#NewTestServer",
+        "https://go.dev/pkg/testing/synctest",
+        "https://go.dev/doc/go1.27",
+        "https://go.dev/issue/new",
+        "https://go.dev/blog/generic-methods",
+        "https://go.dev/blog/pkgsite-api",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 545,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.27 adds generic methods, encoding/json/v2 package, uuid package, faster memory allocation, goroutine leak profiles, and more."
+    },
+    {
+      "id": "2497e442914ab835",
+      "title": "Introducing the pkg.go.dev API",
+      "author": "Ethan Lee, Hana Kim, and Jonathan Amsterdam",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/pkgsite-api",
+      "publishedAt": "2026-05-21T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Introducing the pkg.go.dev API" },
+        {
+          "kind": "p",
+          "text": "Ethan Lee, Hana Kim, and Jonathan Amsterdam 21 May 2026"
+        },
+        {
+          "kind": "p",
+          "text": "Since its inception, pkg.go.dev has established itself as the Go community’s primary resource for package documentation and discovery. While we initially prioritized creating a comprehensive and highly accessible web interface for users, the need for programmatic access has become increasingly clear. Developers building tools, IDE integrations, and automated workflows have historically relied on fragile workarounds like web scraping to access this data. To better address these evolving requirements, we are now expanding our platform to provide robust, direct access to the information our community needs."
+        },
+        {
+          "kind": "p",
+          "text": "Today, we are excited to introduce the official pkg.go.dev API — a service interface for querying metadata about published Go modules. This launch is a direct response to years of community feedback. Furthermore, the need for a formalized interface has become even more acute with the rise of AI-assisted coding. Tools can now access the specific, high-fidelity context needed to reason about the Go ecosystem with greater precision."
+        },
+        { "kind": "h2", "text": "The service interface" },
+        {
+          "kind": "p",
+          "text": "Built for stability and efficient caching, the API uses a stateless, GET-only architecture. Primary endpoints are currently hosted under the /v1beta path. Following a period of community feedback and confirmed stability, we intend to transition toward a formal v1 release."
+        },
+        {
+          "kind": "p",
+          "text": "For a complete interactive reference of all endpoints, query parameters, and response shapes, see the pkg.go.dev/api specification. The machine-readable API contract is also published directly as an OpenAPI specification."
+        },
+        { "kind": "h3", "text": "Core endpoints" },
+        { "kind": "p", "text": "| Endpoint | Description" },
+        {
+          "kind": "p",
+          "text": "| /v1beta/package/{path} | Information about the package at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/module/{path} | Information about the module at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/versions/{path} | Versions of the module at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/packages/{path} | Information about packages of the module at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/search?q={query} | Search results for a given query."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/symbols/{path} | List of symbols declared by the package at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/imported-by/{path} | Paths of packages importing the package at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "| /v1beta/vulns/{path} | Vulnerabilities of the module or package at {path}."
+        },
+        {
+          "kind": "p",
+          "text": "One design principle for this API is “precision over convenience.” For context, when go mod tidy encounters an import of a package that isn’t provided by an existing dependency of the main module, it applies the “longest module path” rule to determine which module is needed. (The fact that two or more modules could provide the package is what makes it possible to later carve out a submodule without breaking existing programs.) The pkg.go.dev web interface follows a similar convention when choosing which package to display for a given package path. By contrast, the pkg.go.dev API requires the module to be specified unambiguously. If a package path is ambiguous because it exists in multiple modules, the API returns a list of candidates and reports an error asking the client to be more specific."
+        },
+        {
+          "kind": "p",
+          "text": "For example, a package imported as example.com/a/b/c could be provided by module example.com/a or by example.com/a/b. While the pkg.go.dev web interface will automatically resolve the “longest module path” (example.com/a/b), a client querying the API must specify the module explicitly to avoid an ambiguous resolution error."
+        },
+        { "kind": "h3", "text": "Specifying versions" },
+        {
+          "kind": "p",
+          "text": "For endpoints that retrieve package, module, or symbol information, you can specify the desired version using the optional version query parameter. The API returns information about the latest version of the module or package by default. The parameter supports:"
+        },
+        {
+          "kind": "li",
+          "text": "Semantic Versions: Retrieve data for a specific release tag (e.g., ?version=v1.2.3 or ?version=v0.6.0)."
+        },
+        {
+          "kind": "li",
+          "text": "Branch Names: Reference default development branches—specifically master or main (e.g., ?version=master). The API will automatically resolve the branch to its corresponding pseudo-version. Note that custom or arbitrary branch names are not supported."
+        },
+        {
+          "kind": "p",
+          "text": "If the version parameter is omitted, the API defaults to resolving the request against the latest tagged version of the package or module."
+        },
+        { "kind": "h3", "text": "Example: raw API request" },
+        {
+          "kind": "p",
+          "text": "To retrieve structured metadata for a specific package directly (using jq for formatting):"
+        },
+        {
+          "kind": "pre",
+          "text": "$ curl https://pkg.go.dev/v1beta/package/github.com/google/go-cmp/cmp | jq .\n{\n  \"modulePath\": \"github.com/google/go-cmp\",\n  \"version\": \"v0.7.0\",\n  \"isLatest\": true,\n  \"isStandardLibrary\": false,\n  \"goos\": \"all\",\n  \"goarch\": \"all\",\n  \"path\": \"github.com/google/go-cmp/cmp\",\n  \"name\": \"cmp\",\n  \"synopsis\": \"Package cmp determines equality of values.\",\n  \"isRedistributable\": true\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "To query a specific branch version (like master) and see it resolve automatically to its corresponding pseudo-version:"
+        },
+        {
+          "kind": "pre",
+          "text": "$ curl -s \"https://pkg.go.dev/v1beta/package/github.com/google/go-cmp/cmp?version=master\" | jq '{path, version}'\n{\n  \"path\": \"github.com/google/go-cmp/cmp\",\n  \"version\": \"v0.7.1-0.20260310220054-34c9473539b8\"\n}\n"
+        },
+        { "kind": "h2", "text": "The pkgsite-cli reference implementation" },
+        {
+          "kind": "p",
+          "text": "To demonstrate how to interact with our API, we are providing a reference client implementation: pkgsite-cli. This implementation serves as a practical example for developers looking to build their own integrations, showing how to handle the data directly from the terminal. Please be aware that as the API continues to evolve, the interface and behavior of this command may change."
+        },
+        { "kind": "p", "text": "To get started, install the command:" },
+        {
+          "kind": "pre",
+          "text": "$ go install golang.org/x/pkgsite/cmd/internal/pkgsite-cli@latest\n"
+        },
+        { "kind": "p", "text": "To search for packages:" },
+        {
+          "kind": "pre",
+          "text": "$ pkgsite-cli search \"uuid\"\ngithub.com/google/uuid\n  Module:   github.com/google/uuid@v1.6.0\n  Synopsis: Package uuid generates and inspects UUIDs.\n... more\n"
+        },
+        { "kind": "p", "text": "To inspect a specific package:" },
+        {
+          "kind": "pre",
+          "text": "$ pkgsite-cli package github.com/google/go-cmp/cmp\ngithub.com/google/go-cmp/cmp\n  Name:      cmp\n  Module:    github.com/google/go-cmp\n  Version:   v0.7.0 (latest)\n  Synopsis:  Package cmp determines equality of values.\n"
+        },
+        {
+          "kind": "p",
+          "text": "To see which packages import a specific package:"
+        },
+        {
+          "kind": "pre",
+          "text": "$ pkgsite-cli package --imported-by github.com/google/go-cmp/cmp\ngithub.com/google/go-cmp/cmp\n  Name:     cmp\n  Module:   github.com/google/go-cmp\n  Version:  v0.7.0 (latest)\n  Synopsis: Package cmp determines equality of values.\n\nImported by:\n  cloud.google.com/go/internal/testutil\n  cuelang.org/go/internal/cuetxtar\n  chainguard.dev/apko/pkg/build/types\n  ... more\n"
+        },
+        { "kind": "p", "text": "To list symbols declared by a package:" },
+        {
+          "kind": "pre",
+          "text": "$ pkgsite-cli package --symbols github.com/google/go-cmp/cmp\ngithub.com/google/go-cmp/cmp\n  Name:     cmp\n  Module:   github.com/google/go-cmp\n  Version:  v0.7.0 (latest)\n  Synopsis: Package cmp determines equality of values.\n\nSymbols:\n  type Indirect struct{}\n  type MapIndex struct{}\n  type Option interface{}\n  ... more\n"
+        },
+        { "kind": "p", "text": "To list versions of a module:" },
+        {
+          "kind": "pre",
+          "text": "$ pkgsite-cli module -versions github.com/google/go-cmp\ngithub.com/google/go-cmp\n  Version:          v0.7.0 (latest)\n  Repository:       https://github.com/google/go-cmp\n  Has go.mod:       yes\n  Redistributable:  yes\n\nVersions:\n  v0.7.0\n  v0.6.0\n  v0.5.9\n  ... more\n"
+        },
+        {
+          "kind": "p",
+          "text": "To list both versions and packages of a module:"
+        },
+        {
+          "kind": "pre",
+          "text": "$ pkgsite-cli module -packages -versions github.com/google/go-cmp\ngithub.com/google/go-cmp\n  Version:          v0.7.0 (latest)\n  Repository:       https://github.com/google/go-cmp\n  Has go.mod:       yes\n  Redistributable:  yes\n\nVersions:\n  v0.7.0\n  v0.6.0\n  v0.5.9\n  ... more\n\nPackages:\n  github.com/google/go-cmp/cmp             Package cmp determines equality of values.\n  github.com/google/go-cmp/cmp/cmpopts     Package cmpopts provides common options for the cmp package.\n  ... more\n"
+        },
+        {
+          "kind": "p",
+          "text": "The command handles pagination and formatting, allowing you to focus on the data you need for your scripts or manual investigation. To learn more, please visit pkgsite-cli’s documentation."
+        },
+        { "kind": "h2", "text": "Stability and the future" },
+        {
+          "kind": "p",
+          "text": "This concludes our brief tour of the pkg.go.dev API. While we plan to expand the interface’s capabilities over time, we are committed to maintaining backward compatibility so that existing integrations continue to function seamlessly. (Note that command line interface of the pkgsite-cli reference client is not yet stable.) We welcome your feedback via our issue tracker, and we look forward to seeing the new tools and workflows the community will build."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Go 1.27 is released Previous article: Type Construction and Cycle Detection Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://pkg.go.dev",
+        "https://pkg.go.dev/api",
+        "https://pkg.go.dev/v1beta/openapi.yaml",
+        "https://github.com/golang/pkgsite/tree/master/cmd/internal/pkgsite-cli",
+        "https://pkg.go.dev/golang.org/x/pkgsite/cmd/internal/pkgsite-cli",
+        "https://github.com/golang/go/issues",
+        "https://go.dev/blog/go1.27",
+        "https://go.dev/blog/type-construction-and-cycle-detection",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 1087,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Introducing the new programmatic API for pkg.go.dev, allowing developers to fetch package and module data directly."
+    },
+    {
+      "id": "61d3be7597ce0c47",
+      "title": "Type Construction and Cycle Detection",
+      "author": "Mark Freeman",
+      "source": "The Go Blog",
+      "sourceURL": "https://go.dev/blog/type-construction-and-cycle-detection",
+      "publishedAt": "2026-03-24T00:00:00+00:00",
+      "blocks": [
+        { "kind": "h2", "text": "The Go Blog" },
+        { "kind": "h2", "text": "Type Construction and Cycle Detection" },
+        { "kind": "p", "text": "Mark Freeman 24 March 2026" },
+        {
+          "kind": "p",
+          "text": "Go’s static typing is an important part of why Go is a good fit for production systems that have to be robust and reliable. When a Go package is compiled, it is first parsed—meaning that the Go source code within that package is converted into an abstract syntax tree (or AST). This AST is then passed to the Go type checker."
+        },
+        {
+          "kind": "p",
+          "text": "In this blog post, we’ll dive into a part of the type checker we significantly improved in Go 1.26. How does this change things from a Go user’s perspective? Unless one is fond of arcane type definitions, there’s no observable change here. This refinement was intended to reduce corner cases, setting us up for future improvements to Go. Also, it’s a fun look at something that seems quite ordinary to Go programmers, but has some real subtleties hiding within."
+        },
+        {
+          "kind": "p",
+          "text": "But first, what exactly is type checking? It’s a step in the Go compiler that eliminates whole classes of errors at compile time. Specifically, the Go type checker verifies that:"
+        },
+        {
+          "kind": "li",
+          "text": "Types appearing in the AST are valid (for example, a map’s key type must be comparable)."
+        },
+        {
+          "kind": "li",
+          "text": "Operations involving those types (or their values) are valid (for example, one can’t add an int and a string)."
+        },
+        {
+          "kind": "p",
+          "text": "To accomplish this, the type checker constructs an internal representation for each type it encounters while traversing the AST—a process informally called type construction."
+        },
+        {
+          "kind": "p",
+          "text": "As we’ll soon see, even though Go is known for its simple type system, type construction can be deceptively complex in certain corners of the language."
+        },
+        { "kind": "h2", "text": "Type construction" },
+        {
+          "kind": "p",
+          "text": "Let’s start by considering a simple pair of type declarations:"
+        },
+        { "kind": "pre", "text": "type T []U\ntype U *int\n" },
+        {
+          "kind": "p",
+          "text": "When the type checker is invoked, it first encounters the type declaration for T. Here, the AST records a type definition of a type name T and a type expression []U. T is a defined type; to represent the actual data structure that the type checker uses when constructing defined types, we’ll use a Defined struct."
+        },
+        {
+          "kind": "p",
+          "text": "The Defined struct contains a pointer to the type for the type expression to the right of the type name. This underlying field is relevant for sourcing the type’s underlying type. To help illustrate the type checker’s state, let’s see how walking the AST fills in the data structures, starting with:"
+        },
+        {
+          "kind": "p",
+          "text": "At this point, T is under construction, indicated by the color yellow. Since we haven’t evaluated the type expression []U yet—it’s still black—underlying points to nil, indicated by an open arrow."
+        },
+        {
+          "kind": "p",
+          "text": "When we evaluate []U, the type checker constructs a Slice struct, the internal data structure used to represent slice types. Similarly to Defined, it contains a pointer to the element type for the slice. We don’t yet know what the name U refers to, though we expect it to refer to a type. So, again, this pointer is nil. We are left with:"
+        },
+        {
+          "kind": "p",
+          "text": "By now you might be getting the gist, so we’ll pick up the pace a bit."
+        },
+        {
+          "kind": "p",
+          "text": "To convert the type name U to a type, we first locate its declaration. Upon seeing that it represents another defined type, we construct a separate Defined for U accordingly. Inspecting the right side of U, we see the type expression *int, which evaluates to a Pointer struct, with the base type of the pointer being the type expression int."
+        },
+        {
+          "kind": "p",
+          "text": "When we evaluate int, something special happens: we get back a predeclared type. Predeclared types are constructed before the type checker even begins walking the AST. Since the type for int is already constructed, there’s nothing for us to do but point to that type."
+        },
+        { "kind": "p", "text": "We now have:" },
+        {
+          "kind": "p",
+          "text": "Note that the Pointer type is complete at this point, indicated by the color green. Completeness means that the type’s internal data structure has all of its fields populated and any types pointed to by those fields are complete. Completeness is an important property of a type because it ensures that accessing the internals, or deconstruction, of that type is sound: we have all the information describing the type."
+        },
+        {
+          "kind": "p",
+          "text": "In the image above, the Pointer struct only contains a base field, which points to int. Since int has no fields to populate, it’s “vacuously” complete, making the type for *int complete."
+        },
+        {
+          "kind": "p",
+          "text": "From here, the type checker begins unwinding the stack. Since the type for *int is complete, we can complete the type for U, meaning we can complete the type for []U, and so on for T. When this process ends, we are left with only complete types, as shown below:"
+        },
+        {
+          "kind": "p",
+          "text": "The numbering above shows the order in which the types were completed (after the Pointer). Note that the type on the bottom completed first. Type construction is naturally a depth-first process, since completing a type requires its dependencies to be completed first."
+        },
+        { "kind": "h2", "text": "Recursive types" },
+        {
+          "kind": "p",
+          "text": "With this simple example out of the way, let’s add a bit more nuance. Go’s type system also allows us to express recursive types. A typical example is something like:"
+        },
+        { "kind": "pre", "text": "type Node struct {\n  next *Node\n}\n" },
+        {
+          "kind": "p",
+          "text": "If we reconsider our example from above, we can add a bit of recursion by swapping *int for *T like so:"
+        },
+        { "kind": "pre", "text": "type T []U\ntype U *T\n" },
+        {
+          "kind": "p",
+          "text": "Now for a trace: let’s start once more with T, but skip ahead to illustrate the effects of this change. As one might suspect from our previous example, the type checker will approach the evaluation of *T with the below state:"
+        },
+        {
+          "kind": "p",
+          "text": "The question is what to do with the base type for *T. We have an idea of what T is (a Defined), but it’s currently being constructed (its underlying is still nil)."
+        },
+        {
+          "kind": "p",
+          "text": "We simply point the base type for *T to T, even though T is incomplete:"
+        },
+        {
+          "kind": "p",
+          "text": "We do this assuming that T will complete when it finishes construction in the future (by pointing to a complete type). When that happens, base will point to a complete type, thus making *T complete."
+        },
+        {
+          "kind": "p",
+          "text": "In the meantime, we’ll begin heading back up the stack:"
+        },
+        {
+          "kind": "p",
+          "text": "When we get back to the top and finish constructing T, the “loop” of types will close, completing each type in the loop simultaneously:"
+        },
+        {
+          "kind": "p",
+          "text": "Before we considered recursive types, evaluating a type expression always returned a complete type. That was a convenient property because it meant the type checker could always deconstruct (look inside) a type returned from evaluation."
+        },
+        {
+          "kind": "p",
+          "text": "But in the example above, evaluation of T returned an incomplete type, meaning deconstructing T is unsound until it completes. Generally speaking, recursive types mean that the type checker can no longer assume that types returned from evaluation will be complete."
+        },
+        {
+          "kind": "p",
+          "text": "Yet, type checking involves many checks which require deconstructing a type. A classic example is confirming that a map key is comparable, which requires inspecting the underlying field. How do we safely interact with incomplete types like T?"
+        },
+        {
+          "kind": "p",
+          "text": "Recall that type completeness is a prerequisite for deconstructing a type. In this case, type construction never deconstructs a type, it merely refers to types. In other words, type completeness does not block type construction here."
+        },
+        {
+          "kind": "p",
+          "text": "Because type construction isn’t blocked, the type checker can simply delay such checks until the end of type checking, when all types are complete (note that the checks themselves also do not block type construction). If a type were to reveal a type error, it makes no difference when that error is reported during type checking—only that it is reported eventually."
+        },
+        {
+          "kind": "p",
+          "text": "With this knowledge in mind, let’s examine a more complex example involving values of incomplete types."
+        },
+        { "kind": "h2", "text": "Recursive types and values" },
+        {
+          "kind": "p",
+          "text": "Let’s take a brief detour and have a look at Go’s array types. Importantly, array types have a size, which is a constant that is part of the type. Some operations, like the built-in functions unsafe.Sizeof and len can return constants when applied to certain values or expressions, meaning they can appear as array sizes. Importantly, the values passed to those functions can be of any type, even an incomplete type. We call these incomplete values."
+        },
+        { "kind": "p", "text": "Let’s consider this example:" },
+        { "kind": "pre", "text": "type T [unsafe.Sizeof(T{})]int\n" },
+        {
+          "kind": "p",
+          "text": "In the same way as before, we’ll reach a state like the one below:"
+        },
+        {
+          "kind": "p",
+          "text": "To construct the Array, we must calculate its size. From the value expression unsafe.Sizeof(T{}), that’s the size of T. For array types (such as T), calculating their size requires deconstruction: we need to look inside the type to determine the length of the array and size of each element."
+        },
+        {
+          "kind": "p",
+          "text": "In other words, type construction for the Array does deconstruct T, meaning the Array cannot finish construction (let alone complete) before T completes. The “loop” trick that we used earlier—where a loop of types simultaneously completes as the type starting the loop finishes construction—doesn’t work here."
+        },
+        { "kind": "p", "text": "This leaves us in a bind:" },
+        {
+          "kind": "li",
+          "text": "T cannot be completed until the Array completes."
+        },
+        {
+          "kind": "li",
+          "text": "The Array cannot be completed until T completes."
+        },
+        {
+          "kind": "li",
+          "text": "They cannot be completed simultaneously (unlike before)."
+        },
+        {
+          "kind": "p",
+          "text": "Clearly, this is impossible to satisfy. What is the type checker to do?"
+        },
+        { "kind": "h3", "text": "Cycle detection" },
+        {
+          "kind": "p",
+          "text": "Fundamentally, code such as this is invalid because the size of T cannot be determined without knowing the size of T, regardless of how the type checker operates. This particular instance—cyclic size definition—is part of a class of errors called cycle errors, which generally involve cyclic definition of Go constructs. As another example, consider type T T, which is also in this class, but for different reasons. The process of finding and reporting cycle errors in the course of type checking is called cycle detection."
+        },
+        {
+          "kind": "p",
+          "text": "Now, how does cycle detection work for type T [unsafe.Sizeof(T{})]int? To answer this, let’s look at the inner T{}. Because T{} is a composite literal expression, the type checker knows that its resulting value is of type T. Because T is incomplete, we call the value T{} an incomplete value."
+        },
+        {
+          "kind": "p",
+          "text": "We must be cautious—operating on an incomplete value is only sound if it doesn’t deconstruct the value’s type. For example, type T [unsafe.Sizeof(new(T))]int is sound, since the value new(T) (of type *T) is never deconstructed—all pointers have the same size. To reiterate, it is sound to size an incomplete value of type *T, but not one of type T."
+        },
+        {
+          "kind": "p",
+          "text": "This is because the “pointerness” of *T provides enough type information for unsafe.Sizeof, whereas just T does not. In fact, it’s never sound to operate on an incomplete value whose type is a defined type, because a mere type name conveys no (underlying) type information at all."
+        },
+        { "kind": "h3", "text": "Where to do it" },
+        {
+          "kind": "p",
+          "text": "Up to now we’ve focused on unsafe.Sizeof directly operating on potentially incomplete values. In type T [unsafe.Sizeof(T{})]int, the call to unsafe.Sizeof is just the “root” of the array length expression. We can readily imagine the incomplete value T{} as an operand in some other value expression."
+        },
+        {
+          "kind": "p",
+          "text": "For example, it could be passed to a function (i.e. type T [unsafe.Sizeof(f(T{}))]int), sliced (i.e. type T [unsafe.Sizeof(T{}[:])]int), indexed (i.e. type T [unsafe.Sizeof(T{}[0])]int), etc. All of these are invalid because they require deconstructing T. For instance, indexing T requires checking the underlying type of T. Because these expressions “consume” potentially incomplete values, let’s call them downstreams. There are many more examples of downstream operators, some of which are not syntactically obvious."
+        },
+        {
+          "kind": "p",
+          "text": "Similarly, T{} is just one example of an expression that “produces” a potentially incomplete value—let’s call these kinds of expressions upstreams:"
+        },
+        {
+          "kind": "p",
+          "text": "Comparatively, there are fewer and more syntactically obvious value expressions that might result in incomplete values. Also, it’s rather simple to enumerate these cases by inspecting Go’s syntax definition. For these reasons, it’ll be simpler to implement our cycle detection logic via the upstreams, where potentially incomplete values originate. Below are some examples of them:"
+        },
+        {
+          "kind": "pre",
+          "text": "\ntype T [unsafe.Sizeof(T(42))]int                // conversion\n\nfunc f() T\ntype T [unsafe.Sizeof(f())]int                  // function call\n\nvar i interface{}\ntype T [unsafe.Sizeof(i.(T))]int                // assertion\n\ntype T [unsafe.Sizeof(<-(make(<-chan T)))]int   // channel receive\n\ntype T [unsafe.Sizeof(make(map[int]T)[42])]int  // map access\n\ntype T [unsafe.Sizeof(*new(T))]int              // dereference\n\n// ... and a handful more\n"
+        },
+        {
+          "kind": "p",
+          "text": "For each of these cases, the type checker has extra logic where that particular kind of value expression is evaluated. As soon as we know the type of the resulting value, we insert a simple test that checks that the type is complete."
+        },
+        {
+          "kind": "p",
+          "text": "For instance, in the conversion example type T [unsafe.Sizeof(T(42))]int, there is a snippet in the type checker that resembles:"
+        },
+        {
+          "kind": "pre",
+          "text": "func callExpr(call *syntax.CallExpr) operand {\n  x := typeOrValue(call.Fun)\n  switch x.mode() {\n  // ... other cases\n  case typeExpr:\n    // T(), meaning it's a conversion\n    T := x.typ()\n    // ... handle the conversion, T *is not* safe to deconstruct\n  }\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "As soon as we observe that the CallExpr is a conversion to T, we know that the resulting type will be T (assuming no preceding errors). Before we pass back a value (here, an operand) of type T to the rest of the type checker, we need to check for completeness of T:"
+        },
+        {
+          "kind": "pre",
+          "text": "func callExpr(call *syntax.CallExpr) operand {\n  x := typeOrValue(call.Fun)\n  switch x.mode() {\n  // ... other cases\n  case typeExpr:\n    // T(), meaning it's a conversion\n    T := x.typ()\n+   if !isComplete(T) {\n+     reportCycleErr(T)\n+     return invalid\n+   }\n    // ... handle the conversion, T *is* safe to deconstruct\n  }\n}\n"
+        },
+        {
+          "kind": "p",
+          "text": "Instead of returning an incomplete value, we return a special invalid operand, which signals that the call expression could not be evaluated. The rest of the type checker has special handling for invalid operands. By adding this, we prevented incomplete values from “escaping” downstream—both into the rest of the type conversion logic and to downstream operators—and instead reported a cycle error describing the problem with T."
+        },
+        {
+          "kind": "p",
+          "text": "A similar code pattern is used in all other cases, implementing cycle detection for incomplete values."
+        },
+        { "kind": "h2", "text": "Conclusion" },
+        {
+          "kind": "p",
+          "text": "Systematic cycle detection involving incomplete values is a new addition to the type checker. Before Go 1.26, we used a more complex type construction algorithm, which involved more bespoke cycle detection that didn’t always work. Our new, simpler approach addressed a number of (admittedly esoteric) compiler panics (issues #75918, #76383, #76384, #76478, and more), resulting in a more stable compiler."
+        },
+        {
+          "kind": "p",
+          "text": "As programmers, we’ve become accustomed to features like recursive type definitions and sized array types such that we might overlook the nuance of their underlying complexity. While this post does skip over some finer details, hopefully we’ve conveyed a deeper understanding of (and perhaps appreciation for) the problems surrounding type checking in Go."
+        },
+        {
+          "kind": "p",
+          "text": "Next article: Introducing the pkg.go.dev API Previous article: //go:fix inline and the source-level inliner Blog Index"
+        }
+      ],
+      "links": [
+        "https://go.dev/blog/",
+        "https://go.dev/ref/spec#Types",
+        "https://go.dev/ref/spec#Underlying_types",
+        "https://go.dev/blog/type-construction-and-cycle-detection#example",
+        "https://go.dev/ref/spec#Array_types",
+        "https://go.dev/ref/spec#Package_unsafe",
+        "https://go.dev/ref/spec#Length_and_capacity",
+        "https://go.dev/ref/spec#Index_expressions",
+        "https://go.dev/issue/75918",
+        "https://go.dev/issue/76383",
+        "https://go.dev/issue/76384",
+        "https://go.dev/issue/76478",
+        "https://go.dev/blog/pkgsite-api",
+        "https://go.dev/blog/inliner",
+        "https://go.dev/blog/all"
+      ],
+      "wordCount": 2393,
+      "license": "CC BY 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": "https://go.dev/copyright",
+      "excerpt": "Go 1.26 simplifies type construction and enhances cycle detection for certain kinds of recursive types."
+    }
+  ]
+}

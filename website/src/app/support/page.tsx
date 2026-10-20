@@ -1,3 +1,4 @@
+import { releases } from "@/lib/releases";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { github, appStore } from "@/lib/course";
@@ -127,17 +128,25 @@ export default function Support() {
       <section className="reading-section">
         <h2>App and web availability</h2>
         <p>
-          <strong>1.1.3 (37) is available on the App Store.</strong> Automatic
-          release after approval has completed. It includes 145 teaching lessons
-          in 20 units, plus 22 prediction challenges.
+          <strong>
+            {releases.public.version} ({releases.public.build}) is available on
+            the App Store.
+          </strong>{" "}
+          It includes 169 teaching lessons in 21 units, 122 readings, 22
+          prediction challenges and 88 interview guides.
         </p>
         <p>
-          The expanded architecture, MongoDB, Redis and tooling course is
-          available here now. Native 1.1.3 is available on the App Store; the
-          newer data-store and tooling additions are available to existing
-          Internal QA testers in 1.1.4 TestFlight. Web progress stays in this
-          browser and is independent of app progress. Web completion marks are
-          self-reported; this site does not compile arbitrary source.
+          Native {releases.next.version} ({releases.next.build}) with Continue
+          is in TestFlight and waiting for App Review, configured for release
+          after approval. The corresponding web course and Continue are
+          available now.
+        </p>
+        <p>
+          Web progress stays in this browser and is independent of app progress.
+          Web completion marks are self-reported; this site does not compile
+          arbitrary source. Eight{" "}
+          <Link href="/interview/ai.workflow">Go coding-agent guides</Link>{" "}
+          cover practical use of Codex, Claude and Cursor.
         </p>
         <a href={appStore} className="button secondary">
           View the app ↗

@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh GopherForge community news twice daily
+
+[Timer]
+OnCalendar=*-*-* 06,18:15:00 UTC
+RandomizedDelaySec=180
+Persistent=true
+Unit=gopherforge-news.service
+
+[Install]
+WantedBy=timers.target

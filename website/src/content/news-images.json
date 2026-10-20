@@ -1,0 +1,77 @@
+{
+  "launch-hero": {
+    "src": "/images/news/launch-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "launch-detail": {
+    "src": "/images/news/launch-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "launch-infographic": {
+    "src": "/images/news/launch-infographic.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "vscode-hero": {
+    "src": "/images/news/vscode-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "vscode-detail": {
+    "src": "/images/news/vscode-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "vscode-infographic": {
+    "src": "/images/news/vscode-infographic.webp",
+    "width": 1600,
+    "height": 800
+  },
+  "security-hero": {
+    "src": "/images/news/security-hero.webp",
+    "width": 1600,
+    "height": 800
+  },
+  "security-detail": {
+    "src": "/images/news/security-detail.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "security-infographic": {
+    "src": "/images/news/security-infographic.webp",
+    "width": 1600,
+    "height": 800
+  },
+  "dapr-hero": {
+    "src": "/images/news/dapr-hero.webp",
+    "width": 1600,
+    "height": 800
+  },
+  "dapr-detail": {
+    "src": "/images/news/dapr-detail.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "dapr-infographic": {
+    "src": "/images/news/dapr-infographic.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "gopls-hero": {
+    "src": "/images/news/gopls-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "gopls-detail": {
+    "src": "/images/news/gopls-detail.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "gopls-infographic": {
+    "src": "/images/news/gopls-infographic.webp",
+    "width": 1600,
+    "height": 683
+  }
+}

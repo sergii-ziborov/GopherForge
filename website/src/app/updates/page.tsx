@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.1.3 is available on the App Store. Explore new MongoDB, Redis and production-tooling lessons and the next native update.",
+    "GopherForge 1.1.4 is on the App Store. Version 1.1.5 with Continue is in TestFlight and waiting for App Review. Explore lessons, agent guides and release history.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -15,9 +15,42 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
+      <section className="release" id="v115">
+        <span className="release-badge muted">
+          TESTFLIGHT · WAITING FOR APP REVIEW
+        </span>
+        <h2>
+          GopherForge 1.1.5 <small>build 40</small>
+        </h2>
+        <p>
+          Continue returns to your last course lesson or interview guide.
+          Learning progress, completion evidence and your selected study area
+          persist locally across relaunches. Version 1.1.5 is submitted for App
+          Review with automatic release after approval; it is not yet the public
+          App Store version. Status checked 20 October 2026.
+        </p>
+        <ul>
+          <li>Separate saved places for Course and Interview.</li>
+          <li>
+            Completion and compiler evidence survive practice-history pruning.
+          </li>
+          <li>
+            Eight Go coding-agent guides cover Codex, Claude, Cursor, API
+            validation, security and concurrency review.
+          </li>
+        </ul>
+        <p>
+          The website already offers Continue from the home page and course
+          maps, including the last reading section. Web and app progress remain
+          separate; no account is needed.
+        </p>
+        <Link className="button" href="/interview/ai.workflow">
+          Work with Go coding agents →
+        </Link>
+      </section>
       <section className="release" id="v114">
         <span className="release-badge muted">
-          WEB AVAILABLE · NATIVE 1.1.4 UPDATE
+          AVAILABLE ON THE APP STORE · WEB AVAILABLE
         </span>
         <h2>
           GopherForge 1.1.4 <small>build 39</small>
@@ -25,9 +58,7 @@ export default function Updates() {
         <p>
           The library now has 169 teaching lessons in 21 units, including 122
           readings, plus 22 prediction challenges. New material is available on
-          the web. Native 1.1.4 is the matching update, configured for automatic
-          release after Apple approval. App Store availability can vary while an
-          update propagates.
+          the web and in native 1.1.4, now published on the App Store.
         </p>
         <ul>
           <li>
@@ -71,7 +102,7 @@ export default function Updates() {
           This native update includes the expanded course: 145 teaching lessons
           in 20 units, including 98 readings, plus 22 prediction challenges. The
           update has passed App Review and released automatically. Version 1.1.3
-          is the current public App Store version.
+          is an earlier public release; 1.1.4 is now current.
         </p>
         <ul>
           <li>

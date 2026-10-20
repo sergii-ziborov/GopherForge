@@ -1,3 +1,4 @@
+import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -18,9 +19,15 @@ export async function generateMetadata({
   const { id } = await params;
   const q = interview.questions.find((q) => q.id === id);
   return {
-    title: q?.title ?? "Guide not found",
+    title: q ? `${q.title} — Go interview guide` : "Guide not found",
     description: q?.prompt,
     alternates: { canonical: interviewURL(id) },
+    openGraph: {
+      title: q?.title,
+      description: q?.prompt,
+      url: interviewURL(id),
+      type: "article",
+    },
   };
 }
 export default async function InterviewDetail({
@@ -37,6 +44,31 @@ export default async function InterviewDetail({
   const next = interview.questions[i + 1];
   return (
     <div className="lesson-layout">
+      <Breadcrumbs
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Go interview preparation", path: "/interview" },
+          { name: q.title, path: interviewURL(id) },
+        ]}
+      />
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@type": "LearningResource",
+          name: q.title,
+          description: q.prompt,
+          url: "https://gopherforge.app" + interviewURL(id),
+          isAccessibleForFree: true,
+          inLanguage: "en",
+          learningResourceType: "Interview preparation",
+          educationalLevel: interview.levels[q.level - 1],
+          isPartOf: {
+            "@type": "CollectionPage",
+            name: "Go interview preparation",
+            url: "https://gopherforge.app/interview",
+          },
+        }}
+      />
       <StudyBookmark area="interview" id={id} />
       <aside className="lesson-toc">
         <Link href="/interview">← Interview map</Link>

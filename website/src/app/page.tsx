@@ -1,3 +1,5 @@
+import { releases } from "@/lib/releases";
+import { news, newsURL } from "@/lib/news";
 import { StudyContinue } from "@/components/StudyContinue";
 import { interview } from "@/lib/interview";
 import Link from "next/link";
@@ -220,11 +222,39 @@ export default function Home() {
               </p>
             </div>
             <p className="small-note">
-              App Store version 1.1.3 is available now. The web course includes
-              the latest architecture, MongoDB, Redis and production-tooling
-              readings. Native availability is listed in the version history.
+              App Store version {releases.public.version} is available now.
+              Native {releases.next.version} with Continue is in TestFlight and
+              waiting for App Review. The web course includes the latest
+              architecture, MongoDB, Redis and production-tooling readings.
+              Native availability is listed in the version history.
             </p>
           </div>
+        </div>
+      </section>
+      <section className="page section-space">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">NEWS & PRACTICAL ANALYSIS</p>
+            <h2>
+              What changed.
+              <br />
+              <em>What to do with it.</em>
+            </h2>
+          </div>
+          <Link href="/news" className="text-link">
+            All news →
+          </Link>
+        </div>
+        <div className="home-news-list">
+          {news.slice(0, 3).map((n) => (
+            <article key={n.slug}>
+              <p className="card-meta">{n.category}</p>
+              <h3>
+                <Link href={newsURL(n.slug)}>{n.title}</Link>
+              </h3>
+              <p>{n.description}</p>
+            </article>
+          ))}
         </div>
       </section>
       <section className="page section-space">
@@ -277,7 +307,7 @@ export default function Home() {
             name: "GopherForge: Go Workbench",
             applicationCategory: "DeveloperApplication",
             operatingSystem: "iOS, iPadOS",
-            softwareVersion: "1.1.3",
+            softwareVersion: releases.public.version,
             offers: {
               "@type": "Offer",
               price: "6.99",

@@ -10,7 +10,19 @@ export const metadata: Metadata = {
   },
   description:
     "A practical Go course, architecture guides and a native offline Go workbench for iPhone and iPad. Learn on the web without an account.",
-  openGraph: { siteName: "GopherForge", type: "website", locale: "en_US" },
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": "/news/rss.xml" },
+  },
+  openGraph: {
+    title: "GopherForge — Learn Go. Build anywhere.",
+    description:
+      "Free Go lessons, interview preparation and a native offline Go workbench.",
+    siteName: "GopherForge",
+    type: "website",
+    locale: "en_US",
+    images: ["/images/news/launch-hero.webp"],
+  },
   twitter: { card: "summary_large_image" },
 };
 export default function RootLayout({
@@ -36,6 +48,7 @@ export default function RootLayout({
           <nav aria-label="Main">
             <Link href="/learn">Learn Go</Link>
             <Link href="/interview">Interview</Link>
+            <Link href="/news">News</Link>
             <Link href="/blog">Field notes</Link>
             <Link href="/updates">Updates</Link>
             <a className="nav-app" href={appStore}>
@@ -59,7 +72,10 @@ export default function RootLayout({
             <h2>Explore</h2>
             <Link href="/learn">Course</Link>
             <Link href="/interview">Interview</Link>
+            <Link href="/news">News</Link>
             <Link href="/blog">Field notes</Link>
+            <Link href="/news/feed">Community feed</Link>
+            <Link href="/news/rss.xml">News RSS</Link>
             <Link href="/updates">Version history</Link>
             <a href={github}>GitHub</a>
           </div>
