@@ -2,8 +2,8 @@
   {
     "id": "launch-hero",
     "mode": "built-in image_gen",
-    "prompt": "Wide editorial warm ivory teal papercraft illustration of an original blue gopher learning beside a phone, book and learning tree with an orange bookmark; no text, logos or fake screenshots.",
-    "promptRecord": "retained specification",
+    "prompt": "Use case: illustration-story. Editorial hero for a GopherForge News article about learning Go on phone and browser. Wide landscape 16:9 composition, refined paper-cut and subtle 3D editorial illustration, warm ivory paper background, deep teal, turquoise and small burnt-orange accents matching a premium developer education website. A friendly original small blue gopher-like developer mascot studies a branching tree of code concepts between a minimal phone-shaped workbench and an open notebook. Visual metaphor of returning to a saved learning bookmark, careful generous negative space, sophisticated texture and soft shadows, legible at thumbnail scale. No invented application screenshot, no logos of other companies, no numbers or text, no watermark. This is a conceptual illustration, not a screenshot.",
+    "promptRecord": "exact",
     "original": "build/news-seo/originals/launch-hero.png",
     "asset": "website/public/images/news/launch-hero.webp",
     "width": 1600,
@@ -14,8 +14,8 @@
   {
     "id": "launch-detail",
     "mode": "built-in image_gen",
-    "prompt": "Wide warm ivory teal editorial illustration of a blue gopher at a desk, book to terminal to check stones linked by an orange return arrow; no letters or logos.",
-    "promptRecord": "retained specification",
+    "prompt": "Use case: illustration-story. Wide 16:9 premium editorial conceptual illustration for GopherForge. Warm ivory textured paper, deep teal turquoise burnt orange, refined papercraft with soft 3D shadows. A tiny original blue gopher-like developer at a desk testing a short code path with three tangible stepping stones: a book, a small terminal-shaped panel and a checkmark, a burnt-orange bookmark returns to a familiar place. Design for an in-article figure, no words or numbers, no real software screenshots, no corporate logos, no watermark.",
+    "promptRecord": "exact",
     "original": "build/news-seo/originals/launch-detail.png",
     "asset": "website/public/images/news/launch-detail.webp",
     "width": 1600,
@@ -26,8 +26,8 @@
   {
     "id": "launch-infographic",
     "mode": "built-in image_gen",
-    "prompt": "Wide ivory teal editorial infographic. Text: A learning loop you can resume. LEARN → TRY → CHECK → CONTINUE. Browser and app save progress separately.",
-    "promptRecord": "retained specification",
+    "prompt": "Use case: infographic-diagram. Wide 16:9 precise educational infographic on ivory paper with teal lines, turquoise and orange highlights. Title exactly 'A learning loop you can resume'. Four large ordered nodes left to right with icons and exact labels 'LEARN', 'TRY', 'CHECK', 'CONTINUE'. A curved return arrow from CONTINUE to LEARN. Under the diagram a clear note exactly 'Browser and app save progress separately'. Minimal premium editorial typography, generous whitespace, all text large sharp and correct, no statistics, no company logos, no screenshot, no watermark.",
+    "promptRecord": "exact",
     "original": "build/news-seo/originals/launch-infographic.png",
     "asset": "website/public/images/news/launch-infographic.webp",
     "width": 1600,
@@ -38,8 +38,8 @@
   {
     "id": "vscode-hero",
     "mode": "built-in image_gen",
-    "prompt": "Wide ivory teal editorial illustration of a blue gopher using a magnifier on abstract code with distinct orange markers at different columns; no letters or logos.",
-    "promptRecord": "retained specification",
+    "prompt": "Use case: illustration-story. Wide 16:9 editorial hero for an article about the official Go extension for VS Code version0.58.0 and more precise diagnostics. Warm ivory paper, deep teal turquoise burnt orange papercraft style. A magnifying glass over three abstract editor lines, each issue marked at a different column with distinct tiny turquoise and orange geometric markers, a small original friendly blue gopher developer observes. No letters, words, version numbers, vendor logos or fake screenshots. Clear thumbnail composition, tactile layers, soft shadows, no watermark.",
+    "promptRecord": "exact",
     "original": "build/news-seo/originals/vscode-hero.png",
     "asset": "website/public/images/news/vscode-hero.webp",
     "width": 1600,

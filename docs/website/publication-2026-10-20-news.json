@@ -1,0 +1,232 @@
+{
+  "checkedAt": "2026-10-20T16:25:04.519551+00:00",
+  "sourceCommit": "8c5a3ea",
+  "initialNewsCommit": "2ef74ba",
+  "url": "https://gopherforge.app/news",
+  "communityReader": "https://gopherforge.app/news/feed",
+  "imageDigest": "sha256:ff21d374f2632c61b3e5f09bf3f43eaf048485557907d591beb3574cf3f95f8f",
+  "registryManifest": "sha256:4790d21d4bcf99e8359c3fba7461a2c9e0cf45a23c84fe483d22efd6ad1a7dc4",
+  "deploymentJob": "gopherforge-8c5a3ea-reader-deploy-20261020",
+  "registryJob": "gopherforge-8c5a3ea-reader-registry-20261020",
+  "deploymentState": "succeeded",
+  "registryState": "succeeded",
+  "releasePath": "/srv/apps/gopherforge/releases/8c5a3ea",
+  "rollbackImage": "localhost/gopherforge-web:rollback-news",
+  "rollbackDigest": "sha256:661456b1a130bdaac56bae220a08905a52fd2c366c08060e1ff9dd13e807ea88",
+  "articles": [
+    {
+      "slug": "gopherforge-go-learning-workbench-continue",
+      "proseWords": 1758,
+      "eventDate": "2026-10-20",
+      "publishedAt": "2026-10-20",
+      "generatedImages": 3
+    },
+    {
+      "slug": "vscode-go-0-58-editor-upgrade",
+      "proseWords": 1781,
+      "eventDate": "2026-10-20",
+      "publishedAt": "2026-10-20",
+      "generatedImages": 3
+    },
+    {
+      "slug": "go-1-27-3-security-patch-deployment",
+      "proseWords": 1723,
+      "eventDate": "2026-10-19",
+      "publishedAt": "2026-10-20",
+      "generatedImages": 3
+    },
+    {
+      "slug": "dapr-1-19-rc4-go-service-boundaries",
+      "proseWords": 1762,
+      "eventDate": "2026-10-16",
+      "publishedAt": "2026-10-20",
+      "generatedImages": 3
+    },
+    {
+      "slug": "gopls-interactive-refactoring-go",
+      "proseWords": 1761,
+      "eventDate": "2026-10-16",
+      "publishedAt": "2026-10-20",
+      "generatedImages": 3
+    }
+  ],
+  "images": {
+    "mode": "built-in image_gen",
+    "distinctAssets": 15,
+    "includesInfographics": 5,
+    "webpBytes": 2016914,
+    "manifest": "docs/website/news-image-manifest.json"
+  },
+  "webTests": {
+    "passed": 17,
+    "failed": 0
+  },
+  "importerTests": {
+    "passed": 4,
+    "failed": 0
+  },
+  "workedGoContractTest": "passed",
+  "localSmoke": {
+    "pages": 333,
+    "internalLinksAndAnchors": "passed",
+    "unknownLesson": 404,
+    "health": "passed",
+    "sitemap": "passed",
+    "newsAssetsAndSchema": "passed",
+    "fullExternalAttributionAndCanonical": "passed",
+    "accountPreviewNoCredentials": "passed",
+    "releasePricingAndAgentLinks": "passed",
+    "rssItems": 5,
+    "checkedAt": "2026-10-20T16:04:43.072Z"
+  },
+  "publicSmokeBeforeReaderHeadingPolish": {
+    "pages": 333,
+    "internalLinksAndAnchors": "passed",
+    "unknownLesson": 404,
+    "health": "passed",
+    "sitemap": "passed",
+    "newsAssetsAndSchema": "passed",
+    "fullExternalAttributionAndCanonical": "passed",
+    "accountPreviewNoCredentials": "passed",
+    "releasePricingAndAgentLinks": "passed",
+    "rssItems": 5,
+    "checkedAt": "2026-10-20T16:12:17.320Z"
+  },
+  "finalReaderChecks": {
+    "sourceCommit": "8c5a3ea",
+    "readers": 10,
+    "duplicatePublisherHeader": false,
+    "completeArticleAndCode": true,
+    "attributionAndNoindex": true,
+    "liveCache": true,
+    "checkedAt": "2026-10-20T16:24:20.579Z"
+  },
+  "server": {
+    "checkedAt": "2026-10-20T16:23:55.055037+00:00",
+    "imageDigest": "ff21d374f2632c61b3e5f09bf3f43eaf048485557907d591beb3574cf3f95f8f",
+    "health": "healthy",
+    "running": true,
+    "readOnlyRootfs": true,
+    "restartPolicy": "unless-stopped",
+    "feed": {
+      "lastAttempt": "2026-10-20T16:23:50.664226+00:00",
+      "lastSuccess": "2026-10-20T16:23:50.664226+00:00",
+      "ok": true,
+      "entries": 10
+    },
+    "timerEnabled": "enabled",
+    "nextRun": "Tue 2026-10-20 18:16:48 UTC"
+  },
+  "appleState": {
+    "checkedAt": "2026-10-20T16:14:39.656283+00:00",
+    "versions": [
+      {
+        "version": "1.1.5",
+        "state": "WAITING_FOR_REVIEW"
+      },
+      {
+        "version": "1.1.4",
+        "state": "READY_FOR_SALE"
+      },
+      {
+        "version": "1.1.3",
+        "state": "READY_FOR_SALE"
+      },
+      {
+        "version": "1.1.2",
+        "state": "READY_FOR_SALE"
+      },
+      {
+        "version": "1.1.1",
+        "state": "READY_FOR_SALE"
+      }
+    ]
+  },
+  "seo": {
+    "staticHTMLPages": 324,
+    "duplicateTitles": {
+      "GopherForge — Learn Go. Build anywhere.": [
+        "index.html",
+        "_not-found.html"
+      ]
+    },
+    "missingDescriptions": [
+      "_global-error.html"
+    ],
+    "newsOGImages": {
+      "gopherforge-go-learning-workbench-continue": [
+        "https://gopherforge.app/images/news/launch-hero.webp"
+      ],
+      "vscode-go-0-58-editor-upgrade": [
+        "https://gopherforge.app/images/news/vscode-hero.webp"
+      ],
+      "dapr-1-19-rc4-go-service-boundaries": [
+        "https://gopherforge.app/images/news/dapr-hero.webp"
+      ],
+      "go-1-27-3-security-patch-deployment": [
+        "https://gopherforge.app/images/news/security-hero.webp"
+      ],
+      "gopls-interactive-refactoring-go": [
+        "https://gopherforge.app/images/news/gopls-hero.webp"
+      ]
+    },
+    "note": "Duplicate home title belongs to the automatic noindex 404 page; the missing description belongs to the global error page. No duplicate titles or missing descriptions were found among indexable static content pages.",
+    "indexableDuplicateTitles": {}
+  },
+  "analytics": {
+    "provider": "Hostwatch",
+    "siteId": "gopherforge",
+    "observedNewsRequests": 4,
+    "observedCommunityFeedRequests": 3,
+    "errors5xx": 0,
+    "windowHours": 1,
+    "note": "Site-scoped traffic includes QA requests; this is not an organic growth claim."
+  },
+  "visualVerification": {
+    "desktopNews": "passed",
+    "fullExternalArticle": "passed",
+    "accountPreview": "passed",
+    "mobileWidth": 390,
+    "mobileDocumentWidth": 390,
+    "mobileNewsNavVisible": true,
+    "existingBrowserViewportRestored": true,
+    "evidence": [
+      "build/news-seo/public-news.png"
+    ]
+  },
+  "progressVerification": {
+    "keysPreserved": true,
+    "browserRoundTrip": [
+      "Mark a lesson complete on isolated localhost origin",
+      "Open its #visual section",
+      "Navigate to home",
+      "Continue restores /learn/core.zero-values#visual",
+      "Reload retains completion"
+    ],
+    "productionProgressNotModified": true,
+    "webAndNativeProgressIndependent": true
+  },
+  "scope": {
+    "nativeAppChanged": false,
+    "native115AlreadySubmitted": true,
+    "publicAppVersion": "1.1.4",
+    "nextAppVersion": "1.1.5",
+    "usOneTimePrice": "6.99 USD",
+    "credentialCollection": false
+  },
+  "storageArchive": {
+    "path": "/srv/apps/gopherforge/old-release-bundles-20261020.tar.gz",
+    "oldBuilds": [
+      "0aa91cd",
+      "512f99b",
+      "79d6727",
+      "7cd9571"
+    ],
+    "archiveVerifiedBeforeRemovingExpandedCopies": true,
+    "activeAndRollbackImagesRetained": true
+  },
+  "buildDiagnostics": [
+    "First Podman invocation rejected unsupported --cpus flag before building; retried with supported CPU quota flags.",
+    "One later registry preview failed transiently; verified registry TLS endpoint, then fresh preview and publication succeeded."
+  ]
+}
