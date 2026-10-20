@@ -26,6 +26,21 @@ export default async function ExternalReader({
   const { id } = await params;
   const e = (await externalFeed()).entries.find((e) => e.id === id);
   if (!e) notFound();
+  // The Atom body includes the publisher's page header as well as the article.
+  // Keep the complete article, with the single attributed header shown above.
+  const body = [...e.blocks];
+  while (
+    body.length &&
+    ["h2", "h3"].includes(body[0].kind) &&
+    ["The Go Blog", e.title].includes(body[0].text.trim())
+  )
+    body.shift();
+  if (
+    body[0]?.kind === "p" &&
+    body[0].text.includes(e.author) &&
+    body[0].text.length < e.author.length + 65
+  )
+    body.shift();
   return (
     <article className="page article external-reader">
       <Link className="back" href="/news/feed">
@@ -53,7 +68,7 @@ export default async function ExternalReader({
         </p>
       </aside>
       <div className="external-body">
-        {e.blocks.map((b, i) =>
+        {body.map((b, i) =>
           b.kind === "pre" ? (
             <pre key={i}>
               <code>{b.text}</code>
