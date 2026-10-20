@@ -132,3 +132,11 @@ test("interview guides and computed traces match the bundled native bank", async
           assert.ok(r.active.every((i) => i >= 0 && i < r.values.length));
     }
 });
+
+test("interview directions contain every topic exactly once", async () => {
+  const { interviewDirections } = await import("../src/lib/interview-map.ts");
+  const interview = await read("../src/content/interview.json");
+  const ids = interviewDirections.flatMap((d) => d.topics);
+  assert.equal(ids.length, new Set(ids).size);
+  assert.deepEqual([...ids].sort(), interview.topics.map((t) => t.id).sort());
+});

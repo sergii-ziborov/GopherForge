@@ -33,11 +33,13 @@ export default function Privacy() {
       </p>
       <h2>Learning on this website</h2>
       <p>
-        Reading lessons and articles needs no account. Completion IDs and the
-        last lesson can be saved in this browser’s local storage. They are not
-        synced with app progress or uploaded as a user profile. Reset local
-        progress in the course library or clear this site’s browser storage to
-        remove it. No registration or cloud backup is provided.
+        Reading lessons and articles needs no account. Completion IDs, interview
+        self-assessments, and your last opened lesson or interview section can
+        be saved in this browser’s local storage. They are not synced with app
+        progress or uploaded as a user profile. Reset course completion in the
+        course library, clear individual interview marks on a guide, or clear
+        this site’s browser storage to remove all local study data. No
+        registration or cloud backup is provided.
       </p>
       <p>
         Self-check answers are handled in your browser. Copying source copies it

@@ -1,34 +1,32 @@
 "use client";
 import { useEffect, useState } from "react";
-const key = "gopherforge.interview.self-assessment.v1";
-function read(): Record<string, string> {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) ?? "{}");
-    return value && typeof value === "object" && !Array.isArray(value)
-      ? value
-      : {};
-  } catch {
-    return {};
-  }
-}
+import {
+  readAssessments,
+  saveAssessment,
+  studyEvent,
+  type Assessment,
+} from "@/lib/study";
 export function InterviewAssessment({ id }: { id: string }) {
   const [mark, setMark] = useState("");
   const [message, setMessage] = useState("");
   useEffect(() => {
-    const m = read()[id];
-    setMark(m === "revisit" || m === "understood" ? m : "");
+    const refresh = () => setMark(readAssessments()[id] ?? "");
+    refresh();
+    window.addEventListener(studyEvent, refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener(studyEvent, refresh);
+      window.removeEventListener("storage", refresh);
+    };
   }, [id]);
-  function save(next: string) {
-    const marks = read();
-    if (next) marks[id] = next;
-    else delete marks[id];
+  function save(next: Assessment | "") {
+    const saved = saveAssessment(id, next);
     setMark(next);
-    try {
-      localStorage.setItem(key, JSON.stringify(marks));
-      setMessage("Saved in this browser.");
-    } catch {
-      setMessage("Browser storage unavailable; kept for this page only.");
-    }
+    setMessage(
+      saved
+        ? "Saved in this browser."
+        : "Browser storage unavailable; kept for this page only.",
+    );
   }
   return (
     <section className="completion">

@@ -1,3 +1,5 @@
+import { StudyContinue } from "@/components/StudyContinue";
+import { interview } from "@/lib/interview";
 import Link from "next/link";
 import { appStore, github, lessons, units, readings } from "@/lib/course";
 import { posts } from "@/lib/posts";
@@ -6,6 +8,10 @@ const heroCode = `package main\n\nimport "fmt"\n\nfunc main() {\n    ideas := []
 export default function Home() {
   return (
     <>
+      <StudyContinue
+        course={lessons.map(({ id, title }) => ({ id, title }))}
+        interview={interview.questions.map(({ id, title }) => ({ id, title }))}
+      />
       <section className="hero page">
         <div className="hero-copy">
           <p className="eyebrow">

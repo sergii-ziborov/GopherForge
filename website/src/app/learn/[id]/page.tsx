@@ -1,3 +1,4 @@
+import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -37,6 +38,7 @@ export default async function LessonPage({
   const guide = l.reading?.designGuide;
   return (
     <div className="lesson-layout">
+      <StudyBookmark area="course" id={id} />
       <aside className="lesson-toc">
         <Link href={`/learn?unit=${l.unitID}`} className="back">
           ← {l.unitTitle}

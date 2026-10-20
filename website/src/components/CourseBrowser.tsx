@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState, useDeferredValue } from "react";
 import { readProgress, saveProgress } from "@/lib/progress";
+import { readStudy, studyEvent, studyURL, clearStudyArea } from "@/lib/study";
 import { directions } from "@/lib/course-map";
 type Summary = {
   id: string;
@@ -30,12 +31,15 @@ export function CourseBrowser({
   const [direction, setDirection] = useState("all");
   const [status, setStatus] = useState("all");
   const [completed, setCompleted] = useState<string[]>([]);
+  const [section, setSection] = useState("");
   const [last, setLast] = useState<string | null>(null);
   useEffect(() => {
     const refresh = () => {
       const p = readProgress();
       setCompleted(p.completed);
-      setLast(p.last);
+      const bookmark = readStudy().course;
+      setLast(bookmark?.id ?? p.last);
+      setSection(bookmark?.section ?? "");
     };
     const readFilters = () => {
       const params = new URLSearchParams(window.location.search);
@@ -55,10 +59,12 @@ export function CourseBrowser({
     readFilters();
     window.addEventListener("gopherforge:progress", refresh);
     window.addEventListener("storage", refresh);
+    window.addEventListener(studyEvent, refresh);
     window.addEventListener("popstate", readFilters);
     return () => {
       window.removeEventListener("gopherforge:progress", refresh);
       window.removeEventListener("storage", refresh);
+      window.removeEventListener(studyEvent, refresh);
       window.removeEventListener("popstate", readFilters);
     };
   }, [groups]);
@@ -108,6 +114,7 @@ export function CourseBrowser({
   function reset() {
     if (window.confirm("Clear learning progress saved in this browser?")) {
       saveProgress({ version: 1, completed: [], last: null });
+      clearStudyArea("course");
       setCompleted([]);
       setLast(null);
     }
@@ -124,7 +131,10 @@ export function CourseBrowser({
           </p>
         </div>
         {resume ? (
-          <Link className="button secondary" href={`/learn/${resume.id}`}>
+          <Link
+            className="button secondary"
+            href={studyURL("course", { id: resume.id, section })}
+          >
             Continue: {resume.title}
           </Link>
         ) : (
@@ -264,7 +274,11 @@ export function CourseBrowser({
                         className="tree-unit"
                         key={`${g.id}:${filtered}:${needle}:${status}`}
                         open={
-                          filtered || g.id === groups[0].id ? true : undefined
+                          filtered ||
+                          g.id === resume?.unitID ||
+                          (!resume && g.id === groups[0].id)
+                            ? true
+                            : undefined
                         }
                       >
                         <summary>
@@ -290,12 +304,16 @@ export function CourseBrowser({
                           {shownLessons.map((l) => (
                             <li
                               key={l.id}
-                              className={
-                                done.has(l.id) ? "is-completed" : undefined
-                              }
+                              className={[
+                                done.has(l.id) ? "is-completed" : "",
+                                l.id === last ? "is-current" : "",
+                              ].join(" ")}
                             >
                               <Link
                                 href={`/learn/${l.id}`}
+                                aria-current={
+                                  l.id === last ? "location" : undefined
+                                }
                                 className="tree-lesson"
                               >
                                 <span
@@ -319,6 +337,7 @@ export function CourseBrowser({
                                         : "Code exercise"}{" "}
                                     · {l.minutes} min
                                     {done.has(l.id) ? " · Completed" : ""}
+                                    {l.id === last ? " · Your saved place" : ""}
                                   </span>
                                 </span>
                                 <span

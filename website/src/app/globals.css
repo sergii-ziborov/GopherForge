@@ -2795,3 +2795,34 @@ details p {
     scroll-snap-align: start;
   }
 }
+
+/* Course and Interview share the same map, branches and progress controls. */
+.interview-levels {
+  margin-top: 18px;
+}
+.interview-levels > div {
+  flex-wrap: wrap;
+}
+.is-current > .tree-lesson {
+  background: var(--wash);
+  box-shadow: inset 3px 0 var(--teal);
+}
+.home-continue {
+  padding-top: 24px;
+}
+.home-continue .progress-summary {
+  margin-bottom: 0;
+}
+.home-continue .eyebrow {
+  margin-bottom: 8px;
+}
+@media (max-width: 760px) {
+  .progress-filter > div {
+    flex-wrap: wrap;
+  }
+  .progress-summary .button {
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+  }
+}

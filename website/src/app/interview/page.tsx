@@ -9,35 +9,37 @@ export const metadata: Metadata = {
 };
 export default function InterviewPage() {
   return (
-    <div className="page section-space">
-      <header className="interview-hero">
+    <section className="page learn-map-page">
+      <header className="page-intro course-map-intro">
         <p className="eyebrow">THE NEXT LEVEL · PREPARE TO EXPLAIN</p>
         <h1>
-          Know the answer.
-          <br />
-          <em>Show the reasoning.</em>
+          Your Go <em>interview map.</em>
         </h1>
-        <p className="lesson-objective">
-          {interview.questions.length} worked guides. {interview.topics.length}{" "}
-          connected topics. From your first Go interview to systems and failure
-          analysis.
-        </p>
         <p>
-          Each guide includes a strong answer, a tempting wrong answer, a worked
-          exercise and a follow-up. Eight algorithm labs let you step through 24
-          input scenarios. The map is a route through the subject, with every
-          level open.
+          Choose a direction, open a topic, and work through the guides — from
+          your first Go interview to systems and failure analysis.
         </p>
-        <ol className="level-route">
-          {interview.levels.map((l) => (
-            <li key={l}>{l}</li>
-          ))}
-        </ol>
-        <p className="small-note">
-          No finite bank covers every possible interview. Use these guides to
-          practice deriving an answer when the constraints change. Native 1.1.4
-          adds the same separate Interview area; web and app progress are
-          independent.
+        <div className="inline-stats">
+          <span>
+            <strong>{interview.questions.length}</strong> worked guides
+          </span>
+          <span>
+            <strong>{interview.topics.length}</strong> topics
+          </span>
+          <span>
+            <strong>{interview.demonstrations.length}</strong> interactive
+            algorithm labs
+          </span>
+        </div>
+        <p>
+          Explain the question, compare a strong answer, then try the worked
+          exercise. Junior through Staff / expert. No finite bank covers every
+          possible interview.
+        </p>
+        <p className="availability">
+          Your study marks and last opened section are saved on this browser.
+          Web and app progress are independent; clearing browser data removes
+          local progress.
         </p>
       </header>
       <InterviewIndex
@@ -53,6 +55,6 @@ export default function InterviewPage() {
         topics={interview.topics}
         levels={interview.levels}
       />
-    </div>
+    </section>
   );
 }

@@ -1,3 +1,4 @@
+import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -36,6 +37,7 @@ export default async function InterviewDetail({
   const next = interview.questions[i + 1];
   return (
     <div className="lesson-layout">
+      <StudyBookmark area="interview" id={id} />
       <aside className="lesson-toc">
         <Link href="/interview">← Interview map</Link>
         <p className="eyebrow">{topic?.title}</p>
