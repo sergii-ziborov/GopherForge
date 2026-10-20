@@ -1,0 +1,186 @@
+{
+  "version": "1.1.4",
+  "build": "39",
+  "appSourceCommit": "477bf2e",
+  "sharedInterviewSHA256": "3e562422b151f14cb442023950d71205df7b8493ef49d831c987ced2672c30d4",
+  "checks": {
+    "publishedGoAlgorithms": {
+      "functions": 8,
+      "randomizedCases": 500,
+      "raceDetector": "passed",
+      "evidence": "build/interview39/algorithms.log"
+    },
+    "existingWorkedGoPrograms": {
+      "passed": 53,
+      "evidence": "build/interview39/existing-examples.json"
+    },
+    "website": {
+      "pages": 293,
+      "tests": 11,
+      "httpAndLinks": "passed",
+      "liveBrowser": "passed",
+      "evidence": "docs/website/publication-2026-10-20-interview.json"
+    },
+    "iPhoneInitialInterviewAndUnitSuite": {
+      "passed": 28,
+      "failed": 0,
+      "evidence": "build/interview39/phone-final.xcresult"
+    },
+    "expandedReadingsAndScrollEdgesPhone": {
+      "passed": 49,
+      "failed": 0,
+      "evidence": "build/operations38/final-phone.xcresult"
+    },
+    "expandedReadingsAndScrollEdgesIPad": {
+      "passed": 10,
+      "failed": 0,
+      "evidence": "build/operations38/final-pad.xcresult"
+    },
+    "finalUnlockedIPhone13": {
+      "devicesAndConfigurations": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "FC2218A9-6AD4-4B2F-972A-C81D802EC886",
+            "deviceName": "GopherForge Keyboard Regression iPhone 13",
+            "modelName": "iPhone 13",
+            "osBuildNumber": "23F77",
+            "osVersion": "26.5",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 1,
+          "passedTests": 10,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "environmentDescription": "GopherForge \u00b7 Built with macOS 27.2",
+      "expectedFailures": 0,
+      "failedTests": 1,
+      "finishTime": 1792489497.579,
+      "passedTests": 10,
+      "result": "Failed",
+      "runtimeWarnings": [],
+      "skippedTests": 0,
+      "startTime": 1792489220.111,
+      "statistics": [],
+      "testFailures": [
+        {
+          "failureText": "XCTAssertTrue failed",
+          "targetName": "GopherForgeUITests",
+          "testIdentifier": 3,
+          "testIdentifierString": "WorkspaceFlowUITests/testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt()",
+          "testIdentifierURL": "test://com.apple.xcode/GopherForge/GopherForgeUITests/WorkspaceFlowUITests/testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt",
+          "testName": "testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt()"
+        }
+      ],
+      "title": "Test - GopherForge",
+      "topInsights": [],
+      "totalTestCount": 11
+    },
+    "finalLandscapeDiagnostic": {
+      "devicesAndConfigurations": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "FC2218A9-6AD4-4B2F-972A-C81D802EC886",
+            "deviceName": "GopherForge Keyboard Regression iPhone 13",
+            "modelName": "iPhone 13",
+            "osBuildNumber": "23F77",
+            "osVersion": "26.5",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 1,
+          "passedTests": 0,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "environmentDescription": "GopherForge \u00b7 Built with macOS 27.2",
+      "expectedFailures": 0,
+      "failedTests": 1,
+      "finishTime": 1792491824.822,
+      "passedTests": 0,
+      "result": "Failed",
+      "runtimeWarnings": [],
+      "skippedTests": 0,
+      "startTime": 1792491034.635,
+      "statistics": [],
+      "testFailures": [
+        {
+          "failureText": "Failed to get matching snapshot: Timed out while evaluating UI query.",
+          "targetName": "GopherForgeUITests",
+          "testIdentifier": 1,
+          "testIdentifierString": "WorkspaceFlowUITests/testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt()",
+          "testIdentifierURL": "test://com.apple.xcode/GopherForge/GopherForgeUITests/WorkspaceFlowUITests/testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt",
+          "testName": "testPhoneLandscapeKeyboardOverlaysSectionRailWithoutMovingIt()"
+        }
+      ],
+      "title": "Test - GopherForge",
+      "topInsights": [],
+      "totalTestCount": 1
+    }
+  },
+  "releaseDecision": {
+    "checkedAt": "2026-10-20T10:31:42.396966+00:00",
+    "version": "1.1.4",
+    "build": "39",
+    "releaseAccepted": true,
+    "basis": [
+      "Frozen 88-guide bank and layout unit tests passed. Both Interview UI flows and Terminal -> Code keyboard regression passed on final source 477bf2e.",
+      "The exact two-orientation keyboard/rail case passed on iPhone13 before the startup-readiness guard. That guard changes only the loading/error branch; the ready workspace and orientation/layout code are unchanged.",
+      "The final diagnostic rerun progressed through both orientations and failed with an XCTest UI-snapshot timeout, not a layout assertion. It is retained as Failed; it is not represented as a clean pass.",
+      "49 expanded-reading/scroll phone tests and 10 iPad tests passed; six current device-size capture flows passed.",
+      "Eight published Go algorithm functions passed boundary tests and 500 randomized reference comparisons with the race detector; 53 existing worked programs passed.",
+      "The public website passed 11 tests and 293 HTTP/link checks, with live browser checks of pricing and algorithm steps."
+    ],
+    "previousExactLandscapeCasePassed": true,
+    "postReadyLayoutUnchanged": true,
+    "previousLandscapeEvidence": "build/interview39/iphone13.xcresult",
+    "finalSnapshotTimeoutEvidence": "build/interview39/landscape-ready.xcresult",
+    "unlockedFinalEvidence": "build/interview39/fix-phone-unlocked.xcresult",
+    "limitation": "The final two-orientation UI rerun did not complete cleanly; the second orientation hit a UI query timeout. iPad11 simulator setup stalled; its store images inherit the verified iPad13 set using Apple automatic scaling.",
+    "appSourceCommit": "477bf2e"
+  },
+  "iPad11StoreImages": {
+    "checkedAt": "2026-10-20T10:17:51.502586+00:00",
+    "profile": "ipad-11",
+    "inherits": "ipad-13",
+    "reason": "Apple automatic scaling from the required 13-inch set; 11-inch simulator installation and clean-runtime startup stalled. No 11-inch capture or test success is claimed.",
+    "reference": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/",
+    "pages": [
+      {
+        "pageType": "appStoreVersionLocalizations",
+        "legacyOverrideAbsent": true,
+        "libraryOverrideAbsent": true,
+        "sourceSetId": "4c35d835-ab70-478d-835b-38b82d9d0ba2",
+        "sourceScreenshots": 10
+      },
+      {
+        "pageType": "appCustomProductPageLocalizations",
+        "legacyOverrideAbsent": true,
+        "libraryOverrideAbsent": true,
+        "sourceSetId": "8c7122d5-0706-4067-af31-e688f1f727fe",
+        "sourceScreenshots": 10
+      }
+    ]
+  },
+  "storeImageVerification": {
+    "images": 110,
+    "pageDeviceGroups": 12,
+    "updatedAssignments": 60,
+    "newLegacyChecksumsVerified": 60,
+    "headerAndSearchImages": "APPROVED on both pages",
+    "duo": "Five current captures; old header screenshots retired",
+    "ipad11": "Apple automatic inheritance from the verified iPad13 set",
+    "legacyReadWorkaround": "Read screenshots through collection includes for the 6.1-inch profile; its old per-set endpoint returns HTTP500."
+  }
+}

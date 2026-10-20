@@ -6,6 +6,7 @@ with a bundled Go 1.27.1 toolchain.
 [App Store](https://apps.apple.com/app/id6809702319) ·
 [Website](https://gopherforge.app) ·
 [Course](https://gopherforge.app/learn) ·
+[Interview preparation](https://gopherforge.app/interview) ·
 [Support](https://gopherforge.app/support)
 
 <img src="docs/app-store/screenshots/iphone-6.9/00-code.png" width="330" alt="Go worker-pool source in the GopherForge editor on iPhone">
@@ -17,13 +18,19 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.1 (33)** | Previous App Store release | Package downloads and retry handling, package cleanup for saved user projects, learning corrections, and iPhone/iPad workspace fixes. |
 | **1.1.2 (34)** | Earlier Internal QA TestFlight | Corrected Duo header and full-width iPhone landscape code with floating section controls. |
 | **1.1.2 (35)** | Earlier Internal QA TestFlight | 26 reading lessons, four new units, an explicit Review finish action, minimum three-pair boards and three-round sessions, and fixed landscape controls behind the keyboard. |
-| **1.1.2 (36)** | Available on the App Store | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
+| **1.1.2 (36)** | Previous App Store release | 25 practical Around Go lessons across command line, containers and Kubernetes; highlighted shell commands and manifests. |
 | **1.1.3 (37)** | Available on the App Store | 53 new readings: architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
+| **1.1.4 (39)** | Waiting for Review; Internal QA TestFlight | 24 data-store/tooling readings, 88 interview guides, eight interactive algorithm labs and transparent scroll endings. |
 
 Version 1.1.3 (37) passed App Review and released automatically.
-Version 1.1.4 (38) is being verified with transparent lower scroll edges and
-24 additional data-store and production-tooling readings. TestFlight access is private;
-there is no public invitation link. [Version history](https://gopherforge.app/updates) ·
+Version 1.1.4 (39) is waiting for App Review and available in Internal QA TestFlight with transparent lower
+scroll edges, 24 additional data-store and production-tooling readings, and a
+separate Interview area with 88 worked guides and eight interactive algorithm labs. TestFlight access is private;
+there is no public invitation link. Automatic publication after approval is enabled.
+[Submission receipt](docs/releases/1.1.4-submission.json) ·
+[Asset verification](docs/releases/1.1.4-assets-verified.json) ·
+[QA results and diagnostic limits](docs/releases/1.1.4-qa.json) ·
+[Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
 The app is a one-time purchase: US $6.99, US $4.99 in Ukraine, with localized
@@ -39,11 +46,14 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The public 1.1.3 course has 145 teaching lessons, 22 question-and-answer challenges and the 69 original visual guides. The 1.1.4 update expands this to 169 teaching lessons across 21 units and 122 readings. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 original command-line, container and Kubernetes readings remain available alongside the 12 new MongoDB/Redis lessons. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
+- **Learn Go.** The public 1.1.3 course has 145 teaching lessons, 22 question-and-answer challenges and 98 readings. The 1.1.4 update expands this to 169 teaching lessons across 21 units and 122 readings. Architecture has 19 lessons and a scenario comparison, clean code has eight, and patterns cover all 23 classic designs plus six Go concurrency and resilience patterns. The 25 original command-line, container and Kubernetes readings remain available alongside the 12 new MongoDB/Redis lessons. New readings include diagrams, highlighted complete Go programs, explanations, tradeoffs and review questions.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
-- **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 interview
-  questions and 12 spot-the-bug exercises.
+- **Prepare for interviews.** A separate area with 88 worked guides, 12 topics,
+  four difficulty levels and eight interactive algorithm labs with 24 input
+  scenarios. Course progress and interview self-assessment stay independent.
+- **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 original unit
+  interview questions and 12 spot-the-bug exercises.
 - **Try working examples.** Multi-package programs, Go-generated PNGs, and
   HTML/CSS/JavaScript projects previewed locally in WebKit.
 

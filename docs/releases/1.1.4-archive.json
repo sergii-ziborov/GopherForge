@@ -1,0 +1,17 @@
+{
+  "version": "1.1.4",
+  "build": "39",
+  "appSourceCommit": "477bf2e",
+  "sizeBytes": 59442948,
+  "ipaSHA256": "f1654954491a9c5bcd57e4d98894374d0dadf5a37ca59bc4ee207c2f734252f7",
+  "interviewSHA256": "3e562422b151f14cb442023950d71205df7b8493ef49d831c987ced2672c30d4",
+  "readingsSHA256": "ba3f488481c5da59e75fa836a428108426ab9e642e165da6a300edd890810409",
+  "interviewGuides": 88,
+  "startupFixIdentifierInBinary": true,
+  "minimumOSVersion": "18.0",
+  "deviceFamily": [
+    1,
+    2
+  ],
+  "validation": "VERIFY SUCCEEDED with no errors"
+}

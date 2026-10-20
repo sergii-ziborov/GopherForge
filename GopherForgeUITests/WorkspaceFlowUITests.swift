@@ -377,6 +377,9 @@ final class WorkspaceFlowUITests: XCTestCase {
         let hideKeyboard = app.buttons[AccessibilityIdentifier.hideKeyboard]
         let projects = app.buttons["landscape.section.projects"]
         let settings = app.buttons["landscape.section.settings"]
+        // The project loads asynchronously. Rotate only once the editor has
+        // appeared, so this checks the layout rather than launch timing.
+        XCTAssertTrue(editor.waitForExistence(timeout: 20))
 
         for orientation in [UIDeviceOrientation.landscapeLeft, .landscapeRight] {
             XCUIDevice.shared.orientation = orientation

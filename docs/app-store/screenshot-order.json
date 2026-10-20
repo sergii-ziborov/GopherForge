@@ -1,7 +1,9 @@
 {
-  "version": "1.1.2",
+  "version": "1.1.4",
+  "build": 39,
   "default": [
     "00-code.png",
+    "08-interview.png",
     "04-lesson.png",
     "03-course.png",
     "09-around-go.png",
@@ -9,10 +11,23 @@
     "01-compiler.png",
     "05-lab.png",
     "06-projects.png",
-    "07-graphics.png",
-    "08-site.png"
+    "07-graphics.png"
   ],
-  "overrides": {},
-  "build": 36,
-  "notes": "Two learning captures per profile are new build 36; eight unchanged feature captures per set are retained from the approved build 33. Primary listing and Learn Go custom product page share this order, code first."
+  "overrides": {
+    "iphone-duo": [
+      "docs/app-store/screenshots/iphone-duo/00-code.png",
+      "docs/app-store/screenshots/iphone-duo/08-interview.png",
+      "docs/app-store/screenshots/iphone-duo/04-lesson.png",
+      "docs/app-store/screenshots/iphone-duo/03-course.png",
+      "docs/app-store/screenshots/iphone-duo/09-around-go.png"
+    ]
+  },
+  "notes": "Main and custom pages share the same current images in Asset Library and legacy projections. Five current Duo images replace the old header captures. Other profiles retain five approved feature images alongside the five current frames. iPad11 inherits the iPad13 set through Apple automatic scaling.",
+  "inheritedProfiles": {
+    "ipad-11": {
+      "source": "ipad-13",
+      "mechanism": "App Store automatic scaling",
+      "reference": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/"
+    }
+  }
 }

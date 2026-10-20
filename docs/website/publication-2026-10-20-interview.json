@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-10-20T09:07:13.834723+00:00",
+  "url": "https://gopherforge.app",
+  "interviewURL": "https://gopherforge.app/interview",
+  "sourceCommit": "7cd9571",
+  "imageDigest": "sha256:a1143ca2280698627b4fdc2ab6b7797666d89afc0e0c5d3f0a27e91d0a938ba4",
+  "registryManifest": "sha256:a2d5d7bf2e636317de1f3f74b09e01b177970c0137a599d29c5ca91efdf3c222",
+  "deploymentJob": "gopherforge-7cd9571-deploy-20261020",
+  "deploymentState": "succeeded",
+  "registryJob": "gopherforge-7cd9571-registry-20261020",
+  "registryState": "succeeded",
+  "releasePath": "/srv/apps/gopherforge/releases/7cd9571",
+  "catalog": {
+    "webCommit": "7cd9571",
+    "appCommit": "477bf2e",
+    "version": "1.1.4",
+    "build": "39",
+    "teachingLessons": 169,
+    "units": 21,
+    "readings": 122,
+    "webLessons": 191,
+    "interviewGuides": 88,
+    "algorithms": 8,
+    "scenarios": 24,
+    "catalogSHA256": "abf8b7d0dc62ee0f05ee34f32b6f8500e2b45712c0643e01d23515d51c8fbe1e",
+    "interviewSHA256": "3e562422b151f14cb442023950d71205df7b8493ef49d831c987ced2672c30d4"
+  },
+  "localSmoke": {
+    "pages": 293,
+    "internalLinksAndAnchors": "passed",
+    "unknownLesson": 404,
+    "health": "passed",
+    "sitemap": "passed",
+    "checkedAt": "2026-10-20T08:44:55.093Z"
+  },
+  "publicSmoke": {
+    "pages": 293,
+    "internalLinksAndAnchors": "passed",
+    "unknownLesson": 404,
+    "health": "passed",
+    "sitemap": "passed",
+    "checkedAt": "2026-10-20T08:51:01.949Z"
+  },
+  "oneTimeUSPrice": "6.99 USD",
+  "priceEvidence": "App Store Connect appPriceSchedule and Apple lookup API, checked 2026-10-20",
+  "hostwatchObservedAfterDeploy": {
+    "interval": "2026-10-20T08:50:00Z",
+    "requests": 301,
+    "errors5xx": 0,
+    "notFound404": 1,
+    "note": "Includes the 293-page verification and its deliberate unknown-route check."
+  },
+  "restartPolicy": "unless-stopped",
+  "systemdUnitsEnabled": [
+    "gopherforge-web.service",
+    "podman-restart.service",
+    "certbot.timer"
+  ],
+  "nginxConfiguration": "valid",
+  "registrationRequired": false,
+  "clientAnalyticsSDK": false,
+  "visualVerification": "Public site checked in the in-app browser after deployment: 88-guide Interview map, restored $6.99 one-time US price, algorithm transition from Step 1 to Step 2. During development, combined filters, scenario changes, answer reveal, quizzes and local progress were also checked at mobile width.",
+  "visualCheckedAt": "2026-10-20T09:49:37.781561+00:00",
+  "visualEvidence": [
+    "build/interview39/public-interview.png",
+    "build/interview39/public-home-price.png",
+    "build/interview39/public-algorithm-step2.png"
+  ]
+}

@@ -1,0 +1,2120 @@
+{
+  "checkedAt": "2026-10-20T10:42:18.548750+00:00",
+  "version": "1.1.4",
+  "build": "39",
+  "appSourceCommit": "477bf2e",
+  "screenshotSets": [
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "caf82223-799b-4cbb-8379-09238af182ff",
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "0e289265-506c-4432-b544-a23b8c22059e",
+          "checksum": "377fa1bbf07fc224aab5421fb1e78007",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "1ded1e23-8088-4304-bb1b-7b2435e51ddc",
+          "checksum": "2702994b3213d151a401f19f37f9e9b8",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "6fe24aa9-9c92-480b-b4e4-4ff16bf4d6dd",
+          "checksum": "05aace7e02b133c66d770f5f47983faa",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "df81bac4-c50a-47e4-8370-da2ae0296475",
+          "checksum": "c2c6e987ed62db9caa2cc65287336771",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "cff19645-7670-4de1-bd92-70a258f5e477",
+          "checksum": "d224c67590045e5365546e12e260d64d",
+          "size": [
+            1206,
+            2622
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "ec86586e-ea3f-486d-8869-0d9ef10bb737",
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "03dfd300-4280-4c4f-8a7a-f2263dbcdc85",
+          "checksum": "1e8020da4a1902bbf70899f43fdd576a",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "b4217028-6836-42ca-99ac-70e1c21853b4",
+          "checksum": "4169f5dd1fae5b04dee53fcc2ad0c43c",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "2d67e1c3-ffe5-47e9-acce-0fe40c2e4b65",
+          "checksum": "766c8e0591b31f416a58b6e4ce7f5fd5",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "e6f5d035-7c59-4450-8c2d-4e434bc60a53",
+          "checksum": "3a2799e892095ed010351f1d5fb613fd",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "d23907ba-294e-4efd-9259-d56b3e1da0c6",
+          "checksum": "a13dba41f1f4aa29f7a955d206f15d44",
+          "size": [
+            1170,
+            2532
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "8686c8d0-91bf-492d-a305-51ad500c7dfa",
+      "displayType": "APP_IPHONE_DUO",
+      "images": 5,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "ce1f31d6-eb01-4cbb-8d5e-596910511628",
+          "checksum": "222e3b0dffc88e0fa3fb0553c591afc4",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "058a8e4e-7fd9-4094-abfa-0a48caee1660",
+          "checksum": "e56dd189422a9b7f29bdc427fb9c0e98",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "9feb20bd-fda4-4d1c-8afa-1eba49926fad",
+          "checksum": "2f40b18856f791d801f609f6cda57e56",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "edacd04a-fef3-415e-92ef-97d184859010",
+          "checksum": "773eca79eac79016974e6248fcdf51ac",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "205b3d9b-e707-40e3-84a7-0ec0efec3ef1",
+          "checksum": "7f3cd85e10d5d29f1bb306ed0c532157",
+          "size": [
+            2007,
+            2853
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "4c35d835-ab70-478d-835b-38b82d9d0ba2",
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "5d432acd-9678-431d-b184-3d22744c4db3",
+          "checksum": "d5a4e0004004c72c249a0756742717b5",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "7ddf9ec1-3602-434a-9b12-9b1741e4e028",
+          "checksum": "6e79c10e455edc59a97d59fffda32d79",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "a2fc6aa7-4c77-4ed6-83af-bbdd411a4d6a",
+          "checksum": "8aa08c6e7bdb78befd622274e8beb822",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "202dd324-5144-4bad-b424-1bfe455f9931",
+          "checksum": "51109705e7910e46917bc02c782ec312",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "44ffbd21-d7ef-4d5f-a5c7-3a2ad86d2e62",
+          "checksum": "39fa95ab98053175b83e92ef707e7efb",
+          "size": [
+            2064,
+            2752
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "e356502e-2279-4ef4-a806-8c03bc4f847a",
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "814a3b18-ff9f-41eb-8e2e-0c2810d876c3",
+          "checksum": "a944b34910ddda6b2923b3c49b103f6b",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "5477e0df-4b24-48f1-9c71-d970d5a7134a",
+          "checksum": "b1dd631872e4d9d7937402c29ab5234e",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "6225dc00-f4a5-47ce-8fb3-f41c937970e6",
+          "checksum": "fd748c4520a722e7ff7443f4f7343962",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "f13fcbb2-4515-4b8c-9e70-9aa8ccf83066",
+          "checksum": "755fc3cab6af50adca48cc4b047d6a56",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "d8ec4feb-1ddf-4436-853f-e1a73d8b92b6",
+          "checksum": "90371bcf9e17ddcac4e58cebd836648e",
+          "size": [
+            1284,
+            2778
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "setId": "bf79f116-18fa-4203-a433-6c715d52287e",
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "c4686662-56e1-4bec-8765-3dc7d7f45dc9",
+          "checksum": "4eb6ef45d5be1df0cf8255fbec755220",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "94361484-ac72-4541-89db-030e4446aca9",
+          "checksum": "73625a2a5ad8fd57ec0ff3edbbc0aeaf",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "6ad11efb-bdb0-49c8-90ff-ee3b4091c07f",
+          "checksum": "034fb91399b27a238e950acf3a65fa8a",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "a838266a-e184-4b66-9973-914761544433",
+          "checksum": "13d90b462c3416fb12af2d2deaa6d235",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "a07d640f-6ff9-4296-b00f-9a02ec8f2916",
+          "checksum": "ecc6991560a5f9bc516466bfee2238b1",
+          "size": [
+            1320,
+            2868
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "c152c428-29a7-44b7-a1b2-ec9cafe873b9",
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "14f13eb8-cc6f-4512-93be-c342c8a1db33",
+          "checksum": "1e8020da4a1902bbf70899f43fdd576a",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "957e15ef-7938-4d21-90b4-b97899769df5",
+          "checksum": "4169f5dd1fae5b04dee53fcc2ad0c43c",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "bdd71c3f-bffe-4cee-b066-6df49b79087e",
+          "checksum": "766c8e0591b31f416a58b6e4ce7f5fd5",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "9fed374c-3471-4b30-8453-bfa474bd307b",
+          "checksum": "3a2799e892095ed010351f1d5fb613fd",
+          "size": [
+            1170,
+            2532
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "fec7bec6-3d1f-41ae-bb6f-ec7de57a3b3f",
+          "checksum": "a13dba41f1f4aa29f7a955d206f15d44",
+          "size": [
+            1170,
+            2532
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "3bd2df3f-14f2-408b-bf63-223ce0a61ea0",
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "42781b4a-b6dc-417f-a872-ad38321d316d",
+          "checksum": "377fa1bbf07fc224aab5421fb1e78007",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "f2659b13-99ca-4d8e-bc76-4ebb25d9cc6c",
+          "checksum": "2702994b3213d151a401f19f37f9e9b8",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "7cfeba7f-2c16-433b-9caa-7ba7455c27e5",
+          "checksum": "05aace7e02b133c66d770f5f47983faa",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "9cb2d4cb-b70e-4287-9a3f-f91d4519d368",
+          "checksum": "c2c6e987ed62db9caa2cc65287336771",
+          "size": [
+            1206,
+            2622
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "9237a65a-4c35-4b7b-a88e-88bdee22889f",
+          "checksum": "d224c67590045e5365546e12e260d64d",
+          "size": [
+            1206,
+            2622
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "1d1da3d2-5ced-47a0-863c-b149ea1cab7e",
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "132ca952-2812-493b-b50b-621434caf8b8",
+          "checksum": "4eb6ef45d5be1df0cf8255fbec755220",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "a1e72d9f-d772-4d7f-86f3-3f61eff8bf0b",
+          "checksum": "73625a2a5ad8fd57ec0ff3edbbc0aeaf",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "d724e8bf-7c6d-40ad-9af7-fda33fed0d7d",
+          "checksum": "034fb91399b27a238e950acf3a65fa8a",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "90d00431-bb49-4d01-9527-7f863c9a5205",
+          "checksum": "13d90b462c3416fb12af2d2deaa6d235",
+          "size": [
+            1320,
+            2868
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "750d8358-2539-4afc-96da-4219bd6edb16",
+          "checksum": "ecc6991560a5f9bc516466bfee2238b1",
+          "size": [
+            1320,
+            2868
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "8c7122d5-0706-4067-af31-e688f1f727fe",
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "cba5ceaf-9f10-4b6d-8766-7425716f9952",
+          "checksum": "d5a4e0004004c72c249a0756742717b5",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "7d842e1b-bf7d-4251-b09c-f1a3d58beac3",
+          "checksum": "6e79c10e455edc59a97d59fffda32d79",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "bc2684e0-c2cc-444c-a051-ec544b16e24d",
+          "checksum": "8aa08c6e7bdb78befd622274e8beb822",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "de0d202b-53f3-48a4-8946-9179eceb00a1",
+          "checksum": "51109705e7910e46917bc02c782ec312",
+          "size": [
+            2064,
+            2752
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "adcd8223-98c9-421c-8b5f-ac8017f1fbad",
+          "checksum": "39fa95ab98053175b83e92ef707e7efb",
+          "size": [
+            2064,
+            2752
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "b62d63c2-83f7-424f-8422-c3b964c3dbed",
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "438c5336-d670-4686-a942-cb62b9e5dcd3",
+          "checksum": "a944b34910ddda6b2923b3c49b103f6b",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "2841f9d9-5ea5-4698-8dbd-c1d4e1116417",
+          "checksum": "b1dd631872e4d9d7937402c29ab5234e",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "03e85df5-bc3b-40f1-9aa5-848a6f7a4262",
+          "checksum": "fd748c4520a722e7ff7443f4f7343962",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "33eb074e-8cc7-47fd-892e-cf76e90c924b",
+          "checksum": "755fc3cab6af50adca48cc4b047d6a56",
+          "size": [
+            1284,
+            2778
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "e59caca5-51ae-4f64-b3f9-b39ded5b1b97",
+          "checksum": "90371bcf9e17ddcac4e58cebd836648e",
+          "size": [
+            1284,
+            2778
+          ]
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "setId": "9db39f29-4180-4632-80e7-27ae09ca2348",
+      "displayType": "APP_IPHONE_DUO",
+      "images": 5,
+      "codeFirst": true,
+      "newImages": [
+        {
+          "name": "00-code",
+          "id": "0eba8abf-13c4-4f4e-ba36-10564e7f2aa9",
+          "checksum": "222e3b0dffc88e0fa3fb0553c591afc4",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "03-course",
+          "id": "66260cc6-2c44-4e24-80cb-63c2fe972766",
+          "checksum": "e56dd189422a9b7f29bdc427fb9c0e98",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "04-lesson",
+          "id": "156520ce-4217-4be9-b444-14b77a418f7c",
+          "checksum": "2f40b18856f791d801f609f6cda57e56",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "08-interview",
+          "id": "1aacfd83-acba-4b94-a6bc-3e784b66ec5b",
+          "checksum": "773eca79eac79016974e6248fcdf51ac",
+          "size": [
+            2007,
+            2853
+          ]
+        },
+        {
+          "name": "09-around-go",
+          "id": "3cf4caf6-4c7f-4452-a2a7-f8139ee424e7",
+          "checksum": "7f3cd85e10d5d29f1bb306ed0c532157",
+          "size": [
+            2007,
+            2853
+          ]
+        }
+      ]
+    }
+  ],
+  "placements": [
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "headerAndSearchActive": true,
+      "total": 57
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "headerAndSearchActive": true,
+      "total": 57
+    }
+  ],
+  "newScreenshotCount": 60,
+  "reusedUnchangedFeatureScreenshots": 50,
+  "visuallyReviewedNewCaptures": 30,
+  "assetLibraryScreenshotGroups": [
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "localeId": "2199c1f4-3438-4801-a083-773e8142eead",
+      "profile": "iphone-6.9",
+      "group": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "placements": [
+        {
+          "id": "43c00019-5e3c-8faf-8f28-f55f5173c84f",
+          "imageId": "d3000019-5e3c-8faf-8035-8c14f48c6b91",
+          "fileName": "iphone-6.9-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/bWFtF2usuTd59zng3dvboQ/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "b7000019-5e3c-8faf-8f15-edd337b6d516",
+          "imageId": "d7800019-5e3c-8faf-8036-730785c50e27",
+          "fileName": "iphone-6.9-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/bDtYEcw5XyC4bHpe1XWsGg/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "0ec00019-5e3c-8faf-8f01-f10d004ec9a9",
+          "imageId": "81400019-5e3c-8faf-8006-e53477e13e87",
+          "fileName": "iphone-6.9-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/uWiF0N2FzmZmo4BSntfLlA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "75c00019-5e3c-8faf-8f04-0e1f1f3941ce",
+          "imageId": "19c00019-5e3c-8faf-8016-c63e402ab8a2",
+          "fileName": "iphone-6.9-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/2DdmpKIGZlQCA1mBtwQXhA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "b6800019-5e3c-8faf-8f0a-5911ba03f82c",
+          "imageId": "eb000019-5e3c-8faf-8028-97008f0e2623",
+          "fileName": "iphone-6.9-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/NnjtZ9ELCwA3TutniHZ8Ng/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "d0400019-5e3c-8faf-8f26-46309e352802",
+          "imageId": "f5000019-5e3c-8faf-8013-9aee2c0edcdf",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/1xdkSvLee_SjTfHF1oSLGA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "33400019-5e3c-8faf-8f0c-a5868e59b1df",
+          "imageId": "56800019-5e3c-8faf-8008-e88b085934c6",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/CyCUSXn_V-dOAxvtiQakRg/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "ef800019-5e3c-8faf-8f3c-a0f05e7f5c27",
+          "imageId": "db800019-5e3c-8faf-800b-0fcd2151d10d",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/-EX-DvzgOpC3jiX8BcRXrg/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "2f400019-5e3c-8faf-8f3e-0e4acabb76e1",
+          "imageId": "ba000019-5e3c-8faf-8005-f7ef83bc10c0",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/2TgMMFjhEaRzK1_TDzK1PQ/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "89c00019-5e3c-8faf-8f38-ef3b31630a4f",
+          "imageId": "5c000019-5e3c-8faf-803a-c21beb5abd33",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/Zoi7YwKVCTl0iOEQrV-iVA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "localeId": "33da6b9e-4233-4f9f-8bc9-bc0916b5157c",
+      "profile": "iphone-6.9",
+      "group": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "placements": [
+        {
+          "id": "65000019-5e3c-8faf-8f38-e2dbd2a148a1",
+          "imageId": "d3000019-5e3c-8faf-8035-8c14f48c6b91",
+          "fileName": "iphone-6.9-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/bWFtF2usuTd59zng3dvboQ/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "a7000019-5e3c-8faf-8f3c-4bc9662694cc",
+          "imageId": "d7800019-5e3c-8faf-8036-730785c50e27",
+          "fileName": "iphone-6.9-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/bDtYEcw5XyC4bHpe1XWsGg/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "15000019-5e3c-8faf-8f1a-f1f39843aea7",
+          "imageId": "81400019-5e3c-8faf-8006-e53477e13e87",
+          "fileName": "iphone-6.9-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/uWiF0N2FzmZmo4BSntfLlA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "54800019-5e3c-8faf-8f16-ffe7861416da",
+          "imageId": "19c00019-5e3c-8faf-8016-c63e402ab8a2",
+          "fileName": "iphone-6.9-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/2DdmpKIGZlQCA1mBtwQXhA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "7e400019-5e3c-8faf-8f31-dd1d93c49927",
+          "imageId": "eb000019-5e3c-8faf-8028-97008f0e2623",
+          "fileName": "iphone-6.9-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/NnjtZ9ELCwA3TutniHZ8Ng/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "04800019-5e3c-8faf-8f2b-390838aa02d4",
+          "imageId": "c9800019-5e3c-8faf-801e-855926f02582",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/VTrj5vXGnDipN-9Nq1MBlw/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "cd800019-5e3c-8faf-8f06-6d646286fc84",
+          "imageId": "61c00019-5e3c-8faf-8008-67bd7e20b650",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/WsjYAYG7aJXsyVsSRZR9Ng/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "59400019-5e3c-8faf-8f3a-5f81dbb1b799",
+          "imageId": "78000019-5e3c-8faf-8016-17f54b2054ce",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/GYE6R-lwuXOn_OI2pMQjHg/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "05400019-5e3c-8faf-8f3a-23fd26eae113",
+          "imageId": "77000019-5e3c-8faf-8000-ee1e5d91aa6b",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/M5qNQfb8h8MdsY2a6-SeeA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        },
+        {
+          "id": "97c00019-5e3c-8faf-8f05-f2debaf9bba6",
+          "imageId": "4dc00019-5e3c-8faf-800b-d09ebba0439c",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/EBTOs0eUOU1AroWd_migxA/{w}x{h}bb.{f}",
+            "width": 1320,
+            "height": 2868
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "localeId": "2199c1f4-3438-4801-a083-773e8142eead",
+      "profile": "iphone-6.3",
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "placements": [
+        {
+          "id": "a6000019-5e3c-8faf-8f24-8dba79851486",
+          "imageId": "be800019-5e3c-8faf-8036-09687d7cd22b",
+          "fileName": "iphone-6.3-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/NlJ5ahcIbIsmV7dFCiLUNg/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "32800019-5e3c-8faf-8f17-3b3eccaedcbf",
+          "imageId": "53400019-5e3c-8faf-8014-c7276831a60b",
+          "fileName": "iphone-6.3-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/7G3MPTy0IqZLPa67agzpmQ/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "30000019-5e3c-8faf-8f1c-e80b08a0c9f2",
+          "imageId": "6e800019-5e3c-8faf-801c-9918f5c264ce",
+          "fileName": "iphone-6.3-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/_MnvOFp3XY1DRn9e7U5B-g/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "94800019-5e3c-8faf-8f13-e3fbeb3ecaa8",
+          "imageId": "a3800019-5e3c-8faf-8028-b745e388d986",
+          "fileName": "iphone-6.3-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/SXjbzMOHTBEQGYABR5P8SQ/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "05800019-5e3c-8faf-8f1d-67646f7a7751",
+          "imageId": "94400019-5e3c-8faf-8033-519ea24e5264",
+          "fileName": "iphone-6.3-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/pbbFX3b98QPEHs_qczfejA/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "fd800019-5e3c-8faf-8f2e-953e45371f27",
+          "imageId": "bac00019-5e3c-8faf-8019-962cc441c6c1",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/dcbCsqva48Sf3INhZPS_QA/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "10400019-5e3c-8faf-8f37-48b5d8dff1c6",
+          "imageId": "d5400019-5e3c-8faf-8031-a9a86450d04a",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/QDgOp7ExNbDbGVfZ4LynSA/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "2cc00019-5e3c-8faf-8f33-4475744e949e",
+          "imageId": "3a800019-5e3c-8faf-8030-8de9bdfdd0e6",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/FAdvweovspvyS8_OwTGStQ/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "2dc00019-5e3c-8faf-8f36-46f8870b4b45",
+          "imageId": "4d400019-5e3c-8faf-802a-916893e79b9c",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/cfISMv-fir_sYbdbEtUsmg/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "a6c00019-5e3c-8faf-8f06-b352ecfa88df",
+          "imageId": "eb800019-5e3c-8faf-8026-fd64d7fad6eb",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/PRUsKa6SRVTr8eskNy4tGQ/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "localeId": "33da6b9e-4233-4f9f-8bc9-bc0916b5157c",
+      "profile": "iphone-6.3",
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "placements": [
+        {
+          "id": "a8000019-5e3c-8faf-8f2f-bda2ab38ca7c",
+          "imageId": "be800019-5e3c-8faf-8036-09687d7cd22b",
+          "fileName": "iphone-6.3-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/NlJ5ahcIbIsmV7dFCiLUNg/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "55c00019-5e3c-8faf-8f1d-8a07ef4174a7",
+          "imageId": "53400019-5e3c-8faf-8014-c7276831a60b",
+          "fileName": "iphone-6.3-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/7G3MPTy0IqZLPa67agzpmQ/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "0e000019-5e3c-8faf-8f3a-b453904e4ecd",
+          "imageId": "6e800019-5e3c-8faf-801c-9918f5c264ce",
+          "fileName": "iphone-6.3-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/_MnvOFp3XY1DRn9e7U5B-g/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "5d000019-5e3c-8faf-8f02-31fef9b50e58",
+          "imageId": "a3800019-5e3c-8faf-8028-b745e388d986",
+          "fileName": "iphone-6.3-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/SXjbzMOHTBEQGYABR5P8SQ/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "cd400019-5e3c-8faf-8f34-95975efb5d06",
+          "imageId": "94400019-5e3c-8faf-8033-519ea24e5264",
+          "fileName": "iphone-6.3-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/pbbFX3b98QPEHs_qczfejA/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "8d800019-5e3c-8faf-8f1f-e025b48af1ac",
+          "imageId": "d7c00019-5e3c-8faf-801d-d5eaeee28e45",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/BN6g_yV2AL-QUzPHBFIC7Q/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "fec00019-5e3c-8faf-8f24-6bd6928967f8",
+          "imageId": "8b400019-5e3c-8faf-8007-d08b9b7a3bd7",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/zO_ku-Z5ztZxqpU9_-KRvw/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "12000019-5e3c-8faf-8f2a-d145a6be75f8",
+          "imageId": "2d000019-5e3c-8faf-802e-feb3b4df3326",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/Cl5CKKbcX7_hRnVGv5HDlg/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "5e000019-5e3c-8faf-8f22-e94918e95ade",
+          "imageId": "95000019-5e3c-8faf-8018-5ec009d6a900",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/ePVi5IMqvfUN96qBmBBwDw/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        },
+        {
+          "id": "1b000019-5e3c-8faf-8f0e-043a29d2fb1b",
+          "imageId": "cec00019-5e3c-8faf-8014-9a688fb42ec9",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/2I3lhqkfqAE5FL7omAe0lA/{w}x{h}bb.{f}",
+            "width": 1206,
+            "height": 2622
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "localeId": "2199c1f4-3438-4801-a083-773e8142eead",
+      "profile": "iphone-6.5",
+      "group": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "placements": [
+        {
+          "id": "a2c00019-5e3c-8faf-8f2d-172b2d6db39e",
+          "imageId": "73c00019-5e3c-8faf-8032-495e647d2200",
+          "fileName": "iphone-6.5-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/5nro-JgWJhhoRvDxIdvzMg/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "20400019-5e3c-8faf-8f33-035c6a3697f0",
+          "imageId": "bd000019-5e3c-8faf-800e-23e529ac81be",
+          "fileName": "iphone-6.5-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/OTqjeYTMNi_VcF2gQp5tMw/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "5d400019-5e3c-8faf-8f24-7f28c3701d1c",
+          "imageId": "a3c00019-5e3c-8faf-801d-3ecb622093f0",
+          "fileName": "iphone-6.5-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/vhcZC57UcLlEDUTkhemZvQ/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "ca400019-5e3c-8faf-8f34-f926f7e2b82d",
+          "imageId": "8c800019-5e3c-8faf-8029-e80f3d4f9168",
+          "fileName": "iphone-6.5-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/9qmmOPJzRR2gxm2vt3lGTA/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "43400019-5e3c-8faf-8f1c-7eb184cd7058",
+          "imageId": "a5000019-5e3c-8faf-803c-da044af68c89",
+          "fileName": "iphone-6.5-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/qUiibbDNXOwcXgBdQxavvQ/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "d0c00019-5e3c-8faf-8f26-548403f12136",
+          "imageId": "a9400019-5e3c-8faf-8038-62b52067e771",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/0Uk18_xMO1AeCz8QFuJ6VA/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "8ac00019-5e3c-8faf-8f25-5a7b52c9c888",
+          "imageId": "b1800019-5e3c-8faf-800a-2e79045ff65f",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/KSQk2ih832brRxtm1aArTQ/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "9a000019-5e3c-8faf-8f06-4685af119ce1",
+          "imageId": "7d000019-5e3c-8faf-802d-ce1130487fc9",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/M3Q5LIfHDwO8ewN2Swvc2A/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "3a000019-5e3c-8faf-8f37-ed827928e79b",
+          "imageId": "15c00019-5e3c-8faf-8008-c1b808bf2e25",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/1OzMUSZkQ7kjNVWlhydU2w/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "e1000019-5e3c-8faf-8f1e-87e536b50d23",
+          "imageId": "b4400019-5e3c-8faf-803b-05c3562a98ba",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/ATP3450AVtLNje9VeB4TlA/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "localeId": "33da6b9e-4233-4f9f-8bc9-bc0916b5157c",
+      "profile": "iphone-6.5",
+      "group": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "placements": [
+        {
+          "id": "d6000019-5e3c-8faf-8f38-5ae6a92a17a2",
+          "imageId": "73c00019-5e3c-8faf-8032-495e647d2200",
+          "fileName": "iphone-6.5-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/5nro-JgWJhhoRvDxIdvzMg/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "77000019-5e3c-8faf-8f16-f458cdc3ccd3",
+          "imageId": "bd000019-5e3c-8faf-800e-23e529ac81be",
+          "fileName": "iphone-6.5-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/OTqjeYTMNi_VcF2gQp5tMw/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "a9000019-5e3c-8faf-8f28-db4f5700e6c0",
+          "imageId": "a3c00019-5e3c-8faf-801d-3ecb622093f0",
+          "fileName": "iphone-6.5-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/vhcZC57UcLlEDUTkhemZvQ/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "b5c00019-5e3c-8faf-8f36-76f802007945",
+          "imageId": "8c800019-5e3c-8faf-8029-e80f3d4f9168",
+          "fileName": "iphone-6.5-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/9qmmOPJzRR2gxm2vt3lGTA/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "9a400019-5e3c-8faf-8f29-00427e6ee9c0",
+          "imageId": "a5000019-5e3c-8faf-803c-da044af68c89",
+          "fileName": "iphone-6.5-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/qUiibbDNXOwcXgBdQxavvQ/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "d7c00019-5e3c-8faf-8f23-96d2c8fe412e",
+          "imageId": "0e000019-5e3c-8faf-802c-5836c0769b04",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/ycF0XMtWwD3SeJInh03Vpw/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "27000019-5e3c-8faf-8f06-7e127e3174be",
+          "imageId": "9f000019-5e3c-8faf-800b-28fb2437589a",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/25TPX2wfmgs41Dxkun8chg/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "18800019-5e3c-8faf-8f17-3b652c4dd674",
+          "imageId": "c4400019-5e3c-8faf-8018-7ac75e4dee22",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/xDDnkJreumIzGroF45qBog/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "da000019-5e3c-8faf-8f20-382e3a41c7ed",
+          "imageId": "48800019-5e3c-8faf-800a-ca0093cfd97d",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/HqSkbVWA7BWfl2nkpNA3vQ/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        },
+        {
+          "id": "9b000019-5e3c-8faf-8f10-298e5af24369",
+          "imageId": "55c00019-5e3c-8faf-8002-2e0fd2882872",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/S6dZ3Lt5ZsQBIXdiCAUeOw/{w}x{h}bb.{f}",
+            "width": 1284,
+            "height": 2778
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "localeId": "2199c1f4-3438-4801-a083-773e8142eead",
+      "profile": "iphone-duo",
+      "group": "IPHONE_DUO_PROFILE",
+      "placements": [
+        {
+          "id": "dfc00019-5e3c-8faf-8f19-b633db5061b3",
+          "imageId": "06400019-5e3c-8faf-8032-7fc50a7b3ca2",
+          "fileName": "iphone-duo-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/NC1aGoU9grJyzi98F1eofA/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "0f000019-5e3c-8faf-8f30-7cfc59425a03",
+          "imageId": "d0400019-5e3c-8faf-8006-eb78f64ad508",
+          "fileName": "iphone-duo-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/doR4Ywi8e5RVeu-wBAVUdg/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "da400019-5e3c-8faf-8f08-e438e9059693",
+          "imageId": "a3c00019-5e3c-8faf-803d-7c4494c1aff0",
+          "fileName": "iphone-duo-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/s-e5o5hexrOYSolDITnbRA/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "5dc00019-5e3c-8faf-8f19-60f21a767026",
+          "imageId": "4c000019-5e3c-8faf-8014-306415a5bc50",
+          "fileName": "iphone-duo-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/Qd3BfdIkB216oMcGUPHoRw/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "42400019-5e3c-8faf-8f14-5b67acb8b9b8",
+          "imageId": "e3400019-5e3c-8faf-8027-03f6afa59876",
+          "fileName": "iphone-duo-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/aUTEEmNF14I2215O0TYzkw/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "localeId": "33da6b9e-4233-4f9f-8bc9-bc0916b5157c",
+      "profile": "iphone-duo",
+      "group": "IPHONE_DUO_PROFILE",
+      "placements": [
+        {
+          "id": "dac00019-5e3c-8faf-8f22-941821a3ec0e",
+          "imageId": "06400019-5e3c-8faf-8032-7fc50a7b3ca2",
+          "fileName": "iphone-duo-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/NC1aGoU9grJyzi98F1eofA/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "bac00019-5e3c-8faf-8f26-c32a6fde7e03",
+          "imageId": "d0400019-5e3c-8faf-8006-eb78f64ad508",
+          "fileName": "iphone-duo-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/doR4Ywi8e5RVeu-wBAVUdg/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "5dc00019-5e3c-8faf-8f31-ea29679d3f13",
+          "imageId": "a3c00019-5e3c-8faf-803d-7c4494c1aff0",
+          "fileName": "iphone-duo-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/s-e5o5hexrOYSolDITnbRA/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "0bc00019-5e3c-8faf-8f0f-c95158b1e5ba",
+          "imageId": "4c000019-5e3c-8faf-8014-306415a5bc50",
+          "fileName": "iphone-duo-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/Qd3BfdIkB216oMcGUPHoRw/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        },
+        {
+          "id": "b7c00019-5e3c-8faf-8f34-8c677d7f5d28",
+          "imageId": "e3400019-5e3c-8faf-8027-03f6afa59876",
+          "fileName": "iphone-duo-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/aUTEEmNF14I2215O0TYzkw/{w}x{h}bb.{f}",
+            "width": 2007,
+            "height": 2853
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "localeId": "2199c1f4-3438-4801-a083-773e8142eead",
+      "profile": "ipad-13",
+      "group": "IPAD_13_PROFILE",
+      "placements": [
+        {
+          "id": "cb800019-5e3c-8faf-8f3c-f47faa1fa7ab",
+          "imageId": "afc00019-5e3c-8faf-801a-f617cbf36ca9",
+          "fileName": "ipad-13-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/yoHMSSK3Zo2jt77kkJLDHg/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "8f800019-5e3c-8faf-8f31-e8cc4ca561cf",
+          "imageId": "bbc00019-5e3c-8faf-8023-76c430d9cb30",
+          "fileName": "ipad-13-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/ejXeE0gSYPrap3ELImX8hw/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "29000019-5e3c-8faf-8f05-c07d2b188a72",
+          "imageId": "b3400019-5e3c-8faf-8023-8c90b758feea",
+          "fileName": "ipad-13-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/k7WvSsiyYaK_wIkmVUcY7Q/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "db000019-5e3c-8faf-8f13-68ef0ecd0da5",
+          "imageId": "16800019-5e3c-8faf-8033-614e93a8c3ed",
+          "fileName": "ipad-13-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/po43vTHxuunVteRdx4WzMQ/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "6a400019-5e3c-8faf-8f23-617202436f6f",
+          "imageId": "68c00019-5e3c-8faf-8028-39e06f1d719e",
+          "fileName": "ipad-13-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/mrx2Vm8IeQlsTp-897c64Q/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "e1800019-5e3c-8faf-8f20-76428b6b1a52",
+          "imageId": "79c00019-5e3c-8faf-801e-3ac74250ac0f",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/pz2xDe88rVGdv6Da3WRU9w/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "2ec00019-5e3c-8faf-8f2f-efdbad31e93f",
+          "imageId": "9f800019-5e3c-8faf-801a-4dca04eb28a7",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/-aW6mG19fkMnEFQwAD10gg/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "f9c00019-5e3c-8faf-8f35-8314ef40ae31",
+          "imageId": "f5400019-5e3c-8faf-8025-aab79a5090e8",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/IZPyNOwrZ0yrhF8ZQHPvfg/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "be000019-5e3c-8faf-8f38-afd85fb84727",
+          "imageId": "d8400019-5e3c-8faf-803f-bddc10a9a1bc",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/WM74eMXt-lGkTN3ck9mioQ/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "c7000019-5e3c-8faf-8f2b-8d98a6835a9b",
+          "imageId": "b8c00019-5e3c-8faf-803b-15a86c7a8101",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/jzSBSXQdciAkNUEyARlr1g/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "localeId": "33da6b9e-4233-4f9f-8bc9-bc0916b5157c",
+      "profile": "ipad-13",
+      "group": "IPAD_13_PROFILE",
+      "placements": [
+        {
+          "id": "37800019-5e3c-8faf-8f20-d872ded1c966",
+          "imageId": "afc00019-5e3c-8faf-801a-f617cbf36ca9",
+          "fileName": "ipad-13-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/yoHMSSK3Zo2jt77kkJLDHg/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "d1000019-5e3c-8faf-8f37-e4ed7320a13e",
+          "imageId": "bbc00019-5e3c-8faf-8023-76c430d9cb30",
+          "fileName": "ipad-13-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/ejXeE0gSYPrap3ELImX8hw/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "d0400019-5e3c-8faf-8f31-afd9b4fa259d",
+          "imageId": "b3400019-5e3c-8faf-8023-8c90b758feea",
+          "fileName": "ipad-13-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/k7WvSsiyYaK_wIkmVUcY7Q/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "07800019-5e3c-8faf-8f1b-369ba16d8ea4",
+          "imageId": "16800019-5e3c-8faf-8033-614e93a8c3ed",
+          "fileName": "ipad-13-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/po43vTHxuunVteRdx4WzMQ/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "1e400019-5e3c-8faf-8f22-4eee4c4b4ea9",
+          "imageId": "68c00019-5e3c-8faf-8028-39e06f1d719e",
+          "fileName": "ipad-13-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/mrx2Vm8IeQlsTp-897c64Q/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "3c800019-5e3c-8faf-8f07-62633bc8dde0",
+          "imageId": "5b000019-5e3c-8faf-800a-43d01f3ce1aa",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/-6Er-m4aPeAJ0RsY2fQEfQ/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "94400019-5e3c-8faf-8f27-f230ab2e71f7",
+          "imageId": "b2c00019-5e3c-8faf-801e-d8e6f3f4447a",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/ESlp5AZlYC9C9CE9plo01A/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "59800019-5e3c-8faf-8f08-2adc16e7059e",
+          "imageId": "16400019-5e3c-8faf-800a-e83eb51e460c",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/WtmvhZ93m7Q8hDshqAunTg/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "47000019-5e3c-8faf-8f09-dfb51f81f710",
+          "imageId": "5a000019-5e3c-8faf-8009-13df315e7c09",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/gLxO75qYRGhN6w3mg0uV1g/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        },
+        {
+          "id": "72000019-5e3c-8faf-8f02-0a720ee92aad",
+          "imageId": "e7000019-5e3c-8faf-801b-1cdb33b610a1",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/q8vIOYT3HwHn97KU2RhAVw/{w}x{h}bb.{f}",
+            "width": 2064,
+            "height": 2752
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "localeId": "2199c1f4-3438-4801-a083-773e8142eead",
+      "profile": "iphone-6.1",
+      "group": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "placements": [
+        {
+          "id": "dbc00019-5e3c-8faf-8f27-6ca695dfb328",
+          "imageId": "df800019-5e3c-8faf-8011-e22f5f4d0ba7",
+          "fileName": "iphone-6.1-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/650kA9iiXlGp4hp0wdgnjg/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "19000019-5e3c-8faf-8f12-4a0ecd309687",
+          "imageId": "3e400019-5e3c-8faf-800f-e0d56786de2f",
+          "fileName": "iphone-6.1-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/u69p4IP9COgc19TtSlQfPw/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "91800019-5e3c-8faf-8f23-cdbc73713b8d",
+          "imageId": "c0400019-5e3c-8faf-803f-99e0dce217cd",
+          "fileName": "iphone-6.1-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/x0nikpzT_ST8Wv-Quk1uvA/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "a1400019-5e3c-8faf-8f3d-f03bdad9efde",
+          "imageId": "58c00019-5e3c-8faf-8037-6a798a8a796b",
+          "fileName": "iphone-6.1-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/GvCBP_UCQenh5BCKdDI_Ag/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "9c400019-5e3c-8faf-8f17-cac708c688be",
+          "imageId": "dd800019-5e3c-8faf-801f-3a7b49af8cc2",
+          "fileName": "iphone-6.1-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/etY1fgQrfiBg7GuRFFeS6w/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "6d800019-5e3c-8faf-8f1b-06ac3ef8ca39",
+          "imageId": "ab400019-5e3c-8faf-8023-26e1a346bcd6",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/UleR6YRSVpx6FSBjhq5zkg/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "39400019-5e3c-8faf-8f1f-b54ce6b47ed1",
+          "imageId": "02800019-5e3c-8faf-8001-9fc2b5825aa6",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/Xicsn54s2z0RGoy1OWmUKg/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "42000019-5e3c-8faf-8f3c-254e95780228",
+          "imageId": "7d800019-5e3c-8faf-8024-3b3977dc491f",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/0M3js2LWlEsveMU18lgIxQ/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "eec00019-5e3c-8faf-8f2b-1a362538ac61",
+          "imageId": "25800019-5e3c-8faf-8002-57f021f45e05",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/YDXmNoZmdSbea_yhtRePpQ/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "1c400019-5e3c-8faf-8f37-04a3a394457f",
+          "imageId": "cc000019-5e3c-8faf-8031-2834d3bebc5f",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/U_UoIjZxeyTZ5nLmBI6Hsg/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        }
+      ]
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "localeId": "33da6b9e-4233-4f9f-8bc9-bc0916b5157c",
+      "profile": "iphone-6.1",
+      "group": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "placements": [
+        {
+          "id": "ea400019-5e3c-8faf-8f37-57ccab164f02",
+          "imageId": "df800019-5e3c-8faf-8011-e22f5f4d0ba7",
+          "fileName": "iphone-6.1-00-code-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/650kA9iiXlGp4hp0wdgnjg/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "20800019-5e3c-8faf-8f1a-f46969fbc7b9",
+          "imageId": "3e400019-5e3c-8faf-800f-e0d56786de2f",
+          "fileName": "iphone-6.1-08-interview-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/u69p4IP9COgc19TtSlQfPw/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "c1000019-5e3c-8faf-8f17-81bfe911064e",
+          "imageId": "c0400019-5e3c-8faf-803f-99e0dce217cd",
+          "fileName": "iphone-6.1-04-lesson-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/x0nikpzT_ST8Wv-Quk1uvA/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "43c00019-5e3c-8faf-8f05-951e34a43b38",
+          "imageId": "58c00019-5e3c-8faf-8037-6a798a8a796b",
+          "fileName": "iphone-6.1-03-course-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/GvCBP_UCQenh5BCKdDI_Ag/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "d1400019-5e3c-8faf-8f3b-7adf8a5a4f4a",
+          "imageId": "dd800019-5e3c-8faf-801f-3a7b49af8cc2",
+          "fileName": "iphone-6.1-09-around-go-build39.png",
+          "imageState": "PREPARE_FOR_SUBMISSION",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/etY1fgQrfiBg7GuRFFeS6w/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "e9400019-5e3c-8faf-8f17-dbcdc2507503",
+          "imageId": "72000019-5e3c-8faf-801d-68d0b39e1d65",
+          "fileName": "02-tests-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/dHVFTw-GZXUZu5iwd6pwJg/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "b6000019-5e3c-8faf-8f2a-289cf14c8578",
+          "imageId": "c1400019-5e3c-8faf-8024-e1ce812e83d8",
+          "fileName": "01-compiler-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/2FFldmW8qNESAWszioCcew/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "b4400019-5e3c-8faf-8f00-bf70419ba873",
+          "imageId": "7dc00019-5e3c-8faf-803e-34b283426a01",
+          "fileName": "05-lab-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/gPsNwNIcy9z3vqj-pvBN4w/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "7c000019-5e3c-8faf-8f39-6c30176c913b",
+          "imageId": "97400019-5e3c-8faf-803d-202acb5a9c5e",
+          "fileName": "06-projects-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/3GTH2gaW7Ie-KH-kl4Zkww/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        },
+        {
+          "id": "26400019-5e3c-8faf-8f09-b70f7da918f9",
+          "imageId": "92000019-5e3c-8faf-800b-0b9510696025",
+          "fileName": "07-graphics-build33.png",
+          "imageState": "APPROVED",
+          "imageAsset": {
+            "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/AtLyux_9xtyGvh6x8Yok5Q/{w}x{h}bb.{f}",
+            "width": 1170,
+            "height": 2532
+          }
+        }
+      ]
+    }
+  ],
+  "assetLibraryScreenshots": 110,
+  "assetLibraryNewAssignments": 60,
+  "inheritedProfiles": [
+    {
+      "checkedAt": "2026-10-20T10:17:51.502586+00:00",
+      "profile": "ipad-11",
+      "inherits": "ipad-13",
+      "reason": "Apple automatic scaling from the required 13-inch set; 11-inch simulator installation and clean-runtime startup stalled. No 11-inch capture or test success is claimed.",
+      "reference": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/",
+      "pages": [
+        {
+          "pageType": "appStoreVersionLocalizations",
+          "legacyOverrideAbsent": true,
+          "libraryOverrideAbsent": true,
+          "sourceSetId": "4c35d835-ab70-478d-835b-38b82d9d0ba2",
+          "sourceScreenshots": 10
+        },
+        {
+          "pageType": "appCustomProductPageLocalizations",
+          "legacyOverrideAbsent": true,
+          "libraryOverrideAbsent": true,
+          "sourceSetId": "8c7122d5-0706-4067-af31-e688f1f727fe",
+          "sourceScreenshots": 10
+        }
+      ]
+    }
+  ],
+  "screenshots": 110,
+  "headerAndSearchActive": true,
+  "selectedBuildId": "7f0dfdf7-e212-47ba-b85f-61ca0dbdb403",
+  "versionId": "a649d81f-af0c-4441-a388-d6bd21fa29b8",
+  "releaseType": "AFTER_APPROVAL",
+  "metadataReadBack": true,
+  "reviewContactPresent": true,
+  "reviewInstructionsUpdated": true,
+  "beta": "IN_BETA_TESTING",
+  "newImageDelivery": "READY_FOR_SUBMISSION",
+  "creativeImages": [
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "placementId": "ecc00019-5e3c-8faf-8f31-444fbda8e909",
+      "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+      "placementState": "ACTIVE",
+      "imageId": "95000019-5e3c-8faf-8007-1e43fbedb20a",
+      "image": {
+        "specId": "d2ffa3b7-6c55-5cdf-8512-229d92791333",
+        "fileName": "search-results.png",
+        "createdDate": "2026-10-12T16:33:28.379864Z",
+        "lastModifiedDate": "2026-10-18T10:48:12.423365Z",
+        "fileSize": 522072,
+        "state": "APPROVED",
+        "category": "CREATIVE_ASSETS",
+        "imageAsset": {
+          "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/HBJtEshCp7cg0W_T-fgWPg/{w}x{h}bb.{f}",
+          "width": 2880,
+          "height": 1920
+        },
+        "stateDetails": null,
+        "referenceName": "search-results.png (23)"
+      }
+    },
+    {
+      "pageType": "appStoreVersionLocalizations",
+      "placementId": "07400019-5e3c-8faf-8f12-408400cafc99",
+      "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+      "placementState": "ACTIVE",
+      "imageId": "f5000019-5e3c-8faf-800c-a38fbd40e134",
+      "image": {
+        "specId": "1eb43b80-e0b7-4d96-bd32-47a42a8c5fed",
+        "fileName": "header.png",
+        "createdDate": "2026-10-12T16:35:21.134267Z",
+        "lastModifiedDate": "2026-10-18T10:48:12.423365Z",
+        "fileSize": 551132,
+        "state": "APPROVED",
+        "category": "CREATIVE_ASSETS",
+        "imageAsset": {
+          "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/K0DgqTVfYkOfbbph48xy6g/{w}x{h}bb.{f}",
+          "width": 3840,
+          "height": 1646
+        },
+        "stateDetails": null,
+        "referenceName": "header.png (26)"
+      }
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "placementId": "e2800019-5e3c-8faf-8f0a-d4b90ea16c76",
+      "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+      "placementState": "ACTIVE",
+      "imageId": "95000019-5e3c-8faf-8007-1e43fbedb20a",
+      "image": {
+        "specId": "d2ffa3b7-6c55-5cdf-8512-229d92791333",
+        "fileName": "search-results.png",
+        "createdDate": "2026-10-12T16:33:28.379864Z",
+        "lastModifiedDate": "2026-10-18T10:48:12.423365Z",
+        "fileSize": 522072,
+        "state": "APPROVED",
+        "category": "CREATIVE_ASSETS",
+        "imageAsset": {
+          "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/HBJtEshCp7cg0W_T-fgWPg/{w}x{h}bb.{f}",
+          "width": 2880,
+          "height": 1920
+        },
+        "stateDetails": null,
+        "referenceName": "search-results.png (23)"
+      }
+    },
+    {
+      "pageType": "appCustomProductPageLocalizations",
+      "placementId": "05c00019-5e3c-8faf-8f16-a522f2c470b2",
+      "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+      "placementState": "ACTIVE",
+      "imageId": "f5000019-5e3c-8faf-800c-a38fbd40e134",
+      "image": {
+        "specId": "1eb43b80-e0b7-4d96-bd32-47a42a8c5fed",
+        "fileName": "header.png",
+        "createdDate": "2026-10-12T16:35:21.134267Z",
+        "lastModifiedDate": "2026-10-18T10:48:12.423365Z",
+        "fileSize": 551132,
+        "state": "APPROVED",
+        "category": "CREATIVE_ASSETS",
+        "imageAsset": {
+          "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/K0DgqTVfYkOfbbph48xy6g/{w}x{h}bb.{f}",
+          "width": 3840,
+          "height": 1646
+        },
+        "stateDetails": null,
+        "referenceName": "header.png (26)"
+      }
+    }
+  ],
+  "captureSources": {
+    "03-course": "39",
+    "08-interview": "39",
+    "00-code": "38 (unchanged editor UI)",
+    "04-lesson": "38 (unchanged lesson UI)",
+    "09-around-go": "38 (unchanged reading UI)"
+  },
+  "legacyCompleteSets": 12,
+  "legacyCompleteChecksums": 60,
+  "imageVerificationMethod": "Actual Asset Library placements and legacy checksum readback for all six sizes on both pages. Collection include=appScreenshots avoids the old per-set endpoint HTTP500."
+}

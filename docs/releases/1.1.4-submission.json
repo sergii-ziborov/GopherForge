@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-20T10:45:00.443623+00:00",
+  "appId": "6809702319",
+  "version": "1.1.4",
+  "build": "39",
+  "buildId": "7f0dfdf7-e212-47ba-b85f-61ca0dbdb403",
+  "appSourceCommit": "477bf2e",
+  "submissionId": "7968c084-211a-4ce8-bd09-07114f78a265",
+  "submissionState": "WAITING_FOR_REVIEW",
+  "versionState": "WAITING_FOR_REVIEW",
+  "customProductPageVersionId": "8a8ea87b-5408-4c6d-916d-dc348d4d5fd3",
+  "customProductPageState": "WAITING_FOR_REVIEW",
+  "releaseType": "AFTER_APPROVAL",
+  "testFlightState": "IN_BETA_TESTING",
+  "screenshots": 110,
+  "screenshotSets": 12,
+  "newCaptures": 30,
+  "newScreenshotAssignments": 60,
+  "inheritedProfiles": {
+    "ipad-11": "ipad-13"
+  },
+  "headerAndSearchActive": true,
+  "submitted": true
+}
