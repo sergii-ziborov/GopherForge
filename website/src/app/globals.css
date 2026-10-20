@@ -2777,3 +2777,21 @@ details p {
     font-size: 14px;
   }
 }
+
+@media (max-width: 420px) {
+  .site-header nav a:nth-child(3) {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .interview-tree {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding: 4px 2px 16px;
+  }
+  .topic-branch {
+    flex: 0 0 86%;
+    scroll-snap-align: start;
+  }
+}

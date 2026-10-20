@@ -17,19 +17,25 @@ export default function Updates() {
       </h1>
       <section className="release" id="v114">
         <span className="release-badge muted">
-          WEB AVAILABLE · PRIVATE TESTFLIGHT
+          WEB AVAILABLE · NATIVE 1.1.4 UPDATE
         </span>
         <h2>
-          GopherForge 1.1.4 <small>build 38</small>
+          GopherForge 1.1.4 <small>build 39</small>
         </h2>
         <p>
           The library now has 169 teaching lessons in 21 units, including 122
           readings, plus 22 prediction challenges. New material is available on
-          the web; the native update is available to existing Internal QA
-          testers in TestFlight. The App Store update is configured for
-          automatic release after approval.
+          the web. Native 1.1.4 is the matching update, configured for automatic
+          release after Apple approval. App Store availability can vary while an
+          update propagates.
         </p>
         <ul>
+          <li>
+            A separate Interview area with 88 worked guides across 12 topics and
+            four difficulty levels. Eight algorithm labs provide 24 scenarios
+            and 111 computed steps, plus Go code, worked exercises and local
+            self-assessment.
+          </li>
           <li>
             Six MongoDB lessons: shared clients, query indexes, atomic writes,
             transaction retries, cursor ownership and pool saturation.
@@ -49,6 +55,9 @@ export default function Updates() {
             lower edge around the floating navigation controls.
           </li>
         </ul>
+        <Link className="button secondary" href="/interview">
+          Prepare for an interview →
+        </Link>
         <Link className="button" href="/learn?direction=tooling">
           Explore Around Go →
         </Link>

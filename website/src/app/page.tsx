@@ -33,7 +33,8 @@ export default function Home() {
             </a>
           </div>
           <p className="small-note">
-            No account for web lessons. One-time purchase for the app.
+            Free web lessons. iOS app: $6.99 USD, one-time U.S. purchase.
+            Regional prices vary.
           </p>
         </div>
         <div className="hero-workbench">
