@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
 import { lessons } from "@/lib/course";
+import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     "",
     "/learn",
+    "/interview",
+    ...interview.questions.map((q) => interviewURL(q.id)),
     "/architectures",
     "/blog",
     "/updates",

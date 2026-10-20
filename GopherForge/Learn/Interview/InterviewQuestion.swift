@@ -44,7 +44,7 @@ enum InterviewCatalog {
             code: "",
             answerPoints: [
                 "Every type has a zero value and every declaration produces it: 0, \"\", false, nil for pointers, slices, maps, channels and interfaces, and a struct whose fields are each their own zero.",
-                "So a declared variable is always usable. There is no uninitialised state to reason about and no constructor that might not have run.",
+                "Every declaration is initialized, but allowed operations still depend on the type: append works on a nil slice, assigning a nil map panics, and a nil-channel send blocks. Types that require configuration must make that requirement explicit.",
                 "The exchange is that the zero value has to be designed. sync.Mutex and bytes.Buffer are usable at zero; a type that needs setup has to say so, which is why NewThing exists as a convention rather than a language feature.",
             ],
             trap: "Saying it is \"like default initialisation in C++ or Java\". Those languages leave some things uninitialised or require a constructor to run; Go's point is that neither is ever true.",
@@ -58,7 +58,7 @@ enum InterviewCatalog {
             answerPoints: [
                 "When the method mutates the receiver, because a value receiver mutates a copy and the caller sees nothing.",
                 "When the value is large enough that copying it per call matters — though that is a measurement, not a guess.",
-                "When any method on the type needs a pointer, all of them should take one: a mixed method set is confusing and changes what satisfies an interface.",
+                "Prefer a consistent receiver convention when a type needs mutation or must not be copied. This is design guidance, not a language rule: T and *T have different method sets, and some mixed receiver APIs can be deliberate.",
             ],
             trap: "\"Pointers are faster.\" For a small struct a copy is often cheaper than the indirection, and the real reason is mutation, not speed.",
             conceptTag: GoConcept.methodSet

@@ -32,8 +32,9 @@ export default function Learn() {
         </div>
         <p className="availability">
           The web library includes the latest MongoDB, Redis and production
-          tooling lessons. These additions are being prepared for native 1.1.4.
-          See the version history for App Store and TestFlight availability.
+          tooling lessons. These additions are available in native 1.1.4
+          TestFlight for existing Internal QA testers. See the version history
+          for App Store and TestFlight availability.
         </p>
       </div>
       <CourseBrowser

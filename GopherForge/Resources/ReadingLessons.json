@@ -613,9 +613,9 @@
       {
         "title": "Read the route from left to right",
         "body": "New creates an engine without the default middleware set. The group applies a common path prefix. A named segment is read from the Gin context, then handed to a service. This is an illustrative fragment: store and its result/error contract are application dependencies.",
-        "code": "r := gin.New()\nr.Use(gin.Logger(), gin.Recovery())\napi := r.Group(\"/v1\")\napi.GET(\"/items/:id\", func(c *gin.Context) {\n    id := c.Param(\"id\")\n    item, err := store.Find(c.Request.Context(), id)\n    if err != nil {\n        c.JSON(http.StatusNotFound, gin.H{\"error\": \"item unavailable\"})\n        return\n    }\n    c.JSON(http.StatusOK, item)\n})",
+        "code": "r := gin.New()\nr.Use(gin.Logger(), gin.Recovery())\napi := r.Group(\"/v1\")\napi.GET(\"/items/:id\", func(c *gin.Context) {\n    id := c.Param(\"id\")\n    item, err := store.Find(c.Request.Context(), id)\n    // ErrNotFound is the application's documented sentinel.\n    if errors.Is(err, ErrNotFound) {\n        c.JSON(http.StatusNotFound, gin.H{\"error\": \"item unavailable\"})\n        return\n    }\n    if err != nil {\n        c.JSON(http.StatusServiceUnavailable, gin.H{\"error\": \"service unavailable\"})\n        return\n    }\n    c.JSON(http.StatusOK, item)\n})",
         "language": "go",
-        "walkthrough": "This simplified example treats Find failure uniformly. A real adapter should distinguish not-found from timeout, cancellation and internal failure rather than returning 404 for all of them."
+        "walkthrough": "The application contract supplies ErrNotFound. Only that classification becomes 404; other failures are not disguised as a missing record. This fragment uses a generic 503 for dependency failure. A complete adapter should distinguish invalid input, internal faults, deadline and cancellation, use the authenticated scope in the lookup and avoid leaking internal error text."
       },
       {
         "title": "Inject the dependency, not a global registry",

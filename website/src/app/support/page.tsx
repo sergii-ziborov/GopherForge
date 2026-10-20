@@ -133,11 +133,11 @@ export default function Support() {
         </p>
         <p>
           The expanded architecture, MongoDB, Redis and tooling course is
-          available here now. Native 1.1.3 is available on the App Store; the newer
-          data-store and tooling additions are being prepared for 1.1.4. Web
-          progress stays in this browser and is independent of app progress. Web
-          completion marks are self-reported; this site does not compile
-          arbitrary source.
+          available here now. Native 1.1.3 is available on the App Store; the
+          newer data-store and tooling additions are available to existing
+          Internal QA testers in 1.1.4 TestFlight. Web progress stays in this
+          browser and is independent of app progress. Web completion marks are
+          self-reported; this site does not compile arbitrary source.
         </p>
         <a href={appStore} className="button secondary">
           View the app ↗

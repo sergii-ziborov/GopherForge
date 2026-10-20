@@ -141,6 +141,23 @@ export default function Home() {
           </Link>
         </div>
       </section>
+      <section className="page section-space interview-preview">
+        <p className="eyebrow">NEXT LEVEL · INTERVIEW PREPARATION</p>
+        <h2>
+          From syntax to
+          <br />
+          <em>engineering judgment.</em>
+        </h2>
+        <p>
+          88 worked guides across 12 topics, from junior foundations to systems
+          tradeoffs. Trace eight algorithms interactively, then practice
+          concurrency, MongoDB, Redis, Docker, Kubernetes and Go workflows with
+          Claude Code, Codex and Cursor.
+        </p>
+        <Link className="button" href="/interview">
+          Open interview preparation →
+        </Link>
+      </section>
       <section className="app-section">
         <div className="page app-grid">
           <div className="app-image">
@@ -185,6 +202,15 @@ export default function Home() {
               <Link className="text-link" href="/support#package-limits">
                 Read the toolchain limits
               </Link>
+            </div>
+            <div className="app-price" id="pricing">
+              <strong>$6.99 USD</strong>
+              <span>One-time purchase · U.S. App Store</span>
+              <p>
+                No subscription or in-app purchases. Regional prices and taxes
+                vary; the App Store shows your final local price. Web lessons
+                and interview preparation are free.
+              </p>
             </div>
             <p className="small-note">
               App Store version 1.1.3 is available now. The web course includes
@@ -244,7 +270,13 @@ export default function Home() {
             name: "GopherForge: Go Workbench",
             applicationCategory: "DeveloperApplication",
             operatingSystem: "iOS, iPadOS",
-            softwareVersion: "1.1.2",
+            softwareVersion: "1.1.3",
+            offers: {
+              "@type": "Offer",
+              price: "6.99",
+              priceCurrency: "USD",
+              url: appStore,
+            },
             url: "https://gopherforge.app",
             downloadUrl: appStore,
           }),

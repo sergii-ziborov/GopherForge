@@ -17,7 +17,7 @@ export default function Updates() {
       </h1>
       <section className="release" id="v114">
         <span className="release-badge muted">
-          WEB AVAILABLE · NEXT NATIVE UPDATE
+          WEB AVAILABLE · PRIVATE TESTFLIGHT
         </span>
         <h2>
           GopherForge 1.1.4 <small>build 38</small>
@@ -25,7 +25,9 @@ export default function Updates() {
         <p>
           The library now has 169 teaching lessons in 21 units, including 122
           readings, plus 22 prediction challenges. New material is available on
-          the web; the native update is in testing.
+          the web; the native update is available to existing Internal QA
+          testers in TestFlight. The App Store update is configured for
+          automatic release after approval.
         </p>
         <ul>
           <li>
@@ -52,16 +54,15 @@ export default function Updates() {
         </Link>
       </section>
       <section className="release" id="next-release">
-        <span className="release-badge muted">
-          AVAILABLE ON THE APP STORE
-        </span>
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
         <h2>
           GopherForge 1.1.3 <small>build 37</small>
         </h2>
         <p>
           This native update includes the expanded course: 145 teaching lessons
-          in 20 units, including 98 readings, plus 22 prediction challenges. The update has passed App Review and released automatically.
-          Version 1.1.3 is the current public App Store version.
+          in 20 units, including 98 readings, plus 22 prediction challenges. The
+          update has passed App Review and released automatically. Version 1.1.3
+          is the current public App Store version.
         </p>
         <ul>
           <li>

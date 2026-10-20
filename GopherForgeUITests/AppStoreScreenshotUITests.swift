@@ -63,6 +63,15 @@ final class AppStoreScreenshotUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Learn"].waitForExistence(timeout: 10))
     }
 
+    func testCaptureInterviewReleaseScreenshots() {
+        launch(section: "learn")
+        XCTAssertTrue(app.waitForElement(app.buttons["unit.core"]))
+        captureNativeDisplayFrame("03-course-build39")
+        app.segmentedControls["learn.area"].buttons["Interview"].tap()
+        XCTAssertTrue(app.buttons["interview.algorithms"].waitForExistence(timeout: 10))
+        captureNativeDisplayFrame("08-interview-build39")
+    }
+
     func testCaptureDataStoreReleaseScreenshots() {
         launch(section: "projects")
         openTemplate("worker-pool")
@@ -72,6 +81,15 @@ final class AppStoreScreenshotUITests: XCTestCase {
         launch(section: "learn")
         XCTAssertTrue(app.waitForElement(app.buttons["unit.core"]))
         captureNativeDisplayFrame("03-course-build38")
+        let concurrency = app.buttons["unit.concurrency"]
+        XCTAssertTrue(app.waitForElement(concurrency, scrollingUpTo: 24))
+        concurrency.tap()
+        let close = app.buttons["lesson.concurrency.channel-close"]
+        XCTAssertTrue(app.waitForElement(close, scrollingUpTo: 16))
+        close.tap()
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.lessonCheck].waitForExistence(timeout: 10))
+        captureNativeDisplayFrame("04-lesson-build38")
+        launch(section: "learn")
         let databases = app.buttons["unit.datastores"]
         XCTAssertTrue(app.waitForElement(databases, scrollingUpTo: 30))
         databases.tap()
@@ -567,7 +585,8 @@ final class AppStoreScreenshotUITests: XCTestCase {
         Thread.sleep(forTimeInterval: 2)
         print("GF_NATIVE_FRAME_READY: \(name)")
         fflush(stdout)
-        Thread.sleep(forTimeInterval: 30)
+        let requested = ProcessInfo.processInfo.environment["GF_CAPTURE_HOLD_SECONDS"].flatMap(Double.init) ?? 30
+        Thread.sleep(forTimeInterval: min(30, max(8, requested)))
     }
 
     /// Named with a leading number so the files sort into listing order once

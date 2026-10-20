@@ -182,3 +182,14 @@ open-source project. Copyright © 2026 Serhii Ziborov. All rights reserved.
 
 GopherForge is independent and is not affiliated with or endorsed by Google or
 the Go project.
+
+
+### Interview preparation (1.1.4)
+
+Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **88 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
+
+Eight algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging and minimum-coin dynamic programming. Choose among **24 scenarios** and step through **111 computed states**, including duplicate, empty, unreachable and greedy-counterexample cases. These are deterministic teaching traces, with highlighted state and published Go implementations. They do not execute arbitrary web input or send code to a server. `python3 scripts/verify_interview_algorithms.py` compiles the eight published examples and checks boundary cases and 500 randomized reference comparisons with Go's race detector.
+
+Interview self-assessment is stored locally, independently from lesson completion and compiler verification. The app does not connect to AI providers: agent workflows are educational guidance, with official documentation links. Tool interfaces and behavior may change; follow the version actually installed.
+
+The existing course includes **169 teaching lessons in 21 units**, **122 readings**, and **22 prediction challenges**. The latest expansion adds six MongoDB, six Redis and twelve module/tooling readings. Database, shell and deployment examples describe a native development environment; they do not add database servers, cgo, arbitrary shell execution or guest network sockets to the app's WASI sandbox.

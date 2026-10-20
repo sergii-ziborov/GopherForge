@@ -22,9 +22,17 @@ const course = JSON.parse(
 const posts = JSON.parse(
   await readFile(new URL("../src/content/posts.json", import.meta.url), "utf8"),
 );
+const interview = JSON.parse(
+  await readFile(
+    new URL("../src/content/interview.json", import.meta.url),
+    "utf8",
+  ),
+);
 const paths = [
   "/",
   "/learn",
+  "/interview",
+  ...interview.questions.map((q) => `/interview/${q.id}`),
   "/architectures",
   "/blog",
   "/updates",

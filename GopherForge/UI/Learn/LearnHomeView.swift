@@ -13,6 +13,7 @@ struct LearnHomeView: View {
     /// meant a lesson marked complete changed nothing anybody could see until
     /// the app was relaunched.
     @Environment(LearnProgress.self) private var progress
+    @State private var learningTab = 0
     @State private var openedScreen: LaunchOptions.Screen?
     /// Held by identifier rather than by value: a `Lesson` carries its starter
     /// source and its hidden test, and a navigation destination wants
@@ -47,6 +48,20 @@ struct LearnHomeView: View {
     }
 
     var body: some View {
+        VStack(spacing: 0) {
+            Picker("Learning area", selection: $learningTab) {
+                Text("Course").tag(0)
+                Text("Interview").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 18).padding(.vertical, 8)
+            .accessibilityIdentifier("learn.area")
+            if learningTab == 1 { InterviewPrepView() } else { course }
+        }
+        .navigationTitle("Learn")
+    }
+
+    private var course: some View {
         ScrollView {
             // Plain, so the unit rail below can be plain too. Laziness here
             // bought nothing — this stack has five children — and it cost the

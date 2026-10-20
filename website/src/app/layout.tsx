@@ -35,6 +35,7 @@ export default function RootLayout({
           </Link>
           <nav aria-label="Main">
             <Link href="/learn">Learn Go</Link>
+            <Link href="/interview">Interview</Link>
             <Link href="/blog">Field notes</Link>
             <Link href="/updates">Updates</Link>
             <a className="nav-app" href={appStore}>
@@ -57,6 +58,7 @@ export default function RootLayout({
           <div>
             <h2>Explore</h2>
             <Link href="/learn">Course</Link>
+            <Link href="/interview">Interview</Link>
             <Link href="/blog">Field notes</Link>
             <Link href="/updates">Version history</Link>
             <a href={github}>GitHub</a>

@@ -106,3 +106,29 @@ test("learning directions contain every native unit exactly once", async () => {
     assert.ok(d.units.length > 0);
   }
 });
+test("interview guides and computed traces match the bundled native bank", async () => {
+  const bank = await read("../src/content/interview.json");
+  assert.deepEqual(
+    bank,
+    await read("../../GopherForge/Resources/InterviewPrep.json"),
+  );
+  assert.equal(bank.questions.length, 88);
+  assert.equal(new Set(bank.questions.map((q) => q.id)).size, 88);
+  assert.equal(bank.demonstrations.length, 8);
+  assert.equal(bank.demonstrations.flatMap((d) => d.cases).length, 24);
+  for (const q of bank.questions) {
+    assert.ok(q.answerPoints.length >= 3, q.id);
+    assert.ok(q.solution.length > 80, q.id);
+    assert.ok(q.trap && q.followUp, q.id);
+    assert.ok(bank.topics.some((t) => t.id === q.topic));
+    assert.ok(q.level >= 1 && q.level <= 4);
+  }
+  for (const d of bank.demonstrations)
+    for (const c of d.cases) {
+      assert.ok(c.result);
+      assert.ok(c.steps.length);
+      for (const s of c.steps)
+        for (const r of s.rows)
+          assert.ok(r.active.every((i) => i >= 0 && i < r.values.length));
+    }
+});
