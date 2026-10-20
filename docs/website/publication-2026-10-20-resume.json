@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-20T12:01:22.379430+00:00",
+  "url": "https://gopherforge.app/interview",
+  "sourceCommit": "d514bd8",
+  "imageDigest": "sha256:6bdb1f1cc5f13752468e1702e0cce8efdd9292167f0899aaa6282b02b0ad95e6",
+  "registryManifest": "sha256:bb00e0dc1430e75b72422ccb34fe6b1b8771b573700af50240f6bb02229740eb",
+  "deploymentJob": "gopherforge-d514bd8-resume-deploy-20261020",
+  "deploymentState": "succeeded",
+  "registryJob": "gopherforge-d514bd8-resume-registry-20261020",
+  "registryState": "succeeded",
+  "releasePath": "/srv/apps/gopherforge/releases/d514bd8",
+  "webTests": {
+    "passed": 14,
+    "failed": 0
+  },
+  "localSmoke": {
+    "pages": 293,
+    "internalLinksAndAnchors": "passed",
+    "unknownLesson": 404,
+    "health": "passed",
+    "sitemap": "passed",
+    "checkedAt": "2026-10-20T11:23:09.193Z"
+  },
+  "publicSmoke": {
+    "pages": 293,
+    "internalLinksAndAnchors": "passed",
+    "unknownLesson": 404,
+    "health": "passed",
+    "sitemap": "passed",
+    "checkedAt": "2026-10-20T11:28:07.849Z"
+  },
+  "publicHTML": {
+    "sharedCourseForest": true,
+    "oldInterviewCardGrid": false,
+    "oneTimeUSPrice": "6.99 USD"
+  },
+  "bookmarkStorage": "gopherforge.study.v1",
+  "existingCompletionAndAssessmentKeysPreserved": true,
+  "localOnly": true,
+  "registrationRequired": false,
+  "restartPolicy": "unless-stopped",
+  "visualVerification": {
+    "state": "passed-desktop",
+    "browser": "Safari",
+    "checks": [
+      "New Interview map and shared Learn Go controls render",
+      "New tab on the home page shows the last interview title and Continue learning",
+      "Continue opens the saved #exercise section",
+      "Understood assessment survives opening the guide in the new tab",
+      "Temporary assessment restored to its original unmarked state",
+      "Map shows Continue and Your saved place after returning"
+    ],
+    "evidence": [
+      "build/continue40/public-interview-map.png",
+      "build/continue40/public-home-continue.png"
+    ],
+    "limitations": [
+      "Native browser automation was unavailable; Safari was checked through native accessibility. A later attempt to scroll and capture the branch view reported noWindowsAvailable; the saved top-of-map and home captures are the completed screenshot evidence. No new mobile-browser visual check was performed."
+    ]
+  },
+  "nativeChanges": {
+    "publication": "next build after 39",
+    "appStore39State": "WAITING_FOR_REVIEW",
+    "appStore39Modified": false,
+    "verification": {
+      "result": "Passed",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "unitTests": 15,
+      "uiTests": 1,
+      "device": "iPhone 13 simulator, iOS 26.5",
+      "resultBundle": "build/continue40/resume-warm-phone.xcresult",
+      "screenshot": "build/continue40/native-attachments/4852D475-EB31-431A-ABB0-37B00E0573F6.png"
+    },
+    "sourceCommit": "c9a1e80",
+    "firstAttempt": {
+      "result": "environment failure before tests",
+      "reason": "Simulator system shell failed with Host is down / invalid connectionUUID. Own test simulator was booted, then the built binaries passed without source changes."
+    }
+  },
+  "containerHealth": "healthy",
+  "reactReview": {
+    "storageAfterHydration": true,
+    "effectListenersCleanedUp": true,
+    "deferredSearch": true,
+    "nativeAccessibleBranchControls": true,
+    "existingProgressKeysRetained": true,
+    "noClientAnalyticsAdded": true
+  }
+}
