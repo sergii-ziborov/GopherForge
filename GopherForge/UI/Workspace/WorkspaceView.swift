@@ -146,11 +146,18 @@ struct WorkspaceView: View {
                 .padding(.vertical, 6)
             }
 
-            if let terminal {
+            // The initial library read can finish after the shell appears.
+            // Do not offer pane controls before open() establishes the project:
+            // its projectGeneration reset would otherwise undo an early tap.
+            if let terminal, workspace.project != nil {
                 workspaceArea(terminal: terminal)
                     .ignoresSafeArea(isCompactPhoneLandscape ? .container : [], edges: .trailing)
+            } else if let error = workspace.saveError {
+                ContentUnavailableView("Project unavailable", systemImage: "folder.badge.questionmark", description: Text(error))
             } else {
-                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView("Opening project…")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .accessibilityIdentifier("workspace.openingProject")
             }
             if isCompactPhoneLandscape || UIDevice.current.userInterfaceIdiom == .pad,
                let progress = workspace.downloadProgress, !workspace.showsDownloadSheet {
