@@ -148,7 +148,8 @@
     "finalSnapshotTimeoutEvidence": "build/interview39/landscape-ready.xcresult",
     "unlockedFinalEvidence": "build/interview39/fix-phone-unlocked.xcresult",
     "limitation": "The final two-orientation UI rerun did not complete cleanly; the second orientation hit a UI query timeout. iPad11 simulator setup stalled; its store images inherit the verified iPad13 set using Apple automatic scaling.",
-    "appSourceCommit": "477bf2e"
+    "appSourceCommit": "477bf2e",
+    "diagnosticScreenshotLimitation": "The final landscape diagnostic bitmap contained rotated/cropped content and is not used as reliable visual proof or as an App Store screenshot. The timeout and this capture remain in the result bundle. This final diagnostic is not counted as a passed full rotation run."
   },
   "iPad11StoreImages": {
     "checkedAt": "2026-10-20T10:17:51.502586+00:00",
