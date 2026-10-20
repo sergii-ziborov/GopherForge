@@ -41,21 +41,25 @@
   "restartPolicy": "unless-stopped",
   "visualVerification": {
     "state": "passed-desktop",
-    "browser": "Safari",
+    "browser": "Safari and ChatGPT in-app browser",
+    "inAppViewport": { "width": 711, "height": 853 },
     "checks": [
       "New Interview map and shared Learn Go controls render",
       "New tab on the home page shows the last interview title and Continue learning",
       "Continue opens the saved #exercise section",
       "Understood assessment survives opening the guide in the new tab",
       "Temporary assessment restored to its original unmarked state",
-      "Map shows Continue and Your saved place after returning"
+      "Map shows Continue and Your saved place after returning",
+      "In-app browser Continue learning opens /interview/language.values#exercise",
+      "In-app browser tree renders readable branches and highlights Your saved place"
     ],
     "evidence": [
       "build/continue40/public-interview-map.png",
-      "build/continue40/public-home-continue.png"
+      "build/continue40/public-home-continue.png",
+      "build/continue40/public-interview-tree-iab.png"
     ],
     "limitations": [
-      "Native browser automation was unavailable; Safari was checked through native accessibility. A later attempt to scroll and capture the branch view reported noWindowsAvailable; the saved top-of-map and home captures are the completed screenshot evidence. No new mobile-browser visual check was performed."
+      "Safari was checked through native accessibility. The later in-app browser check completed the branch-view screenshot at the existing 711 × 853 viewport. No new mobile-device browser visual check was performed."
     ]
   },
   "nativeChanges": {
