@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-21T16:48:11.956238+00:00",
+  "websiteSourceCommit": "96e6ae4",
+  "imageDigest": "sha256:defdd182d8aeaf5e0d07dca2bef9876dc5b9037a4fd33a9f7ee41d9bfbd03bea",
+  "hostwatchJob": "gopherforge-review43-96e6ae4-20261021",
+  "deploymentState": "succeeded",
+  "nativeVersion": "1.1.5",
+  "nativeBuild": 43,
+  "nativeState": "WAITING_FOR_REVIEW",
+  "restartPolicyRestored": true,
+  "communityCacheRestored": true,
+  "publicChecks": [
+    {
+      "path": "/updates",
+      "status": 200
+    },
+    {
+      "path": "/learn",
+      "status": 200
+    },
+    {
+      "path": "/interview",
+      "status": 200
+    },
+    {
+      "path": "/news/feed",
+      "status": 200
+    },
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200
+    }
+  ],
+  "browserVerified": true,
+  "screenshot": "docs/screenshots/review43-website.jpg"
+}

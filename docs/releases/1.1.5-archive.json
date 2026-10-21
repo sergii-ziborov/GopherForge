@@ -1,9 +1,9 @@
 {
   "version": "1.1.5",
-  "build": "42",
-  "appSourceCommit": "3caae13",
-  "sizeBytes": 59504075,
-  "ipaSHA256": "d4af855aff7665a407664ff8cd5214aad601c5f55b6a3456691d83d46790fd14",
+  "build": "43",
+  "appSourceCommit": "8f32092",
+  "sizeBytes": 59504085,
+  "ipaSHA256": "8473af7e05a9750b35542774286faef01fcc0f71af5ad470dd156da8bda43fd5",
   "minimumOSVersion": "18.0",
   "deviceFamily": [
     1,

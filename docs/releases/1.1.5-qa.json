@@ -1,21 +1,35 @@
 {
+  "checkedAt": "2026-10-21T16:25:19.492592+00:00",
   "version": "1.1.5",
-  "build": "42",
-  "appSourceCommit": "3caae13",
+  "build": "43",
+  "appSourceCommit": "8f32092",
   "result": "Passed",
-  "passedTests": 2,
+  "passedTests": 6,
   "failedTests": 0,
   "skippedTests": 0,
-  "verification": "Root headings absent and space reclaimed; Course, Interview, Project library and Third-Party Library keep visible Back navigation. Existing progress and content unchanged.",
-  "initialRun": "The phone retry removed a test-only forced Course preference; the iPad retry used the existing adaptive tab selector for its floating system tabs. Both full flows passed after correcting the test harness.",
   "devices": [
-    "iPhone 13 / iOS 26.5",
-    "iPad 11 / iOS 26.5"
+    "iPhone 13 / iOS 26.5"
   ],
-  "uiTests": [
-    "No root navigation bar for Projects, Learn or Settings; their controls occupy the reclaimed header space",
-    "Course Continue, Interview Continue, Project library and Third-Party Library retain tappable Back navigation on both devices"
+  "checks": [
+    "Continue reopens the saved interview after relaunch",
+    "Interview self-assessment persists independently of lesson completion",
+    "Course Continue reopens a completed reading after relaunch",
+    "Bookmarks survive a fresh progress-store instance without changing completion",
+    "History trimming preserves successful completion and compiler proof after reopening",
+    "Projects, Learn and Settings reclaim heading space; Course, Interview, Project library and Third-Party Library retain Back navigation"
   ],
-  "progressStorage": "Existing bookmark, completion and self-assessment keys retained; no data migration.",
-  "priorRegression": "Build 41 passed 25 learning, interview, content and progress checks. Build 42 only removes duplicate root headings; bundled learning resources match the repository and retain eight agent guides."
+  "runs": [
+    {
+      "bundle": "phone.xcresult",
+      "acceptedPassedTests": 2,
+      "initialFailure": "Tab-root flow did not reach Settings after its tap while the Mac was locked. Entire root flow repeated successfully, with no app/test change."
+    },
+    {
+      "bundle": "phone-confirm.xcresult",
+      "passedTests": 4,
+      "failedTests": 0
+    }
+  ],
+  "progressStorage": "Bookmark, completion and assessment storage keys and formats unchanged. Build 43 only increments the build number from build 42; app behavior and bundled resources are identical.",
+  "priorTabletQA": "The identical native UI in build 42 passed the complete root-navigation flow on iPad 11; build 43 refreshes screenshots on iPad 13 as well."
 }

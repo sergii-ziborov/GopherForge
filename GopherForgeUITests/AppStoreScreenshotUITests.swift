@@ -64,15 +64,25 @@ final class AppStoreScreenshotUITests: XCTestCase {
     }
 
     func testCaptureInterviewReleaseScreenshots() {
-        launch(section: "learn")
-        let area = app.segmentedControls["learn.area"]
-        XCTAssertTrue(area.waitForExistence(timeout: 10))
-        area.buttons["Course"].tap()
-        XCTAssertTrue(app.buttons["learn.continue"].waitForExistence(timeout: 10))
-        captureNativeDisplayFrame("03-course-build41")
-        area.buttons["Interview"].tap()
-        XCTAssertTrue(app.buttons["interview.algorithms"].waitForExistence(timeout: 10))
-        captureNativeDisplayFrame("08-interview-build41")
+        // Launch each area explicitly: captures must not depend on a previous
+        // test's saved tab or a simulator delivering a tap during a transition.
+        for (value, label, ready, image) in [
+            ("0", "Course", "learn.continue", "03-course-current"),
+            ("1", "Interview", "interview.algorithms", "08-interview-current")
+        ] {
+            app.terminate()
+            app.launchArguments = [
+                "-GopherForgeSection", "learn", "-learning.lastArea.v1", value,
+                "-appearanceMode", "light", "-AppleLanguages", "(en)",
+                "-AppleLocale", "en_US"
+            ]
+            app.launch()
+            let area = app.segmentedControls["learn.area"]
+            XCTAssertTrue(area.waitForExistence(timeout: 20))
+            XCTAssertTrue(area.buttons[label].isSelected)
+            XCTAssertTrue(app.buttons[ready].waitForExistence(timeout: 10))
+            captureNativeDisplayFrame(image)
+        }
     }
 
     func testCaptureDataStoreReleaseScreenshots() {
@@ -579,9 +589,9 @@ final class AppStoreScreenshotUITests: XCTestCase {
                    withVelocity: .slow, thenHoldForDuration: 0.3)
     }
 
-    /// XCTest currently captures the inactive outer display on Duo. The host
-    /// screenshot driver uses this marker to capture the enumerated inner
-    /// display with public simctl while the verified UI remains unchanged.
+    /// XCTest may capture Duo's outer display. An inner-display host capture
+    /// must select the enumerated active screen and reject a blank surface.
+    /// Keep app.screenshot as native evidence of the tested UI as well.
     private func captureNativeDisplayFrame(_ name: String) {
         // A view can exist while its navigation/rotation animation is still
         // committing to the native framebuffer.

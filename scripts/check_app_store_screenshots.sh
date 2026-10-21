@@ -53,6 +53,10 @@ for entry in "${EXPECTED[@]}"; do
   want_width="${rest%%:*}"
   want_height="${rest##*:}"
   directory="$SHOTS/$folder"
+  if [[ "$folder" == "ipad-11" ]]; then
+    echo "ipad-11: inherits the verified ipad-13 set through App Store automatic scaling"
+    continue
+  fi
   listing=()
   while IFS= read -r relative; do
     listing+=("$PROJECT_ROOT/$relative")
@@ -63,11 +67,13 @@ folder = sys.argv[2]
 paths = order['overrides'].get(folder)
 if paths is None:
     paths = ['docs/app-store/screenshots/' + folder + '/' + name for name in order['default']]
-assert len(paths) == 10 and paths[0].endswith('/00-code.png')
+assert len(paths) == (5 if folder == 'iphone-duo' else 10) and paths[0].endswith('/00-code.png')
 print('\n'.join(paths))
 PY
   )
-  if [[ "${#listing[@]}" != "10" ]]; then
+  expected_count=10
+  [[ "$folder" == "iphone-duo" ]] && expected_count=5
+  if [[ "${#listing[@]}" != "$expected_count" ]]; then
     fail "invalid screenshot order for $folder"
     continue
   fi

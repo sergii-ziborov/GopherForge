@@ -1,149 +1,178 @@
 {
   "version": "1.1.5",
-  "build": "41",
-  "appSourceCommit": "a5fc9f8",
+  "build": "43",
+  "appSourceCommit": "8f32092",
+  "captureDriverSHA256": "f8a55460038a9b464be5ecf4b593f36b2459e67387e6863806d3e913ba906c22",
   "captured": [
     {
       "profile": "iphone-6.9",
       "area": "03-course",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1320,
         2868
       ],
-      "blueHeroPixelsInThumbnail": 10395,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "efb468dd05fd0ea501d6c2005279ac554d56d577e478f72fbd142f820a9c9408"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "de5333043309da667fc1126051536dd185cb46f79964aa2dbf56f79af71fee84",
+      "blueHeroPixelsInThumbnail": 10092
     },
     {
       "profile": "iphone-6.9",
       "area": "08-interview",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1320,
         2868
       ],
-      "blueHeroPixelsInThumbnail": 10503,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "aeb5f14f46cbfa2caa153f8d6eb65ae0879cb3ec4c29f24b909a18535f592ad7"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "64a6bf56a262d1e8c378a8915237858bb3a3cf770b14cacd800248185edab688",
+      "blueHeroPixelsInThumbnail": 10177
     },
     {
       "profile": "ipad-13",
       "area": "03-course",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         2064,
         2752
       ],
-      "blueHeroPixelsInThumbnail": 5347,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "f5b6cdec51ac80d0d9ea497875a4681b7d69b08d11cd74c5f9ed52e99bd85b1c"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "dc6701db8c3c21664bf07f7025a4c80f7612b815b94fe954f8544d9751168717",
+      "blueHeroPixelsInThumbnail": 5446
     },
     {
       "profile": "ipad-13",
       "area": "08-interview",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         2064,
         2752
       ],
-      "blueHeroPixelsInThumbnail": 5367,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "6eefd5871a2d56881db850fee62f2712e99ca7a5e01766a6bf602838254fd772"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "170dc5b6e8f4e8fa45147f75d8a378f27bfea2a1ec9d3f6fd9534905f587e8da",
+      "blueHeroPixelsInThumbnail": 5474
     },
     {
       "profile": "iphone-6.5",
       "area": "03-course",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1284,
         2778
       ],
-      "blueHeroPixelsInThumbnail": 10336,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "64648fd109bc66a8dce6775484116da8e12de57893792948116e1ec48d205130"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "32309a800997977e5216e1c265c36d78a8efca8f5ccb73e46eb12de225dadf8b",
+      "blueHeroPixelsInThumbnail": 10794
     },
     {
       "profile": "iphone-6.5",
       "area": "08-interview",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1284,
         2778
       ],
-      "blueHeroPixelsInThumbnail": 10433,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "2e4ce5c750c5a6828600c024c570b848942d4fd34f544af640439ee69548424d"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "97df74eaf40a75d84322184d82045fca5796922f8b37fa4c8cae8acd06e12512",
+      "blueHeroPixelsInThumbnail": 10902
     },
     {
       "profile": "iphone-6.3",
       "area": "03-course",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1206,
         2622
       ],
-      "blueHeroPixelsInThumbnail": 11207,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "e37c58e70f73a6fdeba188dcadd4a9155f267c7764afd9db61f13b923cb56147"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "b2894fef2937e6a81584b1e656234ad8428fc46d727341ad48430b7a0fd2e98c",
+      "blueHeroPixelsInThumbnail": 10849
     },
     {
       "profile": "iphone-6.3",
       "area": "08-interview",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1206,
         2622
       ],
-      "blueHeroPixelsInThumbnail": 11211,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "4ed26dc2222f337f679396079a1920c43f2be413052c1271ef676a63ecc7f128"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "90ca374cf42e38b4847c960214a7b508159d61e8c7b35ec9534bc1c4e74db7a9",
+      "blueHeroPixelsInThumbnail": 10965
     },
     {
       "profile": "iphone-6.1",
       "area": "03-course",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1170,
         2532
       ],
-      "blueHeroPixelsInThumbnail": 11515,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "8556542f7a010c7a8f7da0e06932a68cc6c136833e0a305237c622794acabea7"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "17f3f5f78581d26d79d7abbdd6d4781b7ffbc5995bdc3bd1a77ae405d27be409",
+      "blueHeroPixelsInThumbnail": 11379
     },
     {
       "profile": "iphone-6.1",
       "area": "08-interview",
-      "build": "41",
+      "build": "43",
       "dimensions": [
         1170,
         2532
       ],
-      "blueHeroPixelsInThumbnail": 11500,
-      "method": "Installed build 41; native app launched in the requested learning area; native framebuffer capture",
-      "pngSHA256": "53764682619d09a4e09ac45ef02d585dc0c5b40ffa22f7dcee0887ec54638de7"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "be25d5f08230d729432e2c8a824088c53690baa26ae5f80ba451a3fa8024f3ee",
+      "blueHeroPixelsInThumbnail": 11498
+    },
+    {
+      "profile": "iphone-duo",
+      "area": "03-course",
+      "build": "43",
+      "dimensions": [
+        1398,
+        2034
+      ],
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "e40cfb6575795e452b65b591e42843d4c1561634ca596a42bb9932c334a415ea",
+      "blueHeroPixelsInThumbnail": 11723,
+      "display": "Native outer-display capture, 1398 \u00d7 2034; existing open-display editor and lesson images retained"
     },
     {
       "profile": "iphone-duo",
       "area": "08-interview",
-      "build": "41",
+      "build": "43",
       "dimensions": [
-        2853,
-        2007
+        1398,
+        2034
       ],
-      "method": "Native framebuffer of installed build 41 on actual Open Duo; visually inspected",
-      "sourceSHA256": "db0109622d1348ae3c03caa5d43dd6ee5c97f03453b0468d45dbc0f8e61dd5f1",
-      "pngSHA256": "d7bf05c40a4ad629a479c5d3065c999b8779c8d2614c473e8d24be6a88181989"
+      "method": "Native app.screenshot attachment from successful XCTest capture; build 43 Gate product",
+      "appSourceCommit": "8f32092",
+      "pngSHA256": "c63acc4efc4d833699a5f2e22b65e055416a770a1d127f0b91303affc287a052",
+      "blueHeroPixelsInThumbnail": 11679,
+      "display": "Native outer-display capture, 1398 \u00d7 2034; existing open-display editor and lesson images retained"
     }
   ],
+  "updated": 12,
+  "retained": "Other editor, compiler, tests, project-library and lesson frames demonstrate unchanged features. Duo retains three open-display feature frames alongside the two new outer-display learning frames.",
   "uploaded": [
     {
       "profile": "iphone-6.1",
       "setId": "d9115d47-a113-4c04-b211-eddd7cc641c6",
       "name": "03-course",
-      "id": "34400019-5e3c-8faf-802a-2d7ee5e8ae68",
-      "replacedId": "97559fb1-2b0d-4eb4-9b33-9a1c8285bf65",
-      "md5": "978bccb84cf7064fb9db25fd815ed9b4",
+      "id": "78400019-5e3c-8faf-8003-ba1a9f30d662",
+      "replacedId": "34400019-5e3c-8faf-802a-2d7ee5e8ae68",
+      "md5": "0243186d85e9bc4920fe01678b1ffcd6",
       "size": [
         1170,
         2532
@@ -154,9 +183,9 @@
       "profile": "iphone-6.1",
       "setId": "d9115d47-a113-4c04-b211-eddd7cc641c6",
       "name": "08-interview",
-      "id": "64c00019-5e3c-8faf-800b-170b32282ff6",
-      "replacedId": "65406023-92b8-4895-a9b0-6e4571abbbb3",
-      "md5": "9b8b5bfbd476f43559fd0b9947790b33",
+      "id": "c3000019-5e3c-8faf-8028-526376ee3fc2",
+      "replacedId": "64c00019-5e3c-8faf-800b-170b32282ff6",
+      "md5": "e675894084f5df5048b0faf5972e48a2",
       "size": [
         1170,
         2532
@@ -167,9 +196,9 @@
       "profile": "iphone-6.5",
       "setId": "9f833b93-7421-4768-9c1f-ce5d8a20a4af",
       "name": "03-course",
-      "id": "d5000019-5e3c-8faf-803e-f9a294a12b33",
-      "replacedId": "e6060469-2821-4bbc-ac0b-9a9a184c0eae",
-      "md5": "b1dd631872e4d9d7937402c29ab5234e",
+      "id": "53c00019-5e3c-8faf-800d-9a48b27acf8b",
+      "replacedId": "d5000019-5e3c-8faf-803e-f9a294a12b33",
+      "md5": "a32bb50ca2664b20a00b1e73dfaf201e",
       "size": [
         1284,
         2778
@@ -180,9 +209,9 @@
       "profile": "iphone-6.5",
       "setId": "9f833b93-7421-4768-9c1f-ce5d8a20a4af",
       "name": "08-interview",
-      "id": "61400019-5e3c-8faf-800c-8e24fcd732af",
-      "replacedId": "269a862d-28d1-4f7a-be62-e0b24d0d1727",
-      "md5": "d2a4a9cc6b001fd37fc796fb3654b826",
+      "id": "c5000019-5e3c-8faf-8019-588fe7eb9caf",
+      "replacedId": "61400019-5e3c-8faf-800c-8e24fcd732af",
+      "md5": "9d4c100bca8a730b9c2d900c9acdf92c",
       "size": [
         1284,
         2778
@@ -193,9 +222,9 @@
       "profile": "iphone-6.3",
       "setId": "4bff7755-2a42-4391-adfb-cbe42ee888b7",
       "name": "03-course",
-      "id": "6f400019-5e3c-8faf-801c-0ebf3f03c0e5",
-      "replacedId": "0a96bc1f-262f-4c7c-914d-f18bb52a600d",
-      "md5": "2702994b3213d151a401f19f37f9e9b8",
+      "id": "56000019-5e3c-8faf-8012-24f7d9801f3a",
+      "replacedId": "6f400019-5e3c-8faf-801c-0ebf3f03c0e5",
+      "md5": "81f0aff5a0a3baf21ba81a1b416f9338",
       "size": [
         1206,
         2622
@@ -206,9 +235,9 @@
       "profile": "iphone-6.3",
       "setId": "4bff7755-2a42-4391-adfb-cbe42ee888b7",
       "name": "08-interview",
-      "id": "a0000019-5e3c-8faf-8029-2d380be39304",
-      "replacedId": "2e50394f-678a-4b1f-89fb-e6841bccd301",
-      "md5": "cde5b62eff9b8f7612e04ccdaca6b2a6",
+      "id": "4bc00019-5e3c-8faf-802a-f96cd808548b",
+      "replacedId": "a0000019-5e3c-8faf-8029-2d380be39304",
+      "md5": "76ff462531a787a4c2c674213a30aeb7",
       "size": [
         1206,
         2622
@@ -219,9 +248,9 @@
       "profile": "ipad-13",
       "setId": "bc17bffb-67e2-427d-ac30-9533404e5259",
       "name": "03-course",
-      "id": "30400019-5e3c-8faf-8020-70ce4b3076ff",
-      "replacedId": "e3d6c61c-e10b-4160-8d67-fc02e34a6d30",
-      "md5": "6e79c10e455edc59a97d59fffda32d79",
+      "id": "d0000019-5e3c-8faf-8036-36b8ff1ce066",
+      "replacedId": "30400019-5e3c-8faf-8020-70ce4b3076ff",
+      "md5": "580756d0537ad431bd5e8d0e55c5ec03",
       "size": [
         2064,
         2752
@@ -232,9 +261,9 @@
       "profile": "ipad-13",
       "setId": "bc17bffb-67e2-427d-ac30-9533404e5259",
       "name": "08-interview",
-      "id": "6c400019-5e3c-8faf-8031-90bceefec069",
-      "replacedId": "b635c620-4f6c-48e7-9691-0810b6c7f6bd",
-      "md5": "eba28eca31e8f5d86b02d5962663ebbe",
+      "id": "f2800019-5e3c-8faf-8012-b45f2cc6db4a",
+      "replacedId": "6c400019-5e3c-8faf-8031-90bceefec069",
+      "md5": "2591fb52346569e1ac5ffc72499cb351",
       "size": [
         2064,
         2752
@@ -244,13 +273,26 @@
     {
       "profile": "iphone-duo",
       "setId": "2dda32c1-556e-4258-9ec8-e836a4f07bae",
-      "name": "08-interview",
-      "id": "d3c00019-5e3c-8faf-8007-01741954f222",
-      "replacedId": "f9be43e1-6b55-41a0-aaf3-73b602016d36",
-      "md5": "3c0d2dd22a35e75ae17e8410e6b46087",
+      "name": "03-course",
+      "id": "98800019-5e3c-8faf-8031-30880ec607c5",
+      "replacedId": "40db88a8-9997-4e7b-868d-4ab5a12d60f0",
+      "md5": "e63253366a0739b8a8948f005d5512ee",
       "size": [
-        2853,
-        2007
+        1398,
+        2034
+      ],
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-duo",
+      "setId": "2dda32c1-556e-4258-9ec8-e836a4f07bae",
+      "name": "08-interview",
+      "id": "4e000019-5e3c-8faf-8034-96a8cdbcde49",
+      "replacedId": "d3c00019-5e3c-8faf-8007-01741954f222",
+      "md5": "90430b70ccf9c78682568969fb99b6c9",
+      "size": [
+        1398,
+        2034
       ],
       "state": "COMPLETE"
     },
@@ -258,9 +300,9 @@
       "profile": "iphone-6.9",
       "setId": "dbc991fb-6b9f-4739-a4be-2f5a3deb9c41",
       "name": "03-course",
-      "id": "24400019-5e3c-8faf-8005-732ada01978e",
-      "replacedId": "93d2c539-ca0f-4de1-aaf8-767a73c6cb16",
-      "md5": "73625a2a5ad8fd57ec0ff3edbbc0aeaf",
+      "id": "93000019-5e3c-8faf-803c-56221a882cad",
+      "replacedId": "24400019-5e3c-8faf-8005-732ada01978e",
+      "md5": "3ccc560cceb865741b56b7c730b2b8ad",
       "size": [
         1320,
         2868
@@ -271,15 +313,14 @@
       "profile": "iphone-6.9",
       "setId": "dbc991fb-6b9f-4739-a4be-2f5a3deb9c41",
       "name": "08-interview",
-      "id": "8f400019-5e3c-8faf-8036-41ba8b46ec05",
-      "replacedId": "72409c48-6d52-45ad-ad0c-c351e816d137",
-      "md5": "4c223bac487827da0eeb3eb961da5405",
+      "id": "f3400019-5e3c-8faf-8027-f908c89d9d3e",
+      "replacedId": "8f400019-5e3c-8faf-8036-41ba8b46ec05",
+      "md5": "f78f9d318729d37f717c78d64360c3ff",
       "size": [
         1320,
         2868
       ],
       "state": "COMPLETE"
     }
-  ],
-  "retained": "Duo Course screenshot is accurate because its rendering is unchanged. Other retained images show unchanged features."
+  ]
 }

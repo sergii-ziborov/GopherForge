@@ -16,13 +16,14 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 21 October 2026 | Changes |
 | --- | --- | --- |
-| **1.1.5 (43)** | Release candidate; submission receipt below records the final Apple state | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
-| **1.1.5 (42)** | In App Review; being replaced by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
+| **1.1.5 (43)** | Waiting for App Review; Internal QA TestFlight | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
+| **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
 | **1.1.4 (39)** | Available on the App Store | MongoDB/Redis and production tooling, 88 interview guides, eight interactive algorithm labs, transparent scroll endings. |
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.1.4 (39)**. The **1.1.5** update adds Continue
+The store currently distributes **1.1.4 (39)**. **1.1.5 (43)** is in TestFlight and waiting for App Review as of
+21 October 2026, 16:46 UTC. The update adds Continue
 and aligns Course and Interview presentation. TestFlight access is private;
 there is no public invitation link. Automatic publication after App Review
 approval is enabled. Release status is a dated snapshot, not a live indicator.
@@ -99,12 +100,20 @@ Native code and lessons remove the lower scroll-edge backdrop and keep extra
 end space inside scrollable content. This adds no source lines and preserves
 the embedded-versus-full-screen lesson scrolling behavior.
 
+### Interview preparation and coding agents
+
+Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **88 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
+
+Eight algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging and minimum-coin dynamic programming. Choose among **24 scenarios** and step through **111 computed states**, including duplicate, empty, unreachable and greedy-counterexample cases. These are deterministic teaching traces, with highlighted state and published Go implementations. They do not execute arbitrary web input or send code to a server. `python3 scripts/verify_interview_algorithms.py` compiles the eight published examples and checks boundary cases and 500 randomized reference comparisons with Go's race detector.
+
+Interview self-assessment is stored locally, independently from lesson completion and compiler verification. Eight **Go with coding agents** guides cover Claude Code, Codex and Cursor, repository context, generated API and dependency verification, permissions and prompt injection, concurrent-code review and independent engineering judgment. The app does not connect to AI providers; these guides teach workflows in your own development environment, with official documentation links. Tool interfaces and behavior may change; follow the version actually installed.
+
 ### Course and Interview screenshots
 
 Current native screens, captured from the app rather than reconstructed mockups:
 
-<img src="docs/app-store/screenshots/iphone-6.9/03-course.png" width="300" alt="Course progress card, Continue and study actions without a duplicate Learn heading">
-<img src="docs/app-store/screenshots/iphone-6.9/08-interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
+<img src="docs/screenshots/root43-course-continue.png" width="300" alt="Course progress card, Continue and study actions without a duplicate Learn heading">
+<img src="docs/screenshots/root43-interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
 
 ### Next.js website
 
@@ -130,16 +139,6 @@ Lovable. [Deployment and recovery](website/README.md).
 [Browse the course](https://gopherforge.app/learn) ·
 [Prepare for interviews](https://gopherforge.app/interview) ·
 [App screenshots](docs/app-store/screenshots)
-
-### Interview preparation and coding agents
-
-Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **88 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
-
-Eight algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging and minimum-coin dynamic programming. Choose among **24 scenarios** and step through **111 computed states**, including duplicate, empty, unreachable and greedy-counterexample cases. These are deterministic teaching traces, with highlighted state and published Go implementations. They do not execute arbitrary web input or send code to a server. `python3 scripts/verify_interview_algorithms.py` compiles the eight published examples and checks boundary cases and 500 randomized reference comparisons with Go's race detector.
-
-Interview self-assessment is stored locally, independently from lesson completion and compiler verification. The app does not connect to AI providers: agent workflows are educational guidance, with official documentation links. Tool interfaces and behavior may change; follow the version actually installed.
-
-The existing course includes **169 teaching lessons in 21 units**, **122 readings**, and **22 prediction challenges**. The latest expansion adds six MongoDB, six Redis and twelve module/tooling readings. Database, shell and deployment examples describe a native development environment; they do not add database servers, cgo, arbitrary shell execution or guest network sockets to the app's WASI sandbox.
 
 ## Packages and offline work
 

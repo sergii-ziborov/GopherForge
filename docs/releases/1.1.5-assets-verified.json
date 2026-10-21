@@ -1,8 +1,8 @@
 {
-  "updatedScreenshots": 0,
-  "checkedAt": "2026-10-21T08:08:20.481215+00:00",
+  "updatedScreenshots": 12,
+  "checkedAt": "2026-10-21T16:46:05.005618+00:00",
   "version": "1.1.5",
-  "build": "42",
+  "build": "43",
   "versionId": "ea313694-a91c-4447-807a-d56979d93d65",
   "screenshots": 55,
   "sets": [
@@ -37,6 +37,81 @@
       "deliveryState": "COMPLETE"
     }
   ],
+  "screenshotPlacements": 55,
+  "freshScreenshotPlacements": [
+    {
+      "placementGroup": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "fileName": "iphone-6.1-03-course-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "fileName": "iphone-6.1-08-interview-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "fileName": "iphone-6.5-03-course-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "fileName": "iphone-6.5-08-interview-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "fileName": "iphone-6.3-03-course-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "fileName": "iphone-6.3-08-interview-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPAD_13_PROFILE",
+      "fileName": "ipad-13-03-course-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPAD_13_PROFILE",
+      "fileName": "ipad-13-08-interview-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DUO_PROFILE",
+      "fileName": "iphone-duo-03-course-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DUO_PROFILE",
+      "fileName": "iphone-duo-08-interview-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "fileName": "iphone-6.9-03-course-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "fileName": "iphone-6.9-08-interview-build43.png",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "state": "ACTIVE"
+    }
+  ],
   "headerAndSearchActive": true,
   "creative": [
     {
@@ -61,5 +136,5 @@
   "metadataMatchesSavedSource": true,
   "reviewContactComplete": true,
   "accountRequired": false,
-  "screenshotsReuse": "Feature screenshots retained from build 41; build 42 removes duplicate tab titles, while the depicted course, interview, editor and learning content remains the same. Header and Search Results remain active."
+  "screenshotsReuse": "Twelve Course and Interview screenshots recaptured from installed build 43 across six device sets. Retained feature images show unchanged editor and lesson features. Header and Search Results remain active."
 }
