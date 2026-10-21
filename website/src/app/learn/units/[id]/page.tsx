@@ -71,7 +71,7 @@ export default async function Unit({
         <h1>{u.title}</h1>
         <p className="article-lede">{u.summary}</p>
       </header>
-      <ol className="unit-lessons">
+      <ol className="unit-directory-lessons">
         {u.lessons.map((l) => (
           <li key={l.id}>
             <Link href={lessonURL(l.id)}>

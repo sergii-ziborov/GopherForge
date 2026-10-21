@@ -3168,18 +3168,18 @@ details p {
   flex-shrink: 0;
   align-self: center;
 }
-.unit-lessons {
+.unit-directory-lessons {
   list-style: none;
   padding: 0;
   counter-reset: unit;
 }
-.unit-lessons li {
+.unit-directory-lessons > li {
   position: relative;
   padding: 28px 0 28px 48px;
   border-bottom: 1px solid var(--line);
   counter-increment: unit;
 }
-.unit-lessons li:before {
+.unit-directory-lessons > li::before {
   content: counter(unit, decimal-leading-zero);
   position: absolute;
   left: 0;
@@ -3189,7 +3189,7 @@ details p {
     14px ui-monospace,
     monospace;
 }
-.unit-lessons h2 {
+.unit-directory-lessons h2 {
   font-size: 1.6rem;
   line-height: 1.2;
 }
