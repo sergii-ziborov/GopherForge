@@ -182,7 +182,7 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .navigationTitle("Settings")
+        .toolbar(.hidden, for: .navigationBar)
         .onAppear { libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder }
         .task {
             cacheByteCount = workspace.buildCacheByteCount

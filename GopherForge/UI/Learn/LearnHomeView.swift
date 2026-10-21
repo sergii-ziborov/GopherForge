@@ -58,7 +58,7 @@ struct LearnHomeView: View {
             .accessibilityIdentifier("learn.area")
             if learningTab == 1 { InterviewPrepView() } else { course }
         }
-        .navigationTitle("Learn")
+        .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             // An explicit lesson/tool deep link takes precedence over the last tab.
             if LaunchOptions.initialLessonID != nil || LaunchOptions.initialScreen != nil {
@@ -105,7 +105,6 @@ struct LearnHomeView: View {
             .frame(maxWidth: 760)
             .frame(maxWidth: .infinity)
         }
-        .navigationTitle("Learn")
         .navigationDestination(item: $openedLessonID) { lessonID in
             if let lesson = GoCourseCatalog.lesson(id: lessonID) {
                 LessonDetailView(lesson: lesson)

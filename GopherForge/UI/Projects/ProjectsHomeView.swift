@@ -140,7 +140,7 @@ struct ProjectsHomeView: View {
                 }
             }
         }
-        .navigationTitle("Projects")
+        .toolbar(.hidden, for: .navigationBar)
         .fileImporter(
             isPresented: Binding(
                 get: { filePick != nil },

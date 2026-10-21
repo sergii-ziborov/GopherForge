@@ -2,6 +2,54 @@ import XCTest
 
 @MainActor
 final class InterviewPrepUITests: XCTestCase {
+    func testTabRootsReclaimHeaderSpaceAndKeepDetailNavigation() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-GopherForgeSection", "learn", "-appearanceMode", "light"]
+        app.launch()
+        let area = app.segmentedControls["learn.area"]
+        XCTAssertTrue(area.waitForExistence(timeout: 20))
+        area.buttons["Course"].tap()
+        XCTAssertLessThan(area.frame.minY, 120, "The learning selector should use the former title space")
+        XCTAssertFalse(app.navigationBars.firstMatch.isHittable)
+        let course = XCTAttachment(screenshot: app.screenshot())
+        course.name = "learn-without-duplicate-heading"; course.lifetime = .keepAlways; add(course)
+        app.buttons["learn.continue"].tap()
+        returnFromDetail(in: app)
+        area.buttons["Interview"].tap()
+        let interviewContinue = app.buttons["interview.continue"]
+        XCTAssertTrue(interviewContinue.waitForExistence(timeout: 10))
+        interviewContinue.tap()
+        returnFromDetail(in: app)
+
+        app.tabBars.buttons["Projects"].tap()
+        let library = app.buttons["projects.library"]
+        XCTAssertTrue(library.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.navigationBars.firstMatch.isHittable)
+        let projects = XCTAttachment(screenshot: app.screenshot())
+        projects.name = "projects-without-duplicate-heading"; projects.lifetime = .keepAlways; add(projects)
+        library.tap()
+        returnFromDetail(in: app)
+
+        app.tabBars.buttons["Settings"].tap()
+        let theme = app.segmentedControls["settings.appearance"]
+        XCTAssertTrue(theme.waitForExistence(timeout: 10))
+        XCTAssertLessThan(theme.frame.minY, 160)
+        XCTAssertFalse(app.navigationBars.firstMatch.isHittable)
+        let settings = XCTAttachment(screenshot: app.screenshot())
+        settings.name = "settings-without-duplicate-heading"; settings.lifetime = .keepAlways; add(settings)
+        let notices = app.buttons["settings.acknowledgements"]
+        XCTAssertTrue(app.waitForElement(notices, scrollingUpTo: 12)); notices.tap()
+        returnFromDetail(in: app)
+    }
+
+    private func returnFromDetail(in app: XCUIApplication) {
+        let back = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Detail screens must retain their navigation and Back button")
+        XCTAssertTrue(back.isHittable)
+        back.tap()
+    }
+
     func testInterviewAreaOpensAndStepsThroughBoundaryCases() {
         let app = XCUIApplication()
         app.launchArguments = ["-GopherForgeSection", "learn"]
