@@ -1,29 +1,21 @@
 {
   "version": "1.1.5",
-  "build": "41",
-  "appSourceCommit": "a5fc9f8",
-  "device": "iPhone 13 / iOS 26.5",
+  "build": "42",
+  "appSourceCommit": "3caae13",
   "result": "Passed",
-  "passedTests": 25,
+  "passedTests": 2,
   "failedTests": 0,
   "skippedTests": 0,
+  "verification": "Root headings absent and space reclaimed; Course, Interview, Project library and Third-Party Library keep visible Back navigation. Existing progress and content unchanged.",
+  "initialRun": "The phone retry removed a test-only forced Course preference; the iPad retry used the existing adaptive tab selector for its floating system tabs. Both full flows passed after correcting the test harness.",
+  "devices": [
+    "iPhone 13 / iOS 26.5",
+    "iPad 11 / iOS 26.5"
+  ],
   "uiTests": [
-    "Continue reopens the saved interview after relaunch",
-    "Course and Interview header parity and topic navigation",
-    "Algorithm boundary trace",
-    "Interview self-assessment persists",
-    "Search, empty results and reset filters"
+    "No root navigation bar for Projects, Learn or Settings; their controls occupy the reclaimed header space",
+    "Course Continue, Interview Continue, Project library and Third-Party Library retain tappable Back navigation on both devices"
   ],
-  "catalogTests": 3,
-  "initialRun": "Four UI checks passed. The empty-result test expected an exact system title; the real system label includes the query. Corrected the test predicate and reran it successfully.",
   "progressStorage": "Existing bookmark, completion and self-assessment keys retained; no data migration.",
-  "courseRegressionTests": 17,
-  "courseRegression": "Course Continue reopens a completed reading after relaunch; lesson completion/bookmark storage tests passed.",
-  "visualVerification": [
-    "iPhone light and dark",
-    "iPad 13 light",
-    "Open Duo light"
-  ],
-  "nativeImageCapture": "Install build 41 and capture its actual native framebuffer; XCTest comparison attachments verify Course/Interview alignment.",
-  "supersedesBuild": "40"
+  "priorRegression": "Build 41 passed 25 learning, interview, content and progress checks. Build 42 only removes duplicate root headings; bundled learning resources match the repository and retain eight agent guides."
 }

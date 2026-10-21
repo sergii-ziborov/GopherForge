@@ -1,8 +1,8 @@
 {
-  "updatedScreenshots": 11,
-  "checkedAt": "2026-10-20T20:24:40.323426+00:00",
+  "updatedScreenshots": 0,
+  "checkedAt": "2026-10-21T08:08:20.481215+00:00",
   "version": "1.1.5",
-  "build": "41",
+  "build": "42",
   "versionId": "ea313694-a91c-4447-807a-d56979d93d65",
   "screenshots": 55,
   "sets": [
@@ -61,6 +61,5 @@
   "metadataMatchesSavedSource": true,
   "reviewContactComplete": true,
   "accountRequired": false,
-  "screenshotsReuse": "Eleven Course and Interview screenshots recaptured from build 41 across all six display sets. Duo Course screenshot retained because the Course rendering is unchanged. Other accurate feature screenshots retained; Header and Search Results remain active.",
-  "supersedesBuild": "40"
+  "screenshotsReuse": "Feature screenshots retained from build 41; build 42 removes duplicate tab titles, while the depicted course, interview, editor and learning content remains the same. Header and Search Results remain active."
 }

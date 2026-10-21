@@ -22,7 +22,7 @@ final class InterviewPrepUITests: XCTestCase {
         interviewContinue.tap()
         returnFromDetail(in: app)
 
-        app.tabBars.buttons["Projects"].tap()
+        app.sectionButton("Projects").tap()
         let library = app.buttons["projects.library"]
         XCTAssertTrue(library.waitForExistence(timeout: 10))
         XCTAssertFalse(app.navigationBars.firstMatch.isHittable)
@@ -31,7 +31,7 @@ final class InterviewPrepUITests: XCTestCase {
         library.tap()
         returnFromDetail(in: app)
 
-        app.tabBars.buttons["Settings"].tap()
+        app.sectionButton("Settings").tap()
         let theme = app.segmentedControls["settings.appearance"]
         XCTAssertTrue(theme.waitForExistence(timeout: 10))
         XCTAssertLessThan(theme.frame.minY, 160)
