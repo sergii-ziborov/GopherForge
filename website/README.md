@@ -52,7 +52,11 @@ The production profile uses UID/GID 10001, 256 MiB, half a CPU and loopback port
 3047. Hostwatch MCP performs digest/revision-checked deployments and health
 verification. `deploy/gopherforge-web.service`, the container's
 `unless-stopped` policy and the enabled Podman restart unit provide startup
-recovery. Reapply the restart policy after a governed container replacement.
+recovery. Reapply the restart policy after a governed container replacement. After replacement,
+restore the news cache into the new container's writable tmpfs with
+`python3 /srv/apps/gopherforge/news-feed/deliver.py /var/lib/gopherforge-news`
+on the origin. Verify the community reader shows **Feed connected**; its
+bundled saved edition is a fallback, not evidence of a live cache.
 
 For a verified prebuilt standalone release on a capacity-constrained origin,
 `deploy/Dockerfile.bundle` packages `standalone/` from the release build. It

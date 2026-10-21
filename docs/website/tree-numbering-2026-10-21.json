@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-21T14:27:59.829359+00:00",
+  "sourceCommit": "9c63539",
+  "site": "https://gopherforge.app",
+  "cause": "The numbered unit-directory list reused the same global CSS class as the Course and Interview tree lists. Its generated counter and row spacing leaked into both maps.",
+  "fix": "Give the unit directory its own class; retain the shared tree connector and single lesson-node number.",
+  "verification": {
+    "productionBuild": "passed",
+    "localLearn": "one number per tree row",
+    "localInterview": "one number per tree row",
+    "unitDirectory": "retains single generated numbering",
+    "publicLearn": "outer pseudo-element content is empty; inner 01/02/03 retained",
+    "publicInterview": "outer pseudo-element content is empty; inner 01/02/03 retained",
+    "sitemapHTTP": 200,
+    "communityFeedHTTP": 200,
+    "communityFeedCache": "live; restored after container replacement",
+    "restartPolicy": "unless-stopped"
+  },
+  "deployment": {
+    "target": "gopherforge-web",
+    "job": "gopherforge-tree-numbering-9c63539-20261021",
+    "state": "succeeded",
+    "imageDigest": "sha256:058a52110a99b0603d6e22fa4fadbf499d28dc54f88486526fbb496f36463e7e",
+    "previousImageDigest": "sha256:ff21d374f2632c61b3e5f09bf3f43eaf048485557907d591beb3574cf3f95f8f",
+    "rollbackTag": "localhost/gopherforge-web:rollback-tree-8c5a3ea"
+  },
+  "screenshots": [
+    "docs/screenshots/web-tree-numbering-learn.jpg",
+    "docs/screenshots/web-tree-numbering-interview.jpg"
+  ]
+}
