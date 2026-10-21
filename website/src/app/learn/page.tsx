@@ -36,8 +36,8 @@ export default function Learn() {
         <p className="availability">
           The web library includes the latest MongoDB, Redis and production
           tooling lessons, matching App Store {releases.public.version}. Native{" "}
-          {releases.next.version} with Continue is in TestFlight and waiting for
-          App Review. Continue already saves your lesson and section in this
+          {releases.next.version} with Continue is in TestFlight and in App
+          Review. Continue already saves your lesson and section in this
           browser. Web and app progress are stored separately.
         </p>
       </div>

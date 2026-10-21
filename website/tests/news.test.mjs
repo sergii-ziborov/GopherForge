@@ -5,9 +5,9 @@ const read = async (path) =>
   JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const news = await read("../src/content/news.json");
 const images = await read("../src/content/news-images.json");
-test("five substantive original articles have sources, interlinks and three generated assets each", async () => {
-  assert.equal(news.length, 5);
-  assert.equal(new Set(news.map((n) => n.slug)).size, 5);
+test("substantive original articles have sources, interlinks and three generated assets each", async () => {
+  assert.ok(news.length >= 10);
+  assert.equal(new Set(news.map((n) => n.slug)).size, news.length);
   for (const n of news) {
     const prose = n.sections
       .map((s) => s.title + " " + s.body)
@@ -18,8 +18,19 @@ test("five substantive original articles have sources, interlinks and three gene
     assert.ok(n.sources.every((s) => new URL(s.url).protocol === "https:"));
     assert.ok(n.related.every((slug) => news.some((x) => x.slug === slug)));
     assert.equal(new Set(n.sections.map((s) => s.id)).size, n.sections.length);
-    assert.ok(n.eventDate >= "2026-10-15" && n.eventDate <= "2026-10-20");
-    assert.equal(n.publishedAt, "2026-10-20");
+    for (const date of [
+      n.eventDate,
+      n.publishedAt,
+      n.modifiedAt,
+      n.sourceCheckedAt,
+    ]) {
+      assert.ok(Number.isFinite(Date.parse(date)), n.slug);
+      assert.ok(Date.parse(date) <= Date.now(), n.slug);
+    }
+    assert.ok(n.eventDate <= n.publishedAt, n.slug);
+    assert.ok(n.publishedAt <= n.modifiedAt, n.slug);
+    assert.ok(n.sourceCheckedAt <= n.modifiedAt, n.slug);
+    assert.ok(n.keywords.length >= 2, n.slug);
     for (const suffix of ["hero", "detail", "infographic"]) {
       const im = images[n.imagePrefix + "-" + suffix];
       assert.ok(im.width >= 1000);
@@ -29,6 +40,20 @@ test("five substantive original articles have sources, interlinks and three gene
       );
     }
   }
+});
+test("the new edition puts today’s report first and four historical events before the launch", () => {
+  const added = news.filter((n) =>
+    ["rebuild", "http", "simd", "alloc", "leaks"].includes(n.imagePrefix),
+  );
+  assert.equal(added.length, 5);
+  assert.ok(added.every((n) => n.publishedAt === "2026-10-21"));
+  assert.equal(
+    added.find((n) => n.imagePrefix === "rebuild").eventDate,
+    "2026-10-21",
+  );
+  const launch = news.find((n) => n.imagePrefix === "launch");
+  assert.equal(added.filter((n) => n.eventDate < launch.eventDate).length, 4);
+  assert.equal(launch.publishedAt, "2026-10-20");
 });
 test("full external seed carries attribution, code and publication dates without active HTML", async () => {
   const f = await read("../src/content/external-news.json");
@@ -51,5 +76,7 @@ test("sync release record matches reviewed native release receipts", async () =>
   assert.equal(c.publicAppVersion, r.public.version);
   assert.equal(c.appVersion, r.next.version + " TestFlight");
   assert.equal(r.public.version, "1.1.4");
-  assert.equal(r.next.build, 40);
+  const receipt = await read("../../docs/releases/1.1.5-submission.json");
+  assert.equal(r.next.version, receipt.version);
+  assert.equal(r.next.build, Number(receipt.build));
 });

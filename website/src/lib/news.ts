@@ -23,4 +23,12 @@ export const imageCaption: Record<string, string> = {
   dapr: "Go app → Sidecar → Service. Share one deadline budget, bound retries, use idempotency and measure failures.",
   gopls:
     "Select → Answer → Review → Apply → Test. A recommended workflow, not a universal editor feature.",
+  rebuild:
+    "Pin inputs → Build twice → Compare → Record. Matching artifacts are evidence, not a complete security audit.",
+  http: "Share client → Set deadline → Close body → Trace reuse. HTTP/1 cleanup is bounded; measure the real workload.",
+  simd: "Profile → Compare results → Benchmark → Keep fallback. CPU features and workload shape decide the result.",
+  alloc:
+    "Pin workload → Count allocations → Profile memory → Check latency. Faster allocation does not fix retained objects.",
+  leaks:
+    "Capture → Find owner → Fix exit → Test shutdown. An empty leak profile is not proof of no leaks.",
 };

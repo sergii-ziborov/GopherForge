@@ -1,0 +1,193 @@
+{
+  "checkedAt": "2026-10-21",
+  "newArticles": [
+    {
+      "slug": "go-reproducible-build-report-october-21-2026",
+      "eventDate": "2026-10-21",
+      "publishedAt": "2026-10-21",
+      "wordCount": 1915,
+      "sources": [
+        {
+          "title": "Go reproducible-build report — observed 21 October 2026",
+          "url": "https://go.dev/rebuild"
+        },
+        {
+          "title": "Perfectly Reproducible, Verified Go Toolchains",
+          "url": "https://go.dev/blog/rebuild"
+        },
+        {
+          "title": "gorebuild command reference",
+          "url": "https://pkg.go.dev/golang.org/x/build/cmd/gorebuild"
+        },
+        {
+          "title": "Go command and build flags",
+          "url": "https://pkg.go.dev/cmd/go"
+        },
+        {
+          "title": "Go Modules Reference",
+          "url": "https://go.dev/ref/mod"
+        },
+        {
+          "title": "Go toolchain selection",
+          "url": "https://go.dev/doc/toolchain"
+        },
+        {
+          "title": "Profile-guided optimization",
+          "url": "https://go.dev/doc/pgo"
+        },
+        {
+          "title": "Go security best practices",
+          "url": "https://go.dev/doc/security/best-practices"
+        }
+      ]
+    },
+    {
+      "slug": "go-1-27-http-connection-reuse",
+      "eventDate": "2026-10-14",
+      "publishedAt": "2026-10-21",
+      "wordCount": 1846,
+      "sources": [
+        {
+          "title": "Better HTTP/1 connection reuse — 14 October 2026",
+          "url": "https://go.dev/blog/http-connection-reuse"
+        },
+        {
+          "title": "net/http client and transport contracts",
+          "url": "https://pkg.go.dev/net/http"
+        },
+        {
+          "title": "HTTP request tracing",
+          "url": "https://pkg.go.dev/net/http/httptrace"
+        },
+        {
+          "title": "Context cancellation and deadlines",
+          "url": "https://pkg.go.dev/context"
+        },
+        {
+          "title": "Go httptest package",
+          "url": "https://pkg.go.dev/net/http/httptest"
+        }
+      ]
+    },
+    {
+      "slug": "go-1-27-experimental-simd-amd64-arm64-wasm",
+      "eventDate": "2026-10-02",
+      "publishedAt": "2026-10-21",
+      "wordCount": 1949,
+      "sources": [
+        {
+          "title": "Arch-specific SIMD in Go — 2 October 2026",
+          "url": "https://go.dev/blog/archsimd"
+        },
+        {
+          "title": "Go 1.27 release notes",
+          "url": "https://go.dev/doc/go1.27"
+        },
+        {
+          "title": "Go diagnostic tools",
+          "url": "https://go.dev/doc/diagnostics"
+        },
+        {
+          "title": "Go benchmarking reference",
+          "url": "https://pkg.go.dev/testing"
+        },
+        {
+          "title": "Profile-guided optimization",
+          "url": "https://go.dev/doc/pgo"
+        }
+      ]
+    },
+    {
+      "slug": "go-1-27-small-allocation-performance",
+      "eventDate": "2026-09-16",
+      "publishedAt": "2026-10-21",
+      "wordCount": 1878,
+      "sources": [
+        {
+          "title": "Size-Specialized Memory Allocation — 16 September 2026",
+          "url": "https://go.dev/blog/size-specialized-allocations"
+        },
+        {
+          "title": "Go 1.27 release notes",
+          "url": "https://go.dev/doc/go1.27"
+        },
+        {
+          "title": "A Guide to the Go Garbage Collector",
+          "url": "https://go.dev/doc/gc-guide"
+        },
+        {
+          "title": "Go testing and benchmarks",
+          "url": "https://pkg.go.dev/testing"
+        },
+        {
+          "title": "Runtime profiles and heap views",
+          "url": "https://pkg.go.dev/runtime/pprof"
+        },
+        {
+          "title": "Go command build information",
+          "url": "https://pkg.go.dev/cmd/go"
+        }
+      ]
+    },
+    {
+      "slug": "go-1-27-goroutine-leak-profiles",
+      "eventDate": "2026-09-02",
+      "publishedAt": "2026-10-21",
+      "wordCount": 1923,
+      "sources": [
+        {
+          "title": "Goroutine Leak Profiles — 2 September 2026",
+          "url": "https://go.dev/blog/goroutine-leak-profiles"
+        },
+        {
+          "title": "Go 1.27 goroutine leak profile release notes",
+          "url": "https://go.dev/doc/go1.27"
+        },
+        {
+          "title": "runtime/pprof reference",
+          "url": "https://pkg.go.dev/runtime/pprof"
+        },
+        {
+          "title": "Context cancellation",
+          "url": "https://pkg.go.dev/context"
+        },
+        {
+          "title": "Synchronization primitives",
+          "url": "https://pkg.go.dev/sync"
+        },
+        {
+          "title": "Go testing reference",
+          "url": "https://pkg.go.dev/testing"
+        },
+        {
+          "title": "Data race detector guide",
+          "url": "https://go.dev/doc/articles/race_detector"
+        },
+        {
+          "title": "HTTP profiling handlers",
+          "url": "https://pkg.go.dev/net/http/pprof"
+        }
+      ]
+    }
+  ],
+  "datePolicy": "Newest-first verified event dates; actual publication dates remain truthful. Four historical events precede the 20 October launch story; today’s report is dated 21 October. No historical publication claim is invented.",
+  "reportSnapshotSHA256": "4e6cb770e37168261eef0e0eeb1fc8e40137e489cc00ef53ed2f03724ba3853b",
+  "reportRun": {
+    "startedAt": "2026-10-21T00:02:30Z",
+    "finishedAt": "2026-10-21T02:02:02Z"
+  },
+  "originality": "Release observations are attributed. Workflows, example scenarios, rollout recommendations and exercises are original GopherForge analysis. No upstream performance measurement is presented as a local benchmark.",
+  "appleStateCheckedOn": "2026-10-21",
+  "appleState": [
+    {
+      "version": "1.1.5",
+      "state": "IN_REVIEW",
+      "build": "42"
+    },
+    {
+      "version": "1.1.4",
+      "state": "READY_FOR_SALE",
+      "build": "39"
+    }
+  ]
+}

@@ -137,9 +137,8 @@ export default function Support() {
         </p>
         <p>
           Native {releases.next.version} ({releases.next.build}) with Continue
-          is in TestFlight and waiting for App Review, configured for release
-          after approval. The corresponding web course and Continue are
-          available now.
+          is in TestFlight and in App Review, configured for release after
+          approval. The corresponding web course and Continue are available now.
         </p>
         <p>
           Web progress stays in this browser and is independent of app progress.

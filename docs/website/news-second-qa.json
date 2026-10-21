@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-10-21T14:45:56.363546+00:00",
+  "origin": "http://127.0.0.1:3056",
+  "newArticles": [
+    {
+      "slug": "go-reproducible-build-report-october-21-2026",
+      "status": 200,
+      "wordCount": 1915,
+      "images": 3,
+      "canonical": "https://gopherforge.app/news/go-reproducible-build-report-october-21-2026",
+      "schema": "NewsArticle",
+      "eventDate": "2026-10-21",
+      "publishedAt": "2026-10-21"
+    },
+    {
+      "slug": "go-1-27-http-connection-reuse",
+      "status": 200,
+      "wordCount": 1846,
+      "images": 3,
+      "canonical": "https://gopherforge.app/news/go-1-27-http-connection-reuse",
+      "schema": "NewsArticle",
+      "eventDate": "2026-10-14",
+      "publishedAt": "2026-10-21"
+    },
+    {
+      "slug": "go-1-27-experimental-simd-amd64-arm64-wasm",
+      "status": 200,
+      "wordCount": 1949,
+      "images": 3,
+      "canonical": "https://gopherforge.app/news/go-1-27-experimental-simd-amd64-arm64-wasm",
+      "schema": "NewsArticle",
+      "eventDate": "2026-10-02",
+      "publishedAt": "2026-10-21"
+    },
+    {
+      "slug": "go-1-27-small-allocation-performance",
+      "status": 200,
+      "wordCount": 1878,
+      "images": 3,
+      "canonical": "https://gopherforge.app/news/go-1-27-small-allocation-performance",
+      "schema": "NewsArticle",
+      "eventDate": "2026-09-16",
+      "publishedAt": "2026-10-21"
+    },
+    {
+      "slug": "go-1-27-goroutine-leak-profiles",
+      "status": 200,
+      "wordCount": 1923,
+      "images": 3,
+      "canonical": "https://gopherforge.app/news/go-1-27-goroutine-leak-profiles",
+      "schema": "NewsArticle",
+      "eventDate": "2026-09-02",
+      "publishedAt": "2026-10-21"
+    }
+  ],
+  "allNews": 10,
+  "rssItems": 10,
+  "newImageAssets": 15,
+  "internalLinksAndAnchors": 31,
+  "sitemapIncludesAllNewArticles": true,
+  "metadataAndSchema": "passed",
+  "datePolicy": "Archive ordered by real event dates; RSS ordered by actual publication dates; four historical topics precede the launch.",
+  "goExamples": {
+    "nativeToolchain": "go1.24.2 darwin/arm64",
+    "result": "six behavioral checks passed with -race",
+    "scope": "Stable API snippets only; no application performance benchmark or Go 1.27 runtime measurement is claimed."
+  },
+  "browser": {
+    "desktop": "Article title, three figures and dates render; no horizontal overflow",
+    "mobile390": "Long article heading and navigation fit; no horizontal overflow"
+  }
+}

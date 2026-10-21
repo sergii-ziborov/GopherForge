@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.1.4 is on the App Store. Version 1.1.5 with Continue is in TestFlight and waiting for App Review. Explore lessons, agent guides and release history.",
+    "GopherForge 1.1.4 is on the App Store. Version 1.1.5 with Continue is in TestFlight and in App Review. Explore lessons, agent guides and release history.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -16,21 +16,24 @@ export default function Updates() {
         <em>What’s next.</em>
       </h1>
       <section className="release" id="v115">
-        <span className="release-badge muted">
-          TESTFLIGHT · WAITING FOR APP REVIEW
-        </span>
+        <span className="release-badge muted">TESTFLIGHT · IN APP REVIEW</span>
         <h2>
-          GopherForge 1.1.5 <small>build 40</small>
+          GopherForge 1.1.5 <small>build 42</small>
         </h2>
         <p>
           Continue returns to your last course lesson or interview guide.
           Learning progress, completion evidence and your selected study area
           persist locally across relaunches. Version 1.1.5 is submitted for App
           Review with automatic release after approval; it is not yet the public
-          App Store version. Status checked 20 October 2026.
+          App Store version. Status checked 21 October 2026.
         </p>
         <ul>
           <li>Separate saved places for Course and Interview.</li>
+          <li>
+            Course and Interview share the same study layout. Duplicate
+            Projects, Learn and Settings root headings are removed to give
+            content more room.
+          </li>
           <li>
             Completion and compiler evidence survive practice-history pruning.
           </li>

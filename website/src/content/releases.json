@@ -1,5 +1,5 @@
 {
-  "checkedOn": "2026-10-20",
+  "checkedOn": "2026-10-21",
   "public": {
     "version": "1.1.4",
     "build": 39,
@@ -7,8 +7,8 @@
   },
   "next": {
     "version": "1.1.5",
-    "build": 40,
-    "status": "TestFlight · waiting for App Review"
+    "build": 42,
+    "status": "TestFlight \u00b7 in App Review"
   },
   "toolchain": "Go 1.27.1",
   "priceUSD": "6.99"

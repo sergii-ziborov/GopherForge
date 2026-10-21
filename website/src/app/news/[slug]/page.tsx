@@ -19,6 +19,7 @@ export async function generateMetadata({
   return {
     title: n.title,
     description: n.description,
+    keywords: n.keywords,
     alternates: { canonical: newsURL(slug) },
     openGraph: {
       type: "article",
@@ -103,6 +104,9 @@ export default async function NewsArticle({
           mainEntityOfPage: "https://gopherforge.app" + newsURL(slug),
           wordCount: n.wordCount,
           inLanguage: "en",
+          isAccessibleForFree: true,
+          articleSection: n.category,
+          keywords: n.keywords.join(", "),
           citation: n.sources.map((s) => s.url),
         }}
       />
@@ -156,10 +160,11 @@ export default async function NewsArticle({
           <section id="sources" className="references">
             <h2>Primary sources & editorial method</h2>
             <p>
-              We checked these primary references on 20 October 2026. Release
-              facts are attributed; recommended workflows and examples are
-              GopherForge analysis. Illustrations are conceptual, not vendor
-              screenshots or benchmarks.
+              We checked these primary references on{" "}
+              {dateLabel(n.sourceCheckedAt)}. Release facts are attributed;
+              recommended workflows and examples are GopherForge analysis.
+              Illustrations are conceptual, not vendor screenshots or
+              benchmarks.
             </p>
             <ul>
               {n.sources.map((s) => (

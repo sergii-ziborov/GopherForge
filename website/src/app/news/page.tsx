@@ -34,7 +34,7 @@ export default function NewsPage() {
         </p>
         <nav className="news-tabs" aria-label="News sections">
           <Link href="/news" aria-current="page">
-            Our analysis <span>05</span>
+            Our analysis <span>{String(news.length).padStart(2, "0")}</span>
           </Link>
           <Link href="/news/feed">From the Go community ↗</Link>
           <a href="/news/rss.xml">RSS</a>

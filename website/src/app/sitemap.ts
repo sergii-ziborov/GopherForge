@@ -29,7 +29,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ) ||
       path.startsWith("/learn/") ||
       path.startsWith("/interview")
-        ? { lastModified: "2026-10-20" }
+        ? {
+            lastModified:
+              path === "" || path === "/news" ? "2026-10-21" : "2026-10-20",
+          }
         : {}),
       changeFrequency:
         path === "/news/feed" ? ("daily" as const) : ("monthly" as const),

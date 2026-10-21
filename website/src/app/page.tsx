@@ -224,9 +224,9 @@ export default function Home() {
             <p className="small-note">
               App Store version {releases.public.version} is available now.
               Native {releases.next.version} with Continue is in TestFlight and
-              waiting for App Review. The web course includes the latest
-              architecture, MongoDB, Redis and production-tooling readings.
-              Native availability is listed in the version history.
+              in App Review. The web course includes the latest architecture,
+              MongoDB, Redis and production-tooling readings. Native
+              availability is listed in the version history.
             </p>
           </div>
         </div>
