@@ -7,8 +7,8 @@
   },
   "next": {
     "version": "1.1.5",
-    "build": 42,
-    "status": "TestFlight \u00b7 in App Review"
+    "build": 43,
+    "status": "TestFlight · waiting for App Review"
   },
   "toolchain": "Go 1.27.1",
   "priceUSD": "6.99"

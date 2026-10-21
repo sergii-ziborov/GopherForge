@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.1.4 is on the App Store. Version 1.1.5 with Continue is in TestFlight and in App Review. Explore lessons, agent guides and release history.",
+    "GopherForge 1.1.4 is on the App Store. Version 1.1.5 with Continue is in TestFlight and waiting for App Review. Explore lessons, agent guides and release history.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -16,9 +16,9 @@ export default function Updates() {
         <em>What’s next.</em>
       </h1>
       <section className="release" id="v115">
-        <span className="release-badge muted">TESTFLIGHT · IN APP REVIEW</span>
+        <span className="release-badge muted">TESTFLIGHT · WAITING FOR APP REVIEW</span>
         <h2>
-          GopherForge 1.1.5 <small>build 42</small>
+          GopherForge 1.1.5 <small>build 43</small>
         </h2>
         <p>
           Continue returns to your last course lesson or interview guide.
@@ -32,7 +32,7 @@ export default function Updates() {
           <li>
             Course and Interview share the same study layout. Duplicate
             Projects, Learn and Settings root headings are removed to give
-            content more room.
+            content more room. Store learning screenshots now reflect this layout.
           </li>
           <li>
             Completion and compiler evidence survive practice-history pruning.
