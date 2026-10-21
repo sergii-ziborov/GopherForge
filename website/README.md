@@ -23,7 +23,12 @@ Requires Node 22+ and the pinned pnpm version in package.json. Local preview:
 http://127.0.0.1:3047. Course content and all lesson routes are prerendered;
 search receives only summaries, not the full source catalog. Highlighting is
 server-side. No runtime CMS, registration, database or browser analytics SDK.
-Blog articles are authored in `src/content/posts.json`. Existing native lesson
+Blog articles are authored in `src/content/posts.json`; original news and
+analysis live in `src/content/news.json`. Keep verified event dates separate
+from actual publication dates: the journal orders events, while RSS orders
+publications. Include the source-check date, primary references, related
+articles and three generated assets per story. Asset prompts and hashes are
+recorded in `../docs/website/news-image-manifest.json`. Existing native lesson
 IDs are URL slugs; keep them stable.
 
 ## Hostwatch deployment and analytics
