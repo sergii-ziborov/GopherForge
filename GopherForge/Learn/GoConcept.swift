@@ -204,5 +204,6 @@ enum GoConcept {
         runtimeGC, runtimeAllocation, runtimeScheduler, runtimeProfiling,
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
         architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
+        "stdlib.borrowed-buffers", "runtime.pool-ownership",
     ]).union(designLessonTags).union(environmentLessonTags)
 }

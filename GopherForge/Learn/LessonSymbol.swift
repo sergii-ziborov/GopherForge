@@ -13,6 +13,8 @@ import Foundation
 /// about closing channels looks the same wherever it appears.
 enum LessonSymbol {
     private static let environmentSymbols: [String: String] = [
+        "stdlib.borrowed-buffers": "rectangle.on.rectangle",
+        "runtime.pool-ownership": "arrow.triangle.2.circlepath",
         "modules.identity-versions": "shippingbox",
         "modules.version-graph": "arrow.triangle.branch",
         "modules.checksums-private": "checkmark.shield",

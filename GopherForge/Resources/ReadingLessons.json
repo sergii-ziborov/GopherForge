@@ -7656,5 +7656,149 @@
       "cost": "Latency and eviction policies trade memory, availability and persistence work; client concurrency cannot remove a hot-key bottleneck.",
       "ratings": []
     }
+  },
+  {
+    "id": "stdlib.borrowed-buffers",
+    "unitID": "stdlib",
+    "title": "Borrow bytes briefly; copy before their owner changes",
+    "objective": "Trace bytes.Buffer and Scanner views, then make retained results independent at a lifetime boundary.",
+    "conceptTag": "stdlib.borrowed-buffers",
+    "introduction": "A byte slice can be a borrowed window rather than an owned result. bytes.Buffer.Bytes exposes unread storage, and Scanner.Bytes exposes a token with a limited lifetime. The type []byte does not express that lifetime. Draw the owner, the view and the next mutation before deciding whether to copy.",
+    "sections": [
+      {
+        "title": "One owner, one temporary view",
+        "body": "Draw a row of bytes for the buffer, then a window labeled view above it. Bytes does not create a separate row. While the borrow is valid, changing an element through the view changes the buffer. A separate copy belongs on a second row with no shared storage.",
+        "code": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n)\n\nfunc main() {\n    var buffer bytes.Buffer\n    buffer.WriteString(\"alpha\")\n    view := buffer.Bytes()\n    owned := bytes.Clone(view)\n    view[0] = 'A'\n    fmt.Println(buffer.String())\n    buffer.Reset()\n    buffer.WriteString(\"omega\")\n    fmt.Println(string(owned))\n}",
+        "language": "go",
+        "walkthrough": "The output is Alpha, then alpha. The first print demonstrates aliasing before reset. bytes.Clone creates the owned result before the owner changes. The program deliberately never inspects view after reset: its old contents are not a valid result to rely on."
+      },
+      {
+        "title": "The lifetime timeline",
+        "body": "Follow this order: obtain a view, consume it synchronously, then mutate or release the owner. If you must return, cache or enqueue the result beyond that boundary, copy the bytes or transfer the owner explicitly. Assigning the slice to another variable copies its descriptor and preserves sharing. Clip also keeps the existing elements shared."
+      },
+      {
+        "title": "Scanner tokens need the same decision",
+        "body": "Scanner.Bytes may expose storage reused by the next Scan. A token consumed immediately can remain borrowed. A token saved in a collection needs its own bytes. Check Scanner.Err after the loop as a separate requirement; correct ownership does not make input parsing infallible.",
+        "code": "package main\n\nimport (\n    \"bufio\"\n    \"bytes\"\n    \"fmt\"\n    \"strings\"\n)\n\nfunc main() {\n    scanner := bufio.NewScanner(strings.NewReader(\"red\\nblue\\n\"))\n    var saved [][]byte\n    for scanner.Scan() {\n        saved = append(saved, bytes.Clone(scanner.Bytes()))\n    }\n    if err := scanner.Err(); err != nil {\n        panic(err)\n    }\n    for _, token := range saved {\n        fmt.Println(string(token))\n    }\n}",
+        "language": "go",
+        "walkthrough": "Each iteration copies the current token before the next Scan can replace it. The saved values therefore print red and blue. Without a copy, storing the slice descriptors would not establish a durable token contract. The final error check handles scanning failures independently."
+      },
+      {
+        "title": "Asynchronous work crosses the boundary",
+        "body": "A successful channel send transfers the slice descriptor, not an immutable snapshot. The producer must stop using the storage until consumption finishes, or send an owned copy. For cancellation, specify who owns a buffer when enqueueing fails and who releases it after a successful handoff."
+      },
+      {
+        "title": "Reset, retention and tests",
+        "body": "Reset prepares a buffer for reuse and can retain its allocation. It does not guarantee erasure of sensitive bytes. Test that an owned result remains unchanged after later buffer operations. Avoid tests that require a particular stale value from an invalid view, and measure retained memory when large buffers live much longer than their input."
+      }
+    ],
+    "takeaway": "A borrowed result is safe only within its documented lifetime. Draw the next mutation or release, then copy before that boundary when the caller needs a durable value. Test independence of valid results rather than the contents of invalid views.",
+    "references": [
+      "https://pkg.go.dev/bytes#Buffer.Bytes",
+      "https://pkg.go.dev/bytes#Clone",
+      "https://pkg.go.dev/bufio#Scanner.Bytes",
+      "https://go.dev/ref/spec#Slice_types"
+    ],
+    "reviewPrompt": "Keep borrowed bytes after reuse?",
+    "reviewAnswer": "Copy before owner changes",
+    "question": "A result must survive bytes.Buffer.Reset and later writes. What establishes independent ownership?",
+    "wrongAnswers": [
+      "Clip the view to its length",
+      "Assign the slice to a new name"
+    ],
+    "hint": "A second descriptor still refers to the same backing array.",
+    "nuance": "Clone copies the bytes. Reset does not revoke aliases or promise to overwrite old storage. A channel send also copies a descriptor, so asynchronous consumption needs an ownership protocol.",
+    "designGuide": {
+      "family": "Byte ownership",
+      "flow": [
+        "Buffer owns storage",
+        "Bytes borrows a view",
+        "Clone retained result",
+        "Owner may reset"
+      ],
+      "strengths": [
+        "Borrow for immediate synchronous work",
+        "Copy only at a lifetime boundary",
+        "Document validity in the API"
+      ],
+      "cautions": [
+        "Clip does not copy",
+        "Sending a slice does not freeze it",
+        "Reset is not secret erasure"
+      ],
+      "cost": "One deliberate copy buys independent result lifetime. Measure the boundary rather than guessing from allocation count.",
+      "ratings": []
+    }
+  },
+  {
+    "id": "runtime.pool-ownership",
+    "unitID": "runtime",
+    "title": "A pool reuses temporary objects; it does not own your results",
+    "objective": "Use sync.Pool with exclusive ownership, independent output and an explicit policy for oversized buffers.",
+    "conceptTag": "runtime.pool-ownership",
+    "introduction": "Pooling can reduce temporary allocation, but every Get and Put creates an ownership obligation. A former owner must stop using the object after Put. A result that still aliases the object violates that obligation even when the code compiles and a small benchmark looks fast.",
+    "sections": [
+      {
+        "title": "Draw the ownership cycle",
+        "body": "Follow Get to one active owner, then produce an independent result before Put. After release, the old owner must not read or write the buffer. The pool can discard objects and Get need not return a previously stored object, so correctness must work with both reuse and a fresh allocation."
+      },
+      {
+        "title": "Copy the result before releasing its storage",
+        "body": "This encoder returns owned bytes. Its example cutoff avoids deliberately returning an oversized backing buffer to this pool. The cutoff is a workload policy, not a universal value and not a cap on total process memory.",
+        "code": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"sync\"\n)\n\nvar buffers = sync.Pool{New: func() any {\n    return new(bytes.Buffer)\n}}\n\nfunc encode(name string) []byte {\n    buffer := buffers.Get().(*bytes.Buffer)\n    buffer.Reset()\n    buffer.WriteString(\"hello, \")\n    buffer.WriteString(name)\n    result := bytes.Clone(buffer.Bytes())\n    if buffer.Cap() <= 64*1024 {\n        buffer.Reset()\n        buffers.Put(buffer)\n    }\n    return result\n}\n\nfunc main() {\n    first := encode(\"Ada\")\n    _ = encode(\"Grace\")\n    fmt.Println(string(first))\n}",
+        "language": "go",
+        "walkthrough": "The output remains hello, Ada after another encode. bytes.Clone separates the result from temporary storage before Put. The example never assumes the second call gets the same buffer. Buffers larger than the illustrative cutoff are discarded from this reuse path, while active requests and returned results still consume memory."
+      },
+      {
+        "title": "Do not turn a pool into a resource budget",
+        "body": "sync.Pool is not a bounded cache, a reliable queue, or a database connection manager. Objects can disappear without explicit removal. A strict concurrency limit needs admission control; a database connection needs its client library's capacity, timeout and cleanup rules. A pool alone establishes none of those contracts."
+      },
+      {
+        "title": "Test public independence, not object identity",
+        "body": "Keep the first result, make many later calls, and verify the first bytes remain unchanged. Add parallel calls under the race detector. Do not assert that a specific object returns from Get. Test large and small inputs, and check cancellation ownership if work is queued to another goroutine."
+      },
+      {
+        "title": "Make the optimization earn its protocol",
+        "body": "Compare a correct unpooled baseline against the pooled version using realistic response-size distributions. Measure allocations, retained memory and latency after bursts. Race instrumentation is for correctness checks, not production timing claims. If pooling adds complexity without a measurable benefit, keep the simpler owned-result implementation."
+      }
+    ],
+    "takeaway": "Get gives temporary exclusive access; Put ends it. Make external results independent before release, avoid identity assumptions and measure whether pooling helps. A per-object size cutoff does not bound total memory or concurrent work.",
+    "references": [
+      "https://pkg.go.dev/sync#Pool",
+      "https://pkg.go.dev/bytes#Buffer",
+      "https://go.dev/doc/gc-guide",
+      "https://go.dev/doc/articles/race_detector",
+      "https://pkg.go.dev/testing"
+    ],
+    "reviewPrompt": "Return pooled buffer bytes?",
+    "reviewAnswer": "Copy before Put",
+    "question": "A function returns a buffer to sync.Pool. How can its returned []byte remain safe for the caller?",
+    "wrongAnswers": [
+      "Read it after Put if usually unchanged",
+      "Require Get to return the last object"
+    ],
+    "hint": "A later owner may reuse storage immediately; the returned value needs a separate lifetime.",
+    "nuance": "Pool reuse is optional and identity is not guaranteed. An owned copy remains correct with or without reuse. A pool does not replace admission control, a bounded queue or database connection management.",
+    "designGuide": {
+      "family": "Temporary object reuse",
+      "flow": [
+        "Get temporary object",
+        "One exclusive owner",
+        "Copy external result",
+        "Put ends ownership"
+      ],
+      "strengths": [
+        "Reuse measured temporary allocation",
+        "Keep the boundary in one small function",
+        "Correct with reuse or fresh allocation"
+      ],
+      "cautions": [
+        "No access after Put",
+        "No guaranteed object retention",
+        "No hard memory bound"
+      ],
+      "cost": "Extra ownership protocol and possible retained capacity. Keep an unpooled baseline and discard oversized objects according to workload.",
+      "ratings": []
+    }
   }
 ]

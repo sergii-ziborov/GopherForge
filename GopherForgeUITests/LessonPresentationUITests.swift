@@ -9,7 +9,7 @@ final class LessonPresentationUITests: XCTestCase {
     }
 
     func testCourseContinueReopensCompletedReadingAfterRelaunch() {
-        launch("collections.slice-walkthrough")
+        launch("stdlib.borrowed-buffers")
         let done = app.buttons[AccessibilityIdentifier.lessonComplete]
         let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
         XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 15))
@@ -26,7 +26,7 @@ final class LessonPresentationUITests: XCTestCase {
         let resume = app.buttons["learn.continue"]
         XCTAssertTrue(resume.waitForExistence(timeout: 10))
         XCTAssertTrue(resume.label.contains("Continue:"))
-        attachScreenshot(named: "course-continue-after-relaunch-build40")
+        attachScreenshot(named: "course-continue-buffer-ownership")
         resume.tap()
         XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 10))
         XCTAssertTrue(undo.waitForExistence(timeout: 10), "Continue must reopen the completed reading, not a different unfinished lesson")

@@ -2,6 +2,24 @@ import XCTest
 @testable import GopherForge
 
 final class ReadingLessonTests: XCTestCase {
+    func testBufferOwnershipLessonsHaveDistinctReviewAndMistakeEvidence() throws {
+        for id in ["stdlib.borrowed-buffers", "runtime.pool-ownership"] {
+            let reading = try XCTUnwrap(ReadingLessonCatalog.reading(for: id))
+            XCTAssertEqual(reading.conceptTag, id)
+            XCTAssertTrue(GoConcept.all.contains(id))
+            XCTAssertNotNil(LessonSymbol.byConcept[id])
+            XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == id }.count, 1)
+            XCTAssertEqual(GoCourseCatalog.unit(containing: id)?.id, reading.unitID)
+            let pair = try XCTUnwrap(ReviewMatchCatalog.allPairs.first { $0.requiredLessonID == id })
+            XCTAssertEqual(pair.answer, reading.reviewAnswer)
+            XCTAssertLessThanOrEqual(pair.prompt.count, MatchingDrill.maximumPromptCharacters)
+            XCTAssertLessThanOrEqual(pair.answer.count, MatchingDrill.maximumAnswerCharacters)
+            let check = try XCTUnwrap(MistakeReviewCatalog.all.first { $0.id == "reading.question.\(id)" })
+            XCTAssertEqual(Set(check.question.options).count, 3)
+            XCTAssertEqual(reading.designGuide?.flow.count, 4)
+        }
+    }
+
     func testEnvironmentExpansionIsReachableAndHasIndependentReviewEvidence() throws {
         let expanded = ReadingLessonCatalog.all.filter { GoConcept.environmentLessonTags.contains($0.id) }
         XCTAssertEqual(expanded.count, 24)
@@ -26,11 +44,11 @@ final class ReadingLessonTests: XCTestCase {
     }
 
     func testBundledReadingsAreIntegratedExactlyOnceAndPreserveOriginalCourse() {
-        XCTAssertEqual(ReadingLessonCatalog.all.count, 122)
+        XCTAssertEqual(ReadingLessonCatalog.all.count, 124)
         XCTAssertEqual(GoCourseCatalog.units.count, 21)
-        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 169)
+        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 171)
         XCTAssertEqual(GoCourseCatalog.challenges.count, 22)
-        XCTAssertEqual(GoCourseCatalog.lessons.count, 191)
+        XCTAssertEqual(GoCourseCatalog.lessons.count, 193)
         for reading in ReadingLessonCatalog.all {
             XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == reading.id }.count, 1, reading.id)
             XCTAssertEqual(GoCourseCatalog.unit(containing: reading.id)?.id, reading.unitID)
@@ -81,7 +99,7 @@ final class ReadingLessonTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appending(path: "progress.json")
         let store = LearningProgressStore(storageURL: url)
-        let lesson = try XCTUnwrap(GoCourseCatalog.lesson(id: "runtime.gc-reachability"))
+        let lesson = try XCTUnwrap(GoCourseCatalog.lesson(id: "runtime.pool-ownership"))
         let model = LessonModel(lesson: lesson, store: store, testRunner: { _ in
             XCTFail("Reading a lesson must never invoke compilation")
             return .failure(phase: .test, detail: "Unexpected compiler call")
