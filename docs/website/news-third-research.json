@@ -8,7 +8,7 @@
       "editionDate": "2026-10-23",
       "eventDate": "2026-10-21",
       "publishedAt": "2026-10-23",
-      "wordCount": 1775,
+      "wordCount": 2273,
       "sources": [
         {
           "title": "Official 2026 Go Developer Survey announcement",
@@ -34,7 +34,7 @@
       "editionDate": "2026-10-22",
       "eventDate": "2026-10-22",
       "publishedAt": "2026-10-23",
-      "wordCount": 1604,
+      "wordCount": 2096,
       "sources": [
         {
           "title": "Go specification: slice types and append",
@@ -51,6 +51,10 @@
         {
           "title": "Go data race detector",
           "url": "https://go.dev/doc/articles/race_detector"
+        },
+        {
+          "title": "encoding/json slice marshaling rules",
+          "url": "https://pkg.go.dev/encoding/json#Marshal"
         }
       ]
     },
@@ -60,7 +64,7 @@
       "editionDate": "2026-10-18",
       "eventDate": "2026-10-18",
       "publishedAt": "2026-10-23",
-      "wordCount": 1534,
+      "wordCount": 2056,
       "sources": [
         {
           "title": "bytes.Buffer and bytes.Clone reference",
@@ -81,6 +85,10 @@
         {
           "title": "Go testing and benchmarks",
           "url": "https://pkg.go.dev/testing"
+        },
+        {
+          "title": "io.Writer input lifetime contract",
+          "url": "https://pkg.go.dev/io#Writer"
         }
       ]
     },
@@ -90,7 +98,7 @@
       "editionDate": "2026-10-17",
       "eventDate": "2026-10-17",
       "publishedAt": "2026-10-23",
-      "wordCount": 1570,
+      "wordCount": 2074,
       "sources": [
         {
           "title": "Go FAQ: nil error values",
@@ -107,6 +115,10 @@
         {
           "title": "Working with Errors in Go 1.13",
           "url": "https://go.dev/blog/go1.13-errors"
+        },
+        {
+          "title": "Go 1.20: wrapping multiple errors",
+          "url": "https://go.dev/doc/go1.20#errors"
         }
       ]
     },
@@ -116,7 +128,7 @@
       "editionDate": "2026-10-15",
       "eventDate": "2026-10-15",
       "publishedAt": "2026-10-23",
-      "wordCount": 1535,
+      "wordCount": 2068,
       "sources": [
         {
           "title": "Official gopls v0.24.0 release notes",

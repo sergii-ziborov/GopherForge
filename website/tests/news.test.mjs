@@ -99,6 +99,8 @@ test("October additions fill unused editions without inventing publication dates
   assert.equal(added.length, 5);
   assert.equal(added.filter((n) => n.kind === "news").length, 2);
   assert.equal(added.filter((n) => n.kind === "guide").length, 3);
+  const previousLargest = Math.max(...earlier.map((n) => n.wordCount));
+  assert.ok(added.every((n) => n.wordCount >= Math.max(2000, previousLargest)));
   assert.deepEqual(added.map((n) => n.editionDate).sort(), [
     "2026-10-15",
     "2026-10-17",

@@ -3,11 +3,11 @@
   "editorialTimezone": "Asia/Jerusalem",
   "news": 5,
   "proseWords": {
-    "go-developer-survey-2026-practical-feedback": 1775,
-    "go-slices-backing-array-append-clip-clone": 1604,
-    "go-bytes-buffer-sync-pool-ownership": 1534,
-    "go-typed-nil-errors-as-contracts": 1570,
-    "gopls-0-24-error-contracts-memory": 1535
+    "go-developer-survey-2026-practical-feedback": 2273,
+    "go-slices-backing-array-append-clip-clone": 2096,
+    "go-bytes-buffer-sync-pool-ownership": 2056,
+    "go-typed-nil-errors-as-contracts": 2074,
+    "gopls-0-24-error-contracts-memory": 2068
   },
   "completeProgramsExecuted": 15,
   "allOutputsMatchExplanations": true,
@@ -21,8 +21,8 @@
     "failed": 0
   },
   "localHTTPAudit": {
-    "checkedAt": "2026-10-22T23:33:59.452170+00:00",
-    "origin": "http://127.0.0.1:3057",
+    "checkedAt": "2026-10-22T23:41:55.613536+00:00",
+    "origin": "http://127.0.0.1:3058",
     "newArticles": [
       {
         "slug": "go-developer-survey-2026-practical-feedback",
@@ -85,7 +85,6 @@
   },
   "imageManifest": "docs/website/news-image-manifest.json",
   "newImages": 15,
-  "contentSourceCommit": "1587bfe551715d468974e52bc42f7cea9096a2cc",
   "browserChecks": [
     "Desktop syntax highlighting and intact line breaks",
     "390px viewport: no page overflow; long code scrolls within its block",
@@ -93,5 +92,7 @@
     "Lesson completion survives page reload after hydration",
     "Course Continue points to the same new reading"
   ],
-  "reactReview": "Static server pages retained; stable keys, semantic headings, image alt/captions, lazy secondary images, canonical metadata and existing client progress schema reviewed."
+  "reactReview": "Static server pages retained; stable keys, semantic headings, image alt/captions, lazy secondary images, canonical metadata and existing client progress schema reviewed.",
+  "nativeSourceCommit": "1587bfe551715d468974e52bc42f7cea9096a2cc",
+  "lengthGate": "Every new article exceeds 2,000 prose words and the longest previous article (1,949)."
 }

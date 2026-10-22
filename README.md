@@ -232,8 +232,8 @@ the Go project.
 
 The [journal](https://gopherforge.app/news) now contains fifteen original long-form
 articles. Five additions cover the 2026 developer survey, gopls 0.24, slice
-backing storage, borrowed buffers/pooling and typed nil errors. Each has at least
-1,500 words of prose, three original generated illustrations, highlighted
+backing storage, borrowed buffers/pooling and typed nil errors. Each new article has more than
+2,000 words of prose, three original generated illustrations, highlighted
 runnable examples where relevant, primary references and links into the course.
 Edition dates fill unused archive days; actual publication dates remain separate.
 News and evergreen technical guides use distinct structured-data types.
