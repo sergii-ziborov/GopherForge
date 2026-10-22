@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-10-22T23:44:59.748553+00:00",
+  "sourceCommit": "16e4e2d",
+  "imageDigest": "sha256:f22d16f457942e6d6f3a2b46f983f4d0b992224bf063c8e8e5005a318deff3a1",
+  "deploymentJob": "gopherforge-news-third-16e4e2d-20261023",
+  "deploymentState": "succeeded",
+  "rollbackImage": "localhost/gopherforge-web:rollback-news3-defdd18",
+  "publicAudit": {
+    "checkedAt": "2026-10-22T23:43:40.109593+00:00",
+    "origin": "https://gopherforge.app",
+    "newArticles": [
+      {
+        "slug": "go-developer-survey-2026-practical-feedback",
+        "status": 200,
+        "wordCount": 1775,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-developer-survey-2026-practical-feedback",
+        "schema": "NewsArticle",
+        "eventDate": "2026-10-21",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "go-slices-backing-array-append-clip-clone",
+        "status": 200,
+        "wordCount": 1604,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-slices-backing-array-append-clip-clone",
+        "schema": "TechArticle",
+        "eventDate": "2026-10-22",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "go-bytes-buffer-sync-pool-ownership",
+        "status": 200,
+        "wordCount": 1534,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-bytes-buffer-sync-pool-ownership",
+        "schema": "TechArticle",
+        "eventDate": "2026-10-18",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "go-typed-nil-errors-as-contracts",
+        "status": 200,
+        "wordCount": 1570,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-typed-nil-errors-as-contracts",
+        "schema": "TechArticle",
+        "eventDate": "2026-10-17",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "gopls-0-24-error-contracts-memory",
+        "status": 200,
+        "wordCount": 1535,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/gopls-0-24-error-contracts-memory",
+        "schema": "NewsArticle",
+        "eventDate": "2026-10-15",
+        "publishedAt": "2026-10-23"
+      }
+    ],
+    "allNews": 15,
+    "rssItems": 15,
+    "newImageAssets": 15,
+    "internalLinksAndAnchors": 35,
+    "sitemapIncludesAllNewArticles": true,
+    "metadataAndSchema": "passed",
+    "datePolicy": "Archive ordered by unique edition dates; RSS uses actual publication. News and guides are distinct."
+  },
+  "newLessons": [
+    "stdlib.borrowed-buffers",
+    "runtime.pool-ownership"
+  ],
+  "lessonCanonicalsAndArticleBacklinks": true,
+  "newLessonSitemapDates": "2026-10-23",
+  "feedCacheRestored": true,
+  "feedTimer": "active",
+  "containerRestartPolicy": "unless-stopped",
+  "pricingUSD": "6.99",
+  "publicVersion": "1.1.5 (43)",
+  "nextVersion": "1.1.6 (44)",
+  "nextState": "WAITING_FOR_REVIEW",
+  "testFlight": "IN_BETA_TESTING",
+  "proofScreenshot": "docs/website/news-third-published.png",
+  "proofSHA256": "2df9fa47a3598a05493160b60177ada1d0b6c79a59cee1516eba54579a397688"
+}
