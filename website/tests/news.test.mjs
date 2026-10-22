@@ -131,6 +131,13 @@ test("October additions fill unused editions without inventing publication dates
           path,
         );
       }
+      if (path.startsWith("/interview/")) {
+        const bank = await read("../src/content/interview.json");
+        assert.ok(
+          bank.questions.some((q) => "/interview/" + q.id === path),
+          path,
+        );
+      }
     }
   }
 });

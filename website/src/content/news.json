@@ -76,7 +76,11 @@
     ],
     "wordCount": 1758,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": ["gopherforge", "Go engineering", "GopherForge news"],
+    "keywords": [
+      "gopherforge",
+      "Go engineering",
+      "GopherForge news"
+    ],
     "editionDate": "2026-10-20",
     "kind": "news"
   },
@@ -165,7 +169,11 @@
     ],
     "wordCount": 1781,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": ["tooling", "Go engineering", "GopherForge news"],
+    "keywords": [
+      "tooling",
+      "Go engineering",
+      "GopherForge news"
+    ],
     "editionDate": "2026-10-20",
     "kind": "news"
   },
@@ -263,7 +271,11 @@
     ],
     "wordCount": 1723,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": ["security", "Go engineering", "GopherForge news"],
+    "keywords": [
+      "security",
+      "Go engineering",
+      "GopherForge news"
+    ],
     "editionDate": "2026-10-19",
     "kind": "news"
   },
@@ -360,7 +372,11 @@
     ],
     "wordCount": 1762,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": ["cloud native", "Go engineering", "GopherForge news"],
+    "keywords": [
+      "cloud native",
+      "Go engineering",
+      "GopherForge news"
+    ],
     "editionDate": "2026-10-16",
     "kind": "news"
   },
@@ -454,7 +470,11 @@
     ],
     "wordCount": 1761,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": ["language tools", "Go engineering", "GopherForge news"],
+    "keywords": [
+      "language tools",
+      "Go engineering",
+      "GopherForge news"
+    ],
     "editionDate": "2026-10-16",
     "kind": "news"
   },
@@ -1055,7 +1075,7 @@
       {
         "id": "treat-agent-assisted-go-development-as-an-environment",
         "title": "Treat agent-assisted Go development as an environment",
-        "body": "When an agent writes or changes Go code, record which parts of the workflow it could actually observe. Did it inspect the module graph, run tests, read local documentation and see compiler output? Or did it propose code without access to the repository's constraints? These are different development experiences even if the chat interface looks similar.\n\nDescribe the verification boundary. A generated MongoDB query, Redis cache policy or Kubernetes manifest may be syntactically plausible while missing a workload-specific timeout or resource limit. The useful report identifies the task, the missing context and the check that caught the mistake. Do not submit confidential prompts, source or credentials to explain the general failure mode.\n\nOur [agent workflow lessons](/learn?unit=modules) connect repository context, narrow edits and test evidence. They do not suggest trusting an agent's self-reported success without checking the result. For feedback, this distinction helps explain whether the pain comes from language discoverability, tool integration, missing project context or a verification step that the environment could not perform."
+        "body": "When an agent writes or changes Go code, record which parts of the workflow it could actually observe. Did it inspect the module graph, run tests, read local documentation and see compiler output? Or did it propose code without access to the repository's constraints? These are different development experiences even if the chat interface looks similar.\n\nDescribe the verification boundary. A generated MongoDB query, Redis cache policy or Kubernetes manifest may be syntactically plausible while missing a workload-specific timeout or resource limit. The useful report identifies the task, the missing context and the check that caught the mistake. Do not submit confidential prompts, source or credentials to explain the general failure mode.\n\nOur [agent workflow guide](/interview/ai.workflow) connect repository context, narrow edits and test evidence. They do not suggest trusting an agent's self-reported success without checking the result. For feedback, this distinction helps explain whether the pain comes from language discoverability, tool integration, missing project context or a verification step that the environment could not perform."
       },
       {
         "id": "use-a-short-retrospective-with-your-team",
@@ -1485,7 +1505,7 @@
       {
         "id": "build-a-rollout-sample-that-resembles-the-team",
         "title": "Build a rollout sample that resembles the team",
-        "body": "Try the pinned tool with more than one workspace shape. A service repository, a multi-module workspace and a library with generated code can exercise different behavior. Include the actual operating systems and editor clients used by the team where practical. A successful trial in one client does not establish that every client exposes the same language-server interaction or configuration.\n\nCollect concise observations: which diagnostic appeared, what source triggered it, whether the suggested edit compiled, and how tests behaved. Keep performance observations separate from correctness reports. If a suggestion looks wrong, create a minimal reproducer that preserves the relevant type or module boundary rather than attaching an entire private repository.\n\nFor an agent-assisted workflow, ask the agent to explain the contract before applying the edit, identify affected callers, and run the focused tests. Review the diff yourself, especially around public errors and borrowed memory. The [Go agent workflow lessons](/learn?unit=modules) discuss environment visibility and verification; the same principles apply to a language-server-assisted change."
+        "body": "Try the pinned tool with more than one workspace shape. A service repository, a multi-module workspace and a library with generated code can exercise different behavior. Include the actual operating systems and editor clients used by the team where practical. A successful trial in one client does not establish that every client exposes the same language-server interaction or configuration.\n\nCollect concise observations: which diagnostic appeared, what source triggered it, whether the suggested edit compiled, and how tests behaved. Keep performance observations separate from correctness reports. If a suggestion looks wrong, create a minimal reproducer that preserves the relevant type or module boundary rather than attaching an entire private repository.\n\nFor an agent-assisted workflow, ask the agent to explain the contract before applying the edit, identify affected callers, and run the focused tests. Review the diff yourself, especially around public errors and borrowed memory. The [Go agent workflow guide](/interview/ai.workflow) discuss environment visibility and verification; the same principles apply to a language-server-assisted change."
       },
       {
         "id": "make-the-upgrade-outcome-reviewable",
