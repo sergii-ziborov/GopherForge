@@ -21,13 +21,13 @@
     "failed": 0
   },
   "localHTTPAudit": {
-    "checkedAt": "2026-10-22T23:41:55.613536+00:00",
-    "origin": "http://127.0.0.1:3058",
+    "checkedAt": "2026-10-22T23:49:04.379105+00:00",
+    "origin": "http://127.0.0.1:3059",
     "newArticles": [
       {
         "slug": "go-developer-survey-2026-practical-feedback",
         "status": 200,
-        "wordCount": 1775,
+        "wordCount": 2273,
         "images": 3,
         "canonical": "https://gopherforge.app/news/go-developer-survey-2026-practical-feedback",
         "schema": "NewsArticle",
@@ -37,7 +37,7 @@
       {
         "slug": "go-slices-backing-array-append-clip-clone",
         "status": 200,
-        "wordCount": 1604,
+        "wordCount": 2096,
         "images": 3,
         "canonical": "https://gopherforge.app/news/go-slices-backing-array-append-clip-clone",
         "schema": "TechArticle",
@@ -47,7 +47,7 @@
       {
         "slug": "go-bytes-buffer-sync-pool-ownership",
         "status": 200,
-        "wordCount": 1534,
+        "wordCount": 2056,
         "images": 3,
         "canonical": "https://gopherforge.app/news/go-bytes-buffer-sync-pool-ownership",
         "schema": "TechArticle",
@@ -57,7 +57,7 @@
       {
         "slug": "go-typed-nil-errors-as-contracts",
         "status": 200,
-        "wordCount": 1570,
+        "wordCount": 2074,
         "images": 3,
         "canonical": "https://gopherforge.app/news/go-typed-nil-errors-as-contracts",
         "schema": "TechArticle",
@@ -67,7 +67,7 @@
       {
         "slug": "gopls-0-24-error-contracts-memory",
         "status": 200,
-        "wordCount": 1535,
+        "wordCount": 2068,
         "images": 3,
         "canonical": "https://gopherforge.app/news/gopls-0-24-error-contracts-memory",
         "schema": "NewsArticle",
