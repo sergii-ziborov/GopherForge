@@ -1,0 +1,97 @@
+{
+  "checkedOn": "2026-10-23",
+  "editorialTimezone": "Asia/Jerusalem",
+  "news": 5,
+  "proseWords": {
+    "go-developer-survey-2026-practical-feedback": 1775,
+    "go-slices-backing-array-append-clip-clone": 1604,
+    "go-bytes-buffer-sync-pool-ownership": 1534,
+    "go-typed-nil-errors-as-contracts": 1570,
+    "gopls-0-24-error-contracts-memory": 1535
+  },
+  "completeProgramsExecuted": 15,
+  "allOutputsMatchExplanations": true,
+  "poolRaceTest": "ok  \tcommand-line-arguments\t1.259s",
+  "nativeTeachingLessons": 171,
+  "nativeReadings": 124,
+  "nativeChallenges": 22,
+  "sharedCatalogSHA256": "992c409e791c74fea3cf812a6c5b847a7c7e14def4e1a48bedbf5db609ef8604",
+  "webTests": {
+    "passed": 19,
+    "failed": 0
+  },
+  "localHTTPAudit": {
+    "checkedAt": "2026-10-22T23:33:59.452170+00:00",
+    "origin": "http://127.0.0.1:3057",
+    "newArticles": [
+      {
+        "slug": "go-developer-survey-2026-practical-feedback",
+        "status": 200,
+        "wordCount": 1775,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-developer-survey-2026-practical-feedback",
+        "schema": "NewsArticle",
+        "eventDate": "2026-10-21",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "go-slices-backing-array-append-clip-clone",
+        "status": 200,
+        "wordCount": 1604,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-slices-backing-array-append-clip-clone",
+        "schema": "TechArticle",
+        "eventDate": "2026-10-22",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "go-bytes-buffer-sync-pool-ownership",
+        "status": 200,
+        "wordCount": 1534,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-bytes-buffer-sync-pool-ownership",
+        "schema": "TechArticle",
+        "eventDate": "2026-10-18",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "go-typed-nil-errors-as-contracts",
+        "status": 200,
+        "wordCount": 1570,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/go-typed-nil-errors-as-contracts",
+        "schema": "TechArticle",
+        "eventDate": "2026-10-17",
+        "publishedAt": "2026-10-23"
+      },
+      {
+        "slug": "gopls-0-24-error-contracts-memory",
+        "status": 200,
+        "wordCount": 1535,
+        "images": 3,
+        "canonical": "https://gopherforge.app/news/gopls-0-24-error-contracts-memory",
+        "schema": "NewsArticle",
+        "eventDate": "2026-10-15",
+        "publishedAt": "2026-10-23"
+      }
+    ],
+    "allNews": 15,
+    "rssItems": 15,
+    "newImageAssets": 15,
+    "internalLinksAndAnchors": 35,
+    "sitemapIncludesAllNewArticles": true,
+    "metadataAndSchema": "passed",
+    "datePolicy": "Archive ordered by unique edition dates; RSS uses actual publication. News and guides are distinct."
+  },
+  "imageManifest": "docs/website/news-image-manifest.json",
+  "newImages": 15,
+  "contentSourceCommit": "1587bfe551715d468974e52bc42f7cea9096a2cc",
+  "browserChecks": [
+    "Desktop syntax highlighting and intact line breaks",
+    "390px viewport: no page overflow; long code scrolls within its block",
+    "New reading quiz displays corrective reasoning",
+    "Lesson completion survives page reload after hydration",
+    "Course Continue points to the same new reading"
+  ],
+  "reactReview": "Static server pages retained; stable keys, semantic headings, image alt/captions, lazy secondary images, canonical metadata and existing client progress schema reviewed."
+}

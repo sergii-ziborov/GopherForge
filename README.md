@@ -14,23 +14,26 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 21 October 2026 | Changes |
+| Version | Status, checked 23 October 2026 | Changes |
 | --- | --- | --- |
-| **1.1.5 (43)** | Waiting for App Review; Internal QA TestFlight | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
+| **1.1.6 (44)** | Waiting for App Review; Internal QA TestFlight | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
+| **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
 | **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
-| **1.1.4 (39)** | Available on the App Store | MongoDB/Redis and production tooling, 88 interview guides, eight interactive algorithm labs, transparent scroll endings. |
+| **1.1.4 (39)** | Previous App Store release | MongoDB/Redis and production tooling, 88 interview guides, eight interactive algorithm labs, transparent scroll endings. |
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.1.4 (39)**. **1.1.5 (43)** is in TestFlight and waiting for App Review as of
-21 October 2026, 16:46 UTC. The update adds Continue
-and aligns Course and Interview presentation. TestFlight access is private;
-there is no public invitation link. Automatic publication after App Review
-approval is enabled. Release status is a dated snapshot, not a live indicator.
+The store currently distributes **1.1.5 (43)**, verified on 23 October 2026.
+**1.1.6 (44)** is in Internal QA TestFlight and waiting for App Review, with
+automatic release after approval enabled. The update adds two worked readings about borrowed buffer
+lifetimes and sync.Pool ownership. They are also available on the website.
+Existing lesson IDs, completion, bookmarks and Continue storage remain unchanged.
+TestFlight access is private; there is no public invitation link.
+Release status is a dated snapshot, not a live indicator.
 
-[Submission receipt](docs/releases/1.1.5-submission.json) ·
-[Asset verification](docs/releases/1.1.5-assets-verified.json) ·
-[QA results](docs/releases/1.1.5-qa.json) ·
+[Submission receipt](docs/releases/1.1.6-submission.json) ·
+[Asset verification](docs/releases/1.1.6-assets-verified.json) ·
+[QA results](docs/releases/1.1.6-qa.json) ·
 [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
@@ -47,7 +50,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** 169 teaching lessons in 21 units, including 122 readings,
+- **Learn Go.** 171 teaching lessons in 21 units, including 124 readings,
   plus 22 prediction challenges. Worked Go programs, diagrams, matching
   reviews and three-choice mistake practice accompany the material.
 - **Continue studying.** Reopen the last course lesson or interview guide.
@@ -112,7 +115,7 @@ Interview self-assessment is stored locally, independently from lesson completio
 
 Current native screens, captured from the app rather than reconstructed mockups:
 
-<img src="docs/screenshots/root43-course-continue.png" width="300" alt="Course progress card, Continue and study actions without a duplicate Learn heading">
+<img src="docs/screenshots/buffer44-course-continue.png" width="300" alt="Course with 171 teaching lessons and Continue pointing to the borrowed-buffer reading">
 <img src="docs/screenshots/root43-interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
 
 ### Next.js website
@@ -224,3 +227,19 @@ open-source project. Copyright © 2026 Serhii Ziborov. All rights reserved.
 
 GopherForge is independent and is not affiliated with or endorsed by Google or
 the Go project.
+
+### October journal expansion
+
+The [journal](https://gopherforge.app/news) now contains fifteen original long-form
+articles. Five additions cover the 2026 developer survey, gopls 0.24, slice
+backing storage, borrowed buffers/pooling and typed nil errors. Each has at least
+1,500 words of prose, three original generated illustrations, highlighted
+runnable examples where relevant, primary references and links into the course.
+Edition dates fill unused archive days; actual publication dates remain separate.
+News and evergreen technical guides use distinct structured-data types.
+
+The two new course readings are
+[borrowed bytes](https://gopherforge.app/learn/stdlib.borrowed-buffers) and
+[pool ownership](https://gopherforge.app/learn/runtime.pool-ownership).
+The native catalog is the source for both platforms; browser and app progress
+remain independent.

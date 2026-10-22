@@ -76,11 +76,9 @@
     ],
     "wordCount": 1758,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "gopherforge",
-      "Go engineering",
-      "GopherForge news"
-    ]
+    "keywords": ["gopherforge", "Go engineering", "GopherForge news"],
+    "editionDate": "2026-10-20",
+    "kind": "news"
   },
   {
     "slug": "vscode-go-0-58-editor-upgrade",
@@ -167,11 +165,9 @@
     ],
     "wordCount": 1781,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "tooling",
-      "Go engineering",
-      "GopherForge news"
-    ]
+    "keywords": ["tooling", "Go engineering", "GopherForge news"],
+    "editionDate": "2026-10-20",
+    "kind": "news"
   },
   {
     "slug": "go-1-27-3-security-patch-deployment",
@@ -267,11 +263,9 @@
     ],
     "wordCount": 1723,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "security",
-      "Go engineering",
-      "GopherForge news"
-    ]
+    "keywords": ["security", "Go engineering", "GopherForge news"],
+    "editionDate": "2026-10-19",
+    "kind": "news"
   },
   {
     "slug": "dapr-1-19-rc4-go-service-boundaries",
@@ -366,11 +360,9 @@
     ],
     "wordCount": 1762,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "cloud native",
-      "Go engineering",
-      "GopherForge news"
-    ]
+    "keywords": ["cloud native", "Go engineering", "GopherForge news"],
+    "editionDate": "2026-10-16",
+    "kind": "news"
   },
   {
     "slug": "gopls-interactive-refactoring-go",
@@ -379,7 +371,7 @@
     "category": "Language tools",
     "eventDate": "2026-10-16",
     "publishedAt": "2026-10-20",
-    "modifiedAt": "2026-10-20",
+    "modifiedAt": "2026-10-23",
     "imagePrefix": "gopls",
     "sections": [
       {
@@ -456,16 +448,15 @@
       }
     ],
     "related": [
-      "vscode-go-0-58-editor-upgrade",
-      "gopherforge-go-learning-workbench-continue"
+      "gopls-0-24-error-contracts-memory",
+      "go-typed-nil-errors-as-contracts",
+      "vscode-go-0-58-editor-upgrade"
     ],
     "wordCount": 1761,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "language tools",
-      "Go engineering",
-      "GopherForge news"
-    ]
+    "keywords": ["language tools", "Go engineering", "GopherForge news"],
+    "editionDate": "2026-10-16",
+    "kind": "news"
   },
   {
     "slug": "go-reproducible-build-report-october-21-2026",
@@ -574,7 +565,9 @@
         "body": "Start with one release candidate and one comparison rule. Capture the official report’s observation date if it informs the toolchain decision, and record the exact application recipe separately. Make one independent rebuild, inspect any difference and attach the result to the rollout evidence. Finally, ask another engineer to retrieve the record using only the released version number.\n\nResist the temptation to redesign every build job during the first pass. Pick the largest unexplained input and make it explicit. That might be a generator, an image tag, an external profile or an unreviewed script. The next release should be easier to explain because that ambiguity has disappeared. Small, measurable improvements accumulate into a reliable release process.\n\nThe news on 21 October is the current upstream verification report. The longer-term opportunity is to make your own release evidence equally concrete. Reproducibility earns its place when it helps people answer a real question about a real artifact. Keep the report, the recipe and the deployed identity connected, and make the strength of each claim visible to the people who depend on the software."
       }
     ],
-    "wordCount": 1915
+    "wordCount": 1915,
+    "editionDate": "2026-10-21",
+    "kind": "news"
   },
   {
     "slug": "go-1-27-http-connection-reuse",
@@ -671,7 +664,9 @@
         "body": "Take one status-only request in your application and ask a teammate to explain its ownership, deadline and retry policy. Then show the connection trace for a representative test. The exercise should reveal where cleanup happens and which layer owns the decision to abandon a slow operation. If those answers require reading unrelated global helpers, simplify the boundary before adding more tuning knobs.\n\nFor interview preparation, change one assumption at a time. What if the body becomes large? What if a proxy closes every connection? What if the operation stops being safe to repeat? These questions turn a release note into a discussion of network lifecycle and application semantics. Use the [network-service interview material](/interview?topic=http) to practice a full explanation rather than memorizing a preferred helper function.\n\nGo 1.27 removes some delicate cleanup work from ordinary application code. Teams can benefit most by keeping that code small, retaining explicit ownership and measuring the actual path. Close the body, preserve the operation’s budget, and let evidence determine whether connection reuse was the problem you needed to solve."
       }
     ],
-    "wordCount": 1846
+    "wordCount": 1846,
+    "editionDate": "2026-10-14",
+    "kind": "news"
   },
   {
     "slug": "go-1-27-experimental-simd-amd64-arm64-wasm",
@@ -769,7 +764,9 @@
         "body": "Choose one measured hotspot and one supported target. Preserve a scalar reference, write the contract, create representative fixtures and run the correctness comparison before the performance comparison. Expand target coverage only when the first experiment produces evidence worth maintaining. Keep the build configuration and results with the change so another engineer can evaluate the next toolchain release.\n\nThe October announcement broadens the set of Go developers who can try architecture-specific SIMD. Its practical value will come from careful experiments in libraries and workloads that benefit from parallel data operations. It does not establish that every service needs explicit vectors, nor that an experimental optimization should be exposed throughout an application.\n\nTreat the feature as a candidate behind a stable boundary. If it wins on the workload, survives correctness checks and remains supportable across your targets, you have a useful optimization. If it does not, retain the baseline and the lesson. Both outcomes are better than a sweeping rewrite driven by a release headline. The strongest result is a smaller uncertainty about how your actual Go program behaves."
       }
     ],
-    "wordCount": 1949
+    "wordCount": 1949,
+    "editionDate": "2026-10-02",
+    "kind": "news"
   },
   {
     "slug": "go-1-27-small-allocation-performance",
@@ -811,12 +808,12 @@
       }
     ],
     "related": [
-      "go-1-27-goroutine-leak-profiles",
-      "go-1-27-experimental-simd-amd64-arm64-wasm",
-      "go-reproducible-build-report-october-21-2026"
+      "go-bytes-buffer-sync-pool-ownership",
+      "go-slices-backing-array-append-clip-clone",
+      "go-1-27-goroutine-leak-profiles"
     ],
     "publishedAt": "2026-10-21",
-    "modifiedAt": "2026-10-21",
+    "modifiedAt": "2026-10-23",
     "sourceCheckedAt": "2026-10-21",
     "imagePrefix": "alloc",
     "sections": [
@@ -871,7 +868,9 @@
         "body": "Choose one representative request path, capture a baseline and run a controlled toolchain comparison. Add the small benchmark only if it helps explain the result. Inspect retained data before introducing a pool, and include overload behavior before increasing concurrency. Publish the actual scope of any improvement with the release evidence.\n\nThe September announcement is valuable because runtime work can improve ordinary programs without asking every application author to write a custom allocator. The most useful response is equally ordinary: upgrade deliberately, measure the application and keep ownership clear. There is no need to turn an implementation detail into a new abstraction throughout the codebase.\n\nIf the team finds a measurable benefit, retain the workload and command so the next release can repeat the check. If it finds no meaningful end-to-end change, keep that result too. Either outcome is progress when it narrows uncertainty and protects a readable implementation. Faster allocation is one part of a Go program’s behavior; a sound performance decision explains how that part connects to the work users actually need the program to finish."
       }
     ],
-    "wordCount": 1878
+    "wordCount": 1878,
+    "editionDate": "2026-09-16",
+    "kind": "news"
   },
   {
     "slug": "go-1-27-goroutine-leak-profiles",
@@ -980,6 +979,471 @@
         "body": "For every goroutine introduced by a change, ask four questions: who starts it, what can block it, how can it stop and who observes that it has stopped? Apply the questions to the failure path as carefully as the happy path. Add the corresponding test before calling the lifecycle complete.\n\nFor interview preparation, explain why adding a buffer can solve one finite producer scenario without being a universal leak fix. Then describe a case where cancellation is observed before a receive but forgotten before a send. Finally, explain why a clean race-detector run and an empty leak profile still do not prove that every operation has a bounded lifetime. The [concurrency interview topic](/interview?topic=concurrency) is a useful route for working through those distinctions.\n\nGo 1.27 gives engineers a sharper way to locate some permanently blocked workers. The feature becomes most valuable when the resulting stack trace leads to a clear ownership repair and an observable shutdown test. Keep the capture, fix the obligation and verify the exit. Every worker should have an owner who can explain how it gets home."
       }
     ],
-    "wordCount": 1923
+    "wordCount": 1923,
+    "editionDate": "2026-09-02",
+    "kind": "news"
+  },
+  {
+    "slug": "go-developer-survey-2026-practical-feedback",
+    "title": "Go Developer Survey 2026: turn daily friction into useful feedback",
+    "description": "The 2026 Go survey is open. Prepare concrete feedback about modules, editors, agents and debugging with a practical evidence-first workshop.",
+    "category": "COMMUNITY & DEVELOPER EXPERIENCE",
+    "editionDate": "2026-10-23",
+    "eventDate": "2026-10-21",
+    "kind": "news",
+    "keywords": [
+      "Go Developer Survey 2026",
+      "Go developer experience",
+      "Go tooling feedback",
+      "Go agent workflows"
+    ],
+    "sources": [
+      {
+        "title": "Official 2026 Go Developer Survey announcement",
+        "url": "https://go.dev/blog/survey2026-announce"
+      },
+      {
+        "title": "Go toolchain selection",
+        "url": "https://go.dev/doc/toolchain"
+      },
+      {
+        "title": "Go Modules Reference",
+        "url": "https://go.dev/ref/mod"
+      },
+      {
+        "title": "Go diagnostics guide",
+        "url": "https://go.dev/doc/diagnostics"
+      }
+    ],
+    "related": [
+      "gopls-0-24-error-contracts-memory",
+      "go-slices-backing-array-append-clip-clone",
+      "go-reproducible-build-report-october-21-2026"
+    ],
+    "imagePrefix": "survey",
+    "sections": [
+      {
+        "id": "the-survey-is-open-the-useful-part-is-your-experience",
+        "title": "The survey is open; the useful part is your experience",
+        "body": "The Go team announced the 2026 Go Developer Survey on 21 October. As of this edition on 23 October, the announced response window runs through 3 November. The invitation estimates ten to twenty minutes, makes every question optional and says results are expected early in 2027. Those are the news facts; there are no 2026 results to interpret yet. The primary announcement is linked below, and its survey link is the appropriate route to participate.\n\nFor working developers, the opportunity is broader than expressing a language preference. A concrete account of a confusing module upgrade, an unreliable editor interaction or an expensive debugging session can explain where a development workflow breaks down. This article offers an original preparation workshop for turning that experience into useful feedback. It does not claim that these are official survey questions, that a particular feature is planned, or that submitting an answer guarantees a roadmap outcome."
+      },
+      {
+        "id": "start-from-one-real-task-not-a-wishlist",
+        "title": "Start from one real task, not a wishlist",
+        "body": "Pick a recent task you actually performed. Perhaps you added a dependency to a private module, traced a cancellation bug, or tried to understand why a small byte slice retained a large allocation. Write down the intended outcome and the first point where progress became difficult. This produces a more precise account than a general statement that tooling should be simpler.\n\nSeparate frequency from severity. A small annoyance repeated twenty times a day can have a large cumulative cost. A rare failure that blocks a release can matter for a different reason. Describe both without inventing a numeric estimate you did not measure. If you only know that a task took much longer than expected, say that and explain the observable steps that caused the delay.\n\nA useful private note has four fields: task, environment, obstacle and workaround. Keep it short enough that you can check it against memory or logs. The note is preparation for your own answer, not a template to paste into every survey field. Different questions may ask for different kinds of information, and an optional question can be left unanswered when you lack relevant experience."
+      },
+      {
+        "id": "capture-the-environment-without-exposing-the-project",
+        "title": "Capture the environment without exposing the project",
+        "body": "Go behavior depends on more than the version printed by a terminal. A workspace can select a toolchain, an editor can run a separately installed language server, and a container can build with a different configuration from the host. Record the parts relevant to the obstacle before deciding what caused it.\n\n```sh\ngo version\ngo env GOTOOLCHAIN GOWORK GOPROXY\ngopls version\n```\n\nThese commands help inventory a local environment. Review their output before sharing it: proxy settings or paths can reveal internal infrastructure. You usually do not need to disclose a private repository name, access token, customer payload or proprietary algorithm to explain a workflow problem. Replace sensitive identifiers with neutral examples while preserving the structural relationship that caused the issue.\n\nFor an editor problem, verify which language-server binary the editor actually uses. For a module problem, preserve the relevant module or workspace relationship. Our [module lessons](/learn?unit=modules) explain these boundaries, and the [gopls upgrade workshop](/news/gopls-0-24-error-contracts-memory) shows how to compare the editor's executable with the terminal's. Environment evidence helps distinguish a language problem from an installation mismatch."
+      },
+      {
+        "id": "separate-the-symptom-from-your-hypothesis",
+        "title": "Separate the symptom from your hypothesis",
+        "body": "Suppose a request handler's memory grows after large responses. “The garbage collector leaks memory” is a hypothesis. “A cache retains short slices derived from large response buffers” is a more specific observation if a profile and reproducer support it. The difference matters because the right fix may belong in the application's ownership contract rather than in the runtime.\n\nWrite the observable symptom first, then label the suspected cause. Include what you tried and what changed. If reducing cache lifetime changed retained memory, that is useful evidence. If you have not isolated the cause, say so. Uncertainty stated clearly is more informative than a confident explanation built from a single graph.\n\nThe [slice backing-array guide](/news/go-slices-backing-array-append-clip-clone) offers a concrete example of this distinction. A small view can keep storage reachable without the runtime violating its contract. That does not make the developer experience irrelevant: the difficulty of discovering ownership can itself be useful feedback. Good reports can acknowledge correct language behavior while describing why the behavior was hard to understand."
+      },
+      {
+        "id": "build-a-small-reproducer-when-the-problem-is-technical",
+        "title": "Build a small reproducer when the problem is technical",
+        "body": "A reproducer should preserve the condition that makes the problem appear and remove unrelated machinery. For a pointer/value error mismatch, a short program may be enough. For a workspace loading issue, reducing everything to one file may remove the very module relationship that matters. Minimal means the smallest faithful case, not automatically the shortest source file.\n\nUse deterministic examples where possible. If the issue involves timing, explain the coordination steps and run count rather than hiding flakiness behind a sleep. If it concerns performance, pin the input, toolchain and measurement method. A before-and-after result without consistent conditions can be an interesting clue, but it is weak evidence for a causal claim.\n\nSurveys and bug reports serve different purposes. The survey can explain the impact on your workflow; a technical issue tracker can carry the focused reproducer and follow-up discussion. Read the appropriate project's contribution guidance before reporting a bug. Do not assume a long pasted stack trace is the best answer to a broad experience question, or that a survey response replaces an actionable bug report."
+      },
+      {
+        "id": "describe-the-workaround-and-its-maintenance-cost",
+        "title": "Describe the workaround and its maintenance cost",
+        "body": "A workaround reveals what the obstacle forces you to do. You might restart an editor, maintain an extra shell script, copy bytes at an API boundary, or pin a dependency because a migration is unclear. Explain whether the workaround is reliable, temporary or costly to maintain. This helps distinguish an inconvenience with a known remedy from a blocker with no acceptable path.\n\nBe careful with words such as “always” and “never.” If you observed a failure in two repositories, say which relevant properties they shared. If only one operating system or editor was involved, include that limit. A precise narrow report can be more useful than a broad statement that collapses several unrelated situations into one complaint.\n\nAlso describe what worked well. If tests made a refactor safe, or a diagnostic led directly to the repair, that is information about a successful workflow. Balanced feedback does not require equal praise and criticism; it requires an accurate account of the task. The [reproducible build analysis](/news/go-reproducible-build-report-october-21-2026) uses the same approach: record the evidence and the limits of what it establishes."
+      },
+      {
+        "id": "treat-agent-assisted-go-development-as-an-environment",
+        "title": "Treat agent-assisted Go development as an environment",
+        "body": "When an agent writes or changes Go code, record which parts of the workflow it could actually observe. Did it inspect the module graph, run tests, read local documentation and see compiler output? Or did it propose code without access to the repository's constraints? These are different development experiences even if the chat interface looks similar.\n\nDescribe the verification boundary. A generated MongoDB query, Redis cache policy or Kubernetes manifest may be syntactically plausible while missing a workload-specific timeout or resource limit. The useful report identifies the task, the missing context and the check that caught the mistake. Do not submit confidential prompts, source or credentials to explain the general failure mode.\n\nOur [agent workflow lessons](/learn?unit=modules) connect repository context, narrow edits and test evidence. They do not suggest trusting an agent's self-reported success without checking the result. For feedback, this distinction helps explain whether the pain comes from language discoverability, tool integration, missing project context or a verification step that the environment could not perform."
+      },
+      {
+        "id": "use-a-short-retrospective-with-your-team",
+        "title": "Use a short retrospective with your team",
+        "body": "A fifteen-minute discussion can uncover differences hidden by a shared repository. One developer may use a multi-module workspace while another opens a subdirectory. A third may work inside a constrained container. Compare the workflow boundaries rather than assuming everyone experiences the same editor state and build environment.\n\nAsk each person for one recent successful task and one difficult task. Collect concrete observations separately before discussing possible solutions. This reduces the chance that the first confident suggestion becomes everybody's explanation. If you later submit individual survey answers, preserve individual experience rather than coordinating identical responses to amplify a preference.\n\nA team retrospective also creates useful internal work. You may discover an outdated setup guide, a missing test or an ambiguous ownership comment that you can fix immediately. The survey is not the only path to improvement. The [borrowed-buffer workshop](/news/go-bytes-buffer-sync-pool-ownership), for example, can turn an unclear return contract into a focused local repair without waiting for any language change."
+      },
+      {
+        "id": "read-future-results-with-the-right-questions",
+        "title": "Read future results with the right questions",
+        "body": "When results become available, look at who responded, how questions were framed and what the report says about interpretation. A survey can describe experiences among respondents without proving that every Go developer has the same needs. Avoid converting a reported preference into a universal architectural rule or a benchmark conclusion.\n\nCompare the results with your own notes, but do not expect your experience to match every aggregate. A developer maintaining command-line tools and one operating high-throughput services may reasonably prioritize different things. The interesting question is which workflow conditions explain those differences and what practical improvement would help each group.\n\nKeep proposals separate from announcements. An expressed desire for a feature does not mean the Go project has committed to implement it. Likewise, an existing workaround does not mean a difficulty is unimportant. Clear labels for observation, interpretation and planned action make community reporting more useful. We will use the same distinction in future journal coverage rather than presenting survey interest as a released capability."
+      },
+      {
+        "id": "turn-participation-into-one-concrete-improvement",
+        "title": "Turn participation into one concrete improvement",
+        "body": "Before submitting, check that your answers reflect what you know, omit sensitive details and fit the question being asked. Follow the official announcement to the survey itself, review the actual form and answer the parts relevant to you. The preparation steps in this article are optional engineering habits, not additional requirements imposed by the survey organizers.\n\nThen choose one local improvement from your notes. Add an environment check to the setup guide, document a borrowed result, write the missing success-case test, or capture a reproducible editor issue. This converts reflection into something the next developer can use. Keep that change small enough to review and verify, even if the broader problem deserves a larger discussion.\n\nThe Go community benefits from specific accounts of real work, and your project benefits from understanding its own friction. The [course map](/learn), [interview preparation](/interview) and the linked practical articles offer ways to sharpen the explanation before you share it. The strongest feedback is not the longest answer; it is an honest, well-scoped account that makes the task, obstacle and consequence understandable."
+      }
+    ],
+    "wordCount": 1775,
+    "publishedAt": "2026-10-23",
+    "modifiedAt": "2026-10-23",
+    "sourceCheckedAt": "2026-10-23"
+  },
+  {
+    "slug": "go-slices-backing-array-append-clip-clone",
+    "title": "Go slices: backing arrays, append, Clip and Clone without surprises",
+    "description": "Trace slice aliasing with runnable Go examples. Learn when append shares storage, why Clip does not copy, and how shallow clones and retained buffers behave.",
+    "category": "GO DEEP DIVE · SLICES",
+    "editionDate": "2026-10-22",
+    "eventDate": "2026-10-22",
+    "kind": "guide",
+    "keywords": [
+      "Go slice backing array",
+      "Go append aliasing",
+      "slices Clip vs Clone",
+      "Go slice memory retention"
+    ],
+    "sources": [
+      {
+        "title": "Go specification: slice types and append",
+        "url": "https://go.dev/ref/spec"
+      },
+      {
+        "title": "slices.Clip and slices.Clone contracts",
+        "url": "https://pkg.go.dev/slices"
+      },
+      {
+        "title": "Go slices: usage and internals",
+        "url": "https://go.dev/blog/slices-intro"
+      },
+      {
+        "title": "Go data race detector",
+        "url": "https://go.dev/doc/articles/race_detector"
+      }
+    ],
+    "related": [
+      "go-bytes-buffer-sync-pool-ownership",
+      "gopls-0-24-error-contracts-memory",
+      "go-1-27-small-allocation-performance"
+    ],
+    "imagePrefix": "slices",
+    "sections": [
+      {
+        "id": "start-with-storage-not-with-the-brackets",
+        "title": "Start with storage, not with the brackets",
+        "body": "A slice is convenient precisely because several views can describe the same storage. That convenience becomes a bug when an API treats a view as an independent result. A parser returns the first few bytes of its input, a cache stores that result, and the caller reuses the input for another request. Nothing in the type `[]byte` tells either side that the apparent value still belongs to someone else. This article builds a practical ownership model from small, deterministic examples, then follows the model into asynchronous work, caches and production memory investigations.\n\nKeep three questions separate. Which elements are currently addressable through this slice? How far could it be resliced without allocating? Who may change or retain the backing storage? Length answers the first question, capacity helps with the second, and your program's contract must answer the third. Treating capacity as an ownership guarantee is the central mistake. The [Go specification](https://go.dev/ref/spec#Slice_types) defines the language rules; the examples below are original experiments designed to make their consequences visible."
+      },
+      {
+        "id": "a-window-can-overlap-another-window",
+        "title": "A window can overlap another window",
+        "body": "Run this complete program before reading the result. The indexes in the comments refer to the original backing array, which makes the overlap easier to follow than drawing three unrelated slices.\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    storage := [6]int{10, 20, 30, 40, 50, 60}\n    left := storage[1:3]  // original indexes 1 and 2\n    right := storage[2:5] // original indexes 2, 3 and 4\n    left[1] = 99\n    fmt.Println(left)\n    fmt.Println(right)\n    fmt.Println(storage)\n}\n```\n\nThe output is `[20 99]`, `[99 40 50]`, and `[10 20 99 40 50 60]`. Assigning the slice to another variable copies its descriptor, not its elements. Passing it to a function follows the same value-passing rule. This means that a function can change visible elements without receiving a pointer to the slice variable. It needs a pointer or a returned slice only when it must replace the caller's descriptor, for example after appending a result with a different length.\n\nOn paper, draw one row of six cells and place two labeled windows over it. This is more useful than memorizing that slices are references: the descriptor itself is a value, and its relationship to shared storage is the part that matters. Our [slice walkthrough lesson](/learn/collections.slice-walkthrough) uses the same distinction."
+      },
+      {
+        "id": "append-changes-length-before-it-changes-ownership",
+        "title": "Append changes length before it changes ownership",
+        "body": "An append can reuse available backing storage. When it does, an element outside one view's current length may still be inside another view. The second view can therefore change even though the first program line looks like it is constructing a new result.\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    base := []int{1, 2, 3, 4}\n    prefix := base[:2]\n    extended := append(prefix, 9)\n    fmt.Println(base)\n    fmt.Println(extended)\n}\n```\n\nThis prints `[1 2 9 4]` and `[1 2 9]`. The initial slice has enough capacity for the added element, so append writes into the existing array. This is not an implementation accident. It follows from having sufficient room in the backing storage. In contrast, once an append exceeds capacity, it must obtain storage large enough for the result. Do not turn that into a growth-factor promise: the exact new capacity is not a stable contract to encode in application tests.\n\nA good regression test checks the behavior your API promises. If it promises independence, mutate the source after the call and assert that the result stays unchanged. A test that merely asserts `cap(result) == 8` proves little about ownership and can break when a toolchain changes its allocation strategy."
+      },
+      {
+        "id": "clip-prevents-one-kind-of-append-not-all-sharing",
+        "title": "Clip prevents one kind of append, not all sharing",
+        "body": "A full slice expression can cap a view at its current length. `slices.Clip` provides a readable spelling for that operation. Neither spelling copies the elements. Use this when append isolation is the requirement, and use a copy when storage isolation is the requirement.\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"slices\"\n)\n\nfunc main() {\n    source := []int{1, 2, 3, 4}\n    view := slices.Clip(source[:2])\n    view[0] = 7\n    grown := append(view, 8)\n    grown[1] = 6\n    fmt.Println(source)\n    fmt.Println(grown)\n}\n```\n\nThe output is `[7 2 3 4]` and `[7 6 8]`. The first mutation reaches the shared array. The append needs a new array, after which changing `grown[1]` no longer changes the source. Notice how ownership changes at a particular operation; the variable name alone does not establish it. Review code in that order instead of assigning one permanent label such as “safe slice” to every value returned by Clip.\n\nThe newer [gopls analyzer article](/news/gopls-0-24-error-contracts-memory) explains why a tool may suggest Clip for clarity without promising a deep copy. An automated rewrite can improve expression intent while leaving the same aliasing contract in place."
+      },
+      {
+        "id": "clone-is-shallow-and-that-qualifier-matters",
+        "title": "Clone is shallow, and that qualifier matters",
+        "body": "For a slice of integers, cloning the elements gives independent integer storage. For a slice of slices, pointers or maps, cloning only the outer sequence leaves the nested objects shared. That is often correct, but the API should say what level it owns.\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"slices\"\n)\n\nfunc main() {\n    original := [][]int{{1, 2}, {3, 4}}\n    outer := slices.Clone(original)\n    outer[0][0] = 9\n    deep := make([][]int, len(original))\n    for i := range original {\n        deep[i] = slices.Clone(original[i])\n    }\n    deep[0][1] = 8\n    fmt.Println(original[0])\n    fmt.Println(deep[0])\n}\n```\n\nThis prints `[9 2]` followed by `[9 8]`. The first copy retained the inner slices; the second copied each inner integer sequence. A general deep-copy operation is a domain decision, not merely a utility loop. If an element includes a mutex, a file handle, a cyclic graph or identity-sensitive object, blindly copying fields can violate invariants. Prefer a constructor or domain-specific snapshot operation that documents which objects remain shared.\n\nFor byte payloads, a dedicated copy is usually straightforward. For a request structure containing both metadata and payloads, identify the mutable members individually. Copying everything indiscriminately can add expensive allocations while still failing to copy one referenced object that actually needed isolation."
+      },
+      {
+        "id": "a-tiny-view-can-retain-a-large-allocation",
+        "title": "A tiny view can retain a large allocation",
+        "body": "Imagine reading a large response, selecting a short identifier and keeping the identifier in a long-lived map. If that identifier is a slice into the original allocation, the map can keep the large backing array reachable. Reducing the slice's length or capacity does not move those bytes to a smaller allocation. A separate owned copy is the operation that can break that relationship.\n\nThis is where two reasonable optimizations collide. Avoiding a copy makes the parser fast in isolation. Retaining a large allocation makes the application expensive over time. Neither statement is universally right. Compare the lifetime of the input to the lifetime of the result, then measure retained memory under a representative workload. A short-lived parser result consumed before the next read needs a different policy from a cache entry retained for hours.\n\nOur [retained buffers lesson](/learn/collections.retained-buffers) develops this scenario, while the [allocation analysis](/news/go-1-27-small-allocation-performance) separates allocation rate from live memory. A heap profile showing large retained objects does not automatically mean that your program needs a pool. It may mean that a small copy at a lifetime boundary is missing."
+      },
+      {
+        "id": "channels-transfer-descriptors-unless-you-transfer-ownership",
+        "title": "Channels transfer descriptors unless you transfer ownership",
+        "body": "Sending a slice through a channel copies the slice value. It does not freeze the array. A producer that sends a buffer and immediately overwrites it can corrupt a consumer's result. A buffered channel can make this particularly confusing because a successful send only means the descriptor was accepted into the channel, not that the consumer finished reading every element.\n\nThere are three defensible designs. Copy the payload before sending. Transfer exclusive ownership and require the producer to stop using that buffer. Or add a completion protocol that returns the buffer only after consumption. Choose one and make it visible in function names, comments and tests. A channel itself does not choose for you.\n\nCancellation complicates the last design. If the consumer exits early, somebody still needs to decide whether the buffer is reusable, discarded or returned. Review the abandoned path alongside the happy path. The [borrowed-buffer and pool guide](/news/go-bytes-buffer-sync-pool-ownership) takes this ownership problem through an explicit release boundary. The [concurrent slice lesson](/learn/collections.concurrent-slices) covers separate index ownership and collection patterns."
+      },
+      {
+        "id": "build-a-test-matrix-around-boundaries",
+        "title": "Build a test matrix around boundaries",
+        "body": "Test inputs with zero length, one element, spare capacity, exact capacity and nested references. These cases reveal different contracts. A test that only passes a freshly allocated full slice may accidentally force append to allocate, hiding a bug that appears when a caller provides spare capacity. Conversely, a test that expects aliasing after a capacity-growing append is testing an invalid assumption.\n\nFor an API that promises an independent result, test both directions: changing the input must not change the result, and changing the result must not change the input. For nested structures, explicitly state which level is independent and test that level. Include nil and empty inputs when their distinction is part of serialization or domain behavior, rather than assuming every clone operation has identical nil semantics.\n\nRun the race detector for code that shares slices between goroutines, but remember that it observes exercised executions. A clean run does not prove that the ownership protocol is sound. Keep a deterministic single-goroutine mutation test as well: temporal aliasing can be wrong without being concurrent. The [Go race detector guide](https://go.dev/doc/articles/race_detector) explains how to run the tool and interpret its scope."
+      },
+      {
+        "id": "review-the-api-before-tuning-the-allocation",
+        "title": "Review the API before tuning the allocation",
+        "body": "A useful API comment answers four questions in plain language: does the function retain input, may the caller mutate it after return, does the result share storage, and how long is a borrowed result valid? These answers eliminate more uncertainty than a comment saying “efficient implementation.” They also let a later maintainer replace an implementation without accidentally changing the ownership contract.\n\nWhen performance matters, measure the exact boundary you intend to optimize. Count allocations, inspect live memory, and check latency under realistic concurrency. A copy that adds one allocation may release a large backing array much earlier. A zero-copy interface may be excellent inside a tightly controlled parser and unsuitable as a public cache API. The correct choice follows lifetime and ownership, then measurement.\n\nFor interview preparation, explain the overlapping-window program aloud before discussing optimization. Then change one line to Clip and explain which mutation still aliases. Finally clone a nested slice and identify what remains shared. These exercises test a reusable mental model rather than a memorized output. Continue with the [course map](/learn?unit=collections) or [Go interview preparation](/interview), and use the diagrams as prompts to draw your own storage relationships."
+      }
+    ],
+    "wordCount": 1604,
+    "publishedAt": "2026-10-23",
+    "modifiedAt": "2026-10-23",
+    "sourceCheckedAt": "2026-10-23"
+  },
+  {
+    "slug": "go-bytes-buffer-sync-pool-ownership",
+    "title": "bytes.Buffer and sync.Pool: borrowed bytes, owned results and safe reuse",
+    "description": "A practical Go guide to Bytes, Reset, scanner tokens and pooling. Copy at lifetime boundaries, test ownership and avoid retaining oversized buffers.",
+    "category": "GO DEEP DIVE · OWNERSHIP",
+    "editionDate": "2026-10-18",
+    "eventDate": "2026-10-18",
+    "kind": "guide",
+    "keywords": [
+      "Go bytes.Buffer Bytes lifetime",
+      "Go sync.Pool ownership",
+      "Go buffer pooling",
+      "bufio Scanner Bytes copy"
+    ],
+    "sources": [
+      {
+        "title": "bytes.Buffer and bytes.Clone reference",
+        "url": "https://pkg.go.dev/bytes"
+      },
+      {
+        "title": "sync.Pool reference",
+        "url": "https://pkg.go.dev/sync#Pool"
+      },
+      {
+        "title": "bufio.Scanner.Bytes reference",
+        "url": "https://pkg.go.dev/bufio#Scanner.Bytes"
+      },
+      {
+        "title": "Go garbage collector guide",
+        "url": "https://go.dev/doc/gc-guide"
+      },
+      {
+        "title": "Go testing and benchmarks",
+        "url": "https://pkg.go.dev/testing"
+      }
+    ],
+    "related": [
+      "go-slices-backing-array-append-clip-clone",
+      "go-1-27-small-allocation-performance",
+      "go-1-27-goroutine-leak-profiles"
+    ],
+    "imagePrefix": "buffers",
+    "sections": [
+      {
+        "id": "a-fast-result-can-still-belong-to-somebody-else",
+        "title": "A fast result can still belong to somebody else",
+        "body": "A byte slice returned from a buffer often looks like a finished value. You can print it, send it through a channel, or put it into a cache. The danger is that the result may be a temporary view into storage that its owner will reuse. The compiler sees an ordinary `[]byte`; it cannot infer your application's lifetime contract. Correctness therefore depends on deciding when a view stops being valid and where an independent copy is required.\n\nThis guide follows one practical boundary: constructing a response in a reusable `bytes.Buffer`, returning a result, and eventually adding `sync.Pool`. The goal is a result that remains correct after the next request, not the fewest possible allocations in a tiny isolated benchmark. We also connect the same reasoning to scanner tokens, asynchronous consumers and request cancellation. The [slice storage guide](/news/go-slices-backing-array-append-clip-clone) supplies the underlying memory model if shared backing arrays are still unfamiliar."
+      },
+      {
+        "id": "observe-a-borrowed-view-before-reusing-the-buffer",
+        "title": "Observe a borrowed view before reusing the buffer",
+        "body": "The `Bytes` method exposes the buffer's unread bytes. Treat the returned slice as borrowed storage whose validity depends on what happens to the buffer next. A safe ownership boundary can be demonstrated without a pool, a race, or a scheduler-dependent test.\n\n```go\npackage main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n)\n\nfunc main() {\n    var b bytes.Buffer\n    b.WriteString(\"alpha\")\n    borrowed := b.Bytes()\n    owned := bytes.Clone(borrowed)\n    borrowed[0] = 'A'\n    fmt.Println(b.String())\n    b.Reset()\n    b.WriteString(\"omega\")\n    fmt.Println(string(owned))\n}\n```\n\nThis prints `Alpha` and `alpha`. The first line demonstrates shared storage while the borrow is valid. The second demonstrates that the explicit copy survives later reuse. We deliberately do not inspect the borrowed slice after reset: an example that prints a particular stale result could encourage dependence on behavior outside the documented lifetime. The important contract is independence of the owned result, not which bytes happen to remain visible through an invalid view.\n\nThis distinction makes a better test too. Assert that the copy stays unchanged across reuse. Do not write a test that requires invalid borrowed data to become a particular string. Invalid does not mean immediately erased, and unchanged stale bytes do not make a borrow safe."
+      },
+      {
+        "id": "reset-is-a-lifetime-event-not-a-security-eraser",
+        "title": "Reset is a lifetime event, not a security eraser",
+        "body": "Reset makes a buffer ready for another operation while retaining its storage for reuse. It does not promise to overwrite every old byte with zeros. If your code handles secrets, buffer reuse and secret erasure are separate design problems. Reducing length to zero does not establish a data sanitization guarantee, and putting an object into a pool does not make its contents confidential.\n\nDraw a timeline with three moments: obtain the view, consume the view, then mutate or release the owner. Synchronous use inside that interval is often ideal. Returning the view to a caller moves consumption outside the interval unless the caller also receives ownership of the buffer. The API must then return a copy, transfer the owner, or expose a clearly documented release protocol.\n\nThe [new borrowed-buffer lesson](/learn/stdlib.borrowed-buffers) provides a shorter walkthrough with this timeline. It also helps distinguish two uses of the word “copy”: copying a slice descriptor preserves sharing, whereas copying its elements creates separate byte storage. That distinction is easy to lose in a code review focused only on return types."
+      },
+      {
+        "id": "pooling-adds-a-release-boundary",
+        "title": "Pooling adds a release boundary",
+        "body": "A pool can reduce repeated allocation of temporary objects, but it does not know whether a returned byte slice still points inside an object. Once an object has been put back, the former borrower must stop touching it. A different goroutine may obtain it, or the runtime may discard it; neither possibility is under the original caller's control.\n\nThe following complete program copies the response before returning the buffer. Its size cutoff is an example policy for this program, not a universal recommended number.\n\n```go\npackage main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"sync\"\n)\n\nvar buffers = sync.Pool{New: func() any {\n    return new(bytes.Buffer)\n}}\n\nfunc encode(name string) []byte {\n    b := buffers.Get().(*bytes.Buffer)\n    b.Reset()\n    b.WriteString(\"hello, \")\n    b.WriteString(name)\n    result := bytes.Clone(b.Bytes())\n    if b.Cap() <= 64*1024 {\n        b.Reset()\n        buffers.Put(b)\n    }\n    return result\n}\n\nfunc main() {\n    first := encode(\"Ada\")\n    _ = encode(\"Grace\")\n    fmt.Println(string(first))\n}\n```\n\nIt prints `hello, Ada`. The returned result is owned independently of the pool. The cutoff avoids deliberately retaining a very large buffer through this reuse mechanism. It does not place a hard bound on total process memory: multiple callers can hold buffers simultaneously, response copies still allocate, and other application objects remain live. For a strict resource budget, admission control and bounded concurrency are separate requirements."
+      },
+      {
+        "id": "a-pool-is-not-a-cache-or-a-connection-manager",
+        "title": "A pool is not a cache or a connection manager",
+        "body": "A cache exists to make previously stored information available later. A pool exists to reuse temporary objects when convenient. Do not rely on retrieving the object you most recently put in, on a minimum residence time, or on the pool retaining a specific number of entries. Tests that depend on those properties may pass locally and fail when garbage collection, parallelism or runtime details change.\n\nConnection management adds even more responsibilities: liveness checks, capacity limits, timeouts, closing and server-side state. Database client libraries generally provide their own connection management. Replacing that machinery with a `sync.Pool` of network connections changes the problem rather than solving it. Likewise, a pool is not a queue whose elements must all be processed or returned.\n\nThe [pool ownership lesson](/learn/runtime.pool-ownership) asks you to trace who may access an object at each step. Its central invariant is simple: a temporary object has one active owner, and external results must stop depending on it before it becomes reusable. This invariant remains valuable even if profiling later shows that pooling is unnecessary."
+      },
+      {
+        "id": "borrowed-scanner-tokens-have-the-same-shape",
+        "title": "Borrowed scanner tokens have the same shape",
+        "body": "Streaming parsers often avoid allocation by returning views into an internal buffer. For example, `bufio.Scanner.Bytes` returns a token whose storage may be overwritten by a subsequent scan. Processing it immediately is different from appending that slice to a long-lived collection. Saving a descriptor saves a view, not a durable token.\n\n```go\npackage main\n\nimport (\n    \"bufio\"\n    \"bytes\"\n    \"fmt\"\n    \"strings\"\n)\n\nfunc main() {\n    scanner := bufio.NewScanner(strings.NewReader(\"red\\nblue\\n\"))\n    var tokens [][]byte\n    for scanner.Scan() {\n        tokens = append(tokens, bytes.Clone(scanner.Bytes()))\n    }\n    if err := scanner.Err(); err != nil {\n        panic(err)\n    }\n    for _, token := range tokens {\n        fmt.Println(string(token))\n    }\n}\n```\n\nThe durable copies print `red` and `blue`. The error check matters independently of ownership: a parser can retain tokens correctly while silently ignoring a read or token-size failure. Large token requirements need explicit scanner configuration and an application-level input bound, not an unbounded assumption that every line will fit. These are complementary contracts: one controls lifetime, and the other controls accepted input and resource use."
+      },
+      {
+        "id": "asynchronous-consumers-need-an-explicit-handoff",
+        "title": "Asynchronous consumers need an explicit handoff",
+        "body": "Suppose a handler passes a borrowed payload to a logging goroutine. The handler returns the buffer before the goroutine actually formats the message. Even if a channel send completed, the consumer may only have received the descriptor. A later request can reuse the same array before logging finishes. The result may be corrupted, and concurrent access can also become a data race.\n\nAn independent copy before enqueueing is usually the simplest contract. An ownership-transfer design can avoid that copy, but it needs a rule for returning the buffer after consumption and for handling a consumer that exits early. Cancellation must specify who owns the object after a failed enqueue, after a successful enqueue, and after shutdown. Without those transitions, a “zero-copy” optimization can create both leaks and double returns.\n\nKeep asynchronous logging bounded as well. Correct ownership does not stop a producer from enqueueing data faster than the consumer can process it. Decide whether overload blocks, drops or rejects work, and test that policy. Our [goroutine lifetime analysis](/news/go-1-27-goroutine-leak-profiles) is a useful companion when buffer ownership and worker shutdown meet in the same service."
+      },
+      {
+        "id": "test-independence-without-testing-pool-identity",
+        "title": "Test independence without testing pool identity",
+        "body": "Write a deterministic test for the public result: obtain the first payload, perform many later encodes, and confirm the first bytes remain unchanged. Add parallel calls under the race detector to exercise concurrent use. Do not assert that two calls receive the same buffer; a correct pool is allowed to return different objects, and a correct implementation must survive either case.\n\nAlso test the oversize path. A large request should produce the correct result whether or not its temporary buffer is returned for reuse. If you introduce a custom allocator interface for measurement, keep that interface narrow and avoid turning implementation counters into the public contract. Correct output and lifetime independence should remain the primary assertions.\n\nRun ordinary tests and race-enabled tests separately from performance benchmarks. Race instrumentation changes execution cost, so its timings are unsuitable for making throughput claims. For benchmarking, use representative size distributions, report allocations, and inspect retained memory after large bursts. A workload of only tiny uniform responses will not reveal the retention behavior of occasional oversized requests."
+      },
+      {
+        "id": "decide-whether-the-pool-earns-its-complexity",
+        "title": "Decide whether the pool earns its complexity",
+        "body": "Start with a correct unpooled implementation and a clear ownership comment. Then profile. If temporary allocation is insignificant compared with network latency, database work or retained application state, a pool adds a protocol without a useful payoff. If pooling does help, keep the ownership boundary visible in a short function so a future change cannot accidentally return `b.Bytes()` directly.\n\nA good review note says that returned bytes are independent and may be retained after the function returns. A borrowing API instead says exactly which next operation invalidates the view. Both are legitimate designs. Ambiguity is what makes maintenance difficult, especially when an agent or automated refactor changes a synchronous call into asynchronous work.\n\nFinish by drawing two rows: the temporary buffer and the returned owned result. Mark the copy between them, then draw the release arrow only from the temporary row. If you cannot identify where those rows separate, the result probably still depends on the object you plan to reuse. Continue with [runtime memory lessons](/learn?unit=runtime), [standard-library lessons](/learn?unit=stdlib), or the [allocation and retention article](/news/go-1-27-small-allocation-performance) to evaluate the tradeoff with measurements."
+      }
+    ],
+    "wordCount": 1534,
+    "publishedAt": "2026-10-23",
+    "modifiedAt": "2026-10-23",
+    "sourceCheckedAt": "2026-10-23"
+  },
+  {
+    "slug": "go-typed-nil-errors-as-contracts",
+    "title": "Typed nil errors in Go: return, wrap and match a reliable contract",
+    "description": "Explain typed nil, pointer versus value errors and errors.As with runnable examples. Design stable error boundaries and regression tests that catch false failures.",
+    "category": "GO DEEP DIVE · ERRORS",
+    "editionDate": "2026-10-17",
+    "eventDate": "2026-10-17",
+    "kind": "guide",
+    "keywords": [
+      "Go typed nil error",
+      "Go errors.As pointer value",
+      "Go error wrapping",
+      "Go nil interface"
+    ],
+    "sources": [
+      {
+        "title": "Go FAQ: nil error values",
+        "url": "https://go.dev/doc/faq#nil_error"
+      },
+      {
+        "title": "Go specification: interface types and method sets",
+        "url": "https://go.dev/ref/spec"
+      },
+      {
+        "title": "errors package reference",
+        "url": "https://pkg.go.dev/errors"
+      },
+      {
+        "title": "Working with Errors in Go 1.13",
+        "url": "https://go.dev/blog/go1.13-errors"
+      }
+    ],
+    "related": [
+      "gopls-0-24-error-contracts-memory",
+      "go-bytes-buffer-sync-pool-ownership",
+      "go-1-27-http-connection-reuse"
+    ],
+    "imagePrefix": "errors",
+    "sections": [
+      {
+        "id": "the-surprising-success-value-that-still-looks-like-failure",
+        "title": "The surprising success value that still looks like failure",
+        "body": "A function completes successfully, returns a variable that contains a nil pointer, and its caller enters the error branch. The symptom looks contradictory only if we treat an interface as an untyped box of bits. In Go, an interface can hold a concrete type together with a value of that type. A typed nil pointer inside an `error` is therefore different from an interface with no dynamic type and no value.\n\nThis guide follows that distinction through constructors, wrapping, `errors.As`, HTTP boundaries and regression tests. It is deliberately broader than a trick question about `err != nil`: the practical goal is an error API that callers can classify without inspecting strings or understanding the producer's internal pointer choices. The [nil interface lesson](/learn/interfaces.nil) introduces the core concept, while the [gopls 0.24 article](/news/gopls-0-24-error-contracts-memory) connects consistent error types to current tooling."
+      },
+      {
+        "id": "see-the-dynamic-type-in-a-complete-program",
+        "title": "See the dynamic type in a complete program",
+        "body": "The following program never calls a method through the nil pointer. It prints only the interface's nil comparison and dynamic type, so the example does not rely on whether an Error method happens to tolerate a nil receiver.\n\n```go\npackage main\n\nimport \"fmt\"\n\ntype Failure struct{ Message string }\n\nfunc (f *Failure) Error() string { return f.Message }\n\nfunc misleading() error {\n    var failure *Failure\n    return failure\n}\n\nfunc main() {\n    err := misleading()\n    fmt.Println(err == nil)\n    fmt.Printf(\"%T\\n\", err)\n}\n```\n\nThe output is `false` and `*main.Failure`. The returned interface has a concrete pointer type even though the pointer value is nil. A normal success return should instead return the nil interface explicitly. That is a local, understandable contract: if no failure occurred, return `nil`; otherwise construct a valid error value.\n\nDo not fix this by teaching every caller to reflect over every possible nil-like value. That moves a producer bug into all consumers, obscures the contract, and can accidentally treat an intentionally meaningful typed value as success. Repair the constructor or adapter that introduced the inconsistent return. At a third-party boundary, isolate any compatibility workaround and test it against the specific library behavior you actually observed."
+      },
+      {
+        "id": "make-success-and-failure-construction-explicit",
+        "title": "Make success and failure construction explicit",
+        "body": "The safest repair is usually small. Keep the concrete pointer local to the failure branch, or return nil before constructing it. This makes the absence of an error visible to both the compiler's reader and the next maintainer.\n\n```go\npackage main\n\nimport \"fmt\"\n\ntype ValidationError struct{ Field string }\n\nfunc (e *ValidationError) Error() string { return \"invalid \" + e.Field }\n\nfunc validate(name string) error {\n    if name == \"\" {\n        return &ValidationError{Field: \"name\"}\n    }\n    return nil\n}\n\nfunc main() {\n    fmt.Println(validate(\"Ada\") == nil)\n    fmt.Println(validate(\"\") != nil)\n}\n```\n\nBoth lines print `true`. The function's return type remains `error`, allowing callers to depend on behavior rather than construction details. The concrete error can still carry structured information for callers that need it. This is different from returning a typed nil as a signal: callers can now rely on the ordinary nil check before attempting classification.\n\nA useful unit test includes the success case even when the bug report concerns a failure. Error-focused tests often exercise only invalid inputs and miss the accidental typed nil on the successful path. Add the empty, valid and partially valid cases that the domain actually distinguishes. Test the API contract at its return boundary rather than testing only the helper that constructs the pointer."
+      },
+      {
+        "id": "pointer-and-value-errors-are-distinct-matching-targets",
+        "title": "Pointer and value errors are distinct matching targets",
+        "body": "Even with correct nil behavior, an error API can become inconsistent if some branches return a value and others return a pointer to that value. A method with a value receiver can make both forms implement `error`, but that does not make their dynamic types identical. Classification through `errors.As` depends on assignability to the requested target type.\n\n```go\npackage main\n\nimport (\n    \"errors\"\n    \"fmt\"\n)\n\ntype Problem struct{ Code string }\n\nfunc (p Problem) Error() string { return p.Code }\n\nfunc main() {\n    wrapped := fmt.Errorf(\"save record: %w\", &Problem{Code: \"conflict\"})\n    var pointer *Problem\n    var value Problem\n    fmt.Println(errors.As(wrapped, &pointer))\n    fmt.Println(errors.As(wrapped, &value))\n}\n```\n\nThis prints `true` and `false`. The first target requests a `*Problem`; the second requests a `Problem`. The additional address operator supplies a writable target to `errors.As`, which is easy to confuse with the dynamic pointer type being requested. Read the variable declaration first, then the call. This avoids memorizing a misleading rule about how many ampersands a particular example contains.\n\nChoose one exported construction style where practical, document it, and use tests to keep return branches consistent. A value type can be appropriate for small immutable errors. A pointer type can be appropriate for larger structured errors or identity-sensitive cases. Consistency and a deliberate matching contract matter more than choosing the same style for every package in the ecosystem."
+      },
+      {
+        "id": "wrapping-preserves-a-chain-only-when-you-ask-for-it",
+        "title": "Wrapping preserves a chain only when you ask for it",
+        "body": "Adding context is useful: “read settings” tells an operator more than “permission denied.” But formatting a message and preserving the original error are separate choices. With `%w`, callers can inspect the wrapped chain through standard error helpers. With ordinary string formatting, the message may look similar while the structural relationship is gone.\n\nAvoid turning every implementation detail into a permanent public promise. If callers are expected to recognize a sentinel or a specific typed error, wrapping it makes that classification part of the API. If the lower-level error belongs to a replaceable implementation, consider translating it into a stable domain error instead. The decision belongs at the boundary where technical details acquire business meaning.\n\nOur [error wrapping lesson](/learn/errors.wrapping) and [clean error boundaries](/learn/clean.errors) examine these choices from different directions. When reviewing an adapter, ask which failures a caller needs to act on: retry, reject input, report absence, or stop. A stable domain classification is often more useful than exposing the exact storage driver's error type everywhere."
+      },
+      {
+        "id": "errors-is-and-errors-as-answer-different-questions",
+        "title": "errors.Is and errors.As answer different questions",
+        "body": "Use `errors.Is` when the question concerns a recognized error identity or an explicitly supported matching rule. Use `errors.As` when the question concerns a type and its structured information. Neither operation should be replaced with searching the error message for a word such as “timeout.” Messages are written for people and can change without altering the intended classification.\n\nA typed error might include an operation, a field name, a retry hint or a code. Keep those fields meaningful and safe to expose. A database query containing credentials, raw user input or an internal filesystem path should not automatically become a client-visible string. Logging and user-facing responses are different consumers even when both start from the same error value.\n\nIf you implement custom matching methods, test the behavior callers will see through wrappers. A complicated matching rule can be harder to reason about than a simple exported sentinel or small classification interface. Prefer the least surprising contract that supports the domain. The standard [errors reference](https://pkg.go.dev/errors) is the authority for helper behavior; the architectural choice of what your package exposes remains yours."
+      },
+      {
+        "id": "translate-at-the-http-boundary-without-losing-diagnostics",
+        "title": "Translate at the HTTP boundary without losing diagnostics",
+        "body": "Consider a repository that reports a record conflict. The service layer may translate a driver-specific condition into a domain conflict error. The HTTP handler can then produce a stable status and public error code while logs retain request context and an internal diagnostic chain. This avoids coupling every handler to a specific database driver's concrete error types.\n\nThe same design helps testing. Repository tests verify the translation. Service tests verify the business outcome. Handler tests verify the response contract. You do not need to assert the exact spelling of every internal error message at every layer. Instead, assert the public status or code where it becomes public, and assert structural classification where control flow depends on it.\n\nCancellation deserves its own branch. A request ending because its context was cancelled is not automatically evidence of a broken server or a retryable storage failure. Preserve enough information for the boundary to distinguish expected cancellation from a new operational incident. Our [HTTP connection analysis](/news/go-1-27-http-connection-reuse) complements this discussion with deadlines and response ownership."
+      },
+      {
+        "id": "table-tests-should-include-the-boring-successful-case",
+        "title": "Table tests should include the boring successful case",
+        "body": "Build a matrix covering valid input, invalid input, wrapped failures and classification after one or more adapters. For each case, state whether the expected result is nil, a sentinel match, or a typed match. This keeps tests close to observable behavior and prevents a formatting change from breaking unrelated tests.\n\nA second matrix can check constructor consistency: every branch that reports the same exported error category should use the documented pointer or value form. This is especially useful when refactoring several return statements or accepting an automated rewrite. The new `ptrtoerror` analyzer in gopls is a useful additional signal, but a diagnostic is not a substitute for the contract test.\n\nTest an Error method's nil-receiver behavior only if you intentionally support that behavior. Making the method return a friendly message for a nil receiver can prevent a panic during formatting, but it does not make the interface itself nil. Those are separate properties. A test that confirms graceful formatting must not be mistaken for a test that confirms a successful function returns no error."
+      },
+      {
+        "id": "keep-the-explanation-useful-in-interviews-and-reviews",
+        "title": "Keep the explanation useful in interviews and reviews",
+        "body": "A strong interview answer starts with the two parts of an interface value, walks through the concrete program, and proposes a repair at the producer. It then explains why generic reflection at every call site is the wrong default. A stronger answer follows the error across wrapping and asks which classifications the API deliberately preserves.\n\nFor a review, draw four steps: construct, return, wrap, classify. At each step write the actual dynamic type or the expected matching contract. That small exercise catches accidental pointer/value changes, missing `%w` and typed nil returns without requiring a large conceptual diagram. It also gives an agent a narrow, verifiable task: inspect these branches, propose a consistent contract, and run the focused tests.\n\nThe larger lesson is that errors are part of data design. They carry absence, identity, type and context, and each of those can affect control flow. A readable message is valuable, but a reliable API requires more than text. Continue with the [error unit](/learn?unit=errors), [interface unit](/learn?unit=interfaces) or [interview collection](/interview) to practise explaining these boundaries with your own examples."
+      }
+    ],
+    "wordCount": 1570,
+    "publishedAt": "2026-10-23",
+    "modifiedAt": "2026-10-23",
+    "sourceCheckedAt": "2026-10-23"
+  },
+  {
+    "slug": "gopls-0-24-error-contracts-memory",
+    "title": "gopls 0.24: review error contracts, slice intent and editor memory",
+    "description": "A practical adoption workshop for gopls v0.24.0: pin the tool, inspect pointer/value errors and Clip suggestions, then test semantics and measure workspace memory.",
+    "category": "NEWS · GO TOOLS",
+    "editionDate": "2026-10-15",
+    "eventDate": "2026-10-15",
+    "kind": "news",
+    "keywords": [
+      "gopls v0.24.0",
+      "gopls ptrtoerror",
+      "gopls slicesclip",
+      "gopls memoryLimit"
+    ],
+    "sources": [
+      {
+        "title": "Official gopls v0.24.0 release notes",
+        "url": "https://go.dev/gopls/release/v0.24.0"
+      },
+      {
+        "title": "Go tools release record",
+        "url": "https://github.com/golang/tools/releases/tag/gopls%2Fv0.24.0"
+      },
+      {
+        "title": "errors.As reference",
+        "url": "https://pkg.go.dev/errors#As"
+      },
+      {
+        "title": "slices.Clip reference",
+        "url": "https://pkg.go.dev/slices#Clip"
+      },
+      {
+        "title": "Go language server documentation",
+        "url": "https://go.dev/gopls/"
+      }
+    ],
+    "related": [
+      "go-typed-nil-errors-as-contracts",
+      "go-slices-backing-array-append-clip-clone",
+      "gopls-interactive-refactoring-go"
+    ],
+    "imagePrefix": "gopls24",
+    "sections": [
+      {
+        "id": "a-release-worth-reviewing-through-real-contracts",
+        "title": "A release worth reviewing through real contracts",
+        "body": "The Go tools project released gopls v0.24.0 on 15 October 2026. Its release notes include the new `ptrtoerror` analyzer, a `slicesclip` modernizer and an experimental `memoryLimit` setting. Those changes make a useful editorial theme: editor assistance becomes more valuable when a developer can explain the contract behind the suggestion. We checked the primary release record and notes on 23 October; the release date and this article's actual publication date are deliberately separate.\n\nThis article is an original adoption workshop, not a comprehensive paraphrase of the changelog. We will use one error example, one slice boundary and a controlled workspace experiment to decide whether an upgrade helps a particular team. For the separate interaction model behind refactoring dialogs, see our earlier [interactive gopls guide](/news/gopls-interactive-refactoring-go). Here the emphasis is on checking semantics and resource behavior before accepting an editor recommendation."
+      },
+      {
+        "id": "inventory-the-language-server-your-editor-actually-runs",
+        "title": "Inventory the language server your editor actually runs",
+        "body": "A terminal and an editor can use different executables. Updating the first `gopls` on your shell's path does not prove that an already running editor process switched to it. Record the editor extension version, the language-server path reported by the editor, the active workspace and the toolchain used by that workspace. This creates an explanation when two developers see different diagnostics for the same repository.\n\n```sh\ngo version\ngo env GOTOOLCHAIN GOWORK\ngopls version\n```\n\nThese commands are an inventory, not proof of the editor's process state. Compare their output with the editor's Go or language-server output panel. If an extension manages tools in a private directory, inspect that path before changing anything. Keep the previous executable or a documented installation command available so an upgrade can be reversed without guessing.\n\nA team-level rollout should also record the repository revision used for evaluation. Otherwise a tool upgrade and a source change can be mistaken for one another. Choose a small, representative workspace first: one with tests, module boundaries and the actual generated or tagged code your developers edit. A synthetic single-file project is useful for a reproducer but incomplete as a rollout trial."
+      },
+      {
+        "id": "pin-the-experiment-before-comparing-results",
+        "title": "Pin the experiment before comparing results",
+        "body": "For an isolated installation, choose a dedicated tools directory rather than overwriting an existing team tool by accident. The command below installs the exact version discussed in this article; it is a reproducibility example, not a claim that pinning forever is the best update policy.\n\n```sh\nmkdir -p \"$HOME/.local/gopherforge-gopls-024\"\nGOBIN=\"$HOME/.local/gopherforge-gopls-024\" \\\n  go install golang.org/x/tools/gopls@v0.24.0\n\"$HOME/.local/gopherforge-gopls-024/gopls\" version\n```\n\nSelect that executable through your editor's documented tool configuration, restart the language server and verify the selected version again. Configuration names differ between clients, so copying a setting from another editor without checking its documentation is unreliable. An installation that succeeds in the terminal is only one step in the experiment.\n\nWrite down what you expect to improve before testing. Examples include identifying inconsistent error return forms, making an existing slice expression clearer, or reducing disruptive memory peaks in a large workspace. A vague goal such as “newer must be faster” cannot guide a useful comparison. Our [module and toolchain lessons](/learn?unit=modules) provide context for distinguishing application dependencies, tool dependencies and automatically selected Go toolchains."
+      },
+      {
+        "id": "use-an-error-example-that-reveals-a-caller-contract",
+        "title": "Use an error example that reveals a caller contract",
+        "body": "Suppose a package returns a value error from one branch and a pointer to the same named type from another. Both may satisfy the `error` interface, but a caller matching one form through `errors.As` does not automatically match the other. This is the kind of inconsistency worth investigating when an analyzer flags pointer-to-error behavior.\n\n```go\npackage main\n\nimport (\n    \"errors\"\n    \"fmt\"\n)\n\ntype Conflict struct{ Key string }\n\nfunc (c Conflict) Error() string { return \"conflict: \" + c.Key }\n\nfunc main() {\n    err := fmt.Errorf(\"store: %w\", &Conflict{Key: \"alpha\"})\n    var value Conflict\n    var pointer *Conflict\n    fmt.Println(errors.As(err, &value))\n    fmt.Println(errors.As(err, &pointer))\n}\n```\n\nThe output is `false` and `true`. This experiment is useful even before opening an editor because it establishes the observable behavior. The question for a maintainer is then which form the package intends to expose and which callers depend on that choice. Do not change exported error construction solely to silence a diagnostic without reviewing compatibility.\n\nThe [typed nil and error contracts guide](/news/go-typed-nil-errors-as-contracts) follows the distinction through successful returns, wrapping and HTTP adapters. It is a companion explanation, not a claim that a language-server analyzer validates every branch of an application's error policy."
+      },
+      {
+        "id": "review-the-fix-with-a-targeted-regression-test",
+        "title": "Review the fix with a targeted regression test",
+        "body": "Once a return style is chosen, add a test at the package boundary. Include success as well as failure, and classify the returned failure through the same helper that production callers use. This catches a typed nil success bug and a pointer/value mismatch in one small set of cases without making the tests depend on every internal message.\n\nBefore accepting a suggested edit, inspect all construction sites of the affected type. Look at wrappers, adapters, tests and examples. A type can be part of a public contract even when it appears in only a few files. Changing its receiver form may alter which values implement an interface, and changing its returned form may alter matching behavior. These are semantic changes that deserve more attention than renaming a local variable.\n\nThen run the focused package tests followed by the repository's required checks. A diagnostic disappearing is useful evidence that one condition changed; it is not evidence that callers still behave correctly. If the fix crosses a public boundary, document the intended classification so future automated changes have something concrete to preserve."
+      },
+      {
+        "id": "understand-the-slice-suggestion-before-accepting-it",
+        "title": "Understand the slice suggestion before accepting it",
+        "body": "A full slice expression such as `s[:len(s):len(s)]` limits capacity to length. A Clip spelling can communicate that intention more directly. The operation still shares existing elements with the source. The following complete program demonstrates why a clearer expression is not an ownership transfer.\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"slices\"\n)\n\nfunc main() {\n    source := []int{1, 2, 3}\n    limited := slices.Clip(source[:2])\n    limited[0] = 9\n    fmt.Println(source)\n    fmt.Println(len(limited), cap(limited))\n}\n```\n\nIt prints `[9 2 3]` and `2 2`. If the API promises that the caller can mutate a result independently, Clip is insufficient. If the API promises only that append cannot reuse the source's spare capacity through that descriptor, the operation may be exactly right. Read the requirement before reviewing the suggested syntax.\n\nOur [slice backing-array workshop](/news/go-slices-backing-array-append-clip-clone) adds append, shallow cloning and retained allocations to this example. Linking the suggestion to a runnable model is especially helpful when a team accepts many automated modernization changes at once. A small clean diff can still preserve an already incorrect ownership assumption."
+      },
+      {
+        "id": "treat-editor-memory-as-a-measured-budget",
+        "title": "Treat editor memory as a measured budget",
+        "body": "Large workspaces can make memory behavior part of developer experience. To evaluate a memory-related configuration, measure a consistent workload: workspace open, initial diagnostics, a representative navigation action, a refactor preview and an incremental edit. Record both peak process memory and time until useful results. A lower memory peak is not automatically a better experience if every edit becomes noticeably slower.\n\nSeparate a soft runtime budget from a hard container or operating-system limit. The process may have memory outside the managed heap, and other processes share the machine. Leave headroom for the compiler, tests, editor and browser. If the machine is under general memory pressure, changing one process's setting may merely move contention somewhere else.\n\nThe experimental setting deserves an experiment rather than a copied universal number. Start from a baseline, change one setting, repeat the same actions and keep the measurements with the workspace revision. Our [allocation article](/news/go-1-27-small-allocation-performance) uses the same distinction between allocation activity, retained memory and user-visible latency. The aim is a smooth editing loop, not winning a screenshot of a single memory counter."
+      },
+      {
+        "id": "build-a-rollout-sample-that-resembles-the-team",
+        "title": "Build a rollout sample that resembles the team",
+        "body": "Try the pinned tool with more than one workspace shape. A service repository, a multi-module workspace and a library with generated code can exercise different behavior. Include the actual operating systems and editor clients used by the team where practical. A successful trial in one client does not establish that every client exposes the same language-server interaction or configuration.\n\nCollect concise observations: which diagnostic appeared, what source triggered it, whether the suggested edit compiled, and how tests behaved. Keep performance observations separate from correctness reports. If a suggestion looks wrong, create a minimal reproducer that preserves the relevant type or module boundary rather than attaching an entire private repository.\n\nFor an agent-assisted workflow, ask the agent to explain the contract before applying the edit, identify affected callers, and run the focused tests. Review the diff yourself, especially around public errors and borrowed memory. The [Go agent workflow lessons](/learn?unit=modules) discuss environment visibility and verification; the same principles apply to a language-server-assisted change."
+      },
+      {
+        "id": "make-the-upgrade-outcome-reviewable",
+        "title": "Make the upgrade outcome reviewable",
+        "body": "A useful upgrade report fits into a short engineering record: previous version, candidate version, selected executable path, representative repository revision, checked behaviors, known issues and rollback instructions. Attach one or two focused before-and-after examples. Avoid presenting an absence of diagnostics as proof that the entire codebase is correct.\n\nIf a regression blocks a critical workflow, restore the previous version and keep the reproducer. That is a normal outcome of a controlled trial. If the trial succeeds, update the team's documented tool installation and let the ordinary maintenance process handle future releases. Reproducibility and timely updates can coexist when the selected version is explicit.\n\nThe value of this release is not just another checklist of editor features. It is an opportunity to tighten error contracts, clarify slice intent and measure the cost of the development environment. Those improvements remain useful even if a particular editor does not expose every new capability. Continue with [Go course lessons](/learn), [interview preparation](/interview) and the primary release notes below to connect the tool's suggestions to behavior you can explain and test."
+      }
+    ],
+    "wordCount": 1535,
+    "publishedAt": "2026-10-23",
+    "modifiedAt": "2026-10-23",
+    "sourceCheckedAt": "2026-10-23"
   }
 ]

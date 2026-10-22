@@ -81,7 +81,7 @@ export default async function NewsArticle({
       <StructuredData
         data={{
           "@context": "https://schema.org",
-          "@type": "NewsArticle",
+          "@type": n.kind === "guide" ? "TechArticle" : "NewsArticle",
           headline: n.title,
           description: n.description,
           datePublished: n.publishedAt,
@@ -124,8 +124,22 @@ export default async function NewsArticle({
           <time dateTime={n.publishedAt}>{dateLabel(n.publishedAt)}</time>
         </p>
         <p className="news-event">
-          Event: <time dateTime={n.eventDate}>{dateLabel(n.eventDate)}</time> ·
-          Reporting and practical analysis. Sources listed below.
+          Edition:{" "}
+          <time dateTime={n.editionDate}>{dateLabel(n.editionDate)}</time>
+          {n.kind === "news" ? (
+            <>
+              {" "}
+              · Event:{" "}
+              <time dateTime={n.eventDate}>{dateLabel(n.eventDate)}</time>
+            </>
+          ) : (
+            " · Practical guide"
+          )}
+          .
+          {n.editionDate < n.publishedAt
+            ? " Added to the archive on the publication date above."
+            : ""}{" "}
+          Sources and worked examples below.
         </p>
       </header>
       {figure("hero", `Conceptual illustration for ${n.title}`)}

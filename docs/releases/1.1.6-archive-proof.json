@@ -1,0 +1,19 @@
+{
+  "version": "1.1.6",
+  "build": "44",
+  "appSourceCommit": "1587bfe",
+  "sizeBytes": 59507417,
+  "ipaSHA256": "74a0c51c2a3a240ee6b829434eb58fada53f9814c5a3209df15249e933255ffa",
+  "minimumOSVersion": "18.0",
+  "deviceFamily": [
+    1,
+    2
+  ],
+  "contentMatchesRepository": true,
+  "readings": 124,
+  "teachingLessons": 171,
+  "challenges": 22,
+  "agentGuides": 8,
+  "readingsSHA256": "b6f285674672460b9d04146bd6a4eb30e0b835111b29973cb2e845b6b69bbcce",
+  "validation": "passed"
+}

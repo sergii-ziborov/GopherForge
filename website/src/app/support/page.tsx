@@ -136,9 +136,11 @@ export default function Support() {
           prediction challenges and 88 interview guides.
         </p>
         <p>
-          Native {releases.next.version} ({releases.next.build}) with Continue
-          is in TestFlight and in App Review, configured for release after
-          approval. The corresponding web course and Continue are available now.
+          Two further readings on borrowed bytes and pool ownership are
+          available on the web, bringing it to 171 teaching lessons and 124
+          readings. Native {releases.next.version} ({releases.next.build})
+          contains this expansion. Its release status is listed in version
+          history.
         </p>
         <p>
           Web progress stays in this browser and is independent of app progress.

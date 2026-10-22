@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-22T23:37:29.356063+00:00",
+  "version": "1.1.6",
+  "build": "44",
+  "appSourceCommit": "1587bfe",
+  "result": "Passed",
+  "passedTests": 11,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "checks": [
+    "124 reading lessons decode and appear exactly once in the 21-unit catalog",
+    "171 teaching lessons and 22 prediction challenges preserve original anchors",
+    "All bundled readings have worked code walkthroughs, references and corrective questions",
+    "Two new readings have distinct concept tags, symbols, matching pairs and three-choice practice",
+    "Completing the pool reading persists through a fresh progress store without compiler invocation",
+    "Architecture scenarios, diagrams, matching and lesson identifiers remain valid",
+    "Native UI: complete the borrowed-buffer reading, relaunch, tap Continue and reopen the same completed reading"
+  ],
+  "devices": [
+    "iPhone 13 / iOS 26.5"
+  ],
+  "screenshots": "docs/screenshots/buffer44-course-continue.png",
+  "sourceExamples": {
+    "completeProgramsExecuted": 15,
+    "expectedOutputsVerified": true,
+    "poolParallelRaceTest": "passed"
+  },
+  "storage": "Existing lesson identifiers and learning storage formats unchanged."
+}

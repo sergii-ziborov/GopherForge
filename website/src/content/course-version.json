@@ -1,9 +1,9 @@
 {
   "source": "Native GoCourseCatalog + ReadingLessons.json",
-  "appVersion": "1.1.5 TestFlight",
-  "publicAppVersion": "1.1.4",
-  "catalogSHA256": "abf8b7d0dc62ee0f05ee34f32b6f8500e2b45712c0643e01d23515d51c8fbe1e",
+  "appVersion": "1.1.6 \u2014 TestFlight \u00b7 waiting for App Review",
+  "publicAppVersion": "1.1.5",
+  "catalogSHA256": "992c409e791c74fea3cf812a6c5b847a7c7e14def4e1a48bedbf5db609ef8604",
   "units": 21,
-  "lessons": 191,
-  "readings": 122
+  "lessons": 193,
+  "readings": 124
 }

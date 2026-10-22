@@ -5,6 +5,13 @@ const read = async (path) =>
   JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const news = await read("../src/content/news.json");
 const images = await read("../src/content/news-images.json");
+// Date-only editorial fields use the publication desk's calendar, not UTC midnight.
+const editorialToday = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Jerusalem",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(new Date());
 test("substantive original articles have sources, interlinks and three generated assets each", async () => {
   assert.ok(news.length >= 10);
   assert.equal(new Set(news.map((n) => n.slug)).size, news.length);
@@ -25,7 +32,7 @@ test("substantive original articles have sources, interlinks and three generated
       n.sourceCheckedAt,
     ]) {
       assert.ok(Number.isFinite(Date.parse(date)), n.slug);
-      assert.ok(Date.parse(date) <= Date.now(), n.slug);
+      assert.ok(date.slice(0, 10) <= editorialToday, n.slug);
     }
     assert.ok(n.eventDate <= n.publishedAt, n.slug);
     assert.ok(n.publishedAt <= n.modifiedAt, n.slug);
@@ -70,13 +77,58 @@ test("full external seed carries attribution, code and publication dates without
     );
   }
 });
-test("sync release record matches reviewed native release receipts", async () => {
+test("sync release record separates the public version from the next native update", async () => {
   const r = await read("../src/content/releases.json"),
     c = await read("../src/content/course-version.json");
   assert.equal(c.publicAppVersion, r.public.version);
-  assert.equal(c.appVersion, r.next.version + " TestFlight");
-  assert.equal(r.public.version, "1.1.4");
+  assert.equal(c.appVersion, r.next.version + " — " + r.next.status);
+  assert.equal(r.public.version, "1.1.5");
   const receipt = await read("../../docs/releases/1.1.5-submission.json");
-  assert.equal(r.next.version, receipt.version);
-  assert.equal(r.next.build, Number(receipt.build));
+  assert.equal(r.public.version, receipt.version);
+  assert.equal(r.public.build, Number(receipt.build));
+  assert.ok(r.next.build > r.public.build);
+});
+
+test("October additions fill unused editions without inventing publication dates", async () => {
+  const added = news.filter((n) =>
+    ["survey", "slices", "buffers", "errors", "gopls24"].includes(
+      n.imagePrefix,
+    ),
+  );
+  const earlier = news.filter((n) => !added.includes(n));
+  assert.equal(added.length, 5);
+  assert.equal(added.filter((n) => n.kind === "news").length, 2);
+  assert.equal(added.filter((n) => n.kind === "guide").length, 3);
+  assert.deepEqual(added.map((n) => n.editionDate).sort(), [
+    "2026-10-15",
+    "2026-10-17",
+    "2026-10-18",
+    "2026-10-22",
+    "2026-10-23",
+  ]);
+  for (const n of added) {
+    assert.equal(n.publishedAt, "2026-10-23");
+    assert.equal(n.modifiedAt, "2026-10-23");
+    assert.ok(!earlier.some((x) => x.editionDate === n.editionDate));
+    const bodies = n.sections.map((s) => s.body).join("\n");
+    for (const fence of bodies.matchAll(/```([^\n]*)\n/g))
+      assert.ok(["go", "sh", ""].includes(fence[1]));
+    for (const match of bodies.matchAll(/\]\((\/[^)#]+)(?:#[^)]*)?\)/g)) {
+      const path = match[1].split("?")[0];
+      if (path.startsWith("/news/"))
+        assert.ok(
+          news.some((x) => "/news/" + x.slug === path),
+          path,
+        );
+      if (path.startsWith("/learn/")) {
+        const units = await read("../src/content/course.json");
+        assert.ok(
+          units
+            .flatMap((u) => u.lessons)
+            .some((l) => "/learn/" + l.id === path),
+          path,
+        );
+      }
+    }
+  }
 });

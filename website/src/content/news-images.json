@@ -148,5 +148,80 @@
     "src": "/images/news/leaks-infographic.webp",
     "width": 1600,
     "height": 900
+  },
+  "survey-hero": {
+    "src": "/images/news/survey-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "survey-detail": {
+    "src": "/images/news/survey-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "survey-infographic": {
+    "src": "/images/news/survey-infographic.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "slices-hero": {
+    "src": "/images/news/slices-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "slices-detail": {
+    "src": "/images/news/slices-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "slices-infographic": {
+    "src": "/images/news/slices-infographic.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "buffers-hero": {
+    "src": "/images/news/buffers-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "buffers-detail": {
+    "src": "/images/news/buffers-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "buffers-infographic": {
+    "src": "/images/news/buffers-infographic.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "errors-hero": {
+    "src": "/images/news/errors-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "errors-detail": {
+    "src": "/images/news/errors-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "errors-infographic": {
+    "src": "/images/news/errors-infographic.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "gopls24-hero": {
+    "src": "/images/news/gopls24-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "gopls24-detail": {
+    "src": "/images/news/gopls24-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "gopls24-infographic": {
+    "src": "/images/news/gopls24-infographic.webp",
+    "width": 1600,
+    "height": 900
   }
 }

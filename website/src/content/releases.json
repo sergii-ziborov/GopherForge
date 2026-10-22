@@ -1,14 +1,14 @@
 {
-  "checkedOn": "2026-10-21",
+  "checkedOn": "2026-10-23",
   "public": {
-    "version": "1.1.4",
-    "build": 39,
+    "version": "1.1.5",
+    "build": 43,
     "status": "Available on the App Store"
   },
   "next": {
-    "version": "1.1.5",
-    "build": 43,
-    "status": "TestFlight · waiting for App Review"
+    "version": "1.1.6",
+    "build": 44,
+    "status": "TestFlight \u00b7 waiting for App Review"
   },
   "toolchain": "Go 1.27.1",
   "priceUSD": "6.99"

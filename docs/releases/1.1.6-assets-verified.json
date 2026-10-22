@@ -1,0 +1,142 @@
+{
+  "updatedScreenshots": 0,
+  "checkedAt": "2026-10-22T23:37:06.211401+00:00",
+  "version": "1.1.6",
+  "build": "44",
+  "versionId": "76cca5ae-0abc-4b23-a5f6-c38298a8c192",
+  "screenshots": 55,
+  "sets": [
+    {
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_DUO",
+      "images": 5,
+      "deliveryState": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "deliveryState": "COMPLETE"
+    }
+  ],
+  "screenshotPlacements": 55,
+  "headerAndSearchActive": true,
+  "creative": [
+    {
+      "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+      "state": "ACTIVE",
+      "imageState": "APPROVED",
+      "size": [
+        2880,
+        1920
+      ]
+    },
+    {
+      "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+      "state": "ACTIVE",
+      "imageState": "APPROVED",
+      "size": [
+        3840,
+        1646
+      ]
+    }
+  ],
+  "metadataMatchesSavedSource": true,
+  "reviewContactComplete": true,
+  "accountRequired": false,
+  "screenshotsReuse": "All 55 approved screenshot placements and both creative assets are inherited from released 1.1.5. The two new readings add material inside the unchanged learning interface; no edited or synthetic app screenshot is substituted.",
+  "inheritedScreenshots": 55,
+  "inheritedFromVersion": "1.1.5 (43)",
+  "inheritedLearningScreenshotPlacements": [
+    {
+      "placementGroup": "IPAD_13_PROFILE",
+      "fileName": "ipad-13-03-course-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPAD_13_PROFILE",
+      "fileName": "ipad-13-08-interview-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "fileName": "iphone-6.1-03-course-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "fileName": "iphone-6.5-03-course-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "fileName": "iphone-6.9-08-interview-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DUO_PROFILE",
+      "fileName": "iphone-duo-03-course-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "fileName": "iphone-6.3-08-interview-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DUO_PROFILE",
+      "fileName": "iphone-duo-08-interview-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_LARGE_PROFILE",
+      "fileName": "iphone-6.5-08-interview-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "fileName": "iphone-6.3-03-course-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_FACE_ID_MEDIUM_PROFILE",
+      "fileName": "iphone-6.1-08-interview-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    },
+    {
+      "placementGroup": "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE",
+      "fileName": "iphone-6.9-03-course-build43.png",
+      "imageState": "APPROVED",
+      "state": "ACTIVE"
+    }
+  ]
+}

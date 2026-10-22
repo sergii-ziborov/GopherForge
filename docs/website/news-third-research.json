@@ -1,0 +1,146 @@
+{
+  "checkedOn": "2026-10-23",
+  "datePolicy": "Edition dates fill unused archive days. Actual publication and source checks are 23 October. Only news has a separate verified event date; guides do not claim a historical news event.",
+  "articles": [
+    {
+      "slug": "go-developer-survey-2026-practical-feedback",
+      "kind": "news",
+      "editionDate": "2026-10-23",
+      "eventDate": "2026-10-21",
+      "publishedAt": "2026-10-23",
+      "wordCount": 1775,
+      "sources": [
+        {
+          "title": "Official 2026 Go Developer Survey announcement",
+          "url": "https://go.dev/blog/survey2026-announce"
+        },
+        {
+          "title": "Go toolchain selection",
+          "url": "https://go.dev/doc/toolchain"
+        },
+        {
+          "title": "Go Modules Reference",
+          "url": "https://go.dev/ref/mod"
+        },
+        {
+          "title": "Go diagnostics guide",
+          "url": "https://go.dev/doc/diagnostics"
+        }
+      ]
+    },
+    {
+      "slug": "go-slices-backing-array-append-clip-clone",
+      "kind": "guide",
+      "editionDate": "2026-10-22",
+      "eventDate": "2026-10-22",
+      "publishedAt": "2026-10-23",
+      "wordCount": 1604,
+      "sources": [
+        {
+          "title": "Go specification: slice types and append",
+          "url": "https://go.dev/ref/spec"
+        },
+        {
+          "title": "slices.Clip and slices.Clone contracts",
+          "url": "https://pkg.go.dev/slices"
+        },
+        {
+          "title": "Go slices: usage and internals",
+          "url": "https://go.dev/blog/slices-intro"
+        },
+        {
+          "title": "Go data race detector",
+          "url": "https://go.dev/doc/articles/race_detector"
+        }
+      ]
+    },
+    {
+      "slug": "go-bytes-buffer-sync-pool-ownership",
+      "kind": "guide",
+      "editionDate": "2026-10-18",
+      "eventDate": "2026-10-18",
+      "publishedAt": "2026-10-23",
+      "wordCount": 1534,
+      "sources": [
+        {
+          "title": "bytes.Buffer and bytes.Clone reference",
+          "url": "https://pkg.go.dev/bytes"
+        },
+        {
+          "title": "sync.Pool reference",
+          "url": "https://pkg.go.dev/sync#Pool"
+        },
+        {
+          "title": "bufio.Scanner.Bytes reference",
+          "url": "https://pkg.go.dev/bufio#Scanner.Bytes"
+        },
+        {
+          "title": "Go garbage collector guide",
+          "url": "https://go.dev/doc/gc-guide"
+        },
+        {
+          "title": "Go testing and benchmarks",
+          "url": "https://pkg.go.dev/testing"
+        }
+      ]
+    },
+    {
+      "slug": "go-typed-nil-errors-as-contracts",
+      "kind": "guide",
+      "editionDate": "2026-10-17",
+      "eventDate": "2026-10-17",
+      "publishedAt": "2026-10-23",
+      "wordCount": 1570,
+      "sources": [
+        {
+          "title": "Go FAQ: nil error values",
+          "url": "https://go.dev/doc/faq#nil_error"
+        },
+        {
+          "title": "Go specification: interface types and method sets",
+          "url": "https://go.dev/ref/spec"
+        },
+        {
+          "title": "errors package reference",
+          "url": "https://pkg.go.dev/errors"
+        },
+        {
+          "title": "Working with Errors in Go 1.13",
+          "url": "https://go.dev/blog/go1.13-errors"
+        }
+      ]
+    },
+    {
+      "slug": "gopls-0-24-error-contracts-memory",
+      "kind": "news",
+      "editionDate": "2026-10-15",
+      "eventDate": "2026-10-15",
+      "publishedAt": "2026-10-23",
+      "wordCount": 1535,
+      "sources": [
+        {
+          "title": "Official gopls v0.24.0 release notes",
+          "url": "https://go.dev/gopls/release/v0.24.0"
+        },
+        {
+          "title": "Go tools release record",
+          "url": "https://github.com/golang/tools/releases/tag/gopls%2Fv0.24.0"
+        },
+        {
+          "title": "errors.As reference",
+          "url": "https://pkg.go.dev/errors#As"
+        },
+        {
+          "title": "slices.Clip reference",
+          "url": "https://pkg.go.dev/slices#Clip"
+        },
+        {
+          "title": "Go language server documentation",
+          "url": "https://go.dev/gopls/"
+        }
+      ]
+    }
+  ],
+  "originality": "Announcement facts are short and attributed. The workshops, examples and engineering analysis are original GopherForge work; no survey results or benchmark gains are invented.",
+  "editorialTimezone": "Asia/Jerusalem"
+}

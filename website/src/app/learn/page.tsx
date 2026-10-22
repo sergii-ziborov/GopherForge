@@ -35,9 +35,10 @@ export default function Learn() {
         </div>
         <p className="availability">
           The web library includes the latest MongoDB, Redis and production
-          tooling lessons, matching App Store {releases.public.version}. Native{" "}
-          {releases.next.version} with Continue is in TestFlight and in App
-          Review. Continue already saves your lesson and section in this
+          tooling lessons. App Store {releases.public.version} includes
+          Continue. Two new buffer and pooling readings are available here and
+          prepared for native {releases.next.version}. See version history for
+          release status. Continue saves your lesson and section in this
           browser. Web and app progress are stored separately.
         </p>
       </div>

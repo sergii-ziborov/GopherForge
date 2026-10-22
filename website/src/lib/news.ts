@@ -2,9 +2,13 @@ import data from "@/content/news.json";
 import images from "@/content/news-images.json";
 export type News = (typeof data)[number];
 export const news = [...data].sort(
-  (a, b) => Date.parse(b.eventDate) - Date.parse(a.eventDate),
+  (a, b) => Date.parse(b.editionDate) - Date.parse(a.editionDate),
 );
 export const newsURL = (slug: string) => `/news/${slug}`;
+export const newsForLesson = (id: string) =>
+  news
+    .filter((n) => n.sections.some((s) => s.body.includes(`](/learn/${id})`)))
+    .slice(0, 3);
 export const newsImage = (id: string) => images[id as keyof typeof images];
 export const dateLabel = (date: string) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -14,6 +18,16 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  survey:
+    "Observe → Reproduce → Explain → Share. Collect concrete experience; no 2026 survey results have been published in this report.",
+  slices:
+    "View and Clip share existing elements. Clip limits capacity; Clone copies the outer elements into separate storage. Nested references can remain shared.",
+  buffers:
+    "Borrow → Copy → Release → Reuse. Make a result independent before its temporary owner becomes reusable.",
+  errors:
+    "Return → Wrap → Match → Test. Return nil for success, preserve intended classification, and test pointer/value error forms.",
+  gopls24:
+    "Pin → Inspect → Test → Measure. Verify the selected server, review semantics and measure a representative workspace.",
   launch:
     "Learn → Try → Check → Continue. Browser and app save progress separately.",
   vscode:

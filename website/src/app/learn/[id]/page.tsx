@@ -2,6 +2,7 @@ import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { newsForLesson, newsURL } from "@/lib/news";
 import { notFound } from "next/navigation";
 import { lessons, lessonByID, lessonURL, minutes } from "@/lib/course";
 import { Code } from "@/components/Code";
@@ -43,6 +44,7 @@ export default async function LessonPage({
   const prev = lessons[index - 1],
     next = lessons[index + 1];
   const guide = l.reading?.designGuide;
+  const relatedArticles = newsForLesson(l.id);
   return (
     <div className="lesson-layout">
       <Breadcrumbs
@@ -227,6 +229,17 @@ export default async function LessonPage({
         <section id="finish">
           <LessonProgress id={l.id} />
         </section>
+        {relatedArticles.length ? (
+          <aside className="related">
+            <h2>Put the idea to work.</h2>
+            {relatedArticles.map((article) => (
+              <Link key={article.slug} href={newsURL(article.slug)}>
+                {article.title}
+                <span>→</span>
+              </Link>
+            ))}
+          </aside>
+        ) : null}
         <nav className="lesson-pagination" aria-label="Adjacent lessons">
           {prev ? (
             <Link href={lessonURL(prev.id)}>

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.1.4 is on the App Store. Version 1.1.5 with Continue is in TestFlight and waiting for App Review. Explore lessons, agent guides and release history.",
+    "GopherForge 1.1.5 with Continue is on the App Store. Explore the next update's byte ownership lessons, Go tooling, interview preparation and release history.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -15,24 +16,47 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
+      <section className="release" id="v116">
+        <span className="release-badge muted">
+          WEB AVAILABLE · {releases.next.status.toUpperCase()}
+        </span>
+        <h2>
+          GopherForge {releases.next.version}{" "}
+          <small>build {releases.next.build}</small>
+        </h2>
+        <p>
+          Two new worked readings cover borrowed bytes.Buffer and Scanner data,
+          owned results, sync.Pool lifetimes, oversize retention and parallel
+          tests. The shared library now has 171 teaching lessons, 124 readings
+          and 22 prediction challenges in 21 units. Existing progress and
+          Continue keep their stable identifiers.
+        </p>
+        <p>
+          Status checked {releases.checkedOn}. The App Store currently
+          distributes {releases.public.version}.
+        </p>
+        <Link className="button" href="/learn/stdlib.borrowed-buffers">
+          Trace buffer ownership →
+        </Link>
+      </section>
       <section className="release" id="v115">
-        <span className="release-badge muted">TESTFLIGHT · WAITING FOR APP REVIEW</span>
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
         <h2>
           GopherForge 1.1.5 <small>build 43</small>
         </h2>
         <p>
           Continue returns to your last course lesson or interview guide.
           Learning progress, completion evidence and your selected study area
-          persist locally across relaunches. Version 1.1.5 is submitted for App
-          Review with automatic release after approval; it is not yet the public
-          App Store version. Status checked 21 October 2026.
+          persist locally across relaunches. Version 1.1.5 is available on the
+          App Store. Status checked 23 October 2026.
         </p>
         <ul>
           <li>Separate saved places for Course and Interview.</li>
           <li>
             Course and Interview share the same study layout. Duplicate
             Projects, Learn and Settings root headings are removed to give
-            content more room. Store learning screenshots now reflect this layout.
+            content more room. Store learning screenshots now reflect this
+            layout.
           </li>
           <li>
             Completion and compiler evidence survive practice-history pruning.
@@ -105,7 +129,7 @@ export default function Updates() {
           This native update includes the expanded course: 145 teaching lessons
           in 20 units, including 98 readings, plus 22 prediction challenges. The
           update has passed App Review and released automatically. Version 1.1.3
-          is an earlier public release; 1.1.4 is now current.
+          is an earlier public release; 1.1.5 is now current.
         </p>
         <ul>
           <li>

@@ -81,7 +81,7 @@ export default function NewsPage() {
               </Link>
               <div className="news-card-copy">
                 <p className="card-meta">
-                  {n.category} · EVENT {dateLabel(n.eventDate)}
+                  {n.category} · EDITION {dateLabel(n.editionDate)}
                 </p>
                 <h2>
                   <Link href={newsURL(n.slug)}>{n.title}</Link>

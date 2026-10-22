@@ -30,8 +30,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       path.startsWith("/learn/") ||
       path.startsWith("/interview")
         ? {
-            lastModified:
-              path === "" || path === "/news" ? "2026-10-21" : "2026-10-20",
+            lastModified: [
+              "",
+              "/news",
+              "/learn",
+              "/updates",
+              "/support",
+              "/learn/stdlib.borrowed-buffers",
+              "/learn/runtime.pool-ownership",
+              "/learn/units/stdlib",
+              "/learn/units/runtime",
+            ].includes(path)
+              ? "2026-10-23"
+              : "2026-10-20",
           }
         : {}),
       changeFrequency:
