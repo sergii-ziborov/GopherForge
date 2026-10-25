@@ -6,6 +6,7 @@ import Link from "next/link";
 import { appStore, github, lessons, units, readings } from "@/lib/course";
 import { posts } from "@/lib/posts";
 import { Code } from "@/components/Code";
+import { EditorialIllustration } from "@/components/EditorialIllustration";
 const heroCode = `package main\n\nimport "fmt"\n\nfunc main() {\n    ideas := []string{"learn", "build", "understand"}\n    for _, idea := range ideas {\n        fmt.Println("Go", idea)\n    }\n}`;
 export default function Home() {
   return (
@@ -105,6 +106,7 @@ export default function Home() {
           {[
             {
               n: "01",
+              image: "slices-hero" as const,
               title: "Build your Go foundation",
               body: "Values, control flow, slices, errors and packages. Understand the rules behind the syntax.",
               unit: "core",
@@ -112,6 +114,7 @@ export default function Home() {
             },
             {
               n: "02",
+              image: "gopls24-detail" as const,
               title: "Make the design deliberate",
               body: "Compare architectures, read clean Go, and apply patterns with a reason and a tradeoff.",
               unit: "architecture",
@@ -119,6 +122,7 @@ export default function Home() {
             },
             {
               n: "03",
+              image: "rebuild-hero" as const,
               title: "Know the environment",
               body: "Actual Bash, Git, Docker and Kubernetes commands. Read what happens around your Go program.",
               unit: "operations",
@@ -130,6 +134,10 @@ export default function Home() {
               href={`/learn?unit=${p.unit}`}
               key={p.n}
             >
+              <EditorialIllustration
+                id={p.image}
+                sizes="(max-width: 760px) calc(100vw - 98px), (max-width: 1240px) 28vw, 312px"
+              />
               <span>{p.n} / LEARNING PATH</span>
               <h3>{p.title}</h3>
               <p>{p.body}</p>

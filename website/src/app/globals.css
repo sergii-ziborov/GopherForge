@@ -2479,6 +2479,53 @@ details p {
   padding: 17px 21px;
   margin-bottom: 0;
 }
+.editorial-illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background: var(--wash);
+}
+.path-card > .editorial-illustration {
+  margin-bottom: 22px;
+}
+.path-card:has(> .editorial-illustration) > span {
+  margin-bottom: 18px;
+}
+.illustrated-intro {
+  max-width: none;
+}
+.intro-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 48px);
+}
+.intro-copy {
+  min-width: 0;
+}
+.intro-copy > p:not(.eyebrow) {
+  font-size: 0.94rem;
+  color: var(--muted);
+  max-width: 65ch;
+  margin-bottom: 0;
+}
+.architecture-intro h1 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+}
+.architecture-intro > .availability {
+  margin-top: 24px;
+}
+@media (max-width: 760px) {
+  .intro-overview {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+  .intro-overview > .editorial-illustration {
+    max-width: 320px;
+    margin-inline: auto;
+  }
+}
 .course-directions > button {
   font-size: 0.86rem;
 }

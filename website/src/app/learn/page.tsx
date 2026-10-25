@@ -4,6 +4,7 @@ import { releases } from "@/lib/releases";
 import type { Metadata } from "next";
 import { units, lessons, minutes, readings } from "@/lib/course";
 import { CourseBrowser } from "@/components/CourseBrowser";
+import { EditorialIllustration } from "@/components/EditorialIllustration";
 export const metadata: Metadata = {
   title: "Learn Go — the complete course",
   description:
@@ -13,15 +14,24 @@ export const metadata: Metadata = {
 export default function Learn() {
   return (
     <section className="page learn-map-page">
-      <div className="page-intro course-map-intro">
-        <p className="eyebrow">THE GO LEARNING LIBRARY</p>
-        <h1>
-          Your Go <em>learning map.</em>
-        </h1>
-        <p>
-          Choose a direction, open a branch, and follow the lessons in order —
-          or go straight to the topic you need.
-        </p>
+      <header className="page-intro course-map-intro illustrated-intro">
+        <div className="intro-overview">
+          <div className="intro-copy">
+            <p className="eyebrow">THE GO LEARNING LIBRARY</p>
+            <h1>
+              Your Go <em>learning map.</em>
+            </h1>
+            <p>
+              Choose a direction, open a branch, and follow the lessons in order
+              — or go straight to the topic you need.
+            </p>
+          </div>
+          <EditorialIllustration
+            id="launch-hero"
+            alt="Gopher reading beneath a branching tree of Go concepts."
+            loading="eager"
+          />
+        </div>
         <div className="inline-stats">
           <span>
             <strong>{lessons.length}</strong> lessons & challenges
@@ -41,7 +51,7 @@ export default function Learn() {
           release status. Continue saves your lesson and section in this
           browser. Web and app progress are stored separately.
         </p>
-      </div>
+      </header>
       <StructuredData
         data={{
           "@context": "https://schema.org",

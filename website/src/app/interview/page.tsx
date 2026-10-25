@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { interview } from "@/lib/interview";
 import { InterviewIndex } from "@/components/InterviewIndex";
+import { EditorialIllustration } from "@/components/EditorialIllustration";
 export const metadata: Metadata = {
   title: "Go interview preparation — junior to expert",
   description:
@@ -10,15 +11,24 @@ export const metadata: Metadata = {
 export default function InterviewPage() {
   return (
     <section className="page learn-map-page">
-      <header className="page-intro course-map-intro">
-        <p className="eyebrow">THE NEXT LEVEL · PREPARE TO EXPLAIN</p>
-        <h1>
-          Your Go <em>interview map.</em>
-        </h1>
-        <p>
-          Choose a direction, open a topic, and work through the guides — from
-          your first Go interview to systems and failure analysis.
-        </p>
+      <header className="page-intro course-map-intro illustrated-intro">
+        <div className="intro-overview">
+          <div className="intro-copy">
+            <p className="eyebrow">THE NEXT LEVEL · PREPARE TO EXPLAIN</p>
+            <h1>
+              Your Go <em>interview map.</em>
+            </h1>
+            <p>
+              Choose a direction, open a topic, and work through the guides —
+              from your first Go interview to systems and failure analysis.
+            </p>
+          </div>
+          <EditorialIllustration
+            id="survey-detail"
+            alt="Gopher turning tangled notes into clear explanations and checked examples."
+            loading="eager"
+          />
+        </div>
         <div className="inline-stats">
           <span>
             <strong>{interview.questions.length}</strong> worked guides

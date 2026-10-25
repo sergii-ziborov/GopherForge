@@ -5,6 +5,12 @@ import { posts } from "@/lib/posts";
 import { news, newsURL, newsImage } from "@/lib/news";
 export default function sitemap(): MetadataRoute.Sitemap {
   const origin = "https://gopherforge.app";
+  const illustratedPages: Record<string, string[]> = {
+    "": ["slices-hero", "gopls24-detail", "rebuild-hero"],
+    "/learn": ["launch-hero"],
+    "/interview": ["survey-detail"],
+    "/architectures": ["dapr-hero"],
+  };
   const paths = [
     "",
     "/learn",
@@ -24,27 +30,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paths.map((path) => ({
       url: origin + path,
-      ...(["/", "/learn", "/updates", "/support", "/news"].includes(
-        path || "/",
-      ) ||
-      path.startsWith("/learn/") ||
-      path.startsWith("/interview")
+      ...(illustratedPages[path]
         ? {
-            lastModified: [
-              "",
-              "/news",
-              "/learn",
-              "/updates",
-              "/support",
-              "/learn/stdlib.borrowed-buffers",
-              "/learn/runtime.pool-ownership",
-              "/learn/units/stdlib",
-              "/learn/units/runtime",
-            ].includes(path)
-              ? "2026-10-23"
-              : "2026-10-20",
+            lastModified: "2026-10-25",
+            images: illustratedPages[path].map(
+              (id) => origin + newsImage(id).src,
+            ),
           }
-        : {}),
+        : ["/", "/learn", "/updates", "/support", "/news"].includes(
+              path || "/",
+            ) ||
+            path.startsWith("/learn/") ||
+            path.startsWith("/interview")
+          ? {
+              lastModified: [
+                "",
+                "/news",
+                "/learn",
+                "/updates",
+                "/support",
+                "/learn/stdlib.borrowed-buffers",
+                "/learn/runtime.pool-ownership",
+                "/learn/units/stdlib",
+                "/learn/units/runtime",
+              ].includes(path)
+                ? "2026-10-23"
+                : "2026-10-20",
+            }
+          : {}),
       changeFrequency:
         path === "/news/feed" ? ("daily" as const) : ("monthly" as const),
       priority: path === "" ? 1 : path.startsWith("/learn") ? 0.8 : 0.6,
