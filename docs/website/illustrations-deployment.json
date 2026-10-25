@@ -1,0 +1,74 @@
+{
+  "base": "https://gopherforge.app",
+  "pages": [
+    {
+      "path": "/",
+      "illustrations": [
+        "slices-hero",
+        "gopls24-detail",
+        "rebuild-hero"
+      ],
+      "canonical": "https://gopherforge.app"
+    },
+    {
+      "path": "/learn",
+      "illustrations": [
+        "launch-hero"
+      ],
+      "canonical": "https://gopherforge.app/learn"
+    },
+    {
+      "path": "/interview",
+      "illustrations": [
+        "survey-detail"
+      ],
+      "canonical": "https://gopherforge.app/interview"
+    },
+    {
+      "path": "/architectures",
+      "illustrations": [
+        "dapr-hero"
+      ],
+      "canonical": "https://gopherforge.app/architectures"
+    }
+  ],
+  "assets": "all responsive candidates return WebP",
+  "sitemap": "four modified pages and six images verified",
+  "pricing": "$6.99 USD retained",
+  "verifiedAt": "2026-10-25T13:26:53.649977+00:00",
+  "sourceCommit": "ef0f15a0da9e6d7dcb0a08009c7d76b0d2398643",
+  "deployment": {
+    "provider": "Hostwatch / Hetzner",
+    "target": "gopherforge-web",
+    "job": "gopherforge-illustrations-ef0f15a-20261025",
+    "state": "succeeded",
+    "finishedAt": "2026-10-25T13:25:30.421989083Z",
+    "imageDigest": "sha256:c36c44a78d2e8a31bcdd8c6979afdb248da5930bfde1a24654cb6f864f37d72e",
+    "rollbackImage": "localhost/gopherforge-web:rollback-illustrations-707aaa30"
+  },
+  "verification": {
+    "typeCheck": "passed",
+    "productionBuild": "passed",
+    "existingTestsPassed": 19,
+    "viewports": [
+      1280,
+      390
+    ],
+    "horizontalOverflow": false,
+    "courseAndInterview": "Matching header layout; distinct subject illustrations",
+    "navigation": "Home architecture card opens /learn?unit=architecture and selects Architecture & clean code",
+    "feed": "Cache delivered; Feed connected confirmed on public feed"
+  },
+  "imageTreatment": {
+    "placements": 6,
+    "format": "WebP, responsive 720px and full-size candidates",
+    "loading": "Lazy below the fold; eager for page introduction",
+    "layout": "Intrinsic dimensions reserve image space; no image text overlays",
+    "accessibility": "Descriptive alt for introduction scenes; empty alt for decorative linked card images"
+  },
+  "screenshots": [
+    "illustrations-home-published.png",
+    "illustrations-learn-published.png",
+    "illustrations-interview-mobile.png"
+  ]
+}
