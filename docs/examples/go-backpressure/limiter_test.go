@@ -143,4 +143,13 @@ func TestEarlierParentDeadlineWins(t *testing.T) {
 	if !called {
 		t.Fatal("budget wrapper did not invoke next")
 	}
+	called = false
+	w = httptest.NewRecorder()
+	h = WithBudget(time.Hour, Limit(1, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+	})))
+	h.ServeHTTP(w, httptest.NewRequest("GET", "/", nil).WithContext(parent))
+	if called || w.Code != http.StatusGatewayTimeout {
+		t.Fatalf("expired admission: called=%v status=%d", called, w.Code)
+	}
 }

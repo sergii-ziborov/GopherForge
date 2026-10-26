@@ -14,7 +14,10 @@ func Limit(max int, next http.Handler) http.Handler {
 	}
 	slots := make(chan struct{}, max)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Context().Err() != nil {
+		if err := r.Context().Err(); err != nil {
+			if err == context.DeadlineExceeded {
+				http.Error(w, "work budget exhausted", http.StatusGatewayTimeout)
+			}
 			return
 		}
 		select {
