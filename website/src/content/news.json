@@ -76,11 +76,7 @@
     ],
     "wordCount": 1758,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "gopherforge",
-      "Go engineering",
-      "GopherForge news"
-    ],
+    "keywords": ["gopherforge", "Go engineering", "GopherForge news"],
     "editionDate": "2026-10-20",
     "kind": "news"
   },
@@ -169,11 +165,7 @@
     ],
     "wordCount": 1781,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "tooling",
-      "Go engineering",
-      "GopherForge news"
-    ],
+    "keywords": ["tooling", "Go engineering", "GopherForge news"],
     "editionDate": "2026-10-20",
     "kind": "news"
   },
@@ -271,11 +263,7 @@
     ],
     "wordCount": 1723,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "security",
-      "Go engineering",
-      "GopherForge news"
-    ],
+    "keywords": ["security", "Go engineering", "GopherForge news"],
     "editionDate": "2026-10-19",
     "kind": "news"
   },
@@ -372,11 +360,7 @@
     ],
     "wordCount": 1762,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "cloud native",
-      "Go engineering",
-      "GopherForge news"
-    ],
+    "keywords": ["cloud native", "Go engineering", "GopherForge news"],
     "editionDate": "2026-10-16",
     "kind": "news"
   },
@@ -470,11 +454,7 @@
     ],
     "wordCount": 1761,
     "sourceCheckedAt": "2026-10-20",
-    "keywords": [
-      "language tools",
-      "Go engineering",
-      "GopherForge news"
-    ],
+    "keywords": ["language tools", "Go engineering", "GopherForge news"],
     "editionDate": "2026-10-16",
     "kind": "news"
   },
@@ -626,10 +606,11 @@
     "related": [
       "dapr-1-19-rc4-go-service-boundaries",
       "go-1-27-goroutine-leak-profiles",
-      "go-reproducible-build-report-october-21-2026"
+      "go-reproducible-build-report-october-21-2026",
+      "go-backpressure-concurrency-limits-queues-deadlines"
     ],
     "publishedAt": "2026-10-21",
-    "modifiedAt": "2026-10-21",
+    "modifiedAt": "2026-10-26",
     "sourceCheckedAt": "2026-10-21",
     "imagePrefix": "http",
     "sections": [
@@ -941,10 +922,11 @@
     "related": [
       "go-1-27-small-allocation-performance",
       "go-1-27-http-connection-reuse",
-      "dapr-1-19-rc4-go-service-boundaries"
+      "dapr-1-19-rc4-go-service-boundaries",
+      "go-backpressure-concurrency-limits-queues-deadlines"
     ],
     "publishedAt": "2026-10-21",
-    "modifiedAt": "2026-10-21",
+    "modifiedAt": "2026-10-26",
     "sourceCheckedAt": "2026-10-21",
     "imagePrefix": "leaks",
     "sections": [
@@ -1255,7 +1237,8 @@
     "related": [
       "go-slices-backing-array-append-clip-clone",
       "go-1-27-small-allocation-performance",
-      "go-1-27-goroutine-leak-profiles"
+      "go-1-27-goroutine-leak-profiles",
+      "go-backpressure-concurrency-limits-queues-deadlines"
     ],
     "imagePrefix": "buffers",
     "sections": [
@@ -1317,7 +1300,7 @@
     ],
     "wordCount": 2056,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-23",
+    "modifiedAt": "2026-10-26",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1527,5 +1510,157 @@
     "publishedAt": "2026-10-23",
     "modifiedAt": "2026-10-23",
     "sourceCheckedAt": "2026-10-23"
+  },
+  {
+    "slug": "go-backpressure-concurrency-limits-queues-deadlines",
+    "title": "Go backpressure: bound concurrency, queues and request deadlines",
+    "description": "Build Go services that recover under load: shared admission limits, finite queues, context deadlines, retry budgets and race-tested code you can run.",
+    "category": "GUIDE · PRODUCTION GO",
+    "editionDate": "2026-10-26",
+    "eventDate": "2026-10-26",
+    "publishedAt": "2026-10-26",
+    "modifiedAt": "2026-10-26",
+    "sourceCheckedAt": "2026-10-26",
+    "kind": "guide",
+    "keywords": [
+      "Go backpressure",
+      "Go concurrency limit",
+      "Golang worker pool",
+      "Go context timeout",
+      "Go overload protection",
+      "bounded queues in Go"
+    ],
+    "sources": [
+      {
+        "title": "Context deadlines and cancellation",
+        "url": "https://pkg.go.dev/context"
+      },
+      {
+        "title": "net/http server and client contracts",
+        "url": "https://pkg.go.dev/net/http"
+      },
+      {
+        "title": "Go concurrency pipelines and cancellation",
+        "url": "https://go.dev/blog/pipelines"
+      },
+      {
+        "title": "Weighted semaphore acquisition",
+        "url": "https://pkg.go.dev/golang.org/x/sync/semaphore"
+      },
+      {
+        "title": "errgroup concurrency limits and joining",
+        "url": "https://pkg.go.dev/golang.org/x/sync/errgroup"
+      },
+      {
+        "title": "Managing SQL connections",
+        "url": "https://go.dev/doc/database/manage-connections"
+      },
+      {
+        "title": "HTTP connection tracing",
+        "url": "https://pkg.go.dev/net/http/httptrace"
+      },
+      {
+        "title": "Go runtime metrics",
+        "url": "https://pkg.go.dev/runtime/metrics"
+      },
+      {
+        "title": "Go data race detector",
+        "url": "https://go.dev/doc/articles/race_detector"
+      }
+    ],
+    "related": [
+      "go-1-27-goroutine-leak-profiles",
+      "go-1-27-http-connection-reuse",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "imagePrefix": "backpressure",
+    "wordCount": 3708,
+    "sections": [
+      {
+        "title": "The outage that starts with a helpful goroutine",
+        "id": "the-outage-that-starts-with-a-helpful-goroutine",
+        "body": "A checkout service usually answers quickly. Then its pricing dependency slows down. Requests keep arriving, so an engineer moves a lookup into a goroutine and adds a larger channel buffer. A short test looks better: the handler accepts more work. Ten minutes later, memory climbs, useful throughput falls, and users retry requests that are still running somewhere inside the process. The program has become very good at accepting obligations it cannot finish.\n\n**Backpressure in Go means making downstream capacity visible to the producer of work.** In an HTTP service, that often means refusing excess work promptly. In a streaming pipeline, it may mean slowing the source. In a durable job system, it means controlling delivery and acknowledging only completed effects. These are different contracts. Choosing one explicitly is more valuable than adding another concurrency primitive.\n\nThis guide develops a small admission limiter, then follows its consequences through deadlines, worker pools, HTTP connections, databases, retries, shutdown and testing. The example uses the standard library and was tested with Go 1.24.2; it does not depend on an experimental runtime feature. All numerical capacities below are worked assumptions, not benchmark results or production defaults.\n\n**The short version:** bound admitted work; keep waiting finite; propagate the caller’s budget; release capacity when work actually ends; measure useful completions and rejected demand together. The [bounded-work lesson](/learn/concurrency.bounded-work) introduces the same problem through a smaller exercise."
+      },
+      {
+        "title": "Separate rate, concurrency, waiting and memory",
+        "id": "separate-rate-concurrency-waiting-and-memory",
+        "body": "A rate limit answers how many operations may begin over an interval. A concurrency limit answers how many may be active together. A queue limit answers how much admitted work may wait. A byte limit answers how much data that work may retain. None of these quantities automatically bounds the others.\n\nImagine a dependency that normally takes 20 milliseconds but occasionally takes two seconds. A fixed arrival rate can produce a much larger active population during the slow period. Conversely, a concurrency cap can permit a high request rate when every operation completes cheaply. A channel with room for 100 elements says nothing about memory if each element retains a ten-megabyte byte slice.\n\nWrite the resource contract before choosing the mechanism. For a price lookup, it could be: at most 16 active lookups per process; no application waiting queue; at most 300 milliseconds of handler work; a bounded result; an explicit busy response when capacity is occupied. Another endpoint may need different limits because its dependency, payload and customer expectation differ.\n\nThe boundary also needs an owner. Construct the limiter once and share it across requests. Constructing a fresh limiter inside every handler invocation gives each request a private allowance and removes the intended aggregate bound. Similarly, giving every tenant an independent allowance without an overall ceiling can still exhaust the process.\n\n| Budget | Unit | What it protects | What it does not establish |\n| --- | --- | --- | --- |\n| Arrival rate | Starts per second | Allowed request frequency | Active work when requests become slow |\n| Concurrency | Active operations | Simultaneous resource occupation | Retained bytes or fair access |\n| Waiting | Jobs and maximum age | Finite pending obligations | Completion before a deadline |\n| Payload | Bytes or records | Per-operation memory exposure | Total demand across replicas |"
+      },
+      {
+        "title": "Draw every place a request can wait",
+        "id": "draw-every-place-a-request-can-wait",
+        "body": "Before changing code, trace a request from the load balancer to its final dependency. Possible waiting locations include an edge queue, an HTTP handler, an application channel, a semaphore, connection acquisition, a database lock, a remote server and response delivery to a slow client. A visible channel is only one part of that route.\n\nFor each location, record four things: who admits work, what limits it, which deadline applies, and how waiting ends. A useful review question is: **if the dependency stops responding, which population can still grow?** Do not accept “the pool has a limit” as a complete answer. A connection pool may limit connections while a larger population waits for them.\n\nThe first implementation in this article intentionally has no application wait queue. When all slots are held, it rejects the next request. That makes overload visible immediately and avoids storing promises that are unlikely to meet the caller’s deadline. It does not eliminate queues in the network, proxy or transport, and it does not make the process immune to abusive traffic.\n\nFor a pipeline, inspect both handoffs and cleanup. The official [Go pipeline article](https://go.dev/blog/pipelines) illustrates cancellation-aware channel communication. Our [cancellation-and-joining lesson](/learn/concurrency.cancel-and-join) extends the review into a practical question: after requesting stop, what observation proves the work has exited?"
+      },
+      {
+        "title": "Turn a latency budget into a capacity hypothesis",
+        "id": "turn-a-latency-budget-into-a-capacity-hypothesis",
+        "body": "Start with a hypothetical route receiving 400 requests per second. Suppose its lookup stage spends an average of 40 milliseconds doing useful work under a stable representative workload. Multiplying arrival rate by time gives an average population of about 16 operations in that stage: 400 × 0.040. This arithmetic is a sizing hypothesis under the stated steady-workload assumptions. It does not predict tail latency or survive every change in traffic mix.\n\nNow suppose the same work takes 200 milliseconds. Serving 400 requests per second would require an average population around 80. If the dependency remains healthy only below 24 concurrent operations, launching 80 goroutines cannot create the missing capacity. A useful response is to reduce admitted work, reduce cost, degrade an optional feature, or add independently usable capacity after measurement.\n\nA queue adds waiting time. Under a simplified constant-service model, 30 waiting requests ahead of a new arrival at 300 completions per second represent roughly 100 milliseconds before its own service begins. Real queues have variable service times and scheduling effects; use this estimate to challenge a proposed buffer size, then verify with a workload test.\n\nReserve budget for serialization and response delivery. If the caller allows 300 milliseconds and the dependency already consumes 280, a large waiting queue has no plausible purpose for that request. The goal is a capacity decision that can be falsified, not a configuration number that merely looks conservative."
+      },
+      {
+        "title": "Build a shared admission gate with an explicit busy response",
+        "id": "build-a-shared-admission-gate-with-an-explicit-busy-response",
+        "body": "The following `limiter.go` is a complete source file. Its buffered channel represents occupied execution slots. The send uses a `default` branch, so a full gate refuses work immediately instead of parking another handler. A deferred receive returns the slot after the protected handler exits.\n\n```go\npackage backpressure\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// Limit bounds simultaneous calls to next. It creates no application wait queue.\n// Construct it once, then reuse the returned handler for all requests.\nfunc Limit(max int, next http.Handler) http.Handler {\n\tif max < 1 || next == nil {\n\t\tpanic(\"Limit needs a positive capacity and a handler\")\n\t}\n\tslots := make(chan struct{}, max)\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Context().Err() != nil {\n\t\t\treturn\n\t\t}\n\t\tselect {\n\t\tcase slots <- struct{}{}:\n\t\t\tdefer func() { <-slots }()\n\t\tdefault:\n\t\t\tw.Header().Set(\"Retry-After\", \"1\")\n\t\t\thttp.Error(w, \"service busy\", http.StatusServiceUnavailable)\n\t\t\treturn\n\t\t}\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// WithBudget propagates one handler-work budget. It does not interrupt a\n// non-cooperating handler or impose a socket write deadline.\nfunc WithBudget(budget time.Duration, next http.Handler) http.Handler {\n\tif budget <= 0 || next == nil {\n\t\tpanic(\"WithBudget needs a positive duration and a handler\")\n\t}\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tctx, cancel := context.WithTimeout(r.Context(), budget)\n\t\tdefer cancel()\n\t\tnext.ServeHTTP(w, r.WithContext(ctx))\n\t})\n}\n```\n\nConstruct `Limit` during service setup. The gate stays held through the call to `next.ServeHTTP`, including response encoding. This is deliberately a conservative boundary. If slow response delivery should have a separate budget, introduce that boundary explicitly rather than releasing the dependency allowance while detached work still uses it.\n\nHere, 503 means the service cannot currently admit the operation. A per-customer quota might use 429 instead. The `Retry-After` value is a hint for cooperative clients; it neither schedules a retry nor makes repeated writes safe. Authentication, route selection, cheap validation and edge protection should be arranged for your application so rejected traffic cannot consume an unlimited amount of work outside the gate.\n\nThe early context check avoids knowingly starting an already-canceled request. It is not an atomic guarantee against cancellation arriving one instruction later. Protected work must still honor its context. A zero capacity is rejected as configuration failure rather than producing a permanently unusable service."
+      },
+      {
+        "title": "Carry one work budget through the lookup",
+        "id": "carry-one-work-budget-through-the-lookup",
+        "body": "`WithBudget` derives a context before entering the limiter. A shorter parent deadline remains shorter; each layer must not restart a fresh full allowance. The context is a cancellation signal for cooperating operations, not an instruction that can forcibly stop arbitrary CPU work or an uninterruptible library call. This distinction is part of the [official context contract](https://pkg.go.dev/context).\n\nThe next complete file, `quote.go`, accepts an injected lookup function. That keeps the business boundary testable without pretending a sleep is a real database. It validates a small identifier, classifies cancellation separately from ordinary dependency failure, and returns a small JSON result.\n\n```go\npackage backpressure\n\nimport (\n\t\"context\"\n\t\"encoding/json\"\n\t\"errors\"\n\t\"net/http\"\n)\n\ntype Quote struct {\n\tID    string `json:\"id\"`\n\tCents int64  `json:\"cents\"`\n}\n\ntype Lookup func(context.Context, string) (Quote, error)\n\n// QuoteHandler is deliberately small: a production service should also log\n// classified dependency errors and response-write errors without leaking them.\nfunc QuoteHandler(lookup Lookup) http.Handler {\n\tif lookup == nil {\n\t\tpanic(\"QuoteHandler needs a lookup function\")\n\t}\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\tw.Header().Set(\"Allow\", http.MethodGet)\n\t\t\thttp.Error(w, \"method not allowed\", http.StatusMethodNotAllowed)\n\t\t\treturn\n\t\t}\n\t\tid := r.URL.Query().Get(\"id\")\n\t\tif len(id) == 0 || len(id) > 64 {\n\t\t\thttp.Error(w, \"id must contain 1 to 64 bytes\", http.StatusBadRequest)\n\t\t\treturn\n\t\t}\n\t\tquote, err := lookup(r.Context(), id)\n\t\tctxErr := r.Context().Err()\n\t\tswitch {\n\t\tcase errors.Is(ctxErr, context.Canceled):\n\t\t\treturn // The caller went away; do not create replacement work.\n\t\tcase errors.Is(ctxErr, context.DeadlineExceeded):\n\t\t\thttp.Error(w, \"work budget exhausted\", http.StatusGatewayTimeout)\n\t\t\treturn\n\t\tcase err != nil:\n\t\t\thttp.Error(w, \"lookup failed\", http.StatusBadGateway)\n\t\t\treturn\n\t\t}\n\t\tw.Header().Set(\"Content-Type\", \"application/json\")\n\t\t_ = json.NewEncoder(w).Encode(quote)\n\t})\n}\n```\n\nThe handler checks its request context after the lookup returns, including the case where a dependency returns a value after cancellation. It does not disclose an internal error string to the caller. A production adapter should record a useful classified error and response-write failures in its observability path. The deliberately compact example does not implement authentication, business-specific missing-item semantics, or a universal error envelope.\n\nThe illustration here depicts a shared budget across stages. A work deadline still does not replace socket timeouts, body-size limits or a protocol for partially completed side effects. Review [the HTTP request lifecycle](/learn/services.http-lifecycle) when connecting this handler to a real client or database driver."
+      },
+      {
+        "title": "Wire it once, then rehearse overload locally",
+        "id": "wire-it-once-then-rehearse-overload-locally",
+        "body": "The repository contains the complete package, four tests, and a runnable demonstration at [docs/examples/go-backpressure](https://github.com/sergii-ziborov/GopherForge/tree/main/docs/examples/go-backpressure). The demo’s lookup waits on a timer or cancellation and returns a small fictional quote. It exists to make admission observable, not to predict a real service’s capacity.\n\nThe central route wiring is short:\n\n```go\nmux.Handle(\"/quote\", WithBudget(300*time.Millisecond,\n    Limit(16, QuoteHandler(lookup))))\n```\n\nRun the example in one terminal, then send overlapping requests from another:\n\n```sh\ncd docs/examples/go-backpressure\ngo test -race ./...\ngo run ./cmd/demo\n\n# In a second terminal, send 80 requests with up to 40 curl processes.\nseq 1 80 | xargs -P 40 -I '{}' curl --silent --show-error \\\n  --max-time 2 --output /dev/null --write-out '%{http_code}\\n' \\\n  'http://127.0.0.1:8080/quote?id=demo'\n```\n\nDepending on scheduling, this burst should expose a mixture of accepted and busy responses. There is no promised exact count. Repeat with a lower concurrency, then change the demo’s lookup delay. Watch the relationship between offered work and completed work rather than celebrating a high number of requests sent by the client.\n\nThe demo binds to loopback, configures header, write and idle timeouts, and uses a bounded shutdown period. It is a local learning harness. A sustained load test needs controlled arrival scheduling, representative payloads, explicit error accounting and measurements from both sides of the network."
+      },
+      {
+        "title": "Add a waiting queue only when the product needs one",
+        "id": "add-a-waiting-queue-only-when-the-product-needs-one",
+        "body": "Some operations are worth waiting for. A batch import may tolerate seconds of delay; an interactive autocomplete request often does not. If you introduce a queue, define an admission limit, an item-size limit and an expiration policy. A queue is a resource with a lifecycle, not a way to postpone a capacity decision.\n\nQueue age can matter more than queue length. Ten stale jobs may be less valuable than one new job. Before starting queued work, check whether its deadline has expired and whether its result still has a consumer. Returning promptly from the caller does not remove an item already retained in a channel.\n\nAn in-memory queue also needs an ownership rule. Avoid putting `http.ResponseWriter` into a job that might outlive its handler. For durable asynchronous work, persist a job identifier and an explicit acceptance contract, then let a separate worker own retries and completion. Decide what happens if the process dies after accepting the request but before recording the job.\n\nFor data streams, backpressure can be a blocking handoff to a slower consumer. That only works if the producer can actually slow down and every blocking handoff has an exit path. If an upstream source cannot pause, the system needs a deliberate drop, spill or durable-storage policy. The [worker-pool lesson](/learn/concurrency.worker-pool) is a useful place to compare these contracts."
+      },
+      {
+        "title": "Keep fan-out from multiplying the allowance",
+        "id": "keep-fan-out-from-multiplying-the-allowance",
+        "body": "A single admitted HTTP request may start several downstream calls. If 16 admitted requests each create 20 simultaneous lookups, the dependency sees up to 320 operations. The outer admission limit has kept its promise while the system still exceeds its useful downstream capacity.\n\nUse a dependency-specific allowance shared across requests when protecting a common remote resource. Keep the request-level and dependency-level limits conceptually separate. Acquire scarce capacity before creating an unbounded population of waiting goroutines; otherwise the visible worker count can look bounded while blocked goroutines accumulate outside it.\n\n`errgroup.SetLimit` bounds active functions in a group, and `Group.Go` can block while waiting to add another. `TryGo` provides a nonblocking decision. Choose what the caller should do when no slot exists, and do not treat the group limit as a complete service admission policy. These behaviors are documented in the [errgroup reference](https://pkg.go.dev/golang.org/x/sync/errgroup).\n\nFor differently weighted jobs, [the weighted semaphore package](https://pkg.go.dev/golang.org/x/sync/semaphore) supplies context-aware acquisition and a nonblocking acquisition operation. It still needs sensible weights and an external policy for rejected demand. When several resources are required, avoid holding one scarce resource while waiting indefinitely for another; document acquisition order and test the failure path."
+      },
+      {
+        "title": "Align HTTP connection pools and database capacity",
+        "id": "align-http-connection-pools-and-database-capacity",
+        "body": "A connection is not the same unit as a request. HTTP/2 can multiplex streams over a connection, so a connection cap alone is not an application concurrency cap. Shared clients and transports avoid rebuilding connection machinery per request. Configure them once, then use the request context on outgoing operations.\n\nFor an HTTP dependency, inspect time spent obtaining a connection, establishing it, waiting for headers and reading the body. The [httptrace package](https://pkg.go.dev/net/http/httptrace) provides hooks that can help distinguish these stages. Do not turn those hooks into a second expensive logging workload; sample or aggregate for a bounded diagnostic purpose. Our [HTTP connection-reuse guide](/news/go-1-27-http-connection-reuse) covers response cleanup and transport reuse in more detail.\n\nFor SQL, a capped pool can move contention into connection waiting. The [Go connection-management guide](https://go.dev/doc/database/manage-connections) explains `SetMaxOpenConns` and the implications of acquiring limited connections. Compare acquisition waiting with query execution before increasing the pool. More connections may simply move the bottleneck into database CPU, locks or storage.\n\nThe same capacity review applies to other stores, but their driver and server behavior differ. Work through [MongoDB under load](/learn/datastores.mongo-load) and [Redis under load](/learn/datastores.redis-load) for concrete follow-ups. A global service gate should not be enlarged just because a driver accepts a larger pool setting."
+      },
+      {
+        "title": "Spend retry capacity deliberately",
+        "id": "spend-retry-capacity-deliberately",
+        "body": "Retries create additional demand precisely when a dependency may have less capacity. If an ingress, application client and database adapter each perform three total attempts, a single logical operation can expand into as many as 27 downstream attempts along that path. That is a conditional upper bound, not a claim that every implementation always multiplies this way.\n\nChoose one layer to own retries where possible. Specify a maximum number of attempts, a deadline shared with the original operation, backoff with jitter, and a rule for which failures are retryable. A retry budget should be observable separately from original demand. Avoid retrying an overload response immediately inside the same saturated process.\n\nFor a write, a lost response creates uncertainty: the effect may already have happened. Cancellation does not undo a committed transaction or a delivered external request. Use an application-level idempotency protocol when the operation requires it, and decide how long deduplication records remain authoritative. A request identifier that is only written to logs is not such a protocol.\n\nAdmission and retries should cooperate. A rejected request has consumed little protected capacity; an accepted operation that fails after expensive work has consumed much more. Do not hide these outcomes behind one generic error counter. The [retry-pattern lesson](/learn/patterns.retry) and [cache-stampede lesson](/learn/services.cache-stampede) explore related amplification failures."
+      },
+      {
+        "title": "Make memory part of the admission contract",
+        "id": "make-memory-part-of-the-admission-contract",
+        "body": "Sixteen active requests can still exhaust memory if each retains a large payload. Estimate the live working set for a representative request, including decoded structures, response assembly, captured closures and buffered results. Track a byte-oriented bound where input sizes vary substantially. A request-count limit is most useful when operation costs are reasonably comparable.\n\nRead bodies through an explicit size limit and reject oversized input before expensive decoding where the protocol allows it. Bound fan-out results and stream large outputs when the consumer contract permits streaming. A result channel with a small element count can still retain a large backing array through each element.\n\nPooling does not repair an ownership mistake. Returning a buffer to a pool while a response still references its bytes can corrupt the response under concurrency. Keeping every buffer forever to avoid corruption can create retention instead. The [borrowed-buffer and pooling guide](/news/go-bytes-buffer-sync-pool-ownership) explains how to separate temporary storage from owned results; the [slice backing-array guide](/news/go-slices-backing-array-append-clip-clone) shows why a small view can keep a larger allocation reachable.\n\nTreat limits as a combination. An import endpoint may need a compressed-body limit, a decompressed-byte limit, a record-count limit and a cap on concurrently processed records. Writing those quantities down makes a code review much more concrete than the instruction to “use less memory.”"
+      },
+      {
+        "title": "Test refusal, cancellation and recovery as behaviors",
+        "id": "test-refusal-cancellation-and-recovery-as-behaviors",
+        "body": "The crucial limiter test holds one operation inside a one-slot gate, sends another request, and expects an immediate busy response. It then cancels the first request, waits for the handler goroutine to finish, and proves a third request enters the same gate. That sequence checks refusal and recovery instead of merely checking that a channel has a chosen capacity.\n\nUse synchronization channels to establish when a test operation has entered and when it has exited. Avoid assuming that sleeping for a few milliseconds proves a goroutine has reached a particular line. A generous watchdog can fail a stuck test, but elapsed wall-clock time should not be the primary oracle for correct ordering.\n\nThe example also checks a four-slot bound while all slots are occupied, validation without unnecessary lookup calls, the 504 path after cooperative timeout, and an already-expired parent deadline. These tests are intentionally about externally meaningful behavior. They do not establish a production throughput number.\n\nRun the suite with `go test -race ./...`. The [race detector documentation](https://go.dev/doc/articles/race_detector) explains its scope: a clean run only covers the paths executed. It cannot prove absence of deadlocks, guarantee idempotency or establish that a bounded queue is suitably sized. Read the code and test changed failure assumptions as separate steps."
+      },
+      {
+        "title": "Measure overload without letting fast errors flatter the dashboard",
+        "id": "measure-overload-without-letting-fast-errors-flatter-the-dashboard",
+        "body": "Measure offered requests, admitted requests, completed useful operations and rejections separately. Track successful-request latency independently from fast busy responses; an aggregate latency percentile can improve while users receive more failures. Also track deadline exhaustion, canceled requests, dependency errors and attempts per logical operation.\n\nFor every deliberate queue or acquisition gate, expose occupancy and waiting age or waiting duration where appropriate. Relate these measurements to downstream latency and resource use. A high rejection rate with stable successful throughput is a different incident from a low rejection rate with growing internal waiting and collapsing completions.\n\nRuntime signals provide another view. The [runtime/metrics reference](https://pkg.go.dev/runtime/metrics) describes metrics for live goroutines, scheduler latency and memory classes. Enumerate supported metrics for the toolchain you deploy rather than assuming every runtime exposes identical names. Pair process-level signals with endpoint and dependency measurements; one cannot substitute for the other.\n\nKeep metric labels bounded. User IDs, raw URLs and arbitrary error messages can create a new storage problem inside the monitoring system. Prefer a small route template and classified outcome. When evidence suggests unfinished work, our [goroutine-leak guide](/news/go-1-27-goroutine-leak-profiles) helps connect a profile to the component that owns the exit path."
+      },
+      {
+        "title": "Rehearse a slowdown, a burst and a recovery",
+        "id": "rehearse-a-slowdown-a-burst-and-a-recovery",
+        "body": "Use a test dependency whose behavior you control. First establish a stable baseline at a modest offered rate. Then increase dependency latency while keeping offered demand constant. Record successful throughput, rejection rate, active work, memory and the distribution of completion times. Stop adding load when the tested environment reaches its safety limits.\n\nNext introduce a bounded burst, a dependency error period, and client cancellations. Finally remove the fault and watch recovery. The service should return toward its baseline without spending a long period draining work that no caller still wants. If recovery remains slow, inspect retries, hidden acquisition queues, retained payloads and abandoned producers before increasing the gate.\n\nA closed-loop load generator waits for responses before generating more work, so a slow service can reduce the generator’s offered rate. That is useful for some experiments but can conceal a demand pattern you intended to hold steady. State the arrival model in the report and distinguish scheduled arrivals from requests that the generator actually sent.\n\nDo not combine race-detector runs with performance claims. Use race-enabled execution for correctness exploration and an appropriately built binary for capacity measurements. Record the Go version, CPU allocation, replica count, transport protocol, payload distribution and dependency configuration so a later result can be compared fairly."
+      },
+      {
+        "title": "Keep the contract during scaling and shutdown",
+        "id": "keep-the-contract-during-scaling-and-shutdown",
+        "body": "A limit of 16 applies to one shared limiter instance. Ten replicas can collectively admit roughly 160 protected operations before considering other callers. Increasing replicas may help a CPU-bound application while overwhelming its shared database. Re-evaluate aggregate dependency demand during scaling, rollouts and failover rather than copying a per-process number into every deployment.\n\nSeparate optional work from the essential path where the product can tolerate degradation. For example, returning a cached recommendation may be preferable to letting an optional recommendation call occupy the same scarce allowance as payment verification. Document the user-visible fallback and distinguish it from a successful fresh result in metrics.\n\nDuring shutdown, stop admitting new work, allow a bounded drain, then apply the service’s cancellation policy. The demo uses `http.Server.Shutdown` with a deadline and closes the server if that deadline expires. Real background workers need their own cancellation and joining protocol; changing readiness does not magically stop every goroutine already running.\n\nReview termination behavior with the deployment system too. Load-balancer propagation, application drain time and the platform’s termination allowance must fit together. The [probes-and-shutdown lesson](/learn/operations.probes-and-shutdown) connects those operational concerns to the Go process. A limiter that behaves well only before the first rollout is an unfinished design."
+      },
+      {
+        "title": "Questions worth asking in a design review",
+        "id": "questions-worth-asking-in-a-design-review",
+        "body": "**Should every Go service have a worker pool?** No. A synchronous handler plus shared admission control may be simpler for request-scoped work. A pool is useful when there is a real job lifecycle, batching opportunity or separate ownership boundary. Its queue and shutdown still need explicit contracts.\n\n**Does a context timeout stop the work?** Only if the implementation cooperates or the relevant operation observes cancellation. It also does not roll back completed side effects. The [interview guide on cancellation](/interview/concurrency.cancellation) is a good exercise in explaining this boundary precisely.\n\n**Can a semaphore replace a rate limiter?** It protects a different quantity. Concurrency admission controls simultaneous occupation; rate limiting controls activity over time. Some systems need both, plus a payload limit and a tenant policy. Name the resource you are protecting before choosing a package.\n\n**How large should the buffer be?** Large enough for a justified waiting contract under measured bursts, small enough that admitted work can still finish usefully, and bounded in retained bytes as well as items. If nobody can explain why a caller should wait, start by evaluating a no-wait policy.\n\nFor the next practice session, open [bounded workers and overload](/interview/concurrency.bounded-pool). Explain the dependency, the allowed waiting, the cancellation path and the recovery signal before writing code. A strong Go service makes those answers visible in both its implementation and its operational evidence."
+      }
+    ]
   }
 ]

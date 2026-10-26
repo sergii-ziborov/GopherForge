@@ -32,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: origin + path,
       ...(illustratedPages[path]
         ? {
-            lastModified: "2026-10-25",
+            lastModified: path === "" ? news[0].modifiedAt : "2026-10-25",
             images: illustratedPages[path].map(
               (id) => origin + newsImage(id).src,
             ),
@@ -43,19 +43,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
             path.startsWith("/learn/") ||
             path.startsWith("/interview")
           ? {
-              lastModified: [
-                "",
-                "/news",
-                "/learn",
-                "/updates",
-                "/support",
-                "/learn/stdlib.borrowed-buffers",
-                "/learn/runtime.pool-ownership",
-                "/learn/units/stdlib",
-                "/learn/units/runtime",
-              ].includes(path)
-                ? "2026-10-23"
-                : "2026-10-20",
+              lastModified:
+                path === "/news"
+                  ? news[0].modifiedAt
+                  : [
+                        "",
+                        "/news",
+                        "/learn",
+                        "/updates",
+                        "/support",
+                        "/learn/stdlib.borrowed-buffers",
+                        "/learn/runtime.pool-ownership",
+                        "/learn/units/stdlib",
+                        "/learn/units/runtime",
+                      ].includes(path)
+                    ? "2026-10-23"
+                    : "2026-10-20",
             }
           : {}),
       changeFrequency:

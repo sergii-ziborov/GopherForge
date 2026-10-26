@@ -18,6 +18,8 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  backpressure:
+    "Admit → Bound → Cancel → Measure. Make capacity explicit, keep waiting finite, propagate cancellation, and measure useful completions alongside rejections.",
   survey:
     "Observe → Reproduce → Explain → Share. Collect concrete experience; no 2026 survey results have been published in this report.",
   slices:

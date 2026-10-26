@@ -7,6 +7,16 @@ export function Prose({ children }: { children: string }) {
       <Markdown
         remarkPlugins={[remarkGfm]}
         components={{
+          table: ({ children }) => (
+            <div
+              className="prose-table-scroll"
+              role="region"
+              aria-label="Scrollable comparison table"
+              tabIndex={0}
+            >
+              <table>{children}</table>
+            </div>
+          ),
           pre: ({ children }) => <>{children}</>,
           code: ({ children, className }) =>
             className || String(children).includes("\n") ? (

@@ -1,0 +1,72 @@
+{
+  "checkedOn": "2026-10-26",
+  "editorialTimezone": "Asia/Jerusalem",
+  "article": {
+    "slug": "go-backpressure-concurrency-limits-queues-deadlines",
+    "title": "Go backpressure: bound concurrency, queues and request deadlines",
+    "description": "Build Go services that recover under load: shared admission limits, finite queues, context deadlines, retry budgets and race-tested code you can run.",
+    "category": "GUIDE · PRODUCTION GO",
+    "editionDate": "2026-10-26",
+    "eventDate": "2026-10-26",
+    "publishedAt": "2026-10-26",
+    "modifiedAt": "2026-10-26",
+    "sourceCheckedAt": "2026-10-26",
+    "kind": "guide",
+    "keywords": [
+      "Go backpressure",
+      "Go concurrency limit",
+      "Golang worker pool",
+      "Go context timeout",
+      "Go overload protection",
+      "bounded queues in Go"
+    ],
+    "sources": [
+      {
+        "title": "Context deadlines and cancellation",
+        "url": "https://pkg.go.dev/context"
+      },
+      {
+        "title": "net/http server and client contracts",
+        "url": "https://pkg.go.dev/net/http"
+      },
+      {
+        "title": "Go concurrency pipelines and cancellation",
+        "url": "https://go.dev/blog/pipelines"
+      },
+      {
+        "title": "Weighted semaphore acquisition",
+        "url": "https://pkg.go.dev/golang.org/x/sync/semaphore"
+      },
+      {
+        "title": "errgroup concurrency limits and joining",
+        "url": "https://pkg.go.dev/golang.org/x/sync/errgroup"
+      },
+      {
+        "title": "Managing SQL connections",
+        "url": "https://go.dev/doc/database/manage-connections"
+      },
+      {
+        "title": "HTTP connection tracing",
+        "url": "https://pkg.go.dev/net/http/httptrace"
+      },
+      {
+        "title": "Go runtime metrics",
+        "url": "https://pkg.go.dev/runtime/metrics"
+      },
+      {
+        "title": "Go data race detector",
+        "url": "https://go.dev/doc/articles/race_detector"
+      }
+    ],
+    "related": [
+      "go-1-27-goroutine-leak-profiles",
+      "go-1-27-http-connection-reuse",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "imagePrefix": "backpressure",
+    "wordCount": 3708
+  },
+  "code": "docs/examples/go-backpressure; complete displayed source is extracted from the tested package",
+  "datePolicy": "Original practical guide published today; no historical news event is claimed.",
+  "numbers": "Worked hypothetical arithmetic; no invented throughput measurements."
+}

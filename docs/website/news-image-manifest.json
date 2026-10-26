@@ -538,5 +538,41 @@
     "height": 900,
     "bytes": 153820,
     "sha256": "cfb61e2630f8ee9a1f5b3967790fb58c583269f73a811b0fae512af88a51851a"
+  },
+  {
+    "id": "backpressure-hero",
+    "mode": "built-in image_gen",
+    "prompt": "Use case: illustration-story. Asset type: editorial illustration for a practical Go programming article on GopherForge. Create one polished wide landscape image, 16:9, ideally 1600x900. Warm ivory paper background, deep teal and turquoise, restrained burnt-orange accents, tactile papercraft and soft clay materials, crisp gentle studio shadows. One original friendly small blue gopher engineer; charming but professional. No vendor logos, no watermark, no fake screenshot. Scene: a gopher dispatcher manages a calm workshop intake gate. Three compact work bays each hold one teal parcel. A small waiting tray has exactly three marked parcel slots; a fourth incoming orange parcel is directed back along a clear return path instead of piling into the room. A simple gauge signals capacity. Emphasize finite space and orderly flow; no written words or letters. Wide balanced scene with distinct intake, work, and return routes.",
+    "promptRecord": "exact",
+    "original": "build/news-backpressure/originals/backpressure-hero.png",
+    "asset": "website/public/images/news/backpressure-hero.webp",
+    "width": 1600,
+    "height": 900,
+    "bytes": 128888,
+    "sha256": "01fcc367fe69fe65500b03980babaf0406a0f0245a11b5b04a16e854694a46fb"
+  },
+  {
+    "id": "backpressure-detail",
+    "mode": "built-in image_gen",
+    "prompt": "Use case: illustration-story. Asset type: editorial illustration for a practical Go programming article on GopherForge. Create one polished wide landscape image, 16:9, ideally 1600x900. Warm ivory paper background, deep teal and turquoise, restrained burnt-orange accents, tactile papercraft and soft clay materials, crisp gentle studio shadows. One original friendly small blue gopher engineer; charming but professional. No vendor logos, no watermark, no fake screenshot. Scene: close view of a gopher inspecting a long shared deadline represented by one orange ribbon and one large hourglass. Along the ribbon are a small intake tray, a worker bench, and a downstream service box. An orange cancellation gate is closed before an unused work bay; parcels already in progress are set down safely, with no abandoned clutter. Visual metaphor for a single end-to-end budget and cooperative cancellation. No words, letters, numbers or charts.",
+    "promptRecord": "exact",
+    "original": "build/news-backpressure/originals/backpressure-detail.png",
+    "asset": "website/public/images/news/backpressure-detail.webp",
+    "width": 1600,
+    "height": 900,
+    "bytes": 130942,
+    "sha256": "066ff2259787608d43e71640ec1495bba0652134f5ebf6be004a6c75ec69138c"
+  },
+  {
+    "id": "backpressure-infographic",
+    "mode": "built-in image_gen",
+    "prompt": "Use case: illustration-story. Asset type: editorial illustration for a practical Go programming article on GopherForge. Create one polished wide landscape image, 16:9, ideally 1600x900. Warm ivory paper background, deep teal and turquoise, restrained burnt-orange accents, tactile papercraft and soft clay materials, crisp gentle studio shadows. One original friendly small blue gopher engineer; charming but professional. No vendor logos, no watermark, no fake screenshot. Use case: infographic-diagram. Clear four-panel horizontal educational infographic. Exact large English labels, one per panel, in order: \"Admit\", \"Bound\", \"Cancel\", \"Measure\". Panel 1: gopher at a narrow intake gate with a return arrow. Panel 2: exactly three occupied worker slots and a tiny finite tray. Panel 3: gopher closes a gate beside an hourglass and safely sets down a parcel. Panel 4: gopher reads a simple latency gauge and capacity counter. Large high-contrast typography, generous ivory whitespace, no other words, no extra captions. Straight visual hierarchy, all four labels completely visible, nothing cropped.",
+    "promptRecord": "exact",
+    "original": "build/news-backpressure/originals/backpressure-infographic.png",
+    "asset": "website/public/images/news/backpressure-infographic.webp",
+    "width": 1600,
+    "height": 900,
+    "bytes": 117700,
+    "sha256": "f69b8fbc24c996770f78a64da0070e5c6c10e8f7436b9033617472606ac19089"
   }
 ]

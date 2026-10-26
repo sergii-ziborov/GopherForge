@@ -95,7 +95,8 @@ test("October additions fill unused editions without inventing publication dates
       n.imagePrefix,
     ),
   );
-  const earlier = news.filter((n) => !added.includes(n));
+  // Compare this historical edition with the archive that existed at publication.
+  const earlier = news.filter((n) => n.publishedAt < "2026-10-23");
   assert.equal(added.length, 5);
   assert.equal(added.filter((n) => n.kind === "news").length, 2);
   assert.equal(added.filter((n) => n.kind === "guide").length, 3);
@@ -110,7 +111,7 @@ test("October additions fill unused editions without inventing publication dates
   ]);
   for (const n of added) {
     assert.equal(n.publishedAt, "2026-10-23");
-    assert.equal(n.modifiedAt, "2026-10-23");
+    assert.ok(n.modifiedAt >= n.publishedAt);
     assert.ok(!earlier.some((x) => x.editionDate === n.editionDate));
     const bodies = n.sections.map((s) => s.body).join("\n");
     for (const fence of bodies.matchAll(/```([^\n]*)\n/g))

@@ -223,5 +223,20 @@
     "src": "/images/news/gopls24-infographic.webp",
     "width": 1600,
     "height": 900
+  },
+  "backpressure-hero": {
+    "src": "/images/news/backpressure-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "backpressure-detail": {
+    "src": "/images/news/backpressure-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "backpressure-infographic": {
+    "src": "/images/news/backpressure-infographic.webp",
+    "width": 1600,
+    "height": 900
   }
 }

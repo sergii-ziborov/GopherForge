@@ -2991,6 +2991,34 @@ details p {
 .news-figure {
   margin: 38px 0 48px;
 }
+.prose-table-scroll {
+  margin: 24px 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+}
+.prose-table-scroll table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  line-height: 1.5;
+}
+.prose-table-scroll th,
+.prose-table-scroll td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: top;
+}
+.prose-table-scroll th {
+  background: var(--wash);
+  font-weight: 600;
+}
+.prose-table-scroll td {
+  border-top: 1px solid var(--line);
+}
 .news-figure img {
   width: 100%;
   display: block;
