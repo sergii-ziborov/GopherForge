@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-26T18:27:18.931026+00:00",
+  "origin": "https://gopherforge.app",
+  "article": "/news/go-backpressure-concurrency-limits-queues-deadlines",
+  "proseWords": 3708,
+  "sections": 17,
+  "images": [
+    "/images/news/backpressure-hero.webp",
+    "/images/news/backpressure-infographic.webp",
+    "/images/news/backpressure-detail.webp"
+  ],
+  "internalPathsChecked": 26,
+  "anchors": "all section and in-page targets valid",
+  "SEO": "canonical, metadata, TechArticle, image sitemap, RSS verified",
+  "discovery": "latest on News, linked from Home and three related articles",
+  "code": "displayed source matches race-tested package",
+  "pricing": "$6.99 USD retained",
+  "rssItems": 16,
+  "sourceCommit": "0ac2add2e29c121a6e3ddbd3db8f2ee81af54055",
+  "datePolicy": "26 October 2026 in Asia/Jerusalem; original practical guide, not a backdated release announcement",
+  "deployment": {
+    "method": "Hostwatch / Hetzner",
+    "job": "gopherforge-backpressure-0ac2add-20261026",
+    "state": "succeeded",
+    "finishedAt": "2026-10-26T18:26:42.603959431Z",
+    "imageDigest": "sha256:c18d6861ee6ce55ce800f997c9c89e6eff8cd99d82a447ae2b4cb7b5f532c2d3",
+    "rollback": "localhost/gopherforge-web:rollback-backpressure-c36c44a7",
+    "feedCache": "delivered; public Feed connected checked",
+    "feedTimer": "active"
+  },
+  "verification": {
+    "build": "passed",
+    "typeCheck": "passed",
+    "webTests": 19,
+    "goVersion": "go1.24.2 darwin/arm64",
+    "goTests": "four test functions; go test -race -count=5 ./... passed",
+    "goVet": "passed",
+    "displayedSource": "Matches verified limiter.go and quote.go, including expired-admission 504",
+    "viewports": [
+      1280,
+      390
+    ],
+    "horizontalOverflow": false,
+    "mobileTable": "Keyboard-scrollable region, width 342px and inner table 560px; horizontal scrolling stays inside the table",
+    "mobileCode": "Code blocks scroll within the page width",
+    "exampleRepositoryURL": "HTTP 200",
+    "publicationScreenshot": "backpressure-published.png"
+  },
+  "imageProvenance": "backpressure-assets.json; three distinct built-in ImageGen requests, exact prompts and file paths"
+}
