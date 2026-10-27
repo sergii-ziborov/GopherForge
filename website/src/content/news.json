@@ -1238,7 +1238,8 @@
       "go-slices-backing-array-append-clip-clone",
       "go-1-27-small-allocation-performance",
       "go-1-27-goroutine-leak-profiles",
-      "go-backpressure-concurrency-limits-queues-deadlines"
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-json-v2-migration-api-compatibility"
     ],
     "imagePrefix": "buffers",
     "sections": [
@@ -1300,7 +1301,7 @@
     ],
     "wordCount": 2056,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-26",
+    "modifiedAt": "2026-10-27",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1342,7 +1343,8 @@
     "related": [
       "gopls-0-24-error-contracts-memory",
       "go-bytes-buffer-sync-pool-ownership",
-      "go-1-27-http-connection-reuse"
+      "go-1-27-http-connection-reuse",
+      "go-json-v2-migration-api-compatibility"
     ],
     "imagePrefix": "errors",
     "sections": [
@@ -1404,7 +1406,7 @@
     ],
     "wordCount": 2074,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-23",
+    "modifiedAt": "2026-10-27",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1519,7 +1521,7 @@
     "editionDate": "2026-10-26",
     "eventDate": "2026-10-26",
     "publishedAt": "2026-10-26",
-    "modifiedAt": "2026-10-26",
+    "modifiedAt": "2026-10-27",
     "sourceCheckedAt": "2026-10-26",
     "kind": "guide",
     "keywords": [
@@ -1571,7 +1573,8 @@
     "related": [
       "go-1-27-goroutine-leak-profiles",
       "go-1-27-http-connection-reuse",
-      "go-bytes-buffer-sync-pool-ownership"
+      "go-bytes-buffer-sync-pool-ownership",
+      "go-json-v2-migration-api-compatibility"
     ],
     "imagePrefix": "backpressure",
     "wordCount": 3708,
@@ -1660,6 +1663,162 @@
         "title": "Questions worth asking in a design review",
         "id": "questions-worth-asking-in-a-design-review",
         "body": "**Should every Go service have a worker pool?** No. A synchronous handler plus shared admission control may be simpler for request-scoped work. A pool is useful when there is a real job lifecycle, batching opportunity or separate ownership boundary. Its queue and shutdown still need explicit contracts.\n\n**Does a context timeout stop the work?** Only if the implementation cooperates or the relevant operation observes cancellation. It also does not roll back completed side effects. The [interview guide on cancellation](/interview/concurrency.cancellation) is a good exercise in explaining this boundary precisely.\n\n**Can a semaphore replace a rate limiter?** It protects a different quantity. Concurrency admission controls simultaneous occupation; rate limiting controls activity over time. Some systems need both, plus a payload limit and a tenant policy. Name the resource you are protecting before choosing a package.\n\n**How large should the buffer be?** Large enough for a justified waiting contract under measured bursts, small enough that admitted work can still finish usefully, and bounded in retained bytes as well as items. If nobody can explain why a caller should wait, start by evaluating a no-wait policy.\n\nFor the next practice session, open [bounded workers and overload](/interview/concurrency.bounded-pool). Explain the dependency, the allowed waiting, the cancellation path and the recovery signal before writing code. A strong Go service makes those answers visible in both its implementation and its operational evidence."
+      }
+    ]
+  },
+  {
+    "slug": "go-json-v2-migration-api-compatibility",
+    "title": "Go JSON v2 migration: keep your API contract intact",
+    "description": "Go 1.27 JSON v2 migration with runnable tests: nil collections, omitempty, duplicate keys, strict decoding, compatibility options and a staged API rollout.",
+    "category": "GUIDE · GO API CONTRACTS",
+    "editionDate": "2026-10-27",
+    "eventDate": "2026-10-27",
+    "publishedAt": "2026-10-27",
+    "modifiedAt": "2026-10-27",
+    "sourceCheckedAt": "2026-10-27",
+    "kind": "guide",
+    "keywords": [
+      "Go encoding/json/v2 migration",
+      "Go JSON v2 vs v1",
+      "Go 1.27 JSON",
+      "omitempty vs omitzero",
+      "jsonsplit migration",
+      "nil slice JSON"
+    ],
+    "sources": [
+      {
+        "title": "Go 1.27 release notes",
+        "url": "https://go.dev/doc/go1.27"
+      },
+      {
+        "title": "Official encoding/json/v2 migration guide",
+        "url": "https://go.dev/doc/jsonv2-migration"
+      },
+      {
+        "title": "encoding/json legacy semantics and options",
+        "url": "https://pkg.go.dev/encoding/json@go1.27.3"
+      },
+      {
+        "title": "encoding/json/v2 package reference",
+        "url": "https://pkg.go.dev/encoding/json/v2@go1.27.3"
+      },
+      {
+        "title": "JSON text syntax and options",
+        "url": "https://pkg.go.dev/encoding/json/jsontext@go1.27.3"
+      },
+      {
+        "title": "jsonsplit comparison and migration package",
+        "url": "https://pkg.go.dev/github.com/go-json-experiment/jsonsplit"
+      },
+      {
+        "title": "Go toolchain selection",
+        "url": "https://go.dev/doc/toolchain"
+      },
+      {
+        "title": "Native Go fuzzing",
+        "url": "https://go.dev/doc/security/fuzz/"
+      },
+      {
+        "title": "Benchmarking with the testing package",
+        "url": "https://pkg.go.dev/testing#hdr-Benchmarks"
+      },
+      {
+        "title": "RFC 8259: JSON interoperability",
+        "url": "https://www.rfc-editor.org/rfc/rfc8259"
+      }
+    ],
+    "related": [
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-typed-nil-errors-as-contracts",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "imagePrefix": "jsonv2",
+    "wordCount": 3391,
+    "sections": [
+      {
+        "title": "A compiling change can still break a client",
+        "id": "a-compiling-change-can-still-break-a-client",
+        "body": "A service returns a list of available projects. Its Go tests are green, the response status is 200, and the JSON document is valid. After a serializer migration, one account with no projects receives an empty array where it previously received `null`. A mobile client takes a different branch, a snapshot changes, and a downstream import no longer recognises the response it expected. The compiler did its job. The application team had not yet described the contract it needed to preserve.\n\nMoving to `encoding/json/v2` is a useful opportunity to make that contract explicit. The difficult questions are usually about meaning: which inputs are accepted, which fields are present, how absence is represented, and whether an output is compared as data or as exact bytes. A package import is only one line in that larger change.\n\nThis workshop uses a fictional project-list response and a small full-update request. It includes a runnable comparison program, contract tests, a fuzz target and a benchmark harness. The examples were checked with Go 1.27.3. The numbers used for rollout proportions are planning examples, not recommendations derived from a production benchmark.\n\n**The useful starting point:** preserve the existing wire contract first, identify intentional differences, then enable those differences with tests and an observable rollout. If struct tags still feel like incidental formatting, begin with [the JSON schema lesson](/learn/stdlib.json). They are part of what your callers receive."
+      },
+      {
+        "title": "Distinguish a toolchain upgrade from a behavior migration",
+        "id": "distinguish-a-toolchain-upgrade-from-a-behavior-migration",
+        "body": "Go 1.27 makes `encoding/json/v2` and the lower-level `encoding/json/jsontext` packages available in the standard library. The original `encoding/json` API remains supported. The [release notes](https://go.dev/doc/go1.27) also explain that the original package is backed by the newer implementation while preserving its established behavior, with possible differences in exact error text.\n\nThat creates two separate changes to review. First, an application can upgrade its Go toolchain while keeping existing imports. Second, it can deliberately adopt the v2 API and its default behavior. Do not use a successful toolchain build as evidence that switching all imports preserves every API response.\n\nPin the toolchain used for the experiment and record it with the results. Run `go version`, inspect the module’s `go` and `toolchain` directives, and check what CI actually selects. Our companion module declares Go 1.27 and records Go 1.27.3 as its preferred toolchain. The checks for this article explicitly selected Go 1.27.3; a preferred toolchain directive does not force every newer Go installation to use exactly that binary. It does not require an experimental build flag for this release. The [toolchain selection documentation](https://go.dev/doc/toolchain) describes how those choices interact."
+      },
+      {
+        "title": "Start with the response shapes your consumers can observe",
+        "id": "start-with-the-response-shapes-your-consumers-can-observe",
+        "body": "Consider an ordinary slice and map in a response structure. Their zero values are both nil, but an API can choose to represent that absence differently from an empty collection. For the example below, default v1 behavior produces `null` values, while default v2 behavior produces an empty array and object.\n\n| Go value in our fixture | Default v1 output | Default v2 output | Contract question |\n| --- | --- | --- | --- |\n| Nil `[]string` | `null` | `[]` | Is absence different from an empty result? |\n| Nil `map[string]string` | `null` | `{}` | Does the consumer expect a nullable object? |\n| Zero integer with `omitempty` | Field omitted | Field contains `0` | Does field presence carry meaning? |\n| False boolean with `omitempty` | Field omitted | Field contains `false` | Is false an explicit instruction? |\n\nThese rows describe specific types and tags, not every possible collection or custom marshaler. For example, binary data has its own encoding conventions. Keep a fixture for the actual exported type rather than inferring behavior from a superficially similar type.\n\nThe compatibility decision belongs to the API owner. A new endpoint may deliberately prefer empty collections. An established endpoint may need to keep nullable fields until its consumers can change. An OpenAPI description, generated client, mobile model and database representation should agree about which distinction is real. A visually cleaner JSON response is not sufficient evidence that a change is safe."
+      },
+      {
+        "title": "Review omitempty and omitzero field by field",
+        "id": "review-omitempty-and-omitzero-field-by-field",
+        "body": "The name `omitempty` can hide two different expectations. Under v1 defaults, a zero number or false boolean is omitted. Under v2 defaults, omission follows an empty JSON representation, so those values remain present. The `omitzero` tag expresses omission based on a Go zero value instead. The [v2 reference](https://pkg.go.dev/encoding/json/v2@go1.27.3) documents the precise rules, including custom zero checks.\n\nDo not mechanically replace every occurrence of one tag with the other. A field might need to be present even when its value is false. Another field might need an omitted representation for a particular generated client. Write the expected output for zero, nonzero, nil and explicitly empty values before choosing the tag.\n\nPartial updates deserve a separate model. A plain boolean cannot distinguish an absent property from an explicit false after ordinary decoding. A pointer adds a distinction, but an absent field and an explicit JSON null may still need a presence-aware wrapper if the domain treats them differently. That is a request-model decision, not something a serializer migration should decide accidentally.\n\nThe companion’s update type intentionally represents a complete update. It is not a generic PATCH implementation. Keeping that boundary narrow makes its validation and tests easier to understand. When designing a richer update protocol, write a state table for absent, null, empty and concrete values before adding custom unmarshaling code."
+      },
+      {
+        "title": "Input acceptance is also part of compatibility",
+        "id": "input-acceptance-is-also-part-of-compatibility",
+        "body": "An input contract includes more than successful output encoding. Default v2 behavior rejects duplicate JSON object names and invalid UTF-8, and name matching is case-sensitive by default. V1 commonly accepts duplicate names and case-insensitive field matches. Those differences can reveal previously tolerated producer behavior.\n\nUnknown members are a separate policy: v2 does not reject every unknown field merely because its defaults are stricter. Use `RejectUnknownMembers(true)` when that is the intended endpoint contract. A strict command API and a forward-compatible event consumer may reasonably make different decisions.\n\nCreate fixtures for a correctly named property, a differently cased name, a duplicate name, an unknown property and malformed string bytes. Capture whether each decoder accepts the input, the resulting typed value, and whether domain validation succeeds. A changed error message alone is less useful than a changed acceptance decision or value.\n\nDuplicate names are particularly awkward when different components interpret the same document differently. The [JSON specification](https://www.rfc-editor.org/rfc/rfc8259) discusses interoperability concerns around member names. Treat the migration as a chance to align your boundary rules and producer contracts. Do not assume that allowing an ambiguous document everywhere is the best compatibility policy, or claim a new vulnerability without evidence about the actual system."
+      },
+      {
+        "title": "Run the comparison before editing the application",
+        "id": "run-the-comparison-before-editing-the-application",
+        "body": "The complete companion lives in [docs/examples/go-jsonv2-migration](https://github.com/sergii-ziborov/GopherForge/tree/main/docs/examples/go-jsonv2-migration). Its comparison program uses the same `Listing` type for both packages and prints the results. It also demonstrates omission and duplicate-name handling. The small `must` helper is confined to this executable; application boundaries should return and classify errors.\n\n```go\npackage main\n\nimport (\n\tjsonv1 \"encoding/json\"\n\tjsonv2 \"encoding/json/v2\"\n\t\"fmt\"\n\n\tmigration \"example.com/jsonv2migration\"\n)\n\n// must is only for this small comparison program.\nfunc must(b []byte, err error) string {\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn string(b)\n}\n\nfunc main() {\n\tv := migration.Listing{}\n\tfmt.Println(\"v1:\", must(jsonv1.Marshal(v)))\n\tfmt.Println(\"v2:\", must(jsonv2.Marshal(v)))\n\tfmt.Println(\"v2 compatible:\", must(migration.MarshalCompatible(v)))\n\tfmt.Println(\"v2 empty items:\", must(migration.MarshalEmptyItems(v)))\n\n\ttype Flags struct {\n\t\tCount   int  `json:\"count,omitempty\"`\n\t\tEnabled bool `json:\"enabled,omitempty\"`\n\t}\n\tfmt.Println(\"v1 omission:\", must(jsonv1.Marshal(Flags{})))\n\tfmt.Println(\"v2 omission:\", must(jsonv2.Marshal(Flags{})))\n\n\ttype Role struct {\n\t\tRole string `json:\"role\"`\n\t}\n\tvar old, next Role\n\tduplicate := []byte(`{\"role\":\"viewer\",\"role\":\"admin\"}`)\n\toldErr := jsonv1.Unmarshal(duplicate, &old)\n\tnextErr := jsonv2.Unmarshal(duplicate, &next)\n\tfmt.Printf(\"v1 duplicate: accepted=%t role=%s\\n\", oldErr == nil, old.Role)\n\tfmt.Printf(\"v2 duplicate: accepted=%t\\n\", nextErr == nil)\n}\n```\n\nThe expected output is checked against the program run, rather than guessed from the type definitions:\n\n```text\nv1: {\"items\":null,\"labels\":null}\nv2: {\"items\":[],\"labels\":{}}\nv2 compatible: {\"items\":null,\"labels\":null}\nv2 empty items: {\"items\":[],\"labels\":null}\nv1 omission: {}\nv2 omission: {\"count\":0,\"enabled\":false}\nv1 duplicate: accepted=true role=admin\nv2 duplicate: accepted=false\n```\n\nUse this program as a conversation starter with a consumer owner. Ask which output they require and which inputs they actually send. Then replace the fictional type with a small exported response type from your service. Keep that experiment separate from a repository-wide import rewrite so unexpected differences remain easy to locate."
+      },
+      {
+        "title": "Move to the v2 API while preserving the established contract",
+        "id": "move-to-the-v2-api-while-preserving-the-established-contract",
+        "body": "The compatibility options allow a smaller first step. `jsonv1.DefaultOptionsV1()` selects v1 behavior through the v2 API. Later options override earlier settings, so a second helper can opt into one deliberate difference while retaining the rest of that baseline. Our example changes only nil-slice formatting in `MarshalEmptyItems`.\n\nThe following complete `contract.go` also contains the strict full-update decoder used by the tests:\n\n```go\npackage migration\n\nimport (\n\tjsonv1 \"encoding/json\"\n\tjsonv2 \"encoding/json/v2\"\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype Listing struct {\n\tItems  []string          `json:\"items\"`\n\tLabels map[string]string `json:\"labels\"`\n}\n\n// MarshalCompatible moves to the v2 API while retaining v1 behavior.\nfunc MarshalCompatible(v Listing) ([]byte, error) {\n\treturn jsonv2.Marshal(v, jsonv1.DefaultOptionsV1())\n}\n\n// MarshalEmptyItems opts into one deliberate contract change.\nfunc MarshalEmptyItems(v Listing) ([]byte, error) {\n\treturn jsonv2.Marshal(v,\n\t\tjsonv1.DefaultOptionsV1(),\n\t\tjsonv2.FormatNilSliceAsNull(false),\n\t)\n}\n\ntype Update struct {\n\tName    string `json:\"name\"`\n\tEnabled bool   `json:\"enabled\"`\n}\n\n// DecodeUpdate publishes a value only after syntax, shape and domain checks.\n// The caller must bound data size before decoding. This is a full update,\n// not a PATCH representation that distinguishes absent, null and false.\nfunc DecodeUpdate(data []byte) (Update, error) {\n\tvar next Update\n\tif err := jsonv2.Unmarshal(data, &next,\n\t\tjsonv2.RejectUnknownMembers(true)); err != nil {\n\t\treturn Update{}, fmt.Errorf(\"decode update: %w\", err)\n\t}\n\tif strings.TrimSpace(next.Name) == \"\" {\n\t\treturn Update{}, fmt.Errorf(\"name must not be blank\")\n\t}\n\treturn next, nil\n}\n```\n\nKeep the compatibility choice near the boundary that owns it. An existing public response, a newly designed internal message and a persisted export may need different policies. A single global serializer helper that silently changes all three makes ownership harder to follow.\n\nThe [v1 reference](https://pkg.go.dev/encoding/json@go1.27.3) lists the legacy options. Review the ones relevant to your actual types, including custom methods and ordered output, rather than treating compatibility mode as a permanent reason to stop investigating. It provides a controlled baseline from which to make a smaller semantic change."
+      },
+      {
+        "title": "Decode into a fresh value and validate before publishing it",
+        "id": "decode-into-a-fresh-value-and-validate-before-publishing-it",
+        "body": "The decoder above creates a local destination, performs JSON decoding, then validates a domain condition. It returns a zero result on error. That keeps a partially decoded value from being mistaken for an accepted update by its caller. It also keeps decoding separate from database writes or external effects.\n\nThis separation matters when comparing implementations. Do not decode v1 and v2 into the same reused destination. A decoder can leave state from a previous input or modify a destination before reporting an error. Compare independent targets created for that specific input, and never let a shadow comparison write to production state.\n\nBound the input before decoding. In an HTTP adapter, use an explicit body-size limit, classify oversized bodies separately, and ensure the parser policy accounts for trailing data. A body containing one valid object followed by another value must have an intentional outcome. The companion tests that case directly.\n\nStrict shape checks are only the first layer. The fictional update requires a nonblank name; a real update may require authorization, identifier validation and concurrency control as well. The [request-validation lesson](/learn/services.gin-validation) explains why those checks must finish before side effects begin. A successful unmarshal should never be the only evidence that an operation is acceptable."
+      },
+      {
+        "title": "Inventory contracts beyond HTTP handlers",
+        "id": "inventory-contracts-beyond-http-handlers",
+        "body": "Search the repository for more than `Marshal` and `Unmarshal`. Include encoder and decoder construction, custom JSON methods, struct tags, raw messages, message-bus adapters, exported files, cached payloads and persisted JSON columns. A serializer change can affect data that stays around much longer than a single request.\n\nCreate a small inventory with an owner, a consumer, a representation requirement and a rollback constraint for each boundary. A response consumed only by a service you deploy together has a different migration path from an event retained for months or a document consumed by an independently released mobile app.\n\nInclude code generated from schemas. A server DTO may accept a shape that a generated client rejects, or vice versa. Check whether nullable, required and omitted fields have consistent meanings across languages. Record the actual versions of generators and clients used for compatibility tests rather than relying on the latest development tree.\n\nPrioritize by reach and lifetime. Start with one well-understood endpoint and its consumers. Schedule persisted data and externally consumed events as separate migrations if their recovery story is more complicated. The useful output of the inventory is a sequence of reviewable decisions, not a list of files that can all be changed in one commit."
+      },
+      {
+        "title": "Compare typed meaning and exact bytes separately",
+        "id": "compare-typed-meaning-and-exact-bytes-separately",
+        "body": "Different comparison methods answer different questions. For an ordinary object response, a consumer may care about field presence, values and types while ignoring member order. For a signed payload, cache key, golden export or stored snapshot, exact bytes may matter. State which requirement applies before deciding whether a difference is harmless.\n\nDefault v2 map output need not preserve the ordering an application previously observed. The deterministic option can request stable encoding for a given input, but it is not a universal cross-version cryptographic canonicalization scheme. Custom marshalers and the chosen build still matter. The [v2 deterministic option](https://pkg.go.dev/encoding/json/v2@go1.27.3#Deterministic) specifies that scope.\n\nAvoid a comparison helper that decodes everything into `map[string]any` and then declares two messages equivalent. Such normalization can erase distinctions the migration is meant to find, including duplicate-name handling, field presence or large-number precision. Use typed fixtures where possible, and keep an exact-byte check for boundaries that explicitly require it.\n\nA useful failure report identifies the boundary, a redacted fixture identifier, the direction of the difference and the expected policy. It should help an engineer reproduce a semantic change without copying customer documents into a log. Add that fixture to the contract suite once its intended behavior is agreed."
+      },
+      {
+        "title": "Review custom methods, embedding and temporary storage",
+        "id": "review-custom-methods-embedding-and-temporary-storage",
+        "body": "Custom marshalers and unmarshalers can contain their own assumptions about field order, addressability, escaping and recursive serialization. A migration that passes tests for plain structs can still behave differently for a type with methods. Include values and pointers, nil pointers where relevant, embedded fields and realistic nested types in the fixture set.\n\nAvoid mutating a shared object while comparing two encoders. A custom method may read shared data or have effects that make the second call observe a different state. Build immutable fixtures or independent snapshots, and run race-enabled tests when the surrounding code is concurrent. The goal is to compare serializer policies, not two different input states.\n\nTemporary byte ownership also deserves attention. A comparison path that keeps slices returned from reusable storage can report misleading differences or retain excessive memory. Copy only when ownership requires it, and keep sampling and retention bounded. The [borrowed-buffer guide](/news/go-bytes-buffer-sync-pool-ownership) explains the distinction between a temporary view and an owned result.\n\nDo not add new custom methods simply to silence an unexplained difference. First identify the specific contract and option involved. A narrowly chosen tag or boundary option may be clearer than a method that recursively rebuilds the entire document and becomes another serialization system to maintain."
+      },
+      {
+        "title": "Stage the rollout and make the comparison path affordable",
+        "id": "stage-the-rollout-and-make-the-comparison-path-affordable",
+        "body": "The official [migration guide](https://go.dev/doc/jsonv2-migration) describes both option-by-option adoption and a `jsonsplit` comparison approach. A useful staged plan starts with the old response remaining authoritative while selected inputs are compared in a controlled environment. Increase coverage only after the observed differences have an explanation.\n\nThe [jsonsplit package](https://pkg.go.dev/github.com/go-json-experiment/jsonsplit) can route calls through v1, v2 or comparison modes. Treat its configuration and reporting path as application code with ownership. Pin the module revision, review its API for that revision and test the chosen mode before enabling it on a busy service.\n\nComparing two implementations requires extra work and may allocate additional results. Automatic investigation of individual options can add further cost. Choose a bounded sampling policy, cap logged detail and watch whether the comparison itself changes latency or memory behavior. Run comparison-only logic without issuing a second business operation or publishing duplicate events.\n\nResolve differences explicitly: preserve the old representation, fix an invalid producer, change a schema with its consumers, or approve a deliberate new contract. Only then make v2 authoritative for that boundary. A configuration flag can switch encoder selection back; it cannot erase documents already persisted in a new representation or retract an event already delivered."
+      },
+      {
+        "title": "Benchmark the contract you actually intend to ship",
+        "id": "benchmark-the-contract-you-actually-intend-to-ship",
+        "body": "A performance comparison is meaningful only when the workloads and output requirements are comparable. If one encoder sorts map keys and another does not, the measurement includes a policy difference. The companion benchmark therefore includes v1, v2 with legacy options and v2 with deterministic output on a nonnil fixture that has the same intended JSON result.\n\nMeasure allocations and time on representative payloads: small responses, nested collections, larger strings, custom methods and failures. Record the Go version, operating system, architecture and relevant options. Separate codec microbenchmarks from a full service test, where network and database costs may dominate the result.\n\n```sh\ncd docs/examples/go-jsonv2-migration\nexport GOTOOLCHAIN=go1.27.3\ngo version\ngo test ./...\ngo test -race ./...\ngo test -run '^$' -bench BenchmarkMarshal -benchmem -count=5\n```\n\nThese commands are a reproducible harness, not a promised speedup. The [testing package documentation](https://pkg.go.dev/testing#hdr-Benchmarks) explains the benchmark machinery. Keep correctness and compatibility as gates before comparing timing, and do not compare a race-enabled run with a normal build as a performance result.\n\nIf shadow comparisons run inside an API service, also observe queueing and rejected demand. Our [backpressure guide](/news/go-backpressure-concurrency-limits-queues-deadlines) shows why extra per-request work can reduce useful capacity even when an isolated function looks fast."
+      },
+      {
+        "title": "Use fuzzing to search beyond the happy-path fixtures",
+        "id": "use-fuzzing-to-search-beyond-the-happy-path-fixtures",
+        "body": "Handwritten cases document known boundaries; fuzzing explores combinations an engineer may not have anticipated. The companion fuzz target feeds bytes into the strict decoder. For an accepted update, it checks the domain condition, re-encodes the typed value and verifies that decoding the result preserves the value. For a rejected update, it checks that no partial result escapes.\n\nThat is a deliberately chosen property for this full-update model. It is not a claim that every v1 document must be accepted by v2. A migration can intentionally reject an ambiguous input. Write a differential property only after deciding which acceptance and value differences are supposed to be allowed.\n\n```sh\ngo test -run '^$' -fuzz FuzzDecodeUpdate -fuzztime 10s -parallel 2\n```\n\nThe target caps input length so a short local campaign stays focused on this boundary. A useful failure becomes a small checked-in regression fixture with a documented expected outcome. Use generated or sanitized inputs; production documents can contain credentials and personal information even when a field name looks harmless.\n\nThe [Go fuzzing guide](https://go.dev/doc/security/fuzz/) explains how the tool explores inputs. A short successful campaign does not prove universal compatibility. Pair it with your consumer fixtures, method-specific tests and rollout observations rather than replacing them with a green fuzzing summary."
+      },
+      {
+        "title": "Keep schema, numeric precision and error handling coherent",
+        "id": "keep-schema-numeric-precision-and-error-handling-coherent",
+        "body": "Serializer compatibility is not the same thing as schema compatibility. An application can preserve JSON syntax while changing whether a property is required, nullable or meaningful when absent. Update schemas and generated clients deliberately, and verify their interpretations with the exact fixtures used by the server.\n\nNumbers deserve their own cases. A Go integer type, a generic JSON value and a client language’s numeric representation may not offer identical precision. Test identifiers near the limits relevant to your consumers, money representations and values that previously flowed through untyped maps. Do not let a convenient normalization step convert a precise value into an approximate one before the comparison even begins.\n\nClassify errors by what the caller can do. Invalid input, an incompatible producer and an internal serialization failure may need different responses and operational owners. Exact error wording is a fragile contract; wrap errors where useful, retain diagnostic context internally and avoid exposing complete payloads or internal type details in a public response.\n\nOur [error-contract guide](/news/go-typed-nil-errors-as-contracts) covers a related Go boundary: an error value and an error string carry different guarantees. Reuse that discipline here. A migration report should tell you which contract changed and what decision is required, rather than producing a large pile of unstructured decoder messages."
+      },
+      {
+        "title": "A release checklist that leaves a useful rollback path",
+        "id": "a-release-checklist-that-leaves-a-useful-rollback-path",
+        "body": "Before shipping, identify the selected boundary and the consumers that were tested. Record which options remain in compatibility mode, which differences are intentional and which fixtures enforce those decisions. Include invalid inputs, zero values, absent fields, explicit nulls and custom methods where the boundary uses them.\n\nDeploy with a bounded observation plan. Track decode failures by route and classification, serialization failures, sampled comparison differences, latency and allocation pressure. Keep labels finite and avoid attaching arbitrary input documents to metrics. Compare success and rejection rates as well as response timing.\n\nMake the rollback scope honest. Returning to the old encoder is straightforward for an unpersisted response. Persisted payloads, schema changes and messages already accepted by consumers may require a compatible reader or an explicit data repair plan. Keep old-read compatibility until the lifetime of those artifacts is understood.\n\nFinally, remove temporary migration infrastructure after the boundary is stable. A permanent second encoder, unused flags and noisy comparison reports can become a new source of uncertainty. Keep the agreed contract tests, the rationale for intentional options and the benchmark fixtures. Those are useful long after the import change has disappeared from everyone’s memory."
+      },
+      {
+        "title": "Questions to settle before choosing a migration strategy",
+        "id": "questions-to-settle-before-choosing-a-migration-strategy",
+        "body": "**Must every Go application migrate immediately?** No. The original API remains supported. Choose a migration because the new API or behavior helps your application, and give existing consumers a clear compatibility decision.\n\n**Can changing imports be enough?** It can compile for simple call sites, but compilation does not establish wire compatibility. Run zero-value, invalid-input and custom-method fixtures before making that conclusion.\n\n**Does stricter decoding mean all unknown properties are rejected?** No. Unknown-member rejection is a separate option. Decide it per boundary and test the producer behavior you intend to support.\n\n**Is deterministic encoding sufficient for signing JSON?** Not by itself. A signature protocol needs a precisely specified representation and compatible implementations across all participants. Do not substitute a convenient sorting option for that specification.\n\n**What should a team do first?** Choose one real response type, save representative fixtures, run the companion-style comparison and assign each difference an owner. Then work through [behavior tests and boundary cases](/learn/clean.table-tests) or [fuzzing parsers with useful properties](/interview/testing.fuzz). A safe migration is a sequence of explicit contract decisions that your tests and release process can explain."
       }
     ]
   }

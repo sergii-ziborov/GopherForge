@@ -1,0 +1,41 @@
+{
+  "method": "Built-in ImageGen; three distinct prompts",
+  "assets": [
+    {
+      "id": "jsonv2-hero",
+      "mode": "built-in image_gen",
+      "prompt": "Use case: illustration-story. Asset type: original GopherForge editorial illustration for a Go JSON v1-to-v2 migration guide. One polished wide 16:9 composition, ideally 1600x900. Warm ivory paper backdrop, deep teal, turquoise and restrained burnt orange. Tactile papercraft and soft clay materials, gentle crisp shadows, friendly original blue gopher engineer. Professional learning illustration. No vendor logos, no watermark, no fake software screenshot. Scene: a careful gopher inspects two parallel conveyor lanes with matching document-shaped input parcels but visibly different output containers. One output is a sealed pale translucent capsule representing absence; the other is an open empty teal basket representing an empty collection. A magnifying glass and a small bridge with a controlled switch connect the lanes. A calm engineering workshop, not a chaotic factory. Make the contrast between identical code-shaped input and changed external output obvious. No words, letters or numbers.",
+      "promptRecord": "exact",
+      "original": "build/news-jsonv2/originals/jsonv2-hero.png",
+      "asset": "website/public/images/news/jsonv2-hero.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 158712,
+      "sha256": "4c96ee8973a23a04a103502de14c8060981264fee18bbb2db827cc2cba7eae05"
+    },
+    {
+      "id": "jsonv2-detail",
+      "mode": "built-in image_gen",
+      "prompt": "Use case: illustration-story. Asset type: original GopherForge editorial illustration for a Go JSON v1-to-v2 migration guide. One polished wide 16:9 composition, ideally 1600x900. Warm ivory paper backdrop, deep teal, turquoise and restrained burnt orange. Tactile papercraft and soft clay materials, gentle crisp shadows, friendly original blue gopher engineer. Professional learning illustration. No vendor logos, no watermark, no fake software screenshot. Scene: close-up contract-testing workbench. A gopher compares two neatly arranged specimen trays. One contains a pale sealed absence token, an empty teal basket, and one orange marked card. The other contains an empty basket and a pair of identical orange marked cards stopped at a small inspection gate. A magnifier and a checked clipboard support careful comparison. Visual metaphor for nil-versus-empty output and duplicate-name rejection, not a literal JSON syntax diagram. No words, letters, numbers or code.",
+      "promptRecord": "exact",
+      "original": "build/news-jsonv2/originals/jsonv2-detail.png",
+      "asset": "website/public/images/news/jsonv2-detail.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 164804,
+      "sha256": "3ef5a0b10c85d0ef14b4ebccc1b469585615c5cc1be4fb862f4c509e5a418495"
+    },
+    {
+      "id": "jsonv2-infographic",
+      "mode": "built-in image_gen",
+      "prompt": "Use case: illustration-story. Asset type: original GopherForge editorial illustration for a Go JSON v1-to-v2 migration guide. One polished wide 16:9 composition, ideally 1600x900. Warm ivory paper backdrop, deep teal, turquoise and restrained burnt orange. Tactile papercraft and soft clay materials, gentle crisp shadows, friendly original blue gopher engineer. Professional learning illustration. No vendor logos, no watermark, no fake software screenshot. Use case: infographic-diagram. Four equal horizontal panels with exact large labels in order: \"Inventory\", \"Compare\", \"Stage\", \"Verify\". Panel 1: gopher sorts a small stack of API contract cards. Panel 2: magnifier compares two trays with different output shapes. Panel 3: a small controlled switch sends only a few parcels to a second lane while most remain on the original lane. Panel 4: gopher checks a result card beside a simple healthy gauge. High contrast large typography, generous whitespace. All four labels completely visible, no extra words or captions, nothing cropped.",
+      "promptRecord": "exact",
+      "original": "build/news-jsonv2/originals/jsonv2-infographic.png",
+      "asset": "website/public/images/news/jsonv2-infographic.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 161174,
+      "sha256": "6d81082b25c4cce7c29ef5da98b14b54c3e5a663f37998d369dc29b0f1231a79"
+    }
+  ]
+}

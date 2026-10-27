@@ -18,6 +18,8 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  jsonv2:
+    "Inventory → Compare → Stage → Verify. Record the wire contract, test behavioral differences, roll out deliberately, and verify consumer compatibility.",
   backpressure:
     "Admit → Bound → Cancel → Measure. Make capacity explicit, keep waiting finite, propagate cancellation, and measure useful completions alongside rejections.",
   survey:

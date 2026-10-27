@@ -238,5 +238,20 @@
     "src": "/images/news/backpressure-infographic.webp",
     "width": 1600,
     "height": 900
+  },
+  "jsonv2-hero": {
+    "src": "/images/news/jsonv2-hero.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "jsonv2-detail": {
+    "src": "/images/news/jsonv2-detail.webp",
+    "width": 1600,
+    "height": 900
+  },
+  "jsonv2-infographic": {
+    "src": "/images/news/jsonv2-infographic.webp",
+    "width": 1600,
+    "height": 900
   }
 }

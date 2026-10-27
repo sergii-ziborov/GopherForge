@@ -1,0 +1,83 @@
+{
+  "checkedOn": "2026-10-27",
+  "editorialTimezone": "Asia/Jerusalem",
+  "article": {
+    "slug": "go-json-v2-migration-api-compatibility",
+    "title": "Go JSON v2 migration: keep your API contract intact",
+    "description": "Go 1.27 JSON v2 migration with runnable tests: nil collections, omitempty, duplicate keys, strict decoding, compatibility options and a staged API rollout.",
+    "category": "GUIDE · GO API CONTRACTS",
+    "editionDate": "2026-10-27",
+    "eventDate": "2026-10-27",
+    "publishedAt": "2026-10-27",
+    "modifiedAt": "2026-10-27",
+    "sourceCheckedAt": "2026-10-27",
+    "kind": "guide",
+    "keywords": [
+      "Go encoding/json/v2 migration",
+      "Go JSON v2 vs v1",
+      "Go 1.27 JSON",
+      "omitempty vs omitzero",
+      "jsonsplit migration",
+      "nil slice JSON"
+    ],
+    "sources": [
+      {
+        "title": "Go 1.27 release notes",
+        "url": "https://go.dev/doc/go1.27"
+      },
+      {
+        "title": "Official encoding/json/v2 migration guide",
+        "url": "https://go.dev/doc/jsonv2-migration"
+      },
+      {
+        "title": "encoding/json legacy semantics and options",
+        "url": "https://pkg.go.dev/encoding/json@go1.27.3"
+      },
+      {
+        "title": "encoding/json/v2 package reference",
+        "url": "https://pkg.go.dev/encoding/json/v2@go1.27.3"
+      },
+      {
+        "title": "JSON text syntax and options",
+        "url": "https://pkg.go.dev/encoding/json/jsontext@go1.27.3"
+      },
+      {
+        "title": "jsonsplit comparison and migration package",
+        "url": "https://pkg.go.dev/github.com/go-json-experiment/jsonsplit"
+      },
+      {
+        "title": "Go toolchain selection",
+        "url": "https://go.dev/doc/toolchain"
+      },
+      {
+        "title": "Native Go fuzzing",
+        "url": "https://go.dev/doc/security/fuzz/"
+      },
+      {
+        "title": "Benchmarking with the testing package",
+        "url": "https://pkg.go.dev/testing#hdr-Benchmarks"
+      },
+      {
+        "title": "RFC 8259: JSON interoperability",
+        "url": "https://www.rfc-editor.org/rfc/rfc8259"
+      }
+    ],
+    "related": [
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-typed-nil-errors-as-contracts",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "imagePrefix": "jsonv2",
+    "wordCount": 3391
+  },
+  "code": "docs/examples/go-jsonv2-migration; displayed files extracted from the tested package",
+  "toolchain": "go1.27.3 darwin/arm64 explicitly selected via GOTOOLCHAIN",
+  "verification": {
+    "raceTests": "passed",
+    "contractTestFunctions": 5,
+    "fuzzCampaign": "-fuzztime 10s -parallel 2; passed, 743612 executions",
+    "benchmark": "three matched-output modes; harness passed; no general speedup claim",
+    "goVet": "passed"
+  },
+  "datePolicy": "Original guide published today; Go 1.27 availability is distinguished from this publication date."
+}
