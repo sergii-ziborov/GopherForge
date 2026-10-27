@@ -33,6 +33,8 @@ enum CourseUnitStyle {
         case "patterns-go": "arrow.triangle.2.circlepath"
         case "operations": "terminal"
         case "datastores": "externaldrive.connected.to.line.below"
+        case "sql": "externaldrive"
+        case "ai": "sparkles"
         default: "book"
         }
     }
@@ -59,6 +61,8 @@ enum CourseUnitStyle {
         case "patterns-go": GopherForgeTheme.sky
         case "operations": Color(hex: 0x4E8F3E)
         case "datastores": GopherForgeTheme.aqua
+        case "sql": GopherForgeTheme.deepBlue
+        case "ai": Color(hex: 0x6B4FA8)
         default: GopherForgeTheme.slate
         }
     }

@@ -132,15 +132,17 @@ export default function Support() {
             {releases.public.version} ({releases.public.build}) is available on
             the App Store.
           </strong>{" "}
-          It includes 169 teaching lessons in 21 units, 122 readings, 22
+          It includes 171 teaching lessons in 21 units, 124 readings, 22
           prediction challenges and 88 interview guides.
         </p>
         <p>
-          Two further readings on borrowed bytes and pool ownership are
-          available on the web, bringing it to 171 teaching lessons and 124
-          readings. Native {releases.next.version} ({releases.next.build})
-          contains this expansion. Its release status is listed in version
-          history.
+          The web library adds fifteen readings on JSON v2, modern concurrency,
+          SQL services and coding agents: 186 teaching lessons, 139 readings and
+          22 challenges in 23 units. Interview has 92 guides and twelve
+          algorithm labs. Native {releases.next.version} ({releases.next.build})
+          is {releases.next.status.toLowerCase()}. See{" "}
+          <Link href="/updates">version history</Link>
+          and the <Link href="/guide">complete app guide</Link>.
         </p>
         <p>
           Web progress stays in this browser and is independent of app progress.

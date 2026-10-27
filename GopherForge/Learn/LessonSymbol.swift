@@ -13,6 +13,21 @@ import Foundation
 /// about closing channels looks the same wherever it appears.
 enum LessonSymbol {
     private static let environmentSymbols: [String: String] = [
+        "stdlib.json-v2-contracts": "curlybraces",
+        "stdlib.json-presence": "questionmark.square",
+        "stdlib.json-input-policy": "checkmark.shield",
+        "concurrency.waitgroup-go": "person.3",
+        "concurrency.synctest": "clock.badge.checkmark",
+        "concurrency.errgroup": "arrow.triangle.branch",
+        "sql.pool-lifetime": "externaldrive",
+        "sql.rows-and-context": "list.bullet.rectangle",
+        "sql.transaction-owner": "lock.shield",
+        "sql.isolation-and-locks": "lock.rectangle",
+        "sql.retry-and-idempotency": "arrow.clockwise",
+        "ai.go-workflow": "sparkles",
+        "ai.repository-guidance": "doc.text",
+        "ai.verify-generated-go": "checkmark.seal",
+        "ai.trust-boundaries": "hand.raised",
         "stdlib.borrowed-buffers": "rectangle.on.rectangle",
         "runtime.pool-ownership": "arrow.triangle.2.circlepath",
         "modules.identity-versions": "shippingbox",

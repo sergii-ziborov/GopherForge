@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-10-20",
+  "reviewedOn": "2026-10-27",
   "levels": [
     "Junior",
     "Middle",
@@ -1997,6 +1997,93 @@
       ],
       "code": "",
       "complexity": ""
+    },
+    {
+      "id": "algorithms.topological-sort",
+      "topic": "algorithms",
+      "level": 2,
+      "title": "Topological order and cycle detection",
+      "prompt": "How do you schedule dependencies and detect when no valid order exists?",
+      "answerPoints": [
+        "For each directed edge u→v, compute the indegree of v. A FIFO queue starts with every zero-indegree vertex. Removing u satisfies one prerequisite for each neighbor; enqueue that neighbor when its indegree becomes zero.",
+        "The emitted prefix always respects prerequisites. If fewer than V vertices are emitted, a cycle prevented the remaining work from becoming ready. Empty and disconnected graphs are valid; isolated vertices must still appear.",
+        "An ordering need not be unique. Tests should assert every edge points forward and every vertex occurs once, unless the API deliberately fixes a tie rule. Validate IDs before indexing; bound graph size and edges for untrusted input."
+      ],
+      "trap": "Confusing a vertex that is blocked behind a cycle with proof that only that vertex participates in the cycle.",
+      "exercise": "Trace edges 0→1, 0→2, 1→3 and 2→3; then add 3→0.",
+      "solution": "The initial queue is [0]. Emitting 0 makes 1 and 2 ready. Only after both leave the queue does 3 reach indegree zero. Adding 3→0 leaves no initially ready vertex, so the processed count is below four and the cycle is reported.",
+      "followUp": "How would you produce a particular cycle as a diagnostic rather than only report that one exists?",
+      "references": [
+        "https://algs4.cs.princeton.edu/42digraph/",
+        "https://pkg.go.dev/slices"
+      ],
+      "code": "// Caller validates every node ID and bounds graph size.\nfunc TopologicalOrder(adj [][]int) ([]int, bool) {\n\tdegree := make([]int, len(adj))\n\tfor _, edges := range adj {\n\t\tfor _, v := range edges {\n\t\t\tdegree[v]++\n\t\t}\n\t}\n\tqueue := make([]int, 0, len(adj))\n\tfor v, n := range degree {\n\t\tif n == 0 {\n\t\t\tqueue = append(queue, v)\n\t\t}\n\t}\n\torder := make([]int, 0, len(adj))\n\tfor head := 0; head < len(queue); head++ {\n\t\tu := queue[head]\n\t\torder = append(order, u)\n\t\tfor _, v := range adj[u] {\n\t\t\tdegree[v]--\n\t\t\tif degree[v] == 0 {\n\t\t\t\tqueue = append(queue, v)\n\t\t\t}\n\t\t}\n\t}\n\tif len(order) != len(adj) {\n\t\treturn nil, false\n\t}\n\treturn order, true\n}",
+      "complexity": "O(V+E) time and O(V) auxiliary storage. Useful for build dependencies and DAG job scheduling; a static order is not itself a concurrent executor."
+    },
+    {
+      "id": "algorithms.union-find",
+      "topic": "algorithms",
+      "level": 2,
+      "title": "Union-find: connectivity without repeated graph searches",
+      "prompt": "How do you answer many connectivity queries while undirected edges are added?",
+      "answerPoints": [
+        "A disjoint-set structure represents each component by a root. Find follows parent links; Union joins roots only when they differ. Joining by size keeps trees shallow, while path compression shortens future searches.",
+        "An attempted union of vertices already in one component must not decrement the component count. This supports dynamic connectivity as edges are added and cycle checks for undirected graphs; it does not produce shortest paths.",
+        "Ordinary union-find does not support arbitrary edge deletion. It mutates internal state even during compressed Find, so shared concurrent use needs synchronization. Validate vertex IDs and define behavior for an empty structure."
+      ],
+      "trap": "Comparing immediate parents rather than roots, or decrementing the component count for a redundant union.",
+      "exercise": "Start with five vertices and join (0,1), (1,2), (3,4), then join (0,2) again.",
+      "solution": "Five components become four, three and two. The final union finds both endpoints already rooted in the same component, so the count remains two. Vertices 0 and 2 are connected; 0 and 4 are not.",
+      "followUp": "Why does finding a root not provide the route between the original graph vertices?",
+      "references": [
+        "https://algs4.cs.princeton.edu/15uf/"
+      ],
+      "code": "type DisjointSet struct {\n\tparent, size []int\n\tComponents   int\n}\n\n// Caller supplies a nonnegative n and valid IDs to Find and Union.\nfunc NewDisjointSet(n int) *DisjointSet {\n\td := &DisjointSet{parent: make([]int, n), size: make([]int, n), Components: n}\n\tfor i := range d.parent {\n\t\td.parent[i] = i\n\t\td.size[i] = 1\n\t}\n\treturn d\n}\nfunc (d *DisjointSet) Find(x int) int {\n\tfor x != d.parent[x] {\n\t\td.parent[x] = d.parent[d.parent[x]]\n\t\tx = d.parent[x]\n\t}\n\treturn x\n}\nfunc (d *DisjointSet) Union(a, b int) bool {\n\ta, b = d.Find(a), d.Find(b)\n\tif a == b {\n\t\treturn false\n\t}\n\tif d.size[a] < d.size[b] {\n\t\ta, b = b, a\n\t}\n\td.parent[b] = a\n\td.size[a] += d.size[b]\n\td.Components--\n\treturn true\n}",
+      "complexity": "Amortized O(α(V)) per operation with union by size and path compression, O(V) storage; a single operation is not promised constant worst-case time."
+    },
+    {
+      "id": "algorithms.lru-cache",
+      "topic": "algorithms",
+      "level": 3,
+      "title": "LRU cache: lookup and recency form one invariant",
+      "prompt": "How do you implement a bounded least-recently-used cache in Go?",
+      "answerPoints": [
+        "A map finds a key’s list node; a doubly linked list orders recency. A hit moves its node to the front. Updating an existing key changes its value and recency without adding a duplicate node. Evict the back when capacity is exceeded.",
+        "Map and list changes must be one logical operation. If the cache is shared, guard the whole invariant with one synchronization policy; locking only the map lookup is insufficient. Returned reference values still need an ownership contract.",
+        "An entry-count limit is not a byte budget, a TTL or a coherence protocol. This integer example has no expiration or origin loader. Production caches need workload-specific byte limits, invalidation, stampede handling and metrics."
+      ],
+      "trap": "Using a slice for recency updates makes arbitrary moves linear; evicting the front removes the most recently used item.",
+      "exercise": "With capacity two: Put(1,10), Put(2,20), Get(1), Put(3,30), Get(2).",
+      "solution": "Recency becomes [1], [2,1], [1,2], then [3,1]. Key 2 was least recently used and is evicted; its final lookup misses. Updating key 1 must reuse its node rather than make a second copy.",
+      "followUp": "What changes when values have very different sizes or callers need concurrent access?",
+      "references": [
+        "https://pkg.go.dev/container/list",
+        "https://pkg.go.dev/sync#Mutex"
+      ],
+      "code": "// Requires container/list. This cache has a single owner; it is not concurrent.\ntype lruEntry struct{ key, value int }\ntype LRU struct {\n\tcapacity int\n\torder    *list.List\n\tentries  map[int]*list.Element\n}\n\nfunc NewLRU(capacity int) *LRU {\n\tif capacity < 0 {\n\t\tcapacity = 0\n\t}\n\treturn &LRU{capacity: capacity, order: list.New(), entries: make(map[int]*list.Element)}\n}\nfunc (c *LRU) Get(key int) (int, bool) {\n\telement, ok := c.entries[key]\n\tif !ok {\n\t\treturn 0, false\n\t}\n\tc.order.MoveToFront(element)\n\treturn element.Value.(lruEntry).value, true\n}\nfunc (c *LRU) Put(key, value int) {\n\tif c.capacity == 0 {\n\t\treturn\n\t}\n\tif element, ok := c.entries[key]; ok {\n\t\telement.Value = lruEntry{key, value}\n\t\tc.order.MoveToFront(element)\n\t\treturn\n\t}\n\tc.entries[key] = c.order.PushFront(lruEntry{key, value})\n\tif c.order.Len() > c.capacity {\n\t\toldest := c.order.Back()\n\t\tdelete(c.entries, oldest.Value.(lruEntry).key)\n\t\tc.order.Remove(oldest)\n\t}\n}",
+      "complexity": "Expected O(1) lookup/update/eviction with O(capacity) entry storage. This does not impose a process-wide memory cap or make the cache concurrent."
+    },
+    {
+      "id": "algorithms.merge-intervals",
+      "topic": "algorithms",
+      "level": 2,
+      "title": "Merge intervals: define whether touching endpoints overlap",
+      "prompt": "How do you normalize overlapping closed intervals efficiently?",
+      "answerPoints": [
+        "State the endpoint convention first. This example uses closed intervals [start,end], so [1,3] and [3,5] overlap. Half-open time ranges [start,end) may use another adjacency rule. Reject reversed endpoints before calling the helper.",
+        "Sort by start, then end. Maintain a disjoint ordered output. If the next start is at most the last end, extend that last end to the maximum; otherwise append a new interval. Do not replace a long containing interval with a shorter nested one.",
+        "Copy the input before sorting when callers retain its order. Test empty input, a contained interval, equal boundaries and already separated ranges. Go integer width and domain-specific timestamp units remain part of the input contract."
+      ],
+      "trap": "Confusing closed and half-open endpoints, or shrinking an interval when a contained interval arrives.",
+      "exercise": "Merge [1,4], [2,3], [4,6] and [9,10] under closed-interval semantics.",
+      "solution": "The first two retain [1,4], because the second is contained. The touching [4,6] extends it to [1,6]. The gap before 9 starts another interval, producing [1,6] and [9,10]. The original input order remains unchanged.",
+      "followUp": "How would your comparison change if touching half-open intervals must remain separate?",
+      "references": [
+        "https://pkg.go.dev/slices#SortFunc",
+        "https://pkg.go.dev/sort#Slice"
+      ],
+      "code": "type Interval struct{ Start, End int }\n\n// Closed intervals; caller validates Start<=End. Does not mutate input.\nfunc MergeIntervals(input []Interval) []Interval {\n\txs := append([]Interval(nil), input...)\n\tsort.Slice(xs, func(i, j int) bool {\n\t\tif xs[i].Start == xs[j].Start {\n\t\t\treturn xs[i].End < xs[j].End\n\t\t}\n\t\treturn xs[i].Start < xs[j].Start\n\t})\n\tvar out []Interval\n\tfor _, x := range xs {\n\t\tif len(out) == 0 || x.Start > out[len(out)-1].End {\n\t\t\tout = append(out, x)\n\t\t\tcontinue\n\t\t}\n\t\tif x.End > out[len(out)-1].End {\n\t\t\tout[len(out)-1].End = x.End\n\t\t}\n\t}\n\treturn out\n}",
+      "complexity": "O(n log n) time for sorting and O(n) storage to preserve caller input; the merge scan itself is linear."
     }
   ],
   "demonstrations": [
@@ -5142,6 +5229,1016 @@
                   "values": [
                     "0"
                   ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "algorithms.topological-sort",
+      "cases": [
+        {
+          "name": "Diamond dependencies",
+          "input": "[[1, 2], [3], [3], []]",
+          "result": "order [0, 1, 2, 3]",
+          "steps": [
+            {
+              "title": "Count prerequisites",
+              "note": "Only zero-indegree vertices can enter the ready queue.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [
+                    "0",
+                    "1",
+                    "1",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [
+                    "0"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Emit 0",
+              "note": "Remove its outgoing prerequisites; enqueue only newly ready vertices.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [
+                    "0",
+                    "0",
+                    "0",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [
+                    "1",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [
+                    "0"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Emit 1",
+              "note": "Remove its outgoing prerequisites; enqueue only newly ready vertices.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [
+                    "0",
+                    "0",
+                    "0",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [
+                    "0",
+                    "1"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Emit 2",
+              "note": "Remove its outgoing prerequisites; enqueue only newly ready vertices.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [
+                    "3"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [
+                    "0",
+                    "1",
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Emit 3",
+              "note": "Remove its outgoing prerequisites; enqueue only newly ready vertices.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Check processed count",
+              "note": "All vertices must be emitted for a valid complete ordering.",
+              "rows": [
+                {
+                  "label": "emitted",
+                  "values": [
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "counts",
+                  "values": [
+                    "4",
+                    "4"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Directed cycle",
+          "input": "[[1], [0]]",
+          "result": "cycle detected",
+          "steps": [
+            {
+              "title": "Count prerequisites",
+              "note": "Only zero-indegree vertices can enter the ready queue.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Check processed count",
+              "note": "All vertices must be emitted for a valid complete ordering.",
+              "rows": [
+                {
+                  "label": "emitted",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "counts",
+                  "values": [
+                    "0",
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Empty graph",
+          "input": "[]",
+          "result": "order []",
+          "steps": [
+            {
+              "title": "Count prerequisites",
+              "note": "Only zero-indegree vertices can enter the ready queue.",
+              "rows": [
+                {
+                  "label": "indegree",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "ready",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "emitted",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Check processed count",
+              "note": "All vertices must be emitted for a valid complete ordering.",
+              "rows": [
+                {
+                  "label": "emitted",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "counts",
+                  "values": [
+                    "0",
+                    "0"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "algorithms.union-find",
+      "cases": [
+        {
+          "name": "Two connected groups",
+          "input": "n=5, edges=[(0, 1), (1, 2), (3, 4)]",
+          "result": "components 2",
+          "steps": [
+            {
+              "title": "Separate components",
+              "note": "Each vertex initially owns its own root.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "5"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Union (0, 1)",
+              "note": "Join distinct roots.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "0",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "2",
+                    "1",
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "4"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Union (1, 2)",
+              "note": "Join distinct roots.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "0",
+                    "0",
+                    "3",
+                    "4"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "3",
+                    "1",
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "3"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Union (3, 4)",
+              "note": "Join distinct roots.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "0",
+                    "0",
+                    "3",
+                    "3"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "3",
+                    "1",
+                    "1",
+                    "2",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Redundant union",
+          "input": "n=3, edges=[(0, 1), (0, 1)]",
+          "result": "components 2",
+          "steps": [
+            {
+              "title": "Separate components",
+              "note": "Each vertex initially owns its own root.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "1",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "3"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Union (0, 1)",
+              "note": "Join distinct roots.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "0",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "2",
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Union (0, 1)",
+              "note": "Already connected: do not change the component count.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [
+                    "0",
+                    "0",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [
+                    "2",
+                    "1",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Empty structure",
+          "input": "n=0, edges=[]",
+          "result": "components 0",
+          "steps": [
+            {
+              "title": "Separate components",
+              "note": "Each vertex initially owns its own root.",
+              "rows": [
+                {
+                  "label": "parent",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "size",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "components",
+                  "values": [
+                    "0"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "algorithms.lru-cache",
+      "cases": [
+        {
+          "name": "Promote then evict",
+          "input": "capacity=2, operations=[('put', 1, 10), ('put', 2, 20), ('get', 1, 0), ('put', 3, 30), ('get', 2, 0)]",
+          "result": "miss",
+          "steps": [
+            {
+              "title": "Empty cache",
+              "note": "The front is most recent; the back is the eviction candidate.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "capacity",
+                  "values": [
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "put 1",
+              "note": "Update one node or insert, then evict only if over capacity.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "1:10"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "put 2",
+              "note": "Update one node or insert, then evict only if over capacity.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "2",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "2:20",
+                    "1:10"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "get 1",
+              "note": "Get(1) is a hit 10; only a hit changes recency.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "1",
+                    "2"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "1:10",
+                    "2:20"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "put 3",
+              "note": "Update one node or insert, then evict only if over capacity.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "3",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "3:30",
+                    "1:10"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "get 2",
+              "note": "Get(2) is a miss; only a hit changes recency.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "3",
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "3:30",
+                    "1:10"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Update the same key",
+          "input": "capacity=2, operations=[('put', 1, 10), ('put', 1, 99), ('get', 1, 0)]",
+          "result": "hit 99",
+          "steps": [
+            {
+              "title": "Empty cache",
+              "note": "The front is most recent; the back is the eviction candidate.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "capacity",
+                  "values": [
+                    "2"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "put 1",
+              "note": "Update one node or insert, then evict only if over capacity.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "1:10"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "put 1",
+              "note": "Update one node or insert, then evict only if over capacity.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "1:99"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "get 1",
+              "note": "Get(1) is a hit 99; only a hit changes recency.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [
+                    "1"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [
+                    "1:99"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Zero capacity",
+          "input": "capacity=0, operations=[('put', 1, 10), ('get', 1, 0)]",
+          "result": "miss",
+          "steps": [
+            {
+              "title": "Empty cache",
+              "note": "The front is most recent; the back is the eviction candidate.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "capacity",
+                  "values": [
+                    "0"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "put 1",
+              "note": "Update one node or insert, then evict only if over capacity.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "get 1",
+              "note": "Get(1) is a miss; only a hit changes recency.",
+              "rows": [
+                {
+                  "label": "recency",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "values",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "algorithms.merge-intervals",
+      "cases": [
+        {
+          "name": "Containment and touching",
+          "input": "[(1, 4), (2, 3), (4, 6), (9, 10)]",
+          "result": "[[1, 6], [9, 10]]",
+          "steps": [
+            {
+              "title": "Sort by start and end",
+              "note": "Sort a copy so callers keep their input order.",
+              "rows": [
+                {
+                  "label": "sorted",
+                  "values": [
+                    "(1, 4)",
+                    "(2, 3)",
+                    "(4, 6)",
+                    "(9, 10)"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "merged",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Read (1, 4)",
+              "note": "A gap begins a new output interval.",
+              "rows": [
+                {
+                  "label": "merged",
+                  "values": [
+                    "[1, 4]"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Read (2, 3)",
+              "note": "Overlap or a shared closed endpoint extends, but never shrinks, the last interval.",
+              "rows": [
+                {
+                  "label": "merged",
+                  "values": [
+                    "[1, 4]"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Read (4, 6)",
+              "note": "Overlap or a shared closed endpoint extends, but never shrinks, the last interval.",
+              "rows": [
+                {
+                  "label": "merged",
+                  "values": [
+                    "[1, 6]"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Read (9, 10)",
+              "note": "A gap begins a new output interval.",
+              "rows": [
+                {
+                  "label": "merged",
+                  "values": [
+                    "[1, 6]",
+                    "[9, 10]"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Separated intervals",
+          "input": "[(5, 6), (1, 2)]",
+          "result": "[[1, 2], [5, 6]]",
+          "steps": [
+            {
+              "title": "Sort by start and end",
+              "note": "Sort a copy so callers keep their input order.",
+              "rows": [
+                {
+                  "label": "sorted",
+                  "values": [
+                    "(1, 2)",
+                    "(5, 6)"
+                  ],
+                  "active": []
+                },
+                {
+                  "label": "merged",
+                  "values": [],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Read (1, 2)",
+              "note": "A gap begins a new output interval.",
+              "rows": [
+                {
+                  "label": "merged",
+                  "values": [
+                    "[1, 2]"
+                  ],
+                  "active": []
+                }
+              ]
+            },
+            {
+              "title": "Read (5, 6)",
+              "note": "A gap begins a new output interval.",
+              "rows": [
+                {
+                  "label": "merged",
+                  "values": [
+                    "[1, 2]",
+                    "[5, 6]"
+                  ],
+                  "active": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Empty input",
+          "input": "[]",
+          "result": "[]",
+          "steps": [
+            {
+              "title": "Sort by start and end",
+              "note": "Sort a copy so callers keep their input order.",
+              "rows": [
+                {
+                  "label": "sorted",
+                  "values": [],
+                  "active": []
+                },
+                {
+                  "label": "merged",
+                  "values": [],
                   "active": []
                 }
               ]

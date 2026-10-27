@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.1.5 with Continue is on the App Store. Explore the next update's byte ownership lessons, Go tooling, interview preparation and release history.",
+    "GopherForge release history: current App Store availability, the 1.2.0 curriculum expansion, coding agents, SQL, JSON v2, interactive algorithms and the new icon.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -16,7 +16,7 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
-      <section className="release" id="v116">
+      <section className="release" id="v120">
         <span className="release-badge muted">
           WEB AVAILABLE · {releases.next.status.toUpperCase()}
         </span>
@@ -25,17 +25,55 @@ export default function Updates() {
           <small>build {releases.next.build}</small>
         </h2>
         <p>
-          Two new worked readings cover borrowed bytes.Buffer and Scanner data,
-          owned results, sync.Pool lifetimes, oversize retention and parallel
-          tests. The shared library now has 171 teaching lessons, 124 readings
-          and 22 prediction challenges in 21 units. Existing progress and
-          Continue keep their stable identifiers.
+          The expanded library has 186 teaching lessons, 139 worked readings and
+          22 prediction challenges in 23 units. Existing lesson identifiers and
+          local progress are preserved.
         </p>
+        <ul>
+          <li>
+            Fifteen new readings: JSON v2 contracts and input policy;
+            WaitGroup.Go, synctest and errgroup; SQL pool and transaction
+            ownership; practical Go coding-agent workflows.
+          </li>
+          <li>
+            Four new interactive labs: topological sorting, union-find, LRU
+            eviction and merging intervals. Interview now contains 92 guides and
+            12 labs with 36 scenarios.
+          </li>
+          <li>
+            Corrected generic Stack.Pop reference retention, numeric Sum
+            constraints and the three range-over-function signatures.
+          </li>
+          <li>
+            A new dark teal gopher icon, refreshed learning screenshots and a
+            complete app guide.
+          </li>
+        </ul>
         <p>
           Status checked {releases.checkedOn}. The App Store currently
-          distributes {releases.public.version}.
+          distributes {releases.public.version}. New web lessons explain native
+          external tools; they do not add networking, AI services or database
+          servers to the app sandbox.
         </p>
-        <Link className="button" href="/learn/stdlib.borrowed-buffers">
+        <Link className="button" href="/guide">
+          Read the complete app guide →
+        </Link>
+      </section>
+      <section className="release" id="v116">
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
+        <h2>
+          GopherForge 1.1.6 <small>build 44</small>
+        </h2>
+        <p>
+          Two worked readings cover borrowed bytes.Buffer and Scanner data,
+          owned results, sync.Pool lifetimes, oversize retention and parallel
+          tests. This release contains 171 teaching lessons, 124 readings and 22
+          prediction challenges in 21 units.
+        </p>
+        <Link
+          className="button secondary"
+          href="/learn/stdlib.borrowed-buffers"
+        >
           Trace buffer ownership →
         </Link>
       </section>
@@ -129,7 +167,7 @@ export default function Updates() {
           This native update includes the expanded course: 145 teaching lessons
           in 20 units, including 98 readings, plus 22 prediction challenges. The
           update has passed App Review and released automatically. Version 1.1.3
-          is an earlier public release; 1.1.5 is now current.
+          is an earlier public release; later updates are listed above.
         </p>
         <ul>
           <li>

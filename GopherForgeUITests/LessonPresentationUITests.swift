@@ -9,7 +9,7 @@ final class LessonPresentationUITests: XCTestCase {
     }
 
     func testCourseContinueReopensCompletedReadingAfterRelaunch() {
-        launch("stdlib.borrowed-buffers")
+        launch("ai.go-workflow")
         let done = app.buttons[AccessibilityIdentifier.lessonComplete]
         let undo = app.buttons[AccessibilityIdentifier.lessonUncomplete]
         XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 15))
@@ -26,7 +26,7 @@ final class LessonPresentationUITests: XCTestCase {
         let resume = app.buttons["learn.continue"]
         XCTAssertTrue(resume.waitForExistence(timeout: 10))
         XCTAssertTrue(resume.label.contains("Continue:"))
-        attachScreenshot(named: "course-continue-buffer-ownership")
+        attachScreenshot(named: "course-continue-agents")
         resume.tap()
         XCTAssertTrue(app.element(withIdentifier: "lesson.reading").firstMatch.waitForExistence(timeout: 10))
         XCTAssertTrue(undo.waitForExistence(timeout: 10), "Continue must reopen the completed reading, not a different unfinished lesson")
@@ -35,7 +35,7 @@ final class LessonPresentationUITests: XCTestCase {
 
     func testDataStoreReadingsExpandAndPreserveCompletion() {
         XCUIDevice.shared.orientation = .portrait
-        for id in ["datastores.mongo-client", "datastores.redis-client", "modules.version-graph"] {
+        for id in ["ai.go-workflow", "sql.pool-lifetime", "stdlib.json-v2-contracts", "concurrency.synctest"] {
             launch(id)
             XCTAssertTrue(app.element(withIdentifier: "reading.designGuide").firstMatch.waitForExistence(timeout: 15))
             let expand = app.buttons["Open code in full screen"].firstMatch

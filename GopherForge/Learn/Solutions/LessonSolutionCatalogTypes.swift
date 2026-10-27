@@ -137,7 +137,9 @@ extension LessonSolutionCatalog {
         // type is float64 satisfies ~float64, and without it the constraint
         // would accept only float64 itself.
         type Number interface {
-        \t~int | ~int64 | ~float32 | ~float64
+        \t~int | ~int8 | ~int16 | ~int32 | ~int64 |
+        \t~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
+        \t~float32 | ~float64 | ~complex64 | ~complex128
         }
 
         func Sum[T Number](values []T) T {
@@ -173,6 +175,8 @@ extension LessonSolutionCatalog {
         \t}
         \tlast := len(s.items) - 1
         \tvalue := s.items[last]
+        \tvar zero T
+        \ts.items[last] = zero
         \ts.items = s.items[:last]
         \treturn value, true
         }

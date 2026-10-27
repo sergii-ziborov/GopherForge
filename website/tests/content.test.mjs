@@ -112,10 +112,10 @@ test("interview guides and computed traces match the bundled native bank", async
     bank,
     await read("../../GopherForge/Resources/InterviewPrep.json"),
   );
-  assert.equal(bank.questions.length, 88);
-  assert.equal(new Set(bank.questions.map((q) => q.id)).size, 88);
-  assert.equal(bank.demonstrations.length, 8);
-  assert.equal(bank.demonstrations.flatMap((d) => d.cases).length, 24);
+  assert.equal(bank.questions.length, 92);
+  assert.equal(new Set(bank.questions.map((q) => q.id)).size, 92);
+  assert.equal(bank.demonstrations.length, 12);
+  assert.equal(bank.demonstrations.flatMap((d) => d.cases).length, 36);
   for (const q of bank.questions) {
     assert.ok(q.answerPoints.length >= 3, q.id);
     assert.ok(q.solution.length > 80, q.id);

@@ -46,7 +46,7 @@ export const directions = [
     id: "tooling",
     title: "Around Go",
     description:
-      "The command line, containers, Kubernetes, MongoDB and Redis. Real commands and bounded service designs.",
-    units: ["operations", "containers", "kubernetes", "datastores"],
+      "The command line, containers, databases and coding agents. Real commands, bounded services and evidence-driven Go workflows.",
+    units: ["operations", "containers", "kubernetes", "datastores", "sql", "ai"],
   },
 ] as const;

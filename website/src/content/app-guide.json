@@ -1,0 +1,92 @@
+{
+  "updated": "2026-10-27",
+  "sections": [
+    {
+      "id": "start",
+      "title": "Choose your starting point",
+      "body": "GopherForge brings two useful workflows together: a native Go workbench for iPhone and iPad, and a learning library you can also read in a browser. The app bundles Go 1.27.1. It compiles on your device; running a small program does not require an account or a remote execution service. The website provides lessons and interview preparation without running arbitrary submitted source.\n\nStart with **Projects** if you have an idea to build. Start with **Learn \u2192 Course** if you want a structured path through the language. Choose **Learn \u2192 Interview** to practice explanations, tradeoffs and algorithms. You can move between these areas without treating an interview self-assessment as course completion.\n\nThe web library includes the material prepared for native 1.2.0: 186 teaching lessons, 22 prediction challenges and 139 worked readings across 23 units. Check [version history](/updates) for the native release status. Existing App Store installations may show an earlier library until that update is available."
+    },
+    {
+      "id": "first-project",
+      "title": "Your first fifteen minutes",
+      "body": "Open **Projects \u2192 Create new project** and choose a small template. Give it a meaningful name, then open its main Go file. Read the package declaration and imports before changing the program. Change one visible output string, tap **Run**, and compare the result in Output with your expectation. The first build can take longer while the bundled tools prepare their working files.\n\nNext, add a small function with a clear input and return value. Add a test file ending in `_test.go`, then run **Test**. Make the test fail deliberately once, fix the implementation and rerun it. This gives you a reliable distinction between a successful compilation and a checked behavior.\n\nFinish by formatting the project. Export a copy through the project controls before making a larger experiment. A useful first session is one small program you understand, one test you can explain, and a copy you know how to find again."
+    },
+    {
+      "id": "editor",
+      "title": "Files, editing and screen space",
+      "body": "Inside Build, the **Files** control opens or closes the project navigator. Use it to select another source file, inspect the module file or add project content. Files is a collapsible sidebar; it does not need to remain open while you write. The active file appears above the editor so you can confirm where a change will go.\n\nThe editor provides Go syntax highlighting, line numbers and a coding accessory for touch input. With an external keyboard, the touch accessory should not reserve an empty keyboard-sized area. You can scroll past the final source line to keep the last lines clear of floating navigation; that extra space is visual padding, not text inserted into your file.\n\nLayouts adapt to iPhone, iPad and supported Duo postures. If a problem appears only after rotating or changing posture, record the orientation, keyboard state and active pane. [Support](/support) explains the details that make a layout report reproducible."
+    },
+    {
+      "id": "run-test",
+      "title": "Build, run, test, vet and format",
+      "body": "These operations answer different questions. **Build** checks and links the program. **Run** builds and executes the main package. **Test** executes package tests. **Vet** reports suspicious constructs that can compile successfully. **Format** rewrites source with the bundled formatter. A clean build alone does not prove that your program is correct.\n\nUse Problems to locate diagnostics and Output to read execution results. Read the first relevant error before fixing every later message: a missing import or malformed declaration can cause several downstream reports. When a setup or dependency step fails, the program may not have started at all.\n\nThe workbench runs a bounded WASI environment. It is appropriate for compatible pure-Go programs, learning exercises and local project experiments. It does not provide arbitrary native system calls, cgo, native assembly or guest-program networking. An infinite loop has no guaranteed Stop; an unresponsive run may require closing and reopening the app. Keep important source exported."
+    },
+    {
+      "id": "terminal",
+      "title": "Use the project console deliberately",
+      "body": "Terminal is an app-scoped project console. It maps supported commands to the workbench\u2019s existing operations. It is useful when you prefer a command-oriented view of a project, but it is not a general shell or a remote machine.\n\n```text\nhelp\ngo build\ngo run\ngo test\ngo vet\ngo fmt\ngo mod\nls\ncat main.go\npwd\nclear\n```\n\n`go mod` displays the parsed module. It does not expose every desktop `go mod` subcommand. Likewise, this console does not promise arbitrary flags, shell pipelines, Bash scripts, SSH sessions or Kubernetes administration. The Around Go lessons show commands for a separate native development environment; reading those commands does not install those tools into the app.\n\nIf a command is rejected, check `help` and the corresponding toolbar operation. Avoid repeatedly submitting an unsupported desktop workflow and interpreting the response as a Go language failure."
+    },
+    {
+      "id": "projects",
+      "title": "Import, export and keep projects findable",
+      "body": "You can create projects from templates, import a GitHub repository, or open compatible content from Files. GitHub import requires a connection. Review the imported tree and `go.mod` before building an unfamiliar project, especially when it has a large dependency graph or expects native operating-system services.\n\nProjects stay on the device unless you choose a location in Files or iCloud Drive. The project library can be kept in a selected folder; individual projects can also be exported as folders or archives. A folder provider being available in Files is separate from a complete build being supported by the compiler sandbox.\n\nUse a small library with descriptive project names rather than several indistinguishable template copies. Export before deleting or reorganizing a project. The app does not automatically upload source to a coding-agent provider, and the website does not share your native project library. [Package compatibility](/support#package-limits) is the next check when an imported repository fails before compilation."
+    },
+    {
+      "id": "modules",
+      "title": "Dependencies, offline work and archive limits",
+      "body": "Automatic dependency preparation uses requirements already declared in `go.mod`. Once compatible source is present, later builds can use it without downloading it again. Importing a repository or fetching missing packages still needs a connection. This is not a full desktop module-version solver, and `go.work` semantics are not implemented.\n\nGopherForge applies independent resource budgets to downloaded module archives:\n\n| Budget | Meaning |\n| --- | --- |\n| 4,000 files | Non-directory ZIP entries, counted before source filtering |\n| 96 MiB compressed | Maximum download size of one module ZIP |\n| 512 MiB uncompressed | Maximum expanded size of one module |\n| 80 modules | Maximum dependencies prepared in one pass |\n\nThese are application budgets, not Go language limits. Tests, documentation and other-platform sources count toward the ZIP entry budget even when they will later be discarded. For example, `modernc.org/libc@v1.75.3` has 4,168 files and is rejected during Setup. Retry cannot make that same archive smaller.\n\nPassing an archive check also does not establish WASI compatibility. Non-Go `go:embed` assets are not generally preserved by vendoring. Read [the detailed limits](/support#package-limits) before changing dependency versions or assuming that SQLite-based applications will run."
+    },
+    {
+      "id": "previews",
+      "title": "Local web previews, pictures and diagnostic tools",
+      "body": "The workbench can present compatible local HTML, CSS and JavaScript in a WebKit preview and display PNG output from Go programs. These are useful for small visual experiments: generate an image, inspect it, then change one parameter and run again. A preview is not evidence that a guest Go HTTP server can open a network listener.\n\nHTML or JavaScript loaded in WebKit can contact remote services referenced by that content. This differs from networking inside the sandboxed Go program. Inspect imported web content and external resource URLs if you want a fully local experiment.\n\nConcurrency Lab provides nine modeled scenarios for reasoning about goroutines and synchronization. Idiom Coach applies deterministic rules to source. They are learning aids, not a production runtime trace or an AI code review service. Use compiler tests and a native race detector when you validate real concurrent software. The [concurrency unit](/learn/units/concurrency) explains cancellation, joining and modern test tools."
+    },
+    {
+      "id": "course",
+      "title": "Follow the course without losing your place",
+      "body": "The course combines editable exercises, prediction challenges and worked readings. In an exercise, make a small change and run the check. A compiler-verified completion records evidence from execution. A reading can be marked complete without invoking the compiler; that mark means you finished studying it, not that an arbitrary implementation passed tests.\n\n**Continue where you left off** returns to the saved course lesson. Course and Interview keep separate places. Native progress is stored locally and survives normal app relaunches. Keep that distinction in mind before deleting the app or its data: local persistence is not a promise of account-based cloud recovery.\n\nOn the website, progress and bookmarks live in browser storage. Return in the same browser and device to see your saved place. Clearing site data, private browsing or storage restrictions can remove or prevent that record. Browser progress and app progress are independent.\n\nA sensible route is [Go core](/learn/units/core), collections, errors and modules, followed by concurrency and the design topics that match your project. You do not need to read every architecture before writing a useful small program."
+    },
+    {
+      "id": "practice",
+      "title": "Review, fix mistakes and understand the badges",
+      "body": "**Review** asks you to connect learned ideas with their meanings. It builds matching pairs from eligible completed material rather than marking a new course lesson complete on your behalf. Complete a few distinct lessons if the review board has no learned pairs yet.\n\n**Fix mistakes** revisits concepts with a question and three alternatives. After an incorrect answer, read the explanation and compare it with the misconception you chose. A correct response supplies new evidence for that concept. The purpose is to repair a misunderstanding, not to unlock a sequence merely by tapping a checkmark.\n\nAchievements summarize learning events. They are not professional certifications, and a self-reported reading mark should not be confused with compiler evidence. When a topic feels familiar, explain it without the answer visible, then use a code example or prediction challenge to test that explanation. [JSON input policy](/learn/stdlib.json-input-policy) is a useful example of a subject where recognizing a function name is much easier than defining a reliable contract."
+    },
+    {
+      "id": "interview",
+      "title": "Prepare for a Go developer interview",
+      "body": "Interview contains 92 worked guides across 12 topics and four difficulty levels, from junior foundations to staff-level tradeoffs. Read the prompt first, speak your answer aloud, then compare the reasoning, trap and follow-up. Mark whether you understand the topic or want to revisit it. That self-assessment stays separate from course completion.\n\nThe twelve interactive algorithm labs contain 36 scenarios. Step through the state changes before reading the final result. New labs cover [topological sorting](/interview/algorithms.topological-sort), [union-find](/interview/algorithms.union-find), [LRU eviction](/interview/algorithms.lru-cache) and [merging intervals](/interview/algorithms.merge-intervals), alongside search, windows, heaps, graphs and other fundamentals.\n\nDo not memorize only the displayed code. Explain input assumptions, ownership, time and space complexity, empty inputs and failure cases. For an LRU cache, distinguish entry capacity from a byte budget and a recency policy from a time-to-live policy. For a dependency graph, explain what a cycle means to the caller. Those boundaries often matter more than the short implementation."
+    },
+    {
+      "id": "environment",
+      "title": "Move from examples to real Go services",
+      "body": "Around Go connects language knowledge to a working environment. The library covers Bash and Git, modules and tooling, Docker, Kubernetes, MongoDB and Redis. The new SQL unit explains connection pools, row ownership, transaction boundaries, isolation, locking and retry safety. Its examples target a native Go service with a database; the iPhone sandbox does not become a database server or network-enabled SQL client.\n\nThe coding-agent unit covers Go workflows with Codex, Claude Code and Cursor: repository guidance, small reviewable changes, API verification, tests and trust boundaries. These are instructions for using external development tools. GopherForge does not bundle an agent subscription, send your project to those providers or execute their commands for you.\n\nStart with [the agent workflow](/learn/ai.go-workflow), then [verify generated Go](/learn/ai.verify-generated-go). For database work, begin with [pool lifetime](/learn/sql.pool-lifetime) and [transaction ownership](/learn/sql.transaction-owner). Use the linked official references and test the examples against the actual toolchain, driver and service versions you deploy."
+    },
+    {
+      "id": "next",
+      "title": "Settings, privacy and a useful next step",
+      "body": "Settings controls appearance, editor text size, screen-awake behavior and supported project-library preferences. The About section identifies the installed version and build. Include those values in a bug report; they are more useful than assuming every TestFlight or App Store installation contains the latest website material.\n\nThe native app is a one-time paid purchase with no subscription or in-app purchases. The U.S. listing is $6.99; the App Store shows the final price for your region. The web course is freely readable. The app does not include advertising or third-party analytics SDKs. The website has separate infrastructure analytics; see [Privacy](/privacy) for the distinction.\n\nIf you are new to GopherForge, finish one lesson and return through Continue. If you already write Go, build a small project and test an edge case you normally overlook. Then choose one interview guide and explain its tradeoff to another person. The value is a repeatable loop: read, predict, run, inspect and revise. For a problem you cannot resolve, [contact support](/support) with a minimal example and the exact diagnostic."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Does GopherForge compile Go offline?",
+      "answer": "Yes. The native app bundles Go 1.27.1 and compiles compatible programs on the device. Missing packages and GitHub imports need a connection; the website does not execute arbitrary submitted source."
+    },
+    {
+      "question": "Is progress shared between the app and website?",
+      "answer": "No. Native progress is local to the app. Web progress uses storage in the current browser. Continue helps you return within each environment; there is no account-based cross-device synchronization."
+    },
+    {
+      "question": "Can I use MongoDB, Redis, SQL or Kubernetes inside the app?",
+      "answer": "The lessons explain native Go service workflows. They do not add guest-program networking, database servers, Docker, kubectl or a general shell to the app sandbox."
+    },
+    {
+      "question": "Are Codex, Claude Code or Cursor built into GopherForge?",
+      "answer": "No. The course teaches how to use these external tools with Go, including repository instructions, verification and security boundaries. The app does not automatically send your projects to an AI provider."
+    },
+    {
+      "question": "Why does a small module ZIP hit the file limit?",
+      "answer": "The budget counts all non-directory archive entries before platform and source filtering. A compact archive can still exceed 4,000 files. Retrying the unchanged archive does not bypass the budget."
+    }
+  ]
+}

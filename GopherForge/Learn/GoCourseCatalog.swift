@@ -61,6 +61,12 @@ enum GoCourseCatalog {
         ReadingLessonCatalog.unit("datastores", title: "Around Go: MongoDB and Redis",
             summary: "Clients, queries, atomic writes, caching, streams and behavior under load.",
             note: "Read worked native-service examples here. Run them against an isolated development database on your own machine; these lessons do not add network sockets to the app sandbox."),
+        ReadingLessonCatalog.unit("sql", title: "Around Go: SQL services",
+            summary: "Shared pools, rows, transactions, isolation, deadlocks and retry-safe commands.",
+            note: "Worked native Go and PostgreSQL examples. Use an isolated database in your own development environment; the app does not open database sockets."),
+        ReadingLessonCatalog.unit("ai", title: "Around Go: coding agents",
+            summary: "Use Codex, Claude Code and Cursor with concrete contracts, repository context and meaningful checks.",
+            note: "These lessons teach workflows in your own development environment. GopherForge does not connect your projects to AI providers."),
     ]
 
     static var lessons: [Lesson] {

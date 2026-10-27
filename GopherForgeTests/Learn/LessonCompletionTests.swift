@@ -227,6 +227,26 @@ final class LessonCompletionTests: XCTestCase {
     }
 
     @MainActor
+    func testExpandedCurriculumBookmarksAndMarksSurviveStoreReload() async throws {
+        let suite = "gopherforge.expansion-bookmarks.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let progress = LearnProgress(store: store, bookmarks: defaults)
+        for id in ["ai.go-workflow", "sql.pool-lifetime", "stdlib.json-v2-contracts", "concurrency.synctest"] {
+            let lesson = try XCTUnwrap(GoCourseCatalog.lesson(id: id))
+            await progress.markCompleted(lesson)
+            progress.visitLesson(id)
+            progress.visitInterview("algorithms.lru-cache")
+            let restored = LearnProgress(store: LearningProgressStore(storageURL: storeURL), bookmarks: defaults)
+            await restored.refresh()
+            XCTAssertEqual(restored.resumeLesson?.id, id)
+            XCTAssertEqual(restored.resumeInterview?.id, "algorithms.lru-cache")
+            XCTAssertTrue(restored.isCompleted(id))
+            XCTAssertFalse(restored.isCompilerVerified(id))
+        }
+    }
+
+    @MainActor
     func testUnknownBookmarksDoNotBecomeBrokenDestinationsOrPasses() throws {
         let suite = "gopherforge.bookmark-tests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))

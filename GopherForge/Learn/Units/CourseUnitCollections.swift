@@ -209,10 +209,16 @@ enum CourseUnitCollections {
         `yield` returns false — which is how a `break` in the caller's loop \
         reaches you.
 
-        There are two shapes, and the standard library names them in `iter`: \
+        The language accepts functions that yield zero, one or two values. \
+        The standard library names the two value-producing shapes in `iter`: \
         `iter.Seq[V]` yields one value per step, and `iter.Seq2[K, V]` yields \
-        two, which is what map-like iteration needs. You rarely write the type \
-        out; you write the function, and `range` accepts it.
+        two, which is what map-like iteration needs. The zero-value shape is \
+        `func(yield func() bool)` and is used with `for range sequence`. These \
+        are three language signatures, not three named types in `iter`.
+
+        After `yield` returns false, return without calling it again. Do not \
+        save yield for later or invoke it from another goroutine. A sequence \
+        may own resources, so its early-exit path must release them as well.
 
         The point is not novelty. Before this, a function returning a sequence \
         had to hand back a whole slice — allocating every element even when the \

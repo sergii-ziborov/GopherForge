@@ -1,3 +1,4 @@
+import { lessonUpdatedOn } from "@/lib/curriculum-revision";
 import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
@@ -29,6 +30,7 @@ export async function generateMetadata({
       description: l?.objective,
       url: lessonURL(id),
       type: "article",
+      modifiedTime: lessonUpdatedOn(id),
     },
   };
 }
@@ -63,6 +65,7 @@ export default async function LessonPage({
           description: l.objective,
           url: "https://gopherforge.app" + lessonURL(id),
           inLanguage: "en",
+          dateModified: lessonUpdatedOn(id),
           isAccessibleForFree: true,
           learningResourceType:
             l.kind === "predict" ? "Practice problem" : "Lesson",

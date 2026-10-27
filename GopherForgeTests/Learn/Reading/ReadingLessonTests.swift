@@ -2,6 +2,23 @@ import XCTest
 @testable import GopherForge
 
 final class ReadingLessonTests: XCTestCase {
+    func testNewCurriculumIsReachableAndHasIndependentReviewEvidence() throws {
+        let ids = GoConcept.curriculumExpansionTags
+        XCTAssertEqual(ids.count, 15)
+        XCTAssertEqual(GoCourseCatalog.unit(id: "sql")?.teachingLessons.count, 5)
+        XCTAssertEqual(GoCourseCatalog.unit(id: "ai")?.teachingLessons.count, 4)
+        for id in ids {
+            let reading = try XCTUnwrap(ReadingLessonCatalog.reading(for: id))
+            XCTAssertEqual(reading.conceptTag, id)
+            XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == id }.count, 1)
+            XCTAssertTrue(GoConcept.all.contains(id))
+            XCTAssertNotNil(LessonSymbol.byConcept[id])
+            XCTAssertEqual(reading.designGuide?.flow.count, 4)
+            XCTAssertNotNil(ReviewMatchCatalog.allPairs.first { $0.requiredLessonID == id })
+            XCTAssertNotNil(MistakeReviewCatalog.all.first { $0.id == "reading.question.\(id)" })
+        }
+    }
+
     func testBufferOwnershipLessonsHaveDistinctReviewAndMistakeEvidence() throws {
         for id in ["stdlib.borrowed-buffers", "runtime.pool-ownership"] {
             let reading = try XCTUnwrap(ReadingLessonCatalog.reading(for: id))
@@ -44,11 +61,11 @@ final class ReadingLessonTests: XCTestCase {
     }
 
     func testBundledReadingsAreIntegratedExactlyOnceAndPreserveOriginalCourse() {
-        XCTAssertEqual(ReadingLessonCatalog.all.count, 124)
-        XCTAssertEqual(GoCourseCatalog.units.count, 21)
-        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 171)
+        XCTAssertEqual(ReadingLessonCatalog.all.count, 139)
+        XCTAssertEqual(GoCourseCatalog.units.count, 23)
+        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 186)
         XCTAssertEqual(GoCourseCatalog.challenges.count, 22)
-        XCTAssertEqual(GoCourseCatalog.lessons.count, 193)
+        XCTAssertEqual(GoCourseCatalog.lessons.count, 208)
         for reading in ReadingLessonCatalog.all {
             XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == reading.id }.count, 1, reading.id)
             XCTAssertEqual(GoCourseCatalog.unit(containing: reading.id)?.id, reading.unitID)
@@ -76,7 +93,9 @@ final class ReadingLessonTests: XCTestCase {
             "git-scm.com", "curl.se", "www.freedesktop.org", "blog.cleancoder.com",
             "alistair.cockburn.us", "jeffreypalermo.com", "www.jimmybogard.com",
             "www.domainlanguage.com", "martinfowler.com", "learn.microsoft.com",
-            "grpc.io", "docs.aws.amazon.com", "www.informit.com"]
+            "grpc.io", "docs.aws.amazon.com", "www.informit.com", "gopherforge.app",
+            "developers.openai.com", "learn.chatgpt.com", "code.claude.com", "cursor.com",
+            "www.postgresql.org"]
         for reading in ReadingLessonCatalog.all {
             XCTAssertGreaterThan(reading.introduction.count, 100, reading.id)
             XCTAssertGreaterThanOrEqual(reading.sections.count, 3, reading.id)

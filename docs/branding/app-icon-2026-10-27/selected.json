@@ -1,0 +1,12 @@
+{
+  "selectedOn": "2026-10-27",
+  "approvedBy": "User selected the copper-goggle 3D gopher with a dark teal background",
+  "method": "Previously generated using built-in ImageGen, resized to 1024 PNG; no design edit",
+  "source": "mascot-refinements/01-copper-gopher-1024.png",
+  "sha256": "4903b25dc07b0f1d44ef012b5d0625b0d3b63a2e26ea19c79eacab4a033ce588",
+  "opaque": true,
+  "size": [
+    1024,
+    1024
+  ]
+}

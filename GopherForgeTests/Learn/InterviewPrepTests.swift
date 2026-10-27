@@ -5,7 +5,7 @@ final class InterviewPrepTests: XCTestCase {
     func testBundledGuidesAreCompleteAndStable() throws {
         let bank = InterviewPrepBank.shared
         XCTAssertEqual(bank.schemaVersion, 1)
-        XCTAssertEqual(bank.questions.count, 88)
+        XCTAssertEqual(bank.questions.count, 92)
         XCTAssertEqual(bank.topics.count, 12)
         XCTAssertEqual(Set(bank.questions.map(\.id)).count, bank.questions.count)
         XCTAssertEqual(Set(bank.questions.map(\.level)), Set(1...4))
@@ -25,11 +25,11 @@ final class InterviewPrepTests: XCTestCase {
         XCTAssertEqual(bank.filtered(topic: "algorithms", level: 1, search: "boundary").map(\.id), ["algorithms.binary-search"])
         XCTAssertTrue(bank.filtered(topic: "mongodb", level: 4, search: "pool").contains { $0.id == "mongodb.load" })
         XCTAssertTrue(bank.filtered(topic: "redis", level: 1, search: "impossible-keyword-123").isEmpty)
-        XCTAssertEqual(bank.filtered(topic: "", level: 0, search: "   ").count, 88)
+        XCTAssertEqual(bank.filtered(topic: "", level: 0, search: "   ").count, 92)
     }
     func testTracesHaveSafeIndexesAndMeaningfulBoundaryCases() {
         let bank = InterviewPrepBank.shared
-        XCTAssertEqual(bank.demonstrations.count, 8)
+        XCTAssertEqual(bank.demonstrations.count, 12)
         for demo in bank.demonstrations {
             XCTAssertTrue(bank.questions.contains { $0.id == demo.id })
             XCTAssertEqual(demo.cases.count, 3, demo.id)

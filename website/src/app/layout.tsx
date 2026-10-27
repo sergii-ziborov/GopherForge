@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { appStore, github } from "@/lib/course";
 import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://gopherforge.app"),
   title: {
-    default: "GopherForge — Learn Go. Build anywhere.",
+    default: "GopherForge — Go Compiler, Course & Interview Prep",
     template: "%s — GopherForge",
   },
   description:
-    "A practical Go course, architecture guides and a native offline Go workbench for iPhone and iPad. Learn on the web without an account.",
+    "Learn Go with worked examples, interactive algorithms and interview guides. Compile, run and test Go offline on iPhone and iPad with GopherForge.",
   alternates: {
     canonical: "/",
     types: { "application/rss+xml": "/news/rss.xml" },
   },
   openGraph: {
-    title: "GopherForge — Learn Go. Build anywhere.",
+    title: "GopherForge — Go Compiler, Course & Interview Prep",
     description:
       "Free Go lessons, interview preparation and a native offline Go workbench.",
     siteName: "GopherForge",
@@ -38,9 +39,14 @@ export default function RootLayout({
         </a>
         <header className="site-header">
           <Link href="/" className="brand">
-            <span className="brand-mark" aria-hidden="true">
-              G<span>_</span>
-            </span>
+            <Image
+              className="brand-mark"
+              src="/images/app-icon.png"
+              width={40}
+              height={40}
+              alt=""
+              priority
+            />
             <span>
               GopherForge<small>A WORKBENCH FOR GO</small>
             </span>
@@ -49,7 +55,7 @@ export default function RootLayout({
             <Link href="/learn">Learn Go</Link>
             <Link href="/interview">Interview</Link>
             <Link href="/news">News</Link>
-            <Link href="/blog">Field notes</Link>
+            <Link href="/guide">App guide</Link>
             <Link href="/updates">Updates</Link>
             <a className="nav-app" href={appStore}>
               Get the app <span aria-hidden="true">↗</span>
@@ -81,6 +87,7 @@ export default function RootLayout({
           </div>
           <div>
             <h2>Help & details</h2>
+            <Link href="/guide">App guide</Link>
             <Link href="/support">Support</Link>
             <Link href="/support#package-limits">Package limits</Link>
             <Link href="/privacy">Privacy</Link>

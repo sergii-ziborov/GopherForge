@@ -8,7 +8,7 @@ import { EditorialIllustration } from "@/components/EditorialIllustration";
 export const metadata: Metadata = {
   title: "Learn Go — the complete course",
   description:
-    "Explore Go basics, concurrency, architecture, clean code, design patterns, Bash, Docker and Kubernetes. Full lessons, worked code and self-checks; no account.",
+    "Learn Go with 186 teaching lessons: concurrency, JSON v2, architecture, SQL, MongoDB, Redis, coding agents and deployment. Worked code and self-checks; no account.",
   alternates: { canonical: "/learn" },
 };
 export default function Learn() {
@@ -44,12 +44,12 @@ export default function Learn() {
           </span>
         </div>
         <p className="availability">
-          The web library includes the latest MongoDB, Redis and production
-          tooling lessons. App Store {releases.public.version} includes
-          Continue. Two new buffer and pooling readings are available here and
-          prepared for native {releases.next.version}. See version history for
-          release status. Continue saves your lesson and section in this
-          browser. Web and app progress are stored separately.
+          The web library includes JSON v2, modern concurrency, SQL services and
+          coding-agent lessons prepared for native {releases.next.version}. App
+          Store {releases.public.version} includes Continue. See{" "}
+          <Link href="/updates">version history</Link> for release status.
+          Continue saves your lesson and section in this browser. Web and app
+          progress are stored separately.
         </p>
       </header>
       <StructuredData
@@ -77,9 +77,10 @@ export default function Learn() {
       <aside className="agent-study-callout">
         <p className="eyebrow">GO WITH CODING AGENTS</p>
         <p>
-          Eight practical guides cover Codex, Claude, Cursor, API validation,
-          security and concurrency review.{" "}
-          <Link href="/interview/ai.workflow">Start the agent workflow →</Link>
+          Four course readings and eight interview guides cover Codex, Claude
+          Code, Cursor, repository instructions, API validation and trust
+          boundaries.{" "}
+          <Link href="/learn/ai.go-workflow">Start the agent workflow →</Link>
         </p>
       </aside>
       <CourseBrowser

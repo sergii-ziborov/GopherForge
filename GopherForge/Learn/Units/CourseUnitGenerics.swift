@@ -180,13 +180,21 @@ enum CourseUnitGenerics {
             \t\tt.Errorf("Sum of nothing = %d, want 0", got)
             \t}
             }
+
+            func TestSumSupportsNumericFamilies(t *testing.T) {
+            \tif Sum([]uint64{1, 2}) != 3 { t.Fatal("unsigned sum") }
+            \tif Sum([]int8{-2, 3}) != 1 { t.Fatal("small signed sum") }
+            \tif Sum([]complex128{1+2i, 3-1i}) != 4+1i { t.Fatal("complex sum") }
+            }
             """
         ),
         idiomaticSolution: """
         // The tilde is what lets a named type through: Celsius has float64 as
         // its underlying type, and without ~ it would be rejected.
         type Number interface {
-        \t~int | ~int64 | ~float32 | ~float64
+        \t~int | ~int8 | ~int16 | ~int32 | ~int64 |
+        \t~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
+        \t~float32 | ~float64 | ~complex64 | ~complex128
         }
 
         func Sum[T Number](values []T) T {
@@ -218,6 +226,12 @@ enum CourseUnitGenerics {
         whose slice is nil, and appending to a nil slice is fine, so the stack \
         is usable without a constructor — worth designing for rather than \
         stumbling into.
+
+        Popping must also clear the obsolete array slot before shortening the \
+        slice. Otherwise a stack of pointers, slices or interfaces can keep \
+        removed objects reachable while its backing array stays alive. The \
+        returned value remains valid; clearing the slot releases only the \
+        container's extra reference.
 
         Instantiation is explicit where inference has nothing to work from: \
         `Stack[int]{}` names the type, while `Push(1)` infers nothing because \
@@ -295,6 +309,8 @@ enum CourseUnitGenerics {
         \t}
         \tlast := len(s.items) - 1
         \tvalue := s.items[last]
+        \tvar zero T
+        \ts.items[last] = zero
         \ts.items = s.items[:last]
         \treturn value, true
         }

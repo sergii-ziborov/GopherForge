@@ -1,5 +1,7 @@
 # GopherForge
 
+<img src="GopherForge/Resources/Assets.xcassets/AppIcon.appiconset/GopherForgeIcon-1024.png" width="112" alt="GopherForge turquoise gopher with copper goggles on dark teal">
+
 A native Go workspace for iPhone and iPad. Write, compile, run, test and learn
 with a bundled Go 1.27.1 toolchain.
 
@@ -8,26 +10,28 @@ with a bundled Go 1.27.1 toolchain.
 [Course](https://gopherforge.app/learn) ·
 [Interview preparation](https://gopherforge.app/interview) ·
 [News](https://gopherforge.app/news) ·
+[App guide](https://gopherforge.app/guide) ·
 [Support](https://gopherforge.app/support)
 
 <img src="docs/app-store/screenshots/iphone-6.9/00-code.png" width="330" alt="Go worker-pool source in the GopherForge editor on iPhone">
 
 ## Releases
 
-| Version | Status, checked 23 October 2026 | Changes |
+| Version | Status, checked 27 October 2026 | Changes |
 | --- | --- | --- |
-| **1.1.6 (44)** | Waiting for App Review; Internal QA TestFlight | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
+| **1.2.0 (45)** | In preparation | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
+| **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
 | **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
 | **1.1.4 (39)** | Previous App Store release | MongoDB/Redis and production tooling, 88 interview guides, eight interactive algorithm labs, transparent scroll endings. |
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.1.5 (43)**, verified on 23 October 2026.
-**1.1.6 (44)** is in Internal QA TestFlight and waiting for App Review, with
-automatic release after approval enabled. The update adds two worked readings about borrowed buffer
-lifetimes and sync.Pool ownership. They are also available on the website.
-Existing lesson IDs, completion, bookmarks and Continue storage remain unchanged.
+The store currently distributes **1.1.6 (44)**, verified on 27 October 2026.
+**1.2.0 (45)** is being prepared with the expanded curriculum, corrected
+exercise examples and the selected dark teal gopher icon. Web material is
+available with the same stable identifiers. Existing completion, bookmarks
+and Continue storage formats are preserved.
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
@@ -50,7 +54,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** 171 teaching lessons in 21 units, including 124 readings,
+- **Learn Go.** 186 teaching lessons in 23 units, including 139 readings,
   plus 22 prediction challenges. Worked Go programs, diagrams, matching
   reviews and three-choice mistake practice accompany the material.
 - **Continue studying.** Reopen the last course lesson or interview guide.
@@ -59,8 +63,8 @@ App Store prices elsewhere. No subscription or in-app purchase.
   place; it does not mark the material complete.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
-- **Prepare for interviews.** A separate area with 88 worked guides, 12 topics,
-  four difficulty levels and eight interactive algorithm labs with 24 input
+- **Prepare for interviews.** A separate area with 92 worked guides, 12 topics,
+  four difficulty levels and twelve interactive algorithm labs with 36 input
   scenarios. Course progress and interview self-assessment stay independent.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 original unit
   interview questions and 12 spot-the-bug exercises.
@@ -103,11 +107,26 @@ Native code and lessons remove the lower scroll-edge backdrop and keep extra
 end space inside scrollable content. This adds no source lines and preserves
 the embedded-versus-full-screen lesson scrolling behavior.
 
+### JSON v2, modern concurrency, SQL and agents
+
+The 1.2.0 curriculum adds fifteen worked readings. Three cover JSON v2 contracts,
+presence/null semantics and input policy. Three explain WaitGroup.Go, deterministic
+synctest timing and errgroup ownership. **Around Go: SQL services** has five lessons
+on pools, row cleanup, transaction ownership, isolation/locking and bounded retries.
+**Around Go: coding agents** has four lessons on practical workflows, repository
+instructions, generated API verification and trust boundaries. SQL and agent
+examples target an external native environment, not new app network integrations.
+
+The audit also corrected Stack.Pop's retained references, Sum's numeric type
+constraint and the three language-level iterator signatures. All existing lesson
+IDs are preserved. The detailed [app guide](https://gopherforge.app/guide) explains
+projects, testing, Continue, practice, package budgets and the sandbox.
+
 ### Interview preparation and coding agents
 
-Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **88 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
+Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **92 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
 
-Eight algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging and minimum-coin dynamic programming. Choose among **24 scenarios** and step through **111 computed states**, including duplicate, empty, unreachable and greedy-counterexample cases. These are deterministic teaching traces, with highlighted state and published Go implementations. They do not execute arbitrary web input or send code to a server. `python3 scripts/verify_interview_algorithms.py` compiles the eight published examples and checks boundary cases and 500 randomized reference comparisons with Go's race detector.
+Twelve algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging, minimum-coin dynamic programming, topological sorting, union-find, LRU eviction and merging closed intervals. Choose among **36 scenarios** and step through computed states, including empty, duplicate, cyclic and unreachable inputs. These deterministic teaching traces include highlighted state, Go implementations and complexity. They do not execute arbitrary web input. `python3 scripts/verify_interview_algorithms.py` compiles all twelve examples, checks the original 500 randomized rounds and new 200-round property cases with Go's race detector.
 
 Interview self-assessment is stored locally, independently from lesson completion and compiler verification. Eight **Go with coding agents** guides cover Claude Code, Codex and Cursor, repository context, generated API and dependency verification, permissions and prompt injection, concurrent-code review and independent engineering judgment. The app does not connect to AI providers; these guides teach workflows in your own development environment, with official documentation links. Tool interfaces and behavior may change; follow the version actually installed.
 

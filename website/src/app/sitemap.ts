@@ -3,6 +3,12 @@ import { lessons, units } from "@/lib/course";
 import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
 import { news, newsURL, newsImage } from "@/lib/news";
+import {
+  curriculumUpdatedOn,
+  lessonUpdatedOn,
+  changedUnits,
+  changedInterview,
+} from "@/lib/curriculum-revision";
 export default function sitemap(): MetadataRoute.Sitemap {
   const origin = "https://gopherforge.app";
   const illustratedPages: Record<string, string[]> = {
@@ -18,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/architectures",
     "/blog",
     "/updates",
+    "/guide",
     "/support",
     "/privacy",
     "/terms",
@@ -30,35 +37,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paths.map((path) => ({
       url: origin + path,
-      ...(illustratedPages[path]
+      lastModified:
+        path === "/news"
+          ? news[0].modifiedAt
+          : [
+                "",
+                "/guide",
+                "/learn",
+                "/interview",
+                "/updates",
+                "/support",
+              ].includes(path)
+            ? curriculumUpdatedOn
+            : path.startsWith("/learn/units/")
+              ? changedUnits.has(path.split("/").pop()!)
+                ? curriculumUpdatedOn
+                : "2026-10-23"
+              : path.startsWith("/learn/")
+                ? lessonUpdatedOn(path.slice(7))
+                : path.startsWith("/interview/")
+                  ? changedInterview.has(decodeURIComponent(path.slice(11)))
+                    ? curriculumUpdatedOn
+                    : "2026-10-20"
+                  : "2026-10-25",
+      ...(path === "/guide"
         ? {
-            lastModified: path === "" ? news[0].modifiedAt : "2026-10-25",
-            images: illustratedPages[path].map(
-              (id) => origin + newsImage(id).src,
-            ),
+            images: [
+              origin + "/images/app-icon.png",
+              origin + "/images/workbench.png",
+            ],
           }
-        : ["/", "/learn", "/updates", "/support", "/news"].includes(
-              path || "/",
-            ) ||
-            path.startsWith("/learn/") ||
-            path.startsWith("/interview")
+        : illustratedPages[path]
           ? {
-              lastModified:
-                path === "/news"
-                  ? news[0].modifiedAt
-                  : [
-                        "",
-                        "/news",
-                        "/learn",
-                        "/updates",
-                        "/support",
-                        "/learn/stdlib.borrowed-buffers",
-                        "/learn/runtime.pool-ownership",
-                        "/learn/units/stdlib",
-                        "/learn/units/runtime",
-                      ].includes(path)
-                    ? "2026-10-23"
-                    : "2026-10-20",
+              images: illustratedPages[path].map(
+                (id) => origin + newsImage(id).src,
+              ),
             }
           : {}),
       changeFrequency:

@@ -898,7 +898,7 @@
         "title" : "A string is bytes; range gives you runes"
       },
       {
-        "explanation" : "Since Go 1.23, `range` accepts a function as well as a slice, map or channel. A function of the shape `func(yield func(V) bool)` is an iterator: it calls `yield` once per element, and stops early when `yield` returns false — which is how a `break` in the caller's loop reaches you.\n\nThere are two shapes, and the standard library names them in `iter`: `iter.Seq[V]` yields one value per step, and `iter.Seq2[K, V]` yields two, which is what map-like iteration needs. You rarely write the type out; you write the function, and `range` accepts it.\n\nThe point is not novelty. Before this, a function returning a sequence had to hand back a whole slice — allocating every element even when the caller wanted the first one — or take a callback and lose `break`, `continue` and `return`. An iterator is lazy and keeps the loop keywords working, which is why `slices.Values` and `maps.Keys` return one instead of a copy.",
+        "explanation" : "Since Go 1.23, `range` accepts a function as well as a slice, map or channel. A function of the shape `func(yield func(V) bool)` is an iterator: it calls `yield` once per element, and stops early when `yield` returns false — which is how a `break` in the caller's loop reaches you.\n\nThe language accepts functions that yield zero, one or two values. The standard library names the two value-producing shapes in `iter`: `iter.Seq[V]` yields one value per step, and `iter.Seq2[K, V]` yields two, which is what map-like iteration needs. The zero-value shape is `func(yield func() bool)` and is used with `for range sequence`. These are three language signatures, not three named types in `iter`.\n\nAfter `yield` returns false, return without calling it again. Do not save yield for later or invoke it from another goroutine. A sequence may own resources, so its early-exit path must release them as well.\n\nThe point is not novelty. Before this, a function returning a sequence had to hand back a whole slice — allocating every element even when the caller wanted the first one — or take a callback and lose `break`, `continue` and `return`. An iterator is lazy and keeps the loop keywords working, which is why `slices.Values` and `maps.Keys` return one instead of a copy.",
         "guide" : {
           "caption" : "The range loop and yield call cooperate to stop at the same boundary.",
           "id" : "collections.iterators",
@@ -1645,7 +1645,7 @@
         "title" : "A constraint is an interface with types in it"
       },
       {
-        "explanation" : "Types take parameters with the same syntax: `type Stack[T any] struct { items []T }`. Methods on it repeat the parameter in the receiver — `func (s *Stack[T]) Push(v T)` — which makes the type's parameter available to the method.\n\nFor most of generics' life a method could not introduce a parameter of its own, so transformations to another type were written as functions before Go 1.27. That restriction is gone; the next lesson is about what replaced it.\n\nThe zero value still has to work. `var s Stack[int]` gives you a struct whose slice is nil, and appending to a nil slice is fine, so the stack is usable without a constructor — worth designing for rather than stumbling into.\n\nInstantiation is explicit where inference has nothing to work from: `Stack[int]{}` names the type, while `Push(1)` infers nothing because `T` is already fixed by the receiver.",
+        "explanation" : "Types take parameters with the same syntax: `type Stack[T any] struct { items []T }`. Methods on it repeat the parameter in the receiver — `func (s *Stack[T]) Push(v T)` — which makes the type's parameter available to the method.\n\nFor most of generics' life a method could not introduce a parameter of its own, so transformations to another type were written as functions before Go 1.27. That restriction is gone; the next lesson is about what replaced it.\n\nThe zero value still has to work. `var s Stack[int]` gives you a struct whose slice is nil, and appending to a nil slice is fine, so the stack is usable without a constructor — worth designing for rather than stumbling into.\n\nPopping must also clear the obsolete array slot before shortening the slice. Otherwise a stack of pointers, slices or interfaces can keep removed objects reachable while its backing array stays alive. The returned value remains valid; clearing the slot releases only the container's extra reference.\n\nInstantiation is explicit where inference has nothing to work from: `Stack[int]{}` names the type, while `Push(1)` infers nothing because `T` is already fixed by the receiver.",
         "guide" : {
           "caption" : "Each instantiation keeps its element type through every operation.",
           "id" : "generics.containers",
@@ -3563,6 +3563,223 @@
           "concurrency.mutex"
         ],
         "title" : "sync.Once runs a function one time, for everyone"
+      },
+      {
+        "explanation" : "A request owns more than the act of starting goroutines. It must know when its work has stopped and who retains the results. Go 1.25 added WaitGroup.Go, which combines task registration and launch. It reduces a common Add/launch ordering mistake without supplying cancellation, an error result or a concurrency budget.",
+        "id" : "concurrency.waitgroup-go",
+        "kind" : "reading",
+        "objective" : "Use modern WaitGroup task ownership and explain its limits.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Use an error-aware group for returned task errors and keep a separate bounded cancellation path for work that may block."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "WaitGroup.Go joins tasks; it does not collect their errors",
+            "flow" : [
+              "Register owned tasks",
+              "Write independent results",
+              "Observe cancellation",
+              "Join before cleanup"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Use modern WaitGroup task ownership and explain its limits.",
+              "WaitGroup.Go registers owned work and Wait joins it. Cancellation, errors, panic policy and admission control remain separate parts of the design."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Cancel the blocked send automatically",
+              "Collect and return its error"
+            ],
+            "correct" : "Task registration and a join",
+            "explanation" : "Use an error-aware group for returned task errors and keep a separate bounded cancellation path for work that may block.",
+            "hint" : "Joining waits for exit; it cannot manufacture an exit path.",
+            "question" : "A WaitGroup task blocks forever on an uncancellable send. What does calling Wait do?"
+          },
+          "references" : [
+            "https://pkg.go.dev/sync#WaitGroup.Go",
+            "https://go.dev/doc/go1.25",
+            "https://go.dev/ref/mem"
+          ],
+          "review" : {
+            "answer" : "Task registration and a join",
+            "prompt" : "What does WaitGroup.Go add?"
+          },
+          "sections" : [
+            {
+              "body" : "Each task writes to a distinct fixed result slot, and the owner reads results after Wait. That separates mutation by index without concurrently appending to a shared slice. Do not copy an already used WaitGroup or start an unrelated task after the owner has concluded that the group is empty.",
+              "code" : "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\nfunc main() {\n\tinput := []int{2, 3, 4}\n\toutput := make([]int, len(input))\n\tvar tasks sync.WaitGroup\n\tfor i, value := range input {\n\t\ttasks.Go(func() { output[i] = value * value })\n\t}\n\ttasks.Wait()\n\tfmt.Println(output)\n}\n\n// Output:\n// [4 9 16]\n",
+              "language" : "go",
+              "title" : "Register and join owned work",
+              "walkthrough" : "This complete Go 1.25+ example relies on modern loop-declared variables, distinct output elements and an explicit join. It launches only three tasks. A production version with many inputs still needs admission control before launch, and result values must not share unsafe internal storage."
+            },
+            {
+              "body" : "The task function passed to WaitGroup.Go must not panic. It has no error return. Expected failures need an explicit result channel or an error-aware task group, and panic handling belongs to a deliberately chosen boundary. A WaitGroup cannot roll back side effects from a task that already ran.",
+              "title" : "Do not infer an error protocol"
+            },
+            {
+              "body" : "Wait does not take a context or kill a blocked task. A task doing I/O or sending a result must observe cancellation at each potentially blocking point. On shutdown, stop intake, signal cancellation where appropriate, wait for owned tasks and only then close the resources they use.",
+              "title" : "Give cancellation its own path"
+            },
+            {
+              "body" : "Use synchronization or a virtual-time test to hold a task at a known boundary. Verify the owner does not publish success until all required work finishes. A sleep followed by checking a counter depends on timing and may hide the same bug on a slower machine.",
+              "title" : "Test completion rather than scheduling luck"
+            }
+          ],
+          "takeaway" : "WaitGroup.Go registers owned work and Wait joins it. Cancellation, errors, panic policy and admission control remain separate parts of the design."
+        },
+        "tags" : [
+          "concurrency.waitgroup-go"
+        ],
+        "title" : "WaitGroup.Go joins tasks; it does not collect their errors"
+      },
+      {
+        "explanation" : "Tests that sleep for a guessed interval are slow and sensitive to machine load. testing/synctest is a standard package in Go 1.25 and later. It runs a test bubble with virtual time and coordinated goroutine waiting. It is useful for in-process protocols, not a simulator for a remote database or every operating-system event.",
+        "id" : "concurrency.synctest",
+        "kind" : "reading",
+        "objective" : "Use testing/synctest to assert a concurrent timeline deterministically.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Use the bubble for a deterministic in-process protocol and retain isolated integration tests for external services."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "Test time and cancellation without sleeping on the wall clock",
+            "flow" : [
+              "Describe a timeline",
+              "Hold a known phase",
+              "Advance virtual time",
+              "Assert completion and effects"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Use testing/synctest to assert a concurrent timeline deterministically.",
+              "Describe the timeline and assert both early and final states. Virtual time makes supported concurrent tests reproducible; it does not replace real boundary integration checks."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "That real network failover was tested",
+              "That every goroutine schedule is safe"
+            ],
+            "correct" : "Time inside a supported test bubble",
+            "explanation" : "Use the bubble for a deterministic in-process protocol and retain isolated integration tests for external services.",
+            "hint" : "Separate in-process evidence from an external system boundary.",
+            "question" : "A virtual-time unit test passes. What can it establish about a remote PostgreSQL failover?"
+          },
+          "references" : [
+            "https://pkg.go.dev/testing/synctest",
+            "https://go.dev/blog/testing-time"
+          ],
+          "review" : {
+            "answer" : "Time inside a supported test bubble",
+            "prompt" : "What does synctest virtualize?"
+          },
+          "sections" : [
+            {
+              "body" : "Suppose work waits five seconds, publishes a result and exits. The test should establish that it has not published before the deadline and has completed after it. synctest.Wait lets in-bubble goroutines settle at supported blocking points so the assertions do not depend on the scheduler getting lucky.",
+              "code" : "package timeline\n\nimport (\n\t\"testing\"\n\t\"testing/synctest\"\n\t\"time\"\n)\n\nfunc TestDelayedResult(t *testing.T) {\n\tsynctest.Test(t, func(t *testing.T) {\n\t\tdone := make(chan struct{})\n\t\tgo func() { time.Sleep(5 * time.Second); close(done) }()\n\t\tsynctest.Wait()\n\t\tselect {\n\t\tcase <-done:\n\t\t\tt.Fatal(\"completed before the deadline\")\n\t\tdefault:\n\t\t}\n\t\ttime.Sleep(5 * time.Second)\n\t\tsynctest.Wait()\n\t\tselect {\n\t\tcase <-done:\n\t\tdefault:\n\t\t\tt.Fatal(\"result not published\")\n\t\t}\n\t})\n}\n",
+              "language" : "go",
+              "title" : "State the timeline first",
+              "walkthrough" : "Save this complete example as timeline_test.go in a native Go 1.25+ module and run go test -race. The five-second sleep advances virtual time instead of imposing five seconds of wall-clock waiting. This lesson is a reading; it does not promise this diagnostic package on every WASI target."
+            },
+            {
+              "body" : "Model a worker waiting on either its timer or ctx.Done, then cancel at a known phase. Assert that the worker closes its completion signal and does not publish an unwanted result. Cancellation and a simultaneously ready result still need a documented policy; select is not a strict priority rule.",
+              "title" : "Add a cancellation branch"
+            },
+            {
+              "body" : "Virtual time advances when the package can establish the relevant in-bubble blocking state. External network servers, syscalls and objects outside the bubble have different constraints. Keep real integration tests for sockets and databases rather than treating a fast virtual-time test as evidence of remote behavior.",
+              "title" : "Know the boundary of the bubble"
+            },
+            {
+              "body" : "A deterministic test must still assert something meaningful. For a retry protocol, count durable effects and total attempts under a deadline; for cancellation, prove exit with a completion signal. A test that merely waits for the bubble to finish does not verify every business result.",
+              "title" : "Keep the invariant after removing sleeps"
+            }
+          ],
+          "takeaway" : "Describe the timeline and assert both early and final states. Virtual time makes supported concurrent tests reproducible; it does not replace real boundary integration checks."
+        },
+        "tags" : [
+          "concurrency.synctest"
+        ],
+        "title" : "Test time and cancellation without sleeping on the wall clock"
+      },
+      {
+        "explanation" : "golang.org/x/sync/errgroup is a versioned external module, not part of sync. WithContext supplies a derived cancellation context and Wait returns a task error. Tasks must still cooperate with cancellation, and a limit on active tasks is different from a limit on queued input bytes or waiting requests.",
+        "id" : "concurrency.errgroup",
+        "kind" : "reading",
+        "objective" : "Coordinate fallible parallel work without confusing cancellation with joining.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "SetLimit bounds active group functions, not every queued byte. All started work must be joined before its dependencies are released."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "errgroup: errors, cancellation and a real concurrency limit",
+            "flow" : [
+              "Choose a task budget",
+              "Propagate group context",
+              "Collect a task error",
+              "Join before publishing"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Coordinate fallible parallel work without confusing cancellation with joining.",
+              "Choose one owner for submission, cancellation, joining and result publication. An error-aware group simplifies coordination but does not supply a durable transaction or every admission policy."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Always the now-canceled group context",
+              "A new context with no owner or budget"
+            ],
+            "correct" : "Wait ends the derived context",
+            "explanation" : "SetLimit bounds active group functions, not every queued byte. All started work must be joined before its dependencies are released.",
+            "hint" : "The derived context belongs to the group operation.",
+            "question" : "A successful group.Wait returns. Which context should an independent later operation use?"
+          },
+          "references" : [
+            "https://pkg.go.dev/golang.org/x/sync/errgroup",
+            "https://pkg.go.dev/context"
+          ],
+          "review" : {
+            "answer" : "Wait ends the derived context",
+            "prompt" : "Group context after Wait?"
+          },
+          "sections" : [
+            {
+              "body" : "A group cancels its derived context when a task returns a non-nil error or when Wait returns. Keep that context inside the operation. Even a successful Wait leaves it canceled, so later independent work must use the caller’s appropriate context instead.",
+              "code" : "group, workCtx := errgroup.WithContext(ctx)\ngroup.SetLimit(4)\nfor i, id := range ids {\n\tif workCtx.Err() != nil {\n\t\tbreak\n\t}\n\tgroup.Go(func() error {\n\t\tvalue, err := load(workCtx, id)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\toutput[i] = value\n\t\treturn nil\n\t})\n}\nif err := group.Wait(); err != nil {\n\treturn nil, err\n}\nif err := ctx.Err(); err != nil {\n\treturn nil, err\n}\nreturn output, nil",
+              "language" : "go",
+              "title" : "Use the derived context for the owned operation",
+              "walkthrough" : "This native function-body fragment uses the errgroup package, modern loop declarations, a preallocated output slice and a context-aware load function. The simple submission loop assumes load always exits on cancellation. The group does not deep-copy returned values."
+            },
+            {
+              "body" : "Go waits for room when the group is at its configured limit; that admission wait is not itself a ctx-select operation. Do not change the limit while tasks are active. TryGo can express nonblocking admission when the caller has a rejection policy. A fixed worker pool may fit a streaming or explicitly bounded queue better.",
+              "title" : "Understand where SetLimit blocks"
+            },
+            {
+              "body" : "Production submission may fail before every task is added. Do not return and close dependencies while already started tasks still use them. Cancel the operation and call Wait on every exit path that has launched work. Returning from a helper is not a join; a surrounding owner must enforce that lifecycle.",
+              "title" : "Join after a submission failure"
+            },
+            {
+              "body" : "A failed group may have populated some result slots before cancellation. Decide whether the operation permits partial success and represent it explicitly. For all-or-nothing results, return no successful result after Wait fails. Database transactions and idempotency still decide which external effects survive.",
+              "title" : "Separate partial results from successful results"
+            }
+          ],
+          "takeaway" : "Choose one owner for submission, cancellation, joining and result publication. An error-aware group simplifies coordination but does not supply a durable transaction or every admission policy."
+        },
+        "tags" : [
+          "concurrency.errgroup"
+        ],
+        "title" : "errgroup: errors, cancellation and a real concurrency limit"
       }
     ],
     "summary" : "Goroutines, channel ownership, select, buffers and who may send.",
@@ -3647,6 +3864,82 @@
           "stdlib.json"
         ],
         "title" : "Struct tags are the JSON schema"
+      },
+      {
+        "explanation" : "Go 1.27 includes encoding/json/v2 without an experiment flag. Keeping encoding/json preserves its v1 behavior; adopting the v2 API is a separate decision. A compiling change can still alter a mobile model, persisted event or generated client. Write the expected wire representation before migrating.",
+        "id" : "stdlib.json-v2-contracts",
+        "kind" : "reading",
+        "objective" : "Compare null, empty and omitted JSON values before changing a public API.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Go compatibility does not imply that selecting different serializer defaults preserves your application protocol."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "JSON v2: migrate behavior, not just imports",
+            "flow" : [
+              "Record the contract",
+              "Compare v1 and v2",
+              "Opt into one change",
+              "Verify old consumers"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Compare null, empty and omitted JSON values before changing a public API.",
+              "Preserve the established JSON contract first. Enable an intentional representation change only when fixtures and consumers agree about its meaning."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Replace every import and trust the compiler",
+              "Make every field a string"
+            ],
+            "correct" : "Preserve, compare, then opt in",
+            "explanation" : "Go compatibility does not imply that selecting different serializer defaults preserves your application protocol.",
+            "hint" : "A new API surface and a new wire representation are separate changes.",
+            "question" : "An existing endpoint must keep nil maps encoded as null during migration. Which approach fits?"
+          },
+          "references" : [
+            "https://go.dev/doc/jsonv2-migration",
+            "https://pkg.go.dev/encoding/json/v2",
+            "https://gopherforge.app/news/go-json-v2-migration-api-compatibility"
+          ],
+          "review" : {
+            "answer" : "Preserve, compare, then opt in",
+            "prompt" : "JSON v2 migration baseline?"
+          },
+          "sections" : [
+            {
+              "body" : "Ordinary nil slices and maps become empty collections under v2 defaults. V1 produces null. Neither representation is universally better: an established client may distinguish absence from an empty result. Keep fixtures for the actual exported types, including binary data and custom methods.",
+              "code" : "package main\n\nimport (\n\tv1 \"encoding/json\"\n\tv2 \"encoding/json/v2\"\n\t\"fmt\"\n)\n\ntype Page struct {\n\tItems  []string          `json:\"items\"`\n\tLabels map[string]string `json:\"labels\"`\n}\n\nfunc main() {\n\told, err := v1.Marshal(Page{})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnext, err := v2.Marshal(Page{})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(string(old))\n\tfmt.Println(string(next))\n}\n\n// Output:\n// {\"items\":null,\"labels\":null}\n// {\"items\":[],\"labels\":{}}\n",
+              "language" : "go",
+              "title" : "Compare a zero-valued response",
+              "walkthrough" : "The two valid JSON documents carry different collection shapes. This complete program uses only the Go 1.27 standard library. The panic checks belong to a small demonstration; an application boundary should return and classify encoding errors."
+            },
+            {
+              "body" : "DefaultOptionsV1 supplies the compatibility baseline through the v2 API. Later options override earlier ones, so opt into one reviewed change and keep the rest of the contract stable. A compatibility option does not validate domain data or automatically version persisted messages.",
+              "code" : "data, err := jsonv2.Marshal(response,\n\tjsonv1.DefaultOptionsV1(),\n\tjsonv2.FormatNilSliceAsNull(false),\n)\nif err != nil {\n\treturn nil, fmt.Errorf(\"encode response: %w\", err)\n}\nreturn data, nil",
+              "language" : "go",
+              "title" : "Preserve first, opt in deliberately",
+              "walkthrough" : "This function-body fragment imports encoding/json as jsonv1, encoding/json/v2 as jsonv2, and fmt. response is the application value. Only nil-slice formatting is deliberately changed; nil-map behavior stays at the chosen v1 baseline."
+            },
+            {
+              "body" : "Compare typed meaning and exact bytes separately. Sorted map output is useful for snapshots, but deterministic encoding is not a universal canonicalization format for signatures. Include old stored records, custom marshalers and independently released consumers, then stage the rollout with sampled comparisons and a format-aware rollback.",
+              "title" : "Test old readers as well as new writers"
+            },
+            {
+              "body" : "Keep an empty response fixture and a nonempty one. Change one option, predict the output, run both packages and explain which consumer needs the old result. The longer workshop on the website includes strict decoding, race-tested contract examples and a bounded fuzz target. It is useful preparation before a repository-wide import rewrite.",
+              "title" : "Extend the exercise"
+            }
+          ],
+          "takeaway" : "Preserve the established JSON contract first. Enable an intentional representation change only when fixtures and consumers agree about its meaning."
+        },
+        "tags" : [
+          "stdlib.json-v2-contracts"
+        ],
+        "title" : "JSON v2: migrate behavior, not just imports"
       },
       {
         "explanation" : "`time.Duration` is an int64 counting nanoseconds, and the constants are what make it readable: `5 * time.Second` is a multiplication, not a function call. That is also the trap — a bare `5` is five nanoseconds, and `time.Sleep(5)` requests five nanoseconds, not five seconds. Scheduler timing may make the actual wait longer.\n\nTwo more worth knowing on sight: `end.Sub(start)` gives a Duration, and comparing Times uses Before, After and Equal rather than the operators, because a Time carries a monotonic reading as well as a wall clock.",
@@ -3957,6 +4250,151 @@
           "stdlib.borrowed-buffers"
         ],
         "title" : "Borrow bytes briefly; copy before their owner changes"
+      },
+      {
+        "explanation" : "A JSON object can omit a member, contain null, or contain a concrete zero value. Go fields alone do not always preserve those distinctions. An update that sets enabled to false must not silently become an instruction to leave enabled unchanged. Start with a state table for the operation.",
+        "id" : "stdlib.json-presence",
+        "kind" : "reading",
+        "objective" : "Choose omitempty, omitzero and request presence models from the endpoint contract.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A tag controls encoding behavior; it does not define authorization, business validation or every partial-update transition."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "JSON presence: omitted, zero and null are different states",
+            "flow" : [
+              "List input states",
+              "Choose update semantics",
+              "Decode fresh data",
+              "Assert stored effects"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Choose omitempty, omitzero and request presence models from the endpoint contract.",
+              "Specify presence semantics before choosing tags or pointer fields. Missing, null and a concrete zero value may represent different commands."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Pointers always distinguish all three states",
+              "omitempty validates required input"
+            ],
+            "correct" : "Absent and null can both become nil",
+            "explanation" : "A tag controls encoding behavior; it does not define authorization, business validation or every partial-update transition.",
+            "hint" : "Ask what a pointer contains after null and after an omitted property.",
+            "question" : "Ordinary decoding into a fresh *bool must distinguish missing, null and false. What is missing from that representation?"
+          },
+          "references" : [
+            "https://pkg.go.dev/encoding/json",
+            "https://pkg.go.dev/encoding/json/v2"
+          ],
+          "review" : {
+            "answer" : "Absent and null can both become nil",
+            "prompt" : "PATCH with *bool: all states?"
+          },
+          "sections" : [
+            {
+              "body" : "Under v1 defaults, omitempty omits a zero integer and false boolean. Under v2 defaults those are nonempty JSON values and remain present. omitzero expresses Go zero-value omission. Do not replace tags mechanically: some response fields must be visible even when false or zero.",
+              "code" : "type Flags struct {\n\tCount   int  `json:\"count,omitempty\"`\n\tEnabled bool `json:\"enabled,omitempty\"`\n}\n\n// v1 zero value: {}\n// v2 zero value: {\"count\":0,\"enabled\":false}\ntype OptionalCount struct {\n\tCount int `json:\"count,omitzero\"`\n}",
+              "language" : "go",
+              "title" : "Compare omission rules",
+              "walkthrough" : "These declarations compare ordinary scalar fields. They do not describe every custom marshaler. Build table tests for zero, nonzero, nil and explicitly empty values on the actual request or response type."
+            },
+            {
+              "body" : "A bool stores true or false, not whether a property was absent. A *bool can distinguish absent from false in a freshly decoded value, but ordinary decoding also maps explicit null to nil. If null means clear while absence means keep, use a documented presence-aware representation or an explicit operation type.",
+              "title" : "Do not use an ordinary bool as a PATCH protocol"
+            },
+            {
+              "body" : "For a full replacement command, decide required fields and validate the final state. For a partial update, separately validate which transitions are allowed. Avoid reusing an already populated decoding target: fields absent from input can retain earlier state and make missing values appear supplied.",
+              "title" : "A complete update has a simpler contract"
+            },
+            {
+              "body" : "Test an omitted property, null, false and true independently. Assert both the final stored value and whether a write occurs. Add unknown members and malformed values to the matrix, and verify that decoding or validation failure cannot publish a partial update.",
+              "title" : "Write the four cases before the code"
+            }
+          ],
+          "takeaway" : "Specify presence semantics before choosing tags or pointer fields. Missing, null and a concrete zero value may represent different commands."
+        },
+        "tags" : [
+          "stdlib.json-presence"
+        ],
+        "title" : "JSON presence: omitted, zero and null are different states"
+      },
+      {
+        "explanation" : "Successful decoding proves only that input was accepted under the decoder policy. It does not authorize the caller or establish a valid business transition. V2 rejects duplicate names and invalid UTF-8 by default; exact field-name matching and unknown-member rejection are separate settings.",
+        "id" : "stdlib.json-input-policy",
+        "kind" : "reading",
+        "objective" : "Separate JSON syntax acceptance, unknown-member policy and domain validation.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Strict decoding cannot authorize a resource or make an external write exactly once."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "Strict JSON input: reject ambiguity before side effects",
+            "flow" : [
+              "Bound input bytes",
+              "Decode a fresh value",
+              "Validate and authorize",
+              "Publish only success"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Separate JSON syntax acceptance, unknown-member policy and domain validation.",
+              "Bound input, decode under an explicit policy, validate the domain and authorize the target before performing a side effect. Test each boundary independently."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Assume unknown names are always rejected",
+              "Compare decoder error messages only"
+            ],
+            "correct" : "Only with the chosen strict policy",
+            "explanation" : "Strict decoding cannot authorize a resource or make an external write exactly once.",
+            "hint" : "Duplicate names and unknown names are different cases.",
+            "question" : "A v2 command endpoint must reject additional properties. What should its decoder do?"
+          },
+          "references" : [
+            "https://pkg.go.dev/encoding/json/v2",
+            "https://pkg.go.dev/net/http#MaxBytesReader",
+            "https://go.dev/doc/security/fuzz/"
+          ],
+          "review" : {
+            "answer" : "Only with the chosen strict policy",
+            "prompt" : "Are unknown JSON names rejected?"
+          },
+          "sections" : [
+            {
+              "body" : "Unknown members are ignored by default in v2; use RejectUnknownMembers when the endpoint contract requires strict commands. A forward-compatible event consumer may need another policy. Bound body bytes before decoding and limit expensive domain work separately.",
+              "code" : "func decodeName(data []byte) (string, error) {\n\tvar request struct {\n\t\tName string `json:\"name\"`\n\t}\n\tif err := jsonv2.Unmarshal(data, &request, jsonv2.RejectUnknownMembers(true)); err != nil {\n\t\treturn \"\", fmt.Errorf(\"decode name: %w\", err)\n\t}\n\tname := strings.TrimSpace(request.Name)\n\tif name == \"\" {\n\t\treturn \"\", errors.New(\"name required\")\n\t}\n\treturn name, nil\n}",
+              "language" : "go",
+              "title" : "Make the boundary policy visible",
+              "walkthrough" : "The complete helper needs encoding/json/v2 aliased as jsonv2, fmt, strings and errors. Its caller must cap data size before allocation. A fresh local target prevents earlier values or a partial failed decode from becoming a successful published result."
+            },
+            {
+              "body" : "Use fixtures for duplicate names, differently cased names, an unknown property, invalid UTF-8, a trailing second JSON value and a blank name. Record acceptance, typed value and domain-validation result. Do not decide compatibility solely from a changed error string.",
+              "title" : "Test syntax and business meaning separately"
+            },
+            {
+              "body" : "A valid document or resource ID does not establish tenant access. Bind the caller scope to the authoritative lookup or update predicate. A timeout during a later external write can leave its result unknown, so strict JSON decoding is not a substitute for an idempotency protocol.",
+              "title" : "Authorize after decoding, before acting"
+            },
+            {
+              "body" : "For arbitrary bounded bytes, assert that failed decoding returns no usable partial value. For accepted requests, check required invariants and a typed encode/decode round trip. Seed the ambiguity cases explicitly; a ten-second campaign explores inputs without proving every future input safe.",
+              "title" : "Fuzz a meaningful contract"
+            }
+          ],
+          "takeaway" : "Bound input, decode under an explicit policy, validate the domain and authorize the target before performing a side effect. Test each boundary independently."
+        },
+        "tags" : [
+          "stdlib.json-input-policy"
+        ],
+        "title" : "Strict JSON input: reject ambiguity before side effects"
       }
     ],
     "summary" : "io.Reader and io.Writer, encoding/json, and testing without a framework.",
@@ -11479,5 +11917,680 @@
     "summary" : "Clients, queries, atomic writes, caching, streams and behavior under load.",
     "title" : "Around Go: MongoDB and Redis",
     "translationNote" : "Read worked native-service examples here. Run them against an isolated development database on your own machine; these lessons do not add network sockets to the app sandbox."
+  },
+  {
+    "id" : "sql",
+    "lessons" : [
+      {
+        "explanation" : "sql.DB is a concurrency-safe pool handle, not a single database connection. Reuse it across the application and close it after its users drain. These lessons describe native Go services using a real driver; the app’s bounded WASI programs cannot open remote database sockets.",
+        "id" : "sql.pool-lifetime",
+        "kind" : "reading",
+        "objective" : "Configure database/sql as a shared pool and measure its actual pressure.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A larger connection cap can move waiting into an overloaded database. Admission and query efficiency still need their own policies."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "SQL: one pool, explicit capacity and observable waiting",
+            "flow" : [
+              "Construct one pool",
+              "Set a deployment budget",
+              "Measure wait deltas",
+              "Drain before closing"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Configure database/sql as a shared pool and measure its actual pressure.",
+              "Own one shared pool, bound operation lifetimes and admission, and measure pool waits across all replicas before changing connection limits."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Only one replica’s connection count",
+              "The number of Go source files"
+            ],
+            "correct" : "A shared pool, not one connection",
+            "explanation" : "A larger connection cap can move waiting into an overloaded database. Admission and query efficiency still need their own policies.",
+            "hint" : "Multiply per-process settings by every active pool owner.",
+            "question" : "Fifty replicas each allow twelve connections. Which budget must be checked before scaling further?"
+          },
+          "references" : [
+            "https://go.dev/doc/database/manage-connections",
+            "https://pkg.go.dev/database/sql#DB.Stats",
+            "https://pkg.go.dev/github.com/jackc/pgx/v5/stdlib"
+          ],
+          "review" : {
+            "answer" : "A shared pool, not one connection",
+            "prompt" : "What does sql.DB own?"
+          },
+          "sections" : [
+            {
+              "body" : "sql.Open generally constructs a handle rather than proving connectivity. Use a bounded PingContext for startup evidence, then handle every operation error separately. Configure a reviewed driver version in the native service module; pgx/v5/stdlib is one PostgreSQL driver option.",
+              "code" : "db, err := sql.Open(\"pgx\", dsn)\nif err != nil {\n\treturn nil, err\n}\ndb.SetMaxOpenConns(12)\ndb.SetMaxIdleConns(6)\ndb.SetConnMaxIdleTime(2 * time.Minute)\ndb.SetConnMaxLifetime(30 * time.Minute)\nprobe, cancel := context.WithTimeout(ctx, 2*time.Second)\ndefer cancel()\nif err := db.PingContext(probe); err != nil {\n\t_ = db.Close()\n\treturn nil, fmt.Errorf(\"database readiness: %w\", err)\n}\nreturn db, nil",
+              "language" : "go",
+              "title" : "Construct once and verify readiness",
+              "walkthrough" : "This startup-function fragment imports database/sql, context, fmt, time and the chosen PostgreSQL driver registration. The DSN comes from configuration. The numeric settings are examples, not sizing advice; a returned shared pool needs one application lifetime owner."
+            },
+            {
+              "body" : "A limit of twelve per replica means something different with two replicas than with fifty. Reserve database capacity for migrations, administration and other applications. SetMaxOpenConns bounds this pool’s open connections; it is not a global request limiter or a cap on goroutines waiting to acquire one.",
+              "title" : "Budget across the deployment"
+            },
+            {
+              "body" : "DB.Stats exposes OpenConnections, InUse, Idle, WaitCount and WaitDuration. Wait counters accumulate, so compare their changes over the same measurement interval. A high wait rate can reflect slow transactions, leaked rows or too much admission rather than a pool that should simply be enlarged.",
+              "code" : "stats := db.Stats()\nfmt.Println(stats.OpenConnections, stats.InUse, stats.Idle)\nfmt.Println(stats.WaitCount, stats.WaitDuration)\n// Record deltas over a defined interval alongside request latency.",
+              "language" : "go",
+              "title" : "Read counters as changes over an interval",
+              "walkthrough" : "The fragment observes a shared sql.DB and imports fmt. Lifetime counters do not identify the present bottleneck by themselves. Correlate a pool-wait interval with query latency, queue length, errors and the database’s own evidence."
+            },
+            {
+              "body" : "A native pgxpool.Pool is another pool abstraction with its own settings and metrics. Do not wrap one pool in another or assume database/sql option names apply unchanged. Choose the API the service uses, then test saturation and shutdown for that actual combination.",
+              "title" : "Distinguish other pool APIs"
+            }
+          ],
+          "takeaway" : "Own one shared pool, bound operation lifetimes and admission, and measure pool waits across all replicas before changing connection limits."
+        },
+        "tags" : [
+          "sql.pool-lifetime"
+        ],
+        "title" : "SQL: one pool, explicit capacity and observable waiting"
+      },
+      {
+        "explanation" : "A successful QueryContext does not mean every row will decode successfully. Network and server errors can occur during iteration, and Scan can fail on a type or null mismatch. Decide whether partial results are meaningful; do not silently return a successful incomplete list.",
+        "id" : "sql.rows-and-context",
+        "kind" : "reading",
+        "objective" : "Write a cancellation-aware query loop without losing iteration failures.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A parameterized tenant value still requires authorization, and LIMIT is not a universal bound on query execution cost."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "SQL rows: close, check errors and bound the result",
+            "flow" : [
+              "Authorize and bind values",
+              "Run a bounded query",
+              "Scan owned rows",
+              "Check final iteration error"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Write a cancellation-aware query loop without losing iteration failures.",
+              "Check Query, Scan and final iteration errors as separate phases. Close owned rows, authorize scope and cap returned work before reporting a successful result."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Return three records with no error",
+              "Ignore the final iteration status"
+            ],
+            "correct" : "Rows.Err after the loop",
+            "explanation" : "A parameterized tenant value still requires authorization, and LIMIT is not a universal bound on query execution cost.",
+            "hint" : "Next returning false can mean end of rows or an error.",
+            "question" : "A query yields three records and then the driver reports a network error. Which result is correct for an all-or-nothing helper?"
+          },
+          "references" : [
+            "https://go.dev/doc/database/querying",
+            "https://pkg.go.dev/database/sql#Rows",
+            "https://go.dev/doc/database/cancel-operations"
+          ],
+          "review" : {
+            "answer" : "Rows.Err after the loop",
+            "prompt" : "SQL iteration ended. Check?"
+          },
+          "sections" : [
+            {
+              "body" : "This PostgreSQL helper returns at most one hundred identifiers, uses a parameter for the tenant value and returns no successful partial result on failure. A real endpoint must derive tenant from authorization, not merely trust a request parameter.",
+              "code" : "func noteIDs(ctx context.Context, db *sql.DB, tenant string) ([]int64, error) {\n\trows, err := db.QueryContext(ctx,\n\t\t`SELECT id FROM notes WHERE tenant_id = $1 ORDER BY id LIMIT 100`, tenant)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tdefer rows.Close()\n\tvar ids []int64\n\tfor rows.Next() {\n\t\tvar id int64\n\t\tif err := rows.Scan(&id); err != nil {\n\t\t\treturn nil, err\n\t\t}\n\t\tids = append(ids, id)\n\t}\n\tif err := rows.Err(); err != nil {\n\t\treturn nil, err\n\t}\n\treturn ids, nil\n}",
+              "language" : "go",
+              "title" : "Bound a tenant-scoped query",
+              "walkthrough" : "The helper imports context and database/sql and assumes a PostgreSQL-compatible driver and a notes table with an integer id. Close releases resources on early return; Err checks failure after Next becomes false. For a query whose close result affects correctness, handle that result explicitly too."
+            },
+            {
+              "body" : "QueryRowContext defers its error until Scan. Distinguish sql.ErrNoRows from an infrastructure or conversion failure. Use nullable types or pointers when the schema permits null; a zero int is not automatically a missing value. Keep parameter placeholders consistent with the chosen driver.",
+              "title" : "Handle one row and null deliberately"
+            },
+            {
+              "body" : "The $1 parameter protects a value position. It does not let a caller supply an arbitrary table name or ORDER BY expression safely. Choose identifiers and sort directions from a fixed application allowlist, and bind all untrusted values separately.",
+              "title" : "Parameters bind values, not SQL grammar"
+            },
+            {
+              "body" : "A LIMIT bounds this helper’s row count, not the byte size of arbitrary columns or total work examined by the plan. For exports, stream bounded records and carry cancellation to the cursor. Test a failure after several rows and define the response protocol once output has started.",
+              "title" : "Separate buffering from streaming"
+            }
+          ],
+          "takeaway" : "Check Query, Scan and final iteration errors as separate phases. Close owned rows, authorize scope and cap returned work before reporting a successful result."
+        },
+        "tags" : [
+          "sql.rows-and-context"
+        ],
+        "title" : "SQL rows: close, check errors and bound the result"
+      },
+      {
+        "explanation" : "Beginning a transaction does not attach later calls on sql.DB to it. The transaction handle owns a particular transactional connection. A helper that accidentally queries db instead of tx may see another state, escape rollback or wait for a second connection while holding the first.",
+        "id" : "sql.transaction-owner",
+        "kind" : "reading",
+        "objective" : "Place an atomic business transition inside one explicit transaction owner.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A transaction does not automatically include pool calls or an external provider. Check commit outcomes and idempotency at the actual boundary."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "SQL transactions: every participating call uses the transaction",
+            "flow" : [
+              "Validate the command",
+              "Begin one transaction",
+              "Use tx for every call",
+              "Commit or roll back"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Place an atomic business transition inside one explicit transaction owner.",
+              "One owner starts the transaction, passes its handle to every participating call and finishes it. Database atomicity does not include remote side effects."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Yes, because both use the same variable ctx",
+              "Yes, because it is in the same function"
+            ],
+            "correct" : "The same transaction handle",
+            "explanation" : "A transaction does not automatically include pool calls or an external provider. Check commit outcomes and idempotency at the actual boundary.",
+            "hint" : "Context propagation and transaction membership are different contracts.",
+            "question" : "A helper calls db.ExecContext after its caller opened tx. Is that write guaranteed to roll back with tx?"
+          },
+          "references" : [
+            "https://go.dev/doc/database/execute-transactions",
+            "https://pkg.go.dev/database/sql#Tx"
+          ],
+          "review" : {
+            "answer" : "The same transaction handle",
+            "prompt" : "Transaction calls use?"
+          },
+          "sections" : [
+            {
+              "body" : "This abbreviated PostgreSQL transfer updates both accounts through tx. Reject nonpositive amounts before starting, use an exact integer minor-unit representation and treat account currency and authorization as additional domain constraints.",
+              "code" : "tx, err := db.BeginTx(ctx, nil)\nif err != nil {\n\treturn err\n}\ndefer tx.Rollback()\nresult, err := tx.ExecContext(ctx,\n\t`UPDATE accounts SET balance = balance - $1 WHERE id = $2 AND balance >= $1`, amount, from)\nif err != nil {\n\treturn err\n}\nn, err := result.RowsAffected()\nif err != nil {\n\treturn err\n}\nif n != 1 {\n\treturn ErrInsufficientOrMissing\n}\nresult, err = tx.ExecContext(ctx,\n\t`UPDATE accounts SET balance = balance + $1 WHERE id = $2`, amount, to)\nif err != nil {\n\treturn err\n}\nn, err = result.RowsAffected()\nif err != nil {\n\treturn err\n}\nif n != 1 {\n\treturn ErrDestinationMissing\n}\nreturn tx.Commit()",
+              "language" : "go",
+              "title" : "Make the atomic boundary visible",
+              "walkthrough" : "This function-body fragment assumes validated amount/from/to and application errors. Every write uses tx. The deferred Rollback is harmless after a successful Commit. A complete transfer also scopes ownership, checks currency and overflow bounds, and defines retry/idempotency semantics."
+            },
+            {
+              "body" : "A helper can accept the ExecContext or QueryContext capability it needs instead of a hidden global db. That makes accidental pool calls easier to see. The runtime guarantee still comes from passing the same transaction handle to every participating operation, not from an interface name alone.",
+              "title" : "Pass a narrow transaction capability"
+            },
+            {
+              "body" : "An email, HTTP payment or message publish is not rolled back by the SQL transaction. Persist a durable outbox or intent with the state change, then deliver through an idempotent protocol. Do not keep a transaction open while waiting for a user or a slow remote service.",
+              "title" : "Keep external effects outside the callback"
+            },
+            {
+              "body" : "A lost reply can make a durable outcome uncertain. Distinguish documented serialization/deadlock failures from transport ambiguity. Use a stable operation ID to reconcile the latter. Test abort-before-write, error-after-write and commit-then-disconnect separately.",
+              "title" : "Do not interpret every commit error as an abort"
+            }
+          ],
+          "takeaway" : "One owner starts the transaction, passes its handle to every participating call and finishes it. Database atomicity does not include remote side effects."
+        },
+        "tags" : [
+          "sql.transaction-owner"
+        ],
+        "title" : "SQL transactions: every participating call uses the transaction"
+      },
+      {
+        "explanation" : "A transaction can be atomic without providing the isolation an invariant needs. Two transactions may both read a condition as true and each make a different write that breaks the combined rule. Exact behavior depends on the database and isolation level; this lesson uses PostgreSQL terminology explicitly.",
+        "id" : "sql.isolation-and-locks",
+        "kind" : "reading",
+        "objective" : "Explain why atomic statements alone may not preserve a multi-row invariant.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Isolation levels and lock details are database-specific. Do not promise one engine’s exact behavior for every SQL driver."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "SQL isolation and deadlocks: test the business invariant",
+            "flow" : [
+              "State the invariant",
+              "Choose isolation or locks",
+              "Force a concurrent schedule",
+              "Assert durable state"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Explain why atomic statements alone may not preserve a multi-row invariant.",
+              "Choose isolation and locking from the invariant, understand the database-specific failures and prove the protocol with concurrent transactions on the actual engine."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "More goroutines in the unit-test fake",
+              "A larger client-side connection pool"
+            ],
+            "correct" : "Database races need database tests",
+            "explanation" : "Isolation levels and lock details are database-specific. Do not promise one engine’s exact behavior for every SQL driver.",
+            "hint" : "The authoritative state is in another concurrency system.",
+            "question" : "Two replicas pass Go race tests but violate a multi-row invariant. What evidence is missing?"
+          },
+          "references" : [
+            "https://www.postgresql.org/docs/current/transaction-iso.html",
+            "https://www.postgresql.org/docs/current/explicit-locking.html",
+            "https://pkg.go.dev/database/sql#TxOptions"
+          ],
+          "review" : {
+            "answer" : "Database races need database tests",
+            "prompt" : "Can -race prove SQL isolation?"
+          },
+          "sections" : [
+            {
+              "body" : "Imagine two on-call doctors, each allowed to leave only while another remains. Both transactions read two active doctors and each removes its own row. The final state violates the rule even though every individual write is valid. This is a business-level concurrency problem, not an unsynchronized Go map access.",
+              "title" : "Name the anomaly"
+            },
+            {
+              "body" : "A suitable constraint, conditional update, lock protocol or serializable transaction can protect an invariant, depending on how it is represented. PostgreSQL serializable isolation may reject a transaction that would create an incompatible history. Applications must handle that failure rather than treating serializable as a promise that no request ever retries.",
+              "code" : "tx, err := db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})\nif err != nil {\n\treturn err\n}\ndefer tx.Rollback()\n// Read and write the complete invariant using tx and the same ctx.\n// A documented serialization failure can require retrying the whole unit.\nreturn tx.Commit()",
+              "language" : "go",
+              "title" : "Choose a database-enforced protocol",
+              "walkthrough" : "This native transaction skeleton imports database/sql and assumes a driver supporting the requested isolation. It deliberately omits application SQL: the correct statements depend on the invariant. Test the protocol against the actual database rather than a fake that always accepts commits."
+            },
+            {
+              "body" : "Two transfers can lock accounts in opposite orders and deadlock. Acquire relevant locks in a consistent order where possible, keep transactions short and avoid holding locks across remote calls. Deadlock detection prevents one kind of permanent wait by aborting work; it does not make the application transition automatically succeed.",
+              "title" : "Use consistent lock order"
+            },
+            {
+              "body" : "Use synchronization barriers to place both transactions after their initial reads, then release their writes. Assert the final invariant and the expected failure/retry behavior. A process-local mutex cannot establish the same guarantee across every service replica, and the race detector does not observe database interleavings.",
+              "title" : "Reproduce with two independent connections"
+            }
+          ],
+          "takeaway" : "Choose isolation and locking from the invariant, understand the database-specific failures and prove the protocol with concurrent transactions on the actual engine."
+        },
+        "tags" : [
+          "sql.isolation-and-locks"
+        ],
+        "title" : "SQL isolation and deadlocks: test the business invariant"
+      },
+      {
+        "explanation" : "Retrying the last failed SQL statement can be wrong when an earlier statement read stale state or the transaction is already aborted. A safe retry policy names the driver error, restarts the complete business unit when appropriate, stays within a total deadline and prevents repeated external effects.",
+        "id" : "sql.retry-and-idempotency",
+        "kind" : "reading",
+        "objective" : "Separate retryable transaction aborts from an ambiguous committed operation.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Retry classification is driver-specific. Preserve one total deadline and use durable deduplication for ambiguous side effects."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "SQL retries: restart a safe transaction, reconcile an unknown result",
+            "flow" : [
+              "Classify the outcome",
+              "Choose one retry owner",
+              "Respect the total budget",
+              "Reconcile durable identity"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Separate retryable transaction aborts from an ambiguous committed operation.",
+              "Retry a documented safe unit within one budget. Reconcile uncertain commit outcomes through durable operation identity rather than assuming an error proves no effect occurred."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Charge again with a fresh identity",
+              "Assume rollback because err is non-nil"
+            ],
+            "correct" : "The durable outcome may be unknown",
+            "explanation" : "Retry classification is driver-specific. Preserve one total deadline and use durable deduplication for ambiguous side effects.",
+            "hint" : "Distinguish an explicit abort from a missing acknowledgment.",
+            "question" : "A network error occurs after the server may have committed a charge. What is the safe next step?"
+          },
+          "references" : [
+            "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html",
+            "https://www.postgresql.org/docs/current/errcodes-appendix.html",
+            "https://pkg.go.dev/github.com/jackc/pgx/v5/pgconn#PgError"
+          ],
+          "review" : {
+            "answer" : "The durable outcome may be unknown",
+            "prompt" : "A commit reply is lost. Assume?"
+          },
+          "sections" : [
+            {
+              "body" : "For PostgreSQL, serialization_failure is SQLSTATE 40001 and deadlock_detected is 40P01. Inspect structured driver errors rather than parsing an English error message. Those codes are not interchangeable with a lost network response, which can leave an outcome unknown.",
+              "code" : "var pgErr *pgconn.PgError\nif errors.As(err, &pgErr) {\n\tretryable := pgErr.Code == \"40001\" || pgErr.Code == \"40P01\"\n\t_ = retryable // apply the caller's bounded whole-transaction policy\n}",
+              "language" : "go",
+              "title" : "Classify with the real driver",
+              "walkthrough" : "The native fragment imports errors and github.com/jackc/pgx/v5/pgconn. It only classifies two PostgreSQL conditions; it is not a complete retry loop and does not claim every network or database error is retryable."
+            },
+            {
+              "body" : "Use a small reviewed attempt cap, bounded jittered delay and the remaining overall deadline. Recreate the transaction and re-read necessary state on each attempt. Do not let HTTP, application and driver retries multiply independently into a storm while every request retains a connection or body.",
+              "title" : "Give one layer the retry budget"
+            },
+            {
+              "body" : "If a payment-like command committed but its reply was lost, retrying without an operation identity can duplicate the transition. Store a scoped idempotency key and request fingerprint under a uniqueness rule. Return the prior result or reconcile provider state; a transaction cannot un-send a remote charge.",
+              "title" : "Reconcile transport ambiguity"
+            },
+            {
+              "body" : "Inject a known abort before commit, an exhausted deadline, concurrent duplicate commands and commit-then-disconnect. Assert one durable business effect and a useful response classification. Include isolation and schema compatibility in a release rollback plan; reverting a binary does not erase committed data.",
+              "title" : "Test the windows, not only the loop count"
+            }
+          ],
+          "takeaway" : "Retry a documented safe unit within one budget. Reconcile uncertain commit outcomes through durable operation identity rather than assuming an error proves no effect occurred."
+        },
+        "tags" : [
+          "sql.retry-and-idempotency"
+        ],
+        "title" : "SQL retries: restart a safe transaction, reconcile an unknown result"
+      }
+    ],
+    "summary" : "Shared pools, rows, transactions, isolation, deadlocks and retry-safe commands.",
+    "title" : "Around Go: SQL services",
+    "translationNote" : "Worked native Go and PostgreSQL examples. Use an isolated database in your own development environment; the app does not open database sockets."
+  },
+  {
+    "id" : "ai",
+    "lessons" : [
+      {
+        "explanation" : "Claude Code, Codex and Cursor can inspect files, propose patches and run available tools. Useful work still needs a concrete behavior and a way to check it. In this unit you guide an agent in your own repository; GopherForge does not connect to an AI provider or send your projects to one.",
+        "id" : "ai.go-workflow",
+        "kind" : "reading",
+        "objective" : "Turn an ambiguous coding request into a small, verifiable Go change.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A tool can generate and execute code while still misunderstanding the product invariant. Review behavior as well as syntax."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "A Go agent task starts with a contract and a failing example",
+            "flow" : [
+              "State the defect",
+              "Inspect code and callers",
+              "Review a small patch",
+              "Run meaningful checks"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Turn an ambiguous coding request into a small, verifiable Go change.",
+              "Define the contract, inspect the relevant code, make one reviewable change and require concrete evidence. Use the explanation to check understanding, not replace it."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "A larger rewrite with no constraints",
+              "A more confident completion message"
+            ],
+            "correct" : "A contract and a failing example",
+            "explanation" : "A tool can generate and execute code while still misunderstanding the product invariant. Review behavior as well as syntax.",
+            "hint" : "Choose evidence another developer can reproduce.",
+            "question" : "An agent reports a fix but never names a reproducing input or test. What should you establish first?"
+          },
+          "references" : [
+            "https://developers.openai.com/cookbook/examples/codex/iterating-development-workflows-with-codex",
+            "https://code.claude.com/docs/en/best-practices",
+            "https://cursor.com/docs/agent/overview"
+          ],
+          "review" : {
+            "answer" : "A contract and a failing example",
+            "prompt" : "Start a Go agent task with?"
+          },
+          "sections" : [
+            {
+              "body" : "Suppose LowerBound returns an arbitrary duplicate index. Supply a minimal input, expected answer, supported Go version and public API constraint. Ask the agent to inspect the implementation and existing tests before proposing a change. A broad instruction such as improve search does not tell either of you which behavior matters.",
+              "code" : "Task: fix LowerBound in internal/search.\nInput: [1, 3, 3, 8], target 3. Expected index: 1.\nPreserve the exported signature and half-open interval invariant.\nInspect existing callers and tests first. Add empty, missing and duplicate cases.\nRun: go test ./internal/search\nExplain why equality moves hi instead of returning immediately.",
+              "language" : "text",
+              "title" : "Give the task an observable result",
+              "walkthrough" : "This is an example task prompt, not a tool-specific command. It names the defect, scope, invariant and verification. Replace paths with real repository paths; the agent must not invent a test result if the environment cannot run the command."
+            },
+            {
+              "body" : "Read the actual diff, including tests. A test that merely duplicates the new implementation may be green without protecting the contract. Ask which previous input fails, why the change fixes it and which other callers could observe a difference. Formatting changes should not hide the behavior change.",
+              "title" : "Inspect before accepting a patch"
+            },
+            {
+              "body" : "An agent can miss an overflow, copy a mutex or drop a cancellation path while producing plausible prose. Identify the owner of mutable values, the lifetime of every goroutine and the meaning of public errors yourself. A small patch is easier to understand and revert than an unexplained rewrite.",
+              "title" : "Keep human judgment at the boundary"
+            },
+            {
+              "body" : "Run the focused test, then the affected package checks. Record the actual compiler and command. If a remote integration service is unavailable, label that check unverified and keep an isolated reproduction. Passing unit tests is useful evidence; it is not proof about database failover or every interleaving.",
+              "title" : "Repeat a reproducible check"
+            }
+          ],
+          "takeaway" : "Define the contract, inspect the relevant code, make one reviewable change and require concrete evidence. Use the explanation to check understanding, not replace it."
+        },
+        "tags" : [
+          "ai.go-workflow"
+        ],
+        "title" : "A Go agent task starts with a contract and a failing example"
+      },
+      {
+        "explanation" : "Durable guidance saves repeated explanation of layout, build commands and boundary rules. The supported discovery mechanisms differ between products and can change. Keep the repository facts stable, then consult the official documentation for how the installed tool discovers and scopes them.",
+        "id" : "ai.repository-guidance",
+        "kind" : "reading",
+        "objective" : "Write useful Go repository instructions without confusing context with permissions.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Do not share secret values in instruction files or assume that a context exclusion blocks all tool access."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "Repository guidance for Codex, Claude Code and Cursor",
+            "flow" : [
+              "Document real commands",
+              "Choose tool-specific scope",
+              "Check loaded guidance",
+              "Enforce tool permissions"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Write useful Go repository instructions without confusing context with permissions.",
+              "Keep repository facts concrete, scope guidance using each product’s documented mechanism and enforce permissions in the environment. Recheck discovery after tool changes."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "The heading style in the markdown file",
+              "Excluding one file from search alone"
+            ],
+            "correct" : "Guidance is not an access control",
+            "explanation" : "Do not share secret values in instruction files or assume that a context exclusion blocks all tool access.",
+            "hint" : "Distinguish what the model is told from what its tools are allowed to do.",
+            "question" : "A repository instruction says not to query production, but the shell has a production credential. What provides the actual boundary?"
+          },
+          "references" : [
+            "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+            "https://code.claude.com/docs/en/memory",
+            "https://cursor.com/docs/rules"
+          ],
+          "review" : {
+            "answer" : "Guidance is not an access control",
+            "prompt" : "Do repo rules enforce access?"
+          },
+          "sections" : [
+            {
+              "body" : "Describe the real Go module, generated files, focused tests and opt-in integration environment. Use exact working directories and commands. Keep examples free of credentials and name environment variables without values. A new developer should be able to follow the same instructions without an agent.",
+              "code" : "# Go service working agreements\n- Supported compiler: follow go.mod and the CI toolchain.\n- Unit checks: go test ./...\n- Worker changes: go test -race ./internal/worker/...\n- Generated API: run the pinned generator documented in docs/generate.md.\n- Integration checks use disposable databases; never production endpoints.\n- Preserve public error and JSON contracts unless the task changes them.",
+              "language" : "markdown",
+              "title" : "Write the repository facts once",
+              "walkthrough" : "This illustrative guidance belongs in the repository instruction mechanism used by the selected tool. It is not an instruction for GopherForge itself. Replace package paths and generation commands with ones that exist in the actual checkout."
+            },
+            {
+              "body" : "Codex uses AGENTS.md with directory-scoped discovery and override rules. Claude Code uses CLAUDE.md and its documented rules and memory mechanisms. Cursor offers AGENTS.md and project rules in .cursor/rules with selectable scope. Do not assume copying one filename gives identical precedence in every product.",
+              "title" : "Map facts to the tool deliberately"
+            },
+            {
+              "body" : "When guidance appears ignored, ask the tool which files it loaded and inspect its documented diagnostics. A nested instruction may override a general rule. Avoid growing one global instruction file into a second copy of the whole codebase; link concise maintained project documents where supported.",
+              "title" : "Verify the loaded scope"
+            },
+            {
+              "body" : "A sentence saying do not access production is useful intent, but it does not revoke a credential. Use actual sandbox, approval and account controls in the environment. A rule file is not an authentication boundary, and ignoring a file for indexing does not necessarily prevent shell tools from reading it.",
+              "title" : "Keep controls separate from prose"
+            }
+          ],
+          "takeaway" : "Keep repository facts concrete, scope guidance using each product’s documented mechanism and enforce permissions in the environment. Recheck discovery after tool changes."
+        },
+        "tags" : [
+          "ai.repository-guidance"
+        ],
+        "title" : "Repository guidance for Codex, Claude Code and Cursor"
+      },
+      {
+        "explanation" : "Generated source can look idiomatic while targeting the wrong driver major version or changing the public result. Compile against the selected module graph, inspect authoritative APIs and test the observable path. A plausible import name or confident explanation is not version evidence.",
+        "id" : "ai.verify-generated-go",
+        "kind" : "reading",
+        "objective" : "Catch invented APIs, unsafe concurrency and changed wire contracts in generated Go.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Compiling proves API compatibility for that build; database timing, failover and atomicity require additional evidence."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "Verify generated Go against the real module and runtime",
+            "flow" : [
+              "Resolve the module",
+              "Inspect the real API",
+              "Trace ownership",
+              "Test the failure boundary"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Catch invented APIs, unsafe concurrency and changed wire contracts in generated Go.",
+              "Resolve the actual version, compile the claimed API, review ownership and test changed public behavior. Keep native, WASI and remote-service evidence distinct."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Add both major versions automatically",
+              "Trust that a similar method exists"
+            ],
+            "correct" : "Check the selected version and API",
+            "explanation" : "Compiling proves API compatibility for that build; database timing, failover and atomicity require additional evidence.",
+            "hint" : "Find the dependency already selected by the build.",
+            "question" : "A MongoDB example uses an old driver signature but the module uses v2. Which is the useful first check?"
+          },
+          "references" : [
+            "https://go.dev/ref/mod",
+            "https://go.dev/doc/articles/race_detector.html",
+            "https://www.mongodb.com/docs/drivers/go/current/"
+          ],
+          "review" : {
+            "answer" : "Check the selected version and API",
+            "prompt" : "Generated API mismatch. First?"
+          },
+          "sections" : [
+            {
+              "body" : "Start in the target module and inspect the workspace and selected dependencies. A local replace can make generated code compile against unreleased source. For MongoDB v2, use its /v2 path and documented lifecycle; do not add an old major version merely to make an invented call compile.",
+              "code" : "go env GOMOD GOWORK\ngo list -m all\ngo doc go.mongodb.org/mongo-driver/v2/mongo.Connect\ngo test ./internal/store/...",
+              "language" : "bash",
+              "title" : "Check which module the code actually uses",
+              "walkthrough" : "These are native-development commands in a repository that already depends on the v2 driver. go doc establishes the selected API rather than downloading a guessed dependency. The package test path must exist in that checkout."
+            },
+            {
+              "body" : "For every generated goroutine, identify who starts it, cancels it and waits for it. Check blocking sends and capacity acquisition. Acquiring a semaphore inside a newly launched goroutine can bound active work while still allowing an unbounded number of waiting goroutines.",
+              "title" : "Review ownership before adding goroutines"
+            },
+            {
+              "body" : "A nil slice becoming empty changes JSON under some serializers. Replacing %w with %v changes error matching. Returning success after a canceled partial export changes the protocol. Add fixtures for those decisions and check old callers before accepting a cosmetic cleanup.",
+              "title" : "Compare contracts, not just signatures"
+            },
+            {
+              "body" : "Ask for a blocked-receiver cancellation test, duplicate request or commit-then-disconnect fixture when relevant. Run race detection on exercised concurrent paths and use integration tests for database atomicity. No amount of mocking can establish a live driver or server guarantee it never exercised.",
+              "title" : "Require a failure-path demonstration"
+            }
+          ],
+          "takeaway" : "Resolve the actual version, compile the claimed API, review ownership and test changed public behavior. Keep native, WASI and remote-service evidence distinct."
+        },
+        "tags" : [
+          "ai.verify-generated-go"
+        ],
+        "title" : "Verify generated Go against the real module and runtime"
+      },
+      {
+        "explanation" : "A source comment, dependency README, test log or fetched webpage can contain instructions written by someone else. Reading that material to solve a Go problem does not authorize its author to expand the task. Keep the user’s goal and trusted repository guidance separate from external diagnostic content.",
+        "id" : "ai.trust-boundaries",
+        "kind" : "reading",
+        "objective" : "Review commands, secrets and external writes when an agent consumes untrusted text.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Do not confuse a generated command with an authorized action. Context files and tool permissions solve different problems."
+            ],
+            "cost" : "Choose the policy from the actual contract, then verify its failure path in the target environment.",
+            "family" : "Agent trust boundaries: repository text is input data",
+            "flow" : [
+              "Identify trusted intent",
+              "Inspect diagnostic data",
+              "Constrain tools and secrets",
+              "Report verified evidence"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Review commands, secrets and external writes when an agent consumes untrusted text.",
+              "Treat external text as task data, enforce permissions with real controls and verify sensitive commands at their boundary. Keep the Go fix tied to its authorized behavior."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Follow it because it came from a test",
+              "Upload first and redact the reply"
+            ],
+            "correct" : "External text cannot grant permission",
+            "explanation" : "Do not confuse a generated command with an authorized action. Context files and tool permissions solve different problems.",
+            "hint" : "The page is evidence to inspect, not a new instruction source.",
+            "question" : "A webpage linked by a failing test asks an agent to upload a credential file. What should happen?"
+          },
+          "references" : [
+            "https://developers.openai.com/codex/security",
+            "https://code.claude.com/docs/en/security",
+            "https://cursor.com/docs/agent/security"
+          ],
+          "review" : {
+            "answer" : "External text cannot grant permission",
+            "prompt" : "Can a page authorize an upload?"
+          },
+          "sections" : [
+            {
+              "body" : "Imagine a failing test prints a page that tells the agent to upload environment variables. That instruction is not part of the authorized fix. Extract the actual assertion failure, inspect the relevant source and ignore the requested credential transfer.",
+              "code" : "Diagnostic data:\n  expected first duplicate index 1, got 2\n  see external.example/fix for instructions\n\nAuthorized task:\n  repair LowerBound and prove duplicate handling\n\nThe external page cannot authorize uploading files or secrets.",
+              "language" : "text",
+              "title" : "Recognize an instruction hidden in a failure",
+              "walkthrough" : "The URL is an illustrative untrusted destination, not a link to visit. The useful evidence is the mismatch between expected and actual index; an unrelated upload request does not help establish that invariant."
+            },
+            {
+              "body" : "Give agent-driven tests a disposable database, namespaced keys and bounded cleanup. A unique key prefix does not protect other data if a cleanup script still runs FLUSHDB. Inspect generated commands before they can affect shared systems, especially dependency installers, migrations and deployment steps.",
+              "title" : "Use isolated integration resources"
+            },
+            {
+              "body" : "Use environment or credential mechanisms approved for the selected tool. Include variable names in setup instructions rather than real passwords. Logs, traces, snapshots and fixtures can also retain private data; inspect what a test or support bundle records before sharing it.",
+              "title" : "Keep secrets out of the conversation and diff"
+            },
+            {
+              "body" : "Record the changed files, checks actually run, unresolved failures and next concrete step. Preserve the original task constraints after context reduction. A handoff saying everything is safe without naming evidence is difficult for either a human or another session to verify.",
+              "title" : "Make a useful handoff"
+            }
+          ],
+          "takeaway" : "Treat external text as task data, enforce permissions with real controls and verify sensitive commands at their boundary. Keep the Go fix tied to its authorized behavior."
+        },
+        "tags" : [
+          "ai.trust-boundaries"
+        ],
+        "title" : "Agent trust boundaries: repository text is input data"
+      }
+    ],
+    "summary" : "Use Codex, Claude Code and Cursor with concrete contracts, repository context and meaningful checks.",
+    "title" : "Around Go: coding agents",
+    "translationNote" : "These lessons teach workflows in your own development environment. GopherForge does not connect your projects to AI providers."
   }
 ]

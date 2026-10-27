@@ -124,7 +124,7 @@ export default function Home() {
               n: "03",
               image: "rebuild-hero" as const,
               title: "Know the environment",
-              body: "Actual Bash, Git, Docker and Kubernetes commands. Read what happens around your Go program.",
+              body: "Bash, Git, Docker, Kubernetes, SQL, MongoDB, Redis and coding agents. Understand the environment around your Go program.",
               unit: "operations",
               label: "Explore the tooling",
             },
@@ -166,10 +166,11 @@ export default function Home() {
           <em>engineering judgment.</em>
         </h2>
         <p>
-          88 worked guides across 12 topics, from junior foundations to systems
-          tradeoffs. Trace eight algorithms interactively, then practice
-          concurrency, MongoDB, Redis, Docker, Kubernetes and Go workflows with
-          Claude Code, Codex and Cursor.
+          {interview.questions.length} worked guides across{" "}
+          {interview.topics.length} topics, from junior foundations to systems
+          tradeoffs. Trace {interview.demonstrations.length} algorithms
+          interactively, then practice concurrency, MongoDB, Redis, Docker,
+          Kubernetes and Go workflows with Claude Code, Codex and Cursor.
         </p>
         <Link className="button" href="/interview">
           Open interview preparation →
@@ -216,8 +217,8 @@ export default function Home() {
               <a href={appStore} className="button">
                 View on the App Store ↗
               </a>
-              <Link className="text-link" href="/support#package-limits">
-                Read the toolchain limits
+              <Link className="text-link" href="/guide">
+                Read the complete app guide
               </Link>
             </div>
             <div className="app-price" id="pricing">
@@ -231,11 +232,10 @@ export default function Home() {
             </div>
             <p className="small-note">
               App Store version {releases.public.version} is available now.
-              Continue is included. The web course includes the latest
-              architecture, MongoDB, Redis, borrowed-buffer and pooling
-              readings. Native {releases.next.version}
-              contains the two newest readings. Native availability is listed in
-              the version history.
+              Continue is included. The web library adds JSON v2, SQL service
+              lifetimes, modern concurrency and practical coding-agent lessons.
+              Native {releases.next.version}: {releases.next.status}. See
+              version history for its availability.
             </p>
           </div>
         </div>
@@ -313,7 +313,17 @@ export default function Home() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            name: "GopherForge: Go Workbench",
+            name: "GopherForge: Go Compiler",
+            description:
+              "On-device Go compiler and editor for iPhone and iPad, with tests, vet, formatting, a practical course and interview preparation.",
+            image: "https://gopherforge.app/images/app-icon.png",
+            screenshot: "https://gopherforge.app/images/workbench.png",
+            featureList: [
+              "Offline on-device Go compilation",
+              "Package tests and vet",
+              "Go course and saved learning progress",
+              "Interview preparation and interactive algorithms",
+            ],
             applicationCategory: "DeveloperApplication",
             operatingSystem: "iOS, iPadOS",
             softwareVersion: releases.public.version,

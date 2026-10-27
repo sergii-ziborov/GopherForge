@@ -221,21 +221,10 @@ div[id] {
 }
 .brand-mark {
   width: 40px;
-  height: 43px;
-  border: 1.5px solid var(--teal);
+  height: 40px;
   border-radius: 10px;
-  display: grid;
-  place-content: center;
-  position: relative;
-  color: var(--teal);
-  font-family: ui-monospace, monospace;
-  font-size: 1.6rem;
-}
-.brand-mark span {
-  position: absolute;
-  font-size: 1rem;
-  right: 5px;
-  bottom: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 .site-header nav {
   display: flex;
@@ -1473,7 +1462,7 @@ details p {
   }
   .brand-mark {
     width: 35px;
-    height: 38px;
+    height: 35px;
   }
   .site-header nav {
     gap: 18px;
@@ -3373,5 +3362,166 @@ details p {
 @media (prefers-reduced-motion: reduce) {
   .news-picture img {
     transition: none;
+  }
+}
+
+/* App guide: a stable reading column with a separate, usable contents rail. */
+.guide-hero {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  padding: 30px 0 65px;
+  border-bottom: 1px solid var(--line);
+}
+.guide-hero > img {
+  border-radius: 34px;
+  flex-shrink: 0;
+  box-shadow: 0 15px 40px #003b4320;
+}
+.guide-hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4.3rem);
+  margin: 20px 0;
+}
+.guide-hero .lesson-objective {
+  max-width: 760px;
+}
+.guide-body {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 65px;
+  padding-top: 48px;
+}
+.guide-toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.guide-toc nav {
+  display: grid;
+  gap: 14px;
+}
+.guide-toc a {
+  display: flex;
+  gap: 12px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  text-decoration: none;
+  color: var(--muted);
+}
+.guide-toc a:hover {
+  color: var(--teal);
+}
+.guide-toc a span {
+  font-family: ui-monospace, monospace;
+  color: var(--teal);
+}
+.guide-content {
+  max-width: 800px;
+  min-width: 0;
+}
+.guide-content .reading-section {
+  scroll-margin-top: 24px;
+  padding: 0 0 46px;
+  margin-bottom: 46px;
+  border-bottom: 1px solid var(--line);
+}
+.guide-content h2 {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.25;
+}
+.guide-content p,
+.guide-content li {
+  line-height: 1.8;
+}
+.guide-content details {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.guide-content summary {
+  cursor: pointer;
+  font-weight: 650;
+  line-height: 1.5;
+}
+.guide-screen {
+  margin: 32px 0;
+  padding: 24px;
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.guide-screen img {
+  display: block;
+  width: min(100%, 290px);
+  height: auto;
+  margin: auto;
+  border-radius: 20px;
+}
+.guide-screen figcaption {
+  margin-top: 22px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+.guide-next {
+  padding: 32px;
+  background: var(--wash);
+  border-radius: 18px;
+}
+@media (max-width: 1000px) {
+  .guide-body {
+    grid-template-columns: 205px minmax(0, 1fr);
+    gap: 30px;
+  }
+}
+@media (max-width: 760px) {
+  .guide-hero {
+    display: block;
+    padding-top: 0;
+    padding-bottom: 30px;
+  }
+  .guide-hero > img {
+    width: 90px;
+    height: 90px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .guide-body {
+    display: block;
+    padding-top: 28px;
+  }
+  .guide-toc {
+    position: static;
+    max-height: none;
+    margin-bottom: 42px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .guide-toc nav {
+    gap: 12px;
+  }
+  .guide-content .reading-section {
+    padding-bottom: 28px;
+    margin-bottom: 28px;
+  }
+  .guide-next {
+    padding: 23px;
+  }
+}
+@media (max-width: 760px) {
+  .site-header nav {
+    width: 100%;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .site-header nav a {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 0.72rem;
+  }
+  .site-header .nav-app {
+    padding: 8px;
   }
 }

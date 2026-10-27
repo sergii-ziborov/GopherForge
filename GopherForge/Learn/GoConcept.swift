@@ -184,6 +184,14 @@ enum GoConcept {
 
     /// Every tag the product knows, used to validate course content and to
     /// keep the review scheduler from inventing categories at runtime.
+    static let curriculumExpansionTags: Set<String> = [
+        "stdlib.json-v2-contracts", "stdlib.json-presence", "stdlib.json-input-policy",
+        "concurrency.waitgroup-go", "concurrency.synctest", "concurrency.errgroup",
+        "sql.pool-lifetime", "sql.rows-and-context", "sql.transaction-owner",
+        "sql.isolation-and-locks", "sql.retry-and-idempotency",
+        "ai.go-workflow", "ai.repository-guidance", "ai.verify-generated-go", "ai.trust-boundaries",
+    ]
+
     static let all: Set<String> = Set([
         varsUnused, shortDeclaration, unusedImport, undefinedSymbol, importPath,
         missingReturn, typeAssignment, sliceCapacity, sliceBounds, sliceAliasing,
@@ -205,5 +213,5 @@ enum GoConcept {
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
         architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
         "stdlib.borrowed-buffers", "runtime.pool-ownership",
-    ]).union(designLessonTags).union(environmentLessonTags)
+    ]).union(designLessonTags).union(environmentLessonTags).union(curriculumExpansionTags)
 }

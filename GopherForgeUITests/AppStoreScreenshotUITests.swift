@@ -81,7 +81,18 @@ final class AppStoreScreenshotUITests: XCTestCase {
             XCTAssertTrue(area.waitForExistence(timeout: 20))
             XCTAssertTrue(area.buttons[label].isSelected)
             XCTAssertTrue(app.buttons[ready].waitForExistence(timeout: 10))
-            captureNativeDisplayFrame(image)
+            capture(image)
+        }
+    }
+
+    func testCaptureCurriculum45Screenshots() {
+        for (id, name) in [("ai.go-workflow", "09-agents-current"), ("sql.pool-lifetime", "09-sql-current")] {
+            app.terminate()
+            app.launchArguments = ["-GopherForgeSection", "learn", "-GopherForgeLesson", id,
+                "-appearanceMode", "light", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+            app.launch()
+            XCTAssertTrue(app.element(withIdentifier: "reading.designGuide").firstMatch.waitForExistence(timeout: 20))
+            capture(name)
         }
     }
 
