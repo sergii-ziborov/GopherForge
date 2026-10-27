@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-27T05:45:05.750047+00:00",
+  "origin": "https://gopherforge.app",
+  "article": "/news/go-json-v2-migration-api-compatibility",
+  "proseWords": 3391,
+  "sections": 17,
+  "images": [
+    "/images/news/jsonv2-hero.webp",
+    "/images/news/jsonv2-infographic.webp",
+    "/images/news/jsonv2-detail.webp"
+  ],
+  "internalPathsChecked": 18,
+  "anchors": "all section and in-page targets valid",
+  "SEO": "canonical, metadata, TechArticle, image sitemap, RSS verified",
+  "discovery": "latest on News, linked from Home and three related articles",
+  "code": "displayed source matches race-tested package",
+  "pricing": "$6.99 USD retained",
+  "rssItems": 17,
+  "sourceCommit": "4e2d78fb5aa02d79a9ddcf18351121fb6fbfae6a",
+  "datePolicy": "Original practical guide published 27 October 2026 in Asia/Jerusalem; release availability is distinguished from this publication date",
+  "deployment": {
+    "method": "Hostwatch / Hetzner",
+    "job": "gopherforge-jsonv2-4e2d78f-20261027",
+    "state": "succeeded",
+    "finishedAt": "2026-10-27T05:44:33.483257896Z",
+    "imageDigest": "sha256:3d06965d9bb3c2ee81680fece0e3be651fd5f6606835a2b333c0ec6fda184f98",
+    "rollback": "localhost/gopherforge-web:rollback-jsonv2-c18d6861",
+    "containerHealth": "healthy",
+    "restartPolicy": "unless-stopped",
+    "feedCache": "delivered; public Feed connected checked",
+    "feedTimer": "active"
+  },
+  "verification": {
+    "build": "passed",
+    "typeCheck": "passed",
+    "webTests": 19,
+    "goVersion": "go1.27.3 darwin/arm64; explicitly selected with GOTOOLCHAIN",
+    "goTests": "five test functions and fuzz seeds; go test -race ./... passed",
+    "fuzz": "-fuzztime 10s -parallel 2; 743612 executions; passed",
+    "benchmark": "three comparable-output modes; harness passed; no broad speedup claim",
+    "goVet": "passed",
+    "displayedSource": "Matches tested cmd/compare/main.go, contract.go and verified stdout",
+    "viewports": [
+      1280,
+      390
+    ],
+    "horizontalOverflow": false,
+    "mobileTable": "Keyboard scrolling verified; 342px region contains 560px table",
+    "mobileCode": "Code scrolls inside the 342px content column",
+    "browserConsole": "No warning or error logs during local QA",
+    "exampleRepositoryURL": "HTTP 200",
+    "publicationScreenshot": "jsonv2-published.png"
+  },
+  "imageProvenance": "jsonv2-assets.json; three distinct built-in ImageGen requests, exact prompts and saved paths"
+}
