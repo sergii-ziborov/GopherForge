@@ -69,6 +69,7 @@ struct OutputStreamView: View {
                 }
                 if let siteURL {
                     SitePreviewSection(url: siteURL, generation: siteGeneration, offlineFiles: offlineFiles)
+                        .id(siteGeneration)
                 }
                 if let result, !result.stdout.isEmpty {
                     StreamSection(title: "stdout", text: result.stdout, tint: .primary)

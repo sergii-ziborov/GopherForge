@@ -67,6 +67,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
               origin + "/images/workbench.png",
               origin + "/images/guide-course.png",
               origin + "/images/guide-agents.png",
+              origin + "/images/guide-debugger.png",
+              origin + "/images/guide-offline-react.png",
             ],
           }
         : illustratedPages[path]

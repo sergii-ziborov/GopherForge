@@ -87,6 +87,7 @@ final class ProjectTerminalSession {
                 return
             }
             workspace.commitEditorText()
+            guard !workspace.debugger.isActive else { throw OfflineFrontendError.message("Stop the source debugger before changing the frontend build.") }
             guard let snapshot = workspace.project?.files else { throw OfflineFrontendError.message("Open a frontend project first.") }
             let generation = workspace.projectGeneration
             let revision = workspace.sourceRevision

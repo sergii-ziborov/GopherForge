@@ -49,6 +49,7 @@ extension WorkspaceModel {
     /// is worse than any missing language feature.
     func updateEditorText(_ text: String) {
         guard text != editorText else { return }
+        if debugger.isActive { debugger.stop() }
         if let line = focusedErrorLine, focusedErrorFile == selectedFile,
            Self.line(editorText, number: line) != Self.line(text, number: line) {
             clearFocusedError()

@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge release history: current App Store availability, the 1.2.0 curriculum expansion, coding agents, SQL, JSON v2, interactive algorithms and the new icon.",
+    "GopherForge release history: current App Store availability, 1.3.0 beta offline npm/React builds and source debugging, plus the 1.2.0 curriculum expansion and current App Store availability.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -16,6 +16,50 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
+      <section className="release" id="v130">
+        <span className="release-badge muted">
+          {releases.beta.status.toUpperCase()} · PRIVATE BETA
+        </span>
+        <h2>
+          GopherForge {releases.beta.version}{" "}
+          <small>build {releases.beta.build}</small>
+        </h2>
+        <p>
+          Build a React interface offline and trace your Go program one
+          statement at a time. This beta is separate from the current App Store
+          release and the 1.2.0 review submission.
+        </p>
+        <ul>
+          <li>
+            Documented npm install/build/preview commands, bundled esbuild WASI
+            and a fixed React catalog. No Node server, Bun or registry
+            downloads.
+          </li>
+          <li>
+            Optional local Go API paths through the educational Gin-compatible
+            adapter. Real handlers execute with bounded request replay; no
+            sockets or cloud runtime.
+          </li>
+          <li>
+            Tap a Go line number for a breakpoint. Run executes normally without
+            breakpoints and automatically starts the source debugger when they
+            exist.
+          </li>
+          <li>
+            Continue, Into/Over/Out, Stop, an own-source call stack and
+            current-frame local values. Breakpoints persist per project; saved
+            source is unchanged.
+          </li>
+        </ul>
+        <p>
+          External React + Gin source was used only for interoperability
+          verification and is not bundled as an app example. TestFlight access
+          is private; there is no public invitation link.
+        </p>
+        <Link className="button" href="/guide#offline-react">
+          Read the beta walkthrough →
+        </Link>
+      </section>
       <section className="release" id="v120">
         <span className="release-badge muted">
           WEB AVAILABLE · {releases.next.status.toUpperCase()}

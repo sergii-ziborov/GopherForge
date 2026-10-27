@@ -1,6 +1,6 @@
 # Offline React frontend: educational mode
 
-This experiment targets the next build after submitted **1.2.0 (45)**. It is a
+The **1.3.0 beta** adds this educational mode. It is a
 local browser build tool, not an installation of Node.js/npm for iOS.
 The project stays on device. No cloud build or package registry is used at runtime.
 
@@ -21,8 +21,9 @@ The project stays on device. No cloud build or package registry is used at runti
 
 Source changes invalidate the old preview. They do not silently present old
 generated JavaScript as current. Source, the offline lock and generated output
-are autosaved with the project. Browser state is temporary and resets when a
-preview is recreated; it is not the project's saved learning progress.
+are autosaved with the project. Browser state is temporary; it is not the project's saved learning progress.
+The Go API session is shared between embedded and full-screen previews and
+resets when you rebuild or reopen the project.
 
 ## Commands
 
@@ -88,7 +89,8 @@ scheduler packages.
 - Multiple local components and modules, hooks, reducers, forms, lazy imports
   bundled into the output, CSS, JSON and inline SVG/text imports.
 - Relative imports and generated browser assets; local JSON fixture requests.
-- Existing Go commands for the Go part of the project, independently.
+- Existing Go commands for the Go part of the project.
+- Explicit local API paths backed by real Go handlers in the `gin-replay` mode below.
 
 TypeScript is transpiled without a type checker. Unsupported Node built-ins
 fail. Full npm, Node server code, Vite configuration/plugins, native addons,
@@ -107,7 +109,8 @@ Generated browser code runs in a nonpersistent WebKit store. A custom scheme
 serves only this project's generated files and local JSON fixtures. No TCP
 listener is opened. Content rules, CSP and navigation policy block external
 HTTP(S), WebSockets, frames, workers, file URLs and popups. The app does not
-forward arbitrary requests to Go handlers.
+forward arbitrary requests to Go handlers: only explicitly configured local API
+paths enter the bounded Go bridge described below.
 
 | Resource | Limit |
 | --- | --- |
@@ -122,21 +125,78 @@ These compiler limits do not change existing Go guest memory or module-download
 budgets. Simulator results do not establish physical-device memory, thermal or
 battery behavior.
 
-## Gin boundary
+## Optional local Go API
 
-The template's Go code uses the existing educational Gin-compatible subset.
-`go run` checks registered routes through `httptest`; it is not a long-running
-HTTP server. The React preview reads an explicit JSON fixture with the same
-request/response shape. Edit and compare both sides to study a contract, without
-giving the guest networking or pretending arbitrary backend routes are live.
+The default study board uses JSON fixtures. For a small deterministic Go API,
+explicitly configure the educational Gin-compatible adapter with local prefixes:
+
+```json
+{
+  "entry": "web/src/main.tsx",
+  "html": "web/index.html",
+  "output": "web/dist",
+  "minify": true,
+  "backend": "gin-replay",
+  "backendPaths": ["/api/items"]
+}
+```
+
+Calls such as `fetch('/api/items')` then execute the actual Go handlers through
+`httptest`. The app's Gin-compatible subset supports GET, POST, PUT, PATCH,
+DELETE, named path parameters, JSON binding and JSON responses. It is not the
+full upstream Gin library. Import compatible project sources and review the
+recipe and build adaptations; there is no automatic Vite or CRA conversion.
+
+An external interoperability check used
+[jbenassi/react-go-gin](https://github.com/jbenassi/react-go-gin) at commit
+`08418534efed1b32290ac3b1eb1db296c4bd34ae`. Original React `App.js` and Go
+`server/main.go` remained unchanged while build files were adapted. The check
+covered initial read, create, update and delete against real Go handlers.
+**This external project is not included in the app, Examples or release bundle.**
+To reproduce the optional developer test, run
+`python3 scripts/prepare_github_frontend_check.py`, then `OfflineGitHubTests`.
+The checkout, its licence and the test input stay under ignored `build/`.
+
+### How the Go API stays offline
+
+There is no listener, socket or external server. A document-start fetch bridge
+accepts only same-project, main-frame requests to allowlisted paths. A fresh
+WASI invocation runs the actual Go handlers using `httptest`. A bounded mutation
+log is replayed first, reconstructing the in-memory teaching API state, then the
+new request runs. Linked Go artifacts are cached; request bodies are runtime
+inputs, not cache identity. Both preview sizes share this API session.
+
+This mode suits deterministic, small, in-memory learning APIs. Randomness, time,
+external services, background workers, streaming, databases and persistent
+transactions do not have general server semantics here. GET handlers should be
+read-only. Responses and history are temporary; save durable project data in
+the project files instead. Rebuild or reopen the project to reset the session.
+No project source or frontend code receives a host-network capability.
+
+| API resource | Limit |
+| --- | --- |
+| Configured path prefixes | 1–16 |
+| Methods | GET, POST, PUT, PATCH, DELETE |
+| Request body | 32 KiB |
+| Request headers | 32; keys 128 bytes, values 2 KiB; no CR/LF |
+| Path | 4 KiB; no traversal or absolute URL |
+| Mutations per session | 64; later reads remain available |
+| Encoded request history | 2 MiB |
+| Response body | 256 KiB |
+
+Unsupported requests fail with an explanation. The usual Go guest memory and
+output budgets still apply. The app does not download npm packages at runtime.
+The initial import of an arbitrary GitHub project needs a connection; the
+bundled example, its package sources, build, API and preview do not.
 
 ## Verification
 
-[Current npm-only check](examples/offline-frontend/npm-only-check-2026-10-27.json):
-11 focused simulator checks passed, including real React builds, isolation,
-saved projects and the native UI flow. Removed runtime commands are rejected
-without changing project files. The [earlier broader check](examples/offline-frontend/check-2026-10-27.json)
-records 36 checks from the initial prototype, including the combined React
-build → Go route-check flow, plus the existing unrelated 500-line gate failure.
-Both records include source hashes and remaining physical-device/performance
-limitations. This feature has not shipped to TestFlight.
+The focused native and WebKit tests exercise the actual bundled WASI tools,
+React form events and Go GET/create/update/delete handlers. They check the
+upstream source hashes, shared preview state and rejection of external fetches
+and invalid bridge paths. The release QA record links the results and native
+screenshots. Physical-device memory, thermal and battery behaviour remain
+separate from simulator verification.
+
+Earlier records: [npm-only check](examples/offline-frontend/npm-only-check-2026-10-27.json)
+and [initial prototype](examples/offline-frontend/check-2026-10-27.json).

@@ -134,6 +134,38 @@ final class WorkspaceFlowUITests: XCTestCase {
         app.buttons["Done"].tap()
     }
 
+    func testGutterBreakpointRunsTheRealSourceDebugger() {
+        app.launchArguments = ["-GopherForgeSection", Section.projects.rawValue, "-GopherForgeEmptyLibrary"]
+        app.launch()
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.projectsExamples].waitForExistence(timeout: 15))
+        app.buttons[AccessibilityIdentifier.projectsExamples].tap()
+        let example = app.buttons["example.project.debugger-walkthrough"]
+        for _ in 0..<10 where !example.isHittable { app.swipeUp() }
+        XCTAssertTrue(example.isHittable)
+        example.tap()
+        app.buttons[AccessibilityIdentifier.exampleOpen].tap()
+        let point = app.buttons["breakpoint.line.12"]
+        XCTAssertTrue(point.waitForExistence(timeout: 15), app.debugDescription)
+        point.tap()
+        let run = app.buttons["phase.run"]
+        let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: run)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 30), .completed)
+        run.tap()
+        XCTAssertTrue(app.buttons["debug.stepInto"].waitForExistence(timeout: 150), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["debug.local.start"].label.contains("3"))
+        app.buttons["debug.stepInto"].tap()
+        let inside = app.staticTexts["debug.local.n"]
+        XCTAssertTrue(inside.waitForExistence(timeout: 15))
+        XCTAssertTrue(inside.label.contains("3"))
+        app.buttons["debug.stepOver"].tap()
+        XCTAssertTrue(app.staticTexts["debug.local.value"].waitForExistence(timeout: 15))
+        app.buttons["debug.stepOut"].tap()
+        XCTAssertTrue(app.staticTexts["debug.local.result"].waitForExistence(timeout: 15))
+        attachScreenshot(named: "source-debugger-paused")
+        app.buttons["debug.continue"].tap()
+        XCTAssertTrue(app.buttons["debug.continue"].waitForNonExistence(timeout: 20))
+    }
+
     /// The Files tree on a phone is a drawer. A left-to-right swipe from the
     /// leading edge has to open it — the toolbar button is not the only way in.
     func testALeadingSwipeOpensFilesOnThePhone() throws {

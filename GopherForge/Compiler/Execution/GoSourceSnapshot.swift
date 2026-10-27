@@ -18,17 +18,24 @@ struct GoSourceSnapshot: Sendable, Equatable {
     /// Stable identity for the on-disk work tree. The same project can skip
     /// rewriting files that have not changed between runs.
     let workspaceReuseKey: String?
+    /// Bounded runtime input, kept outside source and build cache identities.
+    let runtimeRequest: String?
+    let debugControl: GoDebugControl?
 
     init(
         files: [String: String],
         packagePattern: String = "./...",
         entryFile: String = "main.go",
-        workspaceReuseKey: String? = nil
+        workspaceReuseKey: String? = nil,
+        runtimeRequest: String? = nil,
+        debugControl: GoDebugControl? = nil
     ) {
         self.files = files
         self.packagePattern = packagePattern
         self.entryFile = entryFile
         self.workspaceReuseKey = workspaceReuseKey
+        self.runtimeRequest = runtimeRequest
+        self.debugControl = debugControl
     }
 
     /// A single-file program wrapped in the smallest module that builds.

@@ -139,7 +139,7 @@ final class WasmGoCompiler: @unchecked Sendable {
 
         let cache = artifactCache(for: layout.tag)
         let key = cache.key(phase: phase, files: project.files, packagePattern: project.packagePattern)
-        if let cached = cachedResult(phase: phase, key: key, cache: cache, started: started) {
+        if let cached = cachedResult(phase: phase, key: key, cache: cache, started: started, runtimeRequest: project.runtimeRequest, debugControl: project.debugControl) {
             return cached
         }
 
@@ -159,7 +159,9 @@ final class WasmGoCompiler: @unchecked Sendable {
         phase: CompilationResult.Phase,
         key: String,
         cache: GoArtifactCache,
-        started: ContinuousClock.Instant
+        started: ContinuousClock.Instant,
+        runtimeRequest: String? = nil,
+        debugControl: GoDebugControl? = nil
     ) -> CompilationResult? {
         switch phase {
         case .build, .vet:
@@ -186,7 +188,9 @@ final class WasmGoCompiler: @unchecked Sendable {
                 diagnostics: [],
                 started: started,
                 clock: clock,
-                successDetail: "Executed a cached local build artifact inside the bounded WasmKit sandbox."
+                successDetail: "Executed a cached local build artifact inside the bounded WasmKit sandbox.",
+                runtimeRequest: runtimeRequest,
+                debugControl: debugControl
             )
         // Formatting rewrites files, so a cache hit would hide the rewrite;
         // tests are re-run because their output is the point.

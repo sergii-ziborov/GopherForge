@@ -27,12 +27,18 @@ final class LineNumberGutterView: UIView {
     var markedLines: Set<Int> = [] {
         didSet { setNeedsDisplay() }
     }
+    var breakpointLines: Set<Int> = [] { didSet { setNeedsDisplay() } }
+    var executionLine: Int? { didSet { setNeedsDisplay() } }
+    var onToggleBreakpoint: ((Int) -> Void)? {
+        didSet { isUserInteractionEnabled = onToggleBreakpoint != nil; setNeedsDisplay() }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
         isUserInteractionEnabled = false
         contentMode = .redraw
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toggleBreakpoint(_:))))
     }
 
     @available(*, unavailable)
@@ -56,17 +62,39 @@ final class LineNumberGutterView: UIView {
         let font = UIFont.monospacedDigitSystemFont(ofSize: max(9, fontSize - 2), weight: .regular)
         context.setFillColor(UIColor.systemOrange.withAlphaComponent(0.18).cgColor)
 
-        for fragment in fragmentLines() {
+        let fragments = fragmentLines()
+        for fragment in fragments {
             let marked = markedLines.contains(fragment.number)
-            if marked {
+            if marked || executionLine == fragment.number {
+                context.setFillColor((executionLine == fragment.number ? UIColor.systemYellow : UIColor.systemOrange).withAlphaComponent(0.2).cgColor)
                 context.fill(CGRect(x: 0, y: fragment.y, width: bounds.width, height: fragment.height))
             }
             // A wrapped row carries no number. Two identical numbers down the
             // gutter read as two lines, which is the same lie as numbering the
             // row separately.
             guard fragment.startsLine else { continue }
+            if breakpointLines.contains(fragment.number) {
+                context.setFillColor(UIColor.systemRed.cgColor)
+                context.fillEllipse(in: CGRect(x: 3, y: fragment.y + (fragment.height - 8) / 2, width: 8, height: 8))
+            }
             draw(number: fragment.number, at: fragment.y, height: fragment.height, font: font, marked: marked)
         }
+        if let action = onToggleBreakpoint {
+            accessibilityElements = fragments.filter(\.startsLine).map { fragment in
+                let element = GutterBreakpointElement(accessibilityContainer: self)
+                element.accessibilityLabel = "Breakpoint line \(fragment.number), \(breakpointLines.contains(fragment.number) ? "set" : "not set")"
+                element.accessibilityIdentifier = "breakpoint.line.\(fragment.number)"
+                element.accessibilityTraits = .button
+                element.accessibilityFrameInContainerSpace = CGRect(x: 0, y: fragment.y, width: bounds.width, height: fragment.height)
+                element.action = { action(fragment.number) }
+                return element
+            }
+        } else { accessibilityElements = nil }
+    }
+
+    @objc private func toggleBreakpoint(_ recognizer: UITapGestureRecognizer) {
+        let y = recognizer.location(in: self).y
+        if let line = fragmentLines().first(where: { y >= $0.y && y < $0.y + $0.height })?.number { onToggleBreakpoint?(line) }
     }
 
     /// The fragments on screen, each tagged with the line of the file it is
@@ -181,4 +209,10 @@ final class LineNumberGutterView: UIView {
             )
         )
     }
+}
+
+@MainActor
+private final class GutterBreakpointElement: UIAccessibilityElement {
+    var action: (() -> Void)?
+    override func accessibilityActivate() -> Bool { action?(); return true }
 }

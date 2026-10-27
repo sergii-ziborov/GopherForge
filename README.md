@@ -19,6 +19,7 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 27 October 2026 | Changes |
 | --- | --- | --- |
+| **1.3.0 (46)** | Beta preparation | Offline React/npm subset, isolated Go API capability and automatic source debugging with breakpoints. |
 | **1.2.0 (45)** | TestFlight · Waiting for App Review | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
@@ -116,10 +117,9 @@ the native app serves compatible local preview files. An arbitrary Go backend
 cannot bind a listener inside the WASI guest. Full Node.js/npm runtimes are not bundled.
 Full Gin/database services need an external native environment.
 
-#### Next-build experiment: isolated offline React
+#### 1.3.0 beta: isolated offline React and source debugging
 
-The working branch adds **React + Gin study board** in Examples → Offline
-frontend. This feature is **not in the submitted 1.2.0 (45) binary**. It bundles
+The beta adds **React + Gin study board** in Examples → Offline frontend. This feature is **not in the submitted 1.2.0 (45) binary**. It bundles
 esbuild 0.28.2 as WASI and a fixed browser catalog: React / React DOM 19.3.1
 and scheduler 0.28.0. The installed app needs no registry or server for this mode.
 
@@ -144,9 +144,20 @@ sources and generated output are autosaved in the project library.
 Only bundled package versions are accepted. Package scripts must explicitly
 use `gopherforge build` / `gopherforge preview`; lifecycle hooks, arbitrary
 scripts, Node APIs, native addons, Vite plugins and remote package installation
-are not supported. Gin route checks and frontend JSON fixtures are separate:
-this does **not** turn WASI into an arbitrary live Go backend. See the
-[offline frontend guide](docs/OFFLINE_FRONTEND.md) for the recipe and limits.
+are not supported. An explicit `gin-replay` recipe enables local requests to
+real Go handlers through the educational Gin-compatible layer. Requests rebuild
+small deterministic in-memory state using a bounded mutation log; no socket,
+cloud runtime or general production server is added. The built-in study board
+uses static JSON fixtures. A pinned external React + Gin GitHub project was used
+only for interoperability tests; its code and example are not bundled in the app.
+See the [offline frontend guide](docs/OFFLINE_FRONTEND.md) for the recipe and limits.
+
+Tap a Go line number to set a breakpoint. **Run is unchanged with no breakpoints;
+with breakpoints it automatically starts the beta source debugger.** Continue,
+Step Into/Over/Out, Stop, an own-source call stack and bounded current-frame
+locals are available. Temporary probes never overwrite saved source. Breakpoints
+persist per project. This is a teaching source debugger, not full Delve:
+[debugger guide](docs/SOURCE_DEBUGGER.md).
 
 ### JSON v2, modern concurrency, SQL and agents
 

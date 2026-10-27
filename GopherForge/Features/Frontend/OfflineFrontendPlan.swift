@@ -7,18 +7,30 @@ struct OfflineFrontendRecipe: Codable, Equatable, Sendable {
     var html: String
     var output: String
     var minify: Bool = true
+    var backend: String?
+    var backendPaths: [String]
 
-    private enum CodingKeys: String, CodingKey { case entry, html, output, minify }
+    private enum CodingKeys: String, CodingKey { case entry, html, output, minify, backend, backendPaths }
     init(from decoder: any Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         entry = try values.decode(String.self, forKey: .entry)
         html = try values.decode(String.self, forKey: .html)
         output = try values.decode(String.self, forKey: .output)
         minify = try values.decodeIfPresent(Bool.self, forKey: .minify) ?? true
+        backend = try values.decodeIfPresent(String.self, forKey: .backend)
+        backendPaths = try values.decodeIfPresent([String].self, forKey: .backendPaths) ?? []
     }
 
     static let path = "gopherforge.frontend.json"
     static let lockPath = "gopherforge.frontend.lock.json"
+
+    func validateBackend() throws {
+        guard backend == nil || backend == "gin-replay", backendPaths.count <= 16,
+              backendPaths.allSatisfy({ $0.hasPrefix("/") && !$0.hasPrefix("//") && OfflineFrontendPlan.validPath(String($0.dropFirst())) && !$0.contains("?") && !$0.contains("#") }),
+              (backend == nil ? backendPaths.isEmpty : !backendPaths.isEmpty) else {
+            throw OfflineFrontendError.message("Use backend: gin-replay with 1–16 explicit backendPaths such as /api. Only project-local API paths are accepted.")
+        }
+    }
 }
 
 struct OfflineFrontendPackage: Codable, Sendable {
@@ -103,6 +115,7 @@ struct OfflineFrontendPlan: Sendable {
         }
         let recipe = try JSONDecoder().decode(OfflineFrontendRecipe.self, from: json)
         self.recipe = recipe
+        try recipe.validateBackend()
         let reserved = ["node_modules", ".git", "vendor"]
         for path in [recipe.entry, recipe.html, recipe.output] {
             guard Self.validPath(path), !reserved.contains(path.split(separator: "/").first.map(String.init) ?? "") else {

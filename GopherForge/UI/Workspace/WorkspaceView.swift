@@ -234,6 +234,12 @@ struct WorkspaceView: View {
                 pane = destination
             }
         }
+        .onChange(of: workspace.debugger.state) {
+            guard workspace.debugger.state == .paused else { return }
+            if layout.showsDock { dockPane = .code }
+            selectLaptopPane(.code)
+            pane = .code
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) {
             updateKeyboardFrame($0)
         }

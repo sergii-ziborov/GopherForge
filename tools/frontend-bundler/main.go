@@ -19,6 +19,10 @@ type recipe struct {
 }
 
 func main() {
+	if len(os.Args) == 3 && os.Args[1] == "instrument" {
+		instrumentDebug(os.Args[2])
+		return
+	}
 	if len(os.Args) != 2 {
 		fmt.Fprintln(os.Stderr, "expected one build recipe")
 		os.Exit(2)
@@ -41,7 +45,7 @@ func main() {
 		Target: api.ES2020, JSX: api.JSXAutomatic,
 		MinifyWhitespace: r.Minify, MinifyIdentifiers: r.Minify, MinifySyntax: r.Minify,
 		Define:   map[string]string{"process.env.NODE_ENV": "\"production\""},
-		Loader:   map[string]api.Loader{".svg": api.LoaderDataURL, ".txt": api.LoaderText},
+		Loader:   map[string]api.Loader{".js": api.LoaderJSX, ".svg": api.LoaderDataURL, ".txt": api.LoaderText},
 		LogLevel: api.LogLevelWarning, Color: api.ColorNever,
 	})
 	if len(result.Errors) > 0 {

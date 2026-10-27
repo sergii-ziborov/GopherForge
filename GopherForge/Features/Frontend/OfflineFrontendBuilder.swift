@@ -25,6 +25,28 @@ actor OfflineFrontendBuilder {
         try catalog().packages.map { "\($0.name)@\($0.version)" }.joined(separator: "\n")
     }
 
+    func instrumentGo(files: [String: String]) throws -> GoDebugInstrumented {
+        _ = try catalog()
+        guard files.count <= 2000, files.values.reduce(0, { $0 + $1.utf8.count }) <= 32 * 1024 * 1024 else {
+            throw OfflineFrontendError.message("Debug source exceeds the 2,000-file / 32 MiB budget.")
+        }
+        let stager = GoWorkspaceStager()
+        let job = try stager.createLayout(named: "debug-" + UUID().uuidString)
+        defer { stager.remove(job) }
+        let own = files.filter { $0.key.hasSuffix(".go") && !$0.key.hasPrefix("vendor/") && !$0.key.hasSuffix("_test.go") }
+        try stager.stage(files: own, into: job.work)
+        let recipe = try JSONSerialization.data(withJSONObject: ["files": own.keys.sorted(), "output": ".gopherforge-debug-output.json"])
+        try recipe.write(to: job.work.appending(path: ".gopherforge-debug-job.json"))
+        guard let resourceRoot else { throw OfflineFrontendError.message("The source debugger tool is missing.") }
+        let module = try parseWasm(bytes: [UInt8](Data(contentsOf: resourceRoot.appending(path: "bundler.wasm"))))
+        let invocation = WasiProcessRunner.Invocation(arguments: ["gopherforge-frontend", "instrument", "/work/.gopherforge-debug-job.json"], environment: ["PWD": "/work", "GOMAXPROCS": "1"], preopens: ["/": job.jobRoot.path], memoryLimitBytes: 384 * 1024 * 1024, tableElementLimit: 65_536, outputLimitBytes: 1024 * 1024)
+        let (exit, output) = try WasiProcessRunner().run(module: module, invocation: invocation)
+        guard exit == 0 else { throw OfflineFrontendError.message(output.stderr) }
+        let url = job.work.appending(path: ".gopherforge-debug-output.json")
+        guard let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size <= 32 * 1024 * 1024 else { throw OfflineFrontendError.message("Debug source output exceeds 32 MiB.") }
+        return try JSONDecoder().decode(GoDebugInstrumented.self, from: Data(contentsOf: url))
+    }
+
     func build(files: [String: String]) throws -> Result {
         let plan = try plan(files: files)
         guard files[OfflineFrontendRecipe.lockPath] == plan.lock else {

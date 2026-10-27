@@ -8,6 +8,17 @@ struct SitePreviewSection: View {
     var generation: Int = 0
     var offlineFiles: [String: String]?
     @State private var showingBrowser = false
+    @State private var goBackend: OfflineGoBackend?
+
+    init(url: URL, generation: Int = 0, offlineFiles: [String: String]? = nil) {
+        self.url = url
+        self.generation = generation
+        self.offlineFiles = offlineFiles
+        if let files = offlineFiles, let data = files[OfflineFrontendRecipe.path]?.data(using: .utf8),
+           let recipe = try? JSONDecoder().decode(OfflineFrontendRecipe.self, from: data), recipe.backend == "gin-replay" {
+            _goBackend = State(initialValue: OfflineGoBackend(files: files, paths: recipe.backendPaths))
+        } else { _goBackend = State(initialValue: nil) }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -32,14 +43,14 @@ struct SitePreviewSection: View {
             .sheet(isPresented: $showingBrowser) {
                 if let offlineFiles {
                     NavigationStack {
-                        OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles)
+                        OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles, backend: goBackend, accessibilityID: "offline.preview.fullscreen")
                             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showingBrowser = false } } }
                     }
                 } else { SiteBrowserView(url: url) }
             }
 
             Group {
-                if let offlineFiles { OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles) }
+                if let offlineFiles { OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles, backend: goBackend) }
                 else { SiteWebView(url: url, generation: generation) }
             }
                 .frame(maxWidth: .infinity)
@@ -52,7 +63,9 @@ struct SitePreviewSection: View {
 
             Text(offlineFiles == nil
                  ? "Go checks the Gin routes without opening a port. The app serves this project's web files on this device."
-                 : "Generated React/JS assets and local JSON only. No network or TCP listener. Temporary preview storage. Go routes are checked separately.")
+                 : goBackend != nil
+                    ? "Local Go handlers, no network port. Temporary teaching API: up to 64 changes, replayed between requests. Rebuilding resets its state."
+                    : "Generated React/JS assets and local JSON only. No network or TCP listener. Temporary preview storage. Go routes are checked separately.")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }

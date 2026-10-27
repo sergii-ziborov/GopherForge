@@ -17,7 +17,7 @@ out = root / "build/Resources/Frontend"
 cache = root / "build/frontend-downloads"
 out.mkdir(parents=True, exist_ok=True)
 cache.mkdir(parents=True, exist_ok=True)
-fingerprint = hashlib.sha256(b"".join((source / n).read_bytes() for n in ["main.go", "go.mod", "go.sum", "packages.json", "THIRD_PARTY_NOTICES.txt"]) + Path(__file__).read_bytes()).hexdigest()
+fingerprint = hashlib.sha256(b"".join(p.read_bytes() for p in sorted(source.glob("*.go"))) + b"".join((source / n).read_bytes() for n in ["go.mod", "go.sum", "packages.json", "THIRD_PARTY_NOTICES.txt"]) + Path(__file__).read_bytes()).hexdigest()
 manifest = out / "manifest.json"
 if manifest.exists():
     old = json.loads(manifest.read_text())

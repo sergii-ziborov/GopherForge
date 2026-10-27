@@ -9,6 +9,7 @@ enum GoExampleLibrary {
     static let all: [GoExample] =
         GoExampleLibrarySites.all
             + [GoExampleProjectReactStudy.board]
+            + [GoExampleDebugging.walkthrough]
             + GoExampleLibraryGraphics.all
             + GoExampleLibraryGraphicsMore.all
             + GoExampleLibraryProjects.all
@@ -32,6 +33,7 @@ enum GoExampleLibrary {
         [
             ("Sites", GoExampleLibrarySites.all),
             ("Offline frontend", [GoExampleProjectReactStudy.board]),
+            ("Source debugger", [GoExampleDebugging.walkthrough]),
             ("Graphics", GoExampleLibraryGraphics.all + GoExampleLibraryGraphicsMore.all),
             ("Projects", GoExampleLibraryProjects.all),
             ("The language", GoExampleLibraryCore.all),

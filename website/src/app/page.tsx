@@ -45,6 +45,10 @@ export default function Home() {
             Free web lessons. iOS app: $6.99 USD, one-time U.S. purchase.
             Regional prices vary.
           </p>
+          <p className="small-note">
+            Private 1.3.0 beta: offline React/npm and automatic Go breakpoints.{" "}
+            <Link href="/guide#offline-react">See what it does →</Link>
+          </p>
         </div>
         <div className="hero-workbench">
           <div className="window-bar">

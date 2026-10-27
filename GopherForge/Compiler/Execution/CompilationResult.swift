@@ -30,6 +30,7 @@ struct CompilationResult: Sendable {
     /// Images the program wrote into its sandbox, collected before the sandbox
     /// was removed.
     let artifacts: GoProgramArtifacts
+    let sandboxResponse: String?
 
     init(
         succeeded: Bool,
@@ -43,7 +44,8 @@ struct CompilationResult: Sendable {
         tests: [GoTestResult] = [],
         formattedFiles: [String: String] = [:],
         reusedSteps: Int = 0,
-        artifacts: GoProgramArtifacts = .empty
+        artifacts: GoProgramArtifacts = .empty,
+        sandboxResponse: String? = nil
     ) {
         self.succeeded = succeeded
         self.phase = phase
@@ -57,6 +59,7 @@ struct CompilationResult: Sendable {
         self.formattedFiles = formattedFiles
         self.reusedSteps = reusedSteps
         self.artifacts = artifacts
+        self.sandboxResponse = sandboxResponse
     }
 
     var blockingDiagnostics: [GoDiagnostic] {

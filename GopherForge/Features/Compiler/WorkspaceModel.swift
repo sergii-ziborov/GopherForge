@@ -9,6 +9,7 @@ import Observation
 @MainActor
 @Observable
 final class WorkspaceModel {
+    let debugger = GoDebuggerModel()
     private(set) var toolchain: ToolchainStatus = .missing
     private(set) var project: GopherForgeProject?
     private(set) var projectID: UUID?
@@ -188,6 +189,7 @@ final class WorkspaceModel {
         }
         self.project = project
         projectID = id
+        debugger.openProject(id)
         sourceRevision = revision
         navigatorRevision &+= 1
         savedRevision = isNew ? 0 : revision
@@ -828,6 +830,7 @@ final class WorkspaceModel {
     /// The open file is kept if it survived the change, so vendoring a
     /// dependency does not move the user out of what they were editing.
     func replaceFiles(with files: [String: String]) {
+        if debugger.isActive { debugger.stop() }
         guard let project else { return }
         let updated = GopherForgeProject(
             name: project.name,
@@ -851,6 +854,7 @@ final class WorkspaceModel {
     /// One atomic source change for rename/delete, including the entry point
     /// and the selected buffer. Saving must see the same paths as the editor.
     func applyFileChange(_ files: [String: String], entryFile: String?, selectedFile: String) {
+        if debugger.isActive { debugger.stop() }
         guard let project, let entryFile else { return }
         self.project = GopherForgeProject(
             name: project.name, files: files, entryFile: entryFile, provenance: project.provenance
@@ -907,7 +911,16 @@ final class WorkspaceModel {
         case .format: await compiler.format(project: snapshot, onProgress: report)
         case .vet: await compiler.vet(project: snapshot, onProgress: report)
         case .build: await compiler.build(project: snapshot, onProgress: report)
-        case .run: await compiler.run(project: snapshot, onProgress: report)
+        case .run:
+            if debugger.hasBreakpoints {
+                await debugger.run(project: snapshot, compiler: compiler, onProgress: report) { [weak self] stop in
+                    guard let self, self.projectID == projectID else { return }
+                    self.runningStep = nil
+                    self.select(file: stop.point.file, revealingLine: stop.point.line)
+                }
+            } else {
+                await compiler.run(project: snapshot, onProgress: report)
+            }
         case .test: await compiler.test(project: snapshot, onProgress: report)
         case .setup: .failure(phase: .setup, detail: "Setup is not a runnable phase.")
         }

@@ -5,7 +5,7 @@ final class ExampleLibraryInvariantTests: XCTestCase {
     private let standardLibrary: Set<String> = [
         "bufio", "cmp", "context", "embed", "encoding/json", "errors", "fmt",
         "image", "image/color", "image/png", "io", "math", "math/rand",
-        "net/http", "net/http/httptest", "os", "slices", "sort", "strings",
+        "net/http", "net/http/httptest", "os", "slices", "sort", "strconv", "strings",
         "sync", "testing", "time", "unsafe",
     ]
 

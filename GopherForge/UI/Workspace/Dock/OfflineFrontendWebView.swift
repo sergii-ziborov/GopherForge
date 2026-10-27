@@ -6,9 +6,11 @@ struct OfflineFrontendWebView: UIViewRepresentable {
     let url: URL
     let generation: Int
     let files: [String: String]
+    var backend: OfflineGoBackend?
+    var accessibilityID = "offline.preview.embedded"
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(url: url, generation: generation, files: files)
+        Coordinator(url: url, generation: generation, files: files, backend: backend)
     }
 
     func makeUIView(context: Context) -> Container {
@@ -17,7 +19,7 @@ struct OfflineFrontendWebView: UIViewRepresentable {
         container.loadTask = Task { @MainActor [weak container] in
             do {
                 // Install every policy before WebKit copies the configuration.
-                let view = try await Self.makeWebView(coordinator: coordinator)
+                let view = try await Self.makeWebView(coordinator: coordinator, accessibilityID: accessibilityID)
                 guard !Task.isCancelled, let container else { return }
                 container.install(view)
                 coordinator.ready = true
@@ -31,14 +33,16 @@ struct OfflineFrontendWebView: UIViewRepresentable {
     }
 
     @MainActor
-    static func makeWebView(coordinator: Coordinator) async throws -> WKWebView {
+    static func makeWebView(coordinator: Coordinator, accessibilityID: String = "offline.preview") async throws -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
         configuration.setURLSchemeHandler(coordinator.handler, forURLScheme: OfflinePreviewResources.scheme)
         try await OfflinePreviewPolicy.apply(to: configuration)
+        try OfflineGoMessageHandler.install(in: configuration, origin: coordinator.url, files: coordinator.handler.resources.files, backend: coordinator.backend)
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.navigationDelegate = coordinator
         view.isOpaque = false
+        view.accessibilityIdentifier = accessibilityID
         return view
     }
 
@@ -91,10 +95,12 @@ struct OfflineFrontendWebView: UIViewRepresentable {
         var generation: Int
         var ready = false
         let handler: OfflinePreviewSchemeHandler
+        let backend: OfflineGoBackend?
 
-        init(url: URL, generation: Int, files: [String: String]) {
+        init(url: URL, generation: Int, files: [String: String], backend: OfflineGoBackend? = nil) {
             self.url = url
             self.generation = generation
+            self.backend = backend
             handler = OfflinePreviewSchemeHandler(resources: OfflinePreviewResources(url: url, files: files))
         }
 
