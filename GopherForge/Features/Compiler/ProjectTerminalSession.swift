@@ -67,10 +67,10 @@ final class ProjectTerminalSession {
             await runFrontend(command)
         case let .unavailableRuntime(tool):
             append(.failure, """
-                \(tool) is not installed in GopherForge. Node.js, npm and Bun commands \
-                cannot run as full runtimes in this console. The educational \
-                offline frontend subset supports frontend install/build/preview \
-                and compatible npm/Bun spellings. Type help for its limits.
+                \(tool) is not installed in GopherForge. This console provides \
+                an educational offline frontend subset, without full JavaScript \
+                runtimes. It supports frontend install/build/preview \
+                and compatible npm spellings. Type help for its limits.
                 """)
         case let .unknown(text):
             append(.failure, unknownMessage(for: text))
@@ -112,7 +112,7 @@ final class ProjectTerminalSession {
                 files.merge(result.generated) { _, generated in generated }
                 workspace.replaceFiles(with: files)
                 append(.output, result.stdout)
-                append(.output, "Offline preview ready in Output. This is a browser build, not a Node/Bun server or a TypeScript type check.")
+                append(.output, "Offline preview ready in Output. This is a browser build, not a Node.js server or a TypeScript type check.")
             case .preview:
                 guard OfflineFrontendPlan.previewReady(files: snapshot) else { throw OfflineFrontendError.message("Run frontend build first; generated assets are missing or source changed.") }
                 workspace.refreshSitePreview()

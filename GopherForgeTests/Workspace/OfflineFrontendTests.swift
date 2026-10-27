@@ -109,7 +109,7 @@ final class OfflineFrontendTests: XCTestCase {
 
     func testOnlyTheDocumentedOfflineCommandSubsetIsAccepted() throws {
         XCTAssertEqual(OfflineFrontendCommand.parse(["npm", "install", "--offline"]), .install(frozen: false))
-        XCTAssertEqual(OfflineFrontendCommand.parse(["bun", "install", "--frozen-lockfile"]), .install(frozen: true))
+        XCTAssertEqual(OfflineFrontendCommand.parse(["npm", "ci", "--offline"]), .install(frozen: true))
         XCTAssertEqual(OfflineFrontendCommand.parse(["npm", "run", "build"]), .build(packageScript: true))
         XCTAssertNil(OfflineFrontendCommand.parse(["npm", "run", "build", "&&", "curl", "https://example.invalid"]))
         XCTAssertNil(OfflineFrontendCommand.parse(["bun", "run", "server.ts"]))

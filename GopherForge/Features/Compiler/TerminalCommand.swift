@@ -83,8 +83,8 @@ enum TerminalCommand: Equatable {
       frontend build      bundle JS/TS/JSX with the WASI tool
       frontend preview    check the isolated preview is ready
 
-    npm install --offline / npm run build and bun install --offline /
-    bun run build are compatible spellings for this educational offline mode.
-    Full Node.js/npm/Bun runtimes and arbitrary package scripts are not included.
+    npm install --offline / npm run build are compatible spellings for this
+    educational offline mode. Full Node.js/npm runtimes and arbitrary package
+    scripts are not included.
     """
 }

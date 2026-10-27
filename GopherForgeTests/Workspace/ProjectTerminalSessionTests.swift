@@ -19,7 +19,7 @@ final class ProjectTerminalSessionTests: XCTestCase {
         await terminal.submit()
         guard case .failure = terminal.transcript.last?.kind else { return XCTFail("ci must require a lock") }
 
-        for command in ["npm install --offline", "bun install --frozen-lockfile", "npm run build", "bun run preview"] {
+        for command in ["npm install --offline", "npm ci --offline", "npm run build", "npm run preview"] {
             terminal.input = command
             await terminal.submit()
             let reply = try XCTUnwrap(terminal.transcript.last)
@@ -41,7 +41,7 @@ final class ProjectTerminalSessionTests: XCTestCase {
         broken["web/src/main.tsx"] = "import fs from 'node:fs'; fs.readFileSync('/private/host-file');"
         workspace.replaceFiles(with: broken)
         XCTAssertNil(workspace.sitePreviewURL)
-        terminal.input = "bun run build"
+        terminal.input = "npm run build"
         await terminal.submit()
         guard case .failure = terminal.transcript.last?.kind else { return XCTFail("Node built-ins must not be supplied") }
         XCTAssertTrue(terminal.transcript.last?.text.contains("node:fs") == true)
@@ -62,7 +62,7 @@ final class ProjectTerminalSessionTests: XCTestCase {
         XCTAssertTrue(workspace.open(project))
         let terminal = ProjectTerminalSession(workspace: workspace)
 
-        for command in ["npm exec vite", "npx vite", "bun run server", "bunx vite", "node server.js"] {
+        for command in ["npm exec vite", "npx vite", "bun install", "bun install --offline", "bun install --frozen-lockfile", "bun run build", "bun run preview", "bun --version", "bun run server", "bunx vite", "node server.js"] {
             terminal.input = command
             await terminal.submit()
             let reply = try XCTUnwrap(terminal.transcript.last)

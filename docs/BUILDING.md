@@ -94,7 +94,7 @@ JavaScript interactions in WebKit. These examples use the documented educational
 Gin-compatible subset; their Go routes run through `httptest`, while the native
 host serves the web files. This does not verify an arbitrary upstream Gin server.
 
-Full Node.js, npm and Bun runtimes are not bundled. Unsupported runtime commands
+Full Node.js/npm runtimes are not bundled. Unsupported runtime commands
 fail clearly without running Go or changing the project. The next-build offline
 frontend experiment accepts a documented command subset; a host Mac's installed
 JavaScript tools do not become available in the iOS console.

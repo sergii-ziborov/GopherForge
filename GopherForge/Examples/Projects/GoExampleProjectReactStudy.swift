@@ -97,9 +97,9 @@ enum GoExampleProjectReactStudy {
             # Offline React + Gin study board
 
             Open Terminal, run `frontend packages`, `npm install --offline`, then
-            `npm run build`. `bun install --offline` / `bun run build` are equivalent
-            educational command spellings. The app uses its own offline catalog
-            and esbuild WASI compiler; neither full npm nor Bun is bundled.
+            `npm run build`. The app uses its own offline catalog and esbuild
+            WASI compiler. These npm commands are an educational subset;
+            a full Node.js/npm runtime is not bundled.
 
             Open Output for the isolated preview. There is no registry, cloud,
             Node server, Vite plugin execution or external network. TypeScript is

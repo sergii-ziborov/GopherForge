@@ -69,7 +69,7 @@ Copyright © 2020 Evan Wallace. **MIT License.**
 
 The offline JSX/TypeScript browser bundler uses the esbuild Go API inside WASI.
 Its complete MIT notice and the Go runtime / golang.org/x/sys BSD notices ship at
-`Frontend/THIRD_PARTY_NOTICES.txt`. No Node.js or Bun runtime is bundled.
+`Frontend/THIRD_PARTY_NOTICES.txt`. No Node.js runtime is bundled.
 
 <https://github.com/evanw/esbuild>
 

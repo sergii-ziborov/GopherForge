@@ -1,7 +1,7 @@
 # Offline React frontend: educational mode
 
 This experiment targets the next build after submitted **1.2.0 (45)**. It is a
-local browser build tool, not an installation of Node.js, npm or Bun for iOS.
+local browser build tool, not an installation of Node.js/npm for iOS.
 The project stays on device. No cloud build or package registry is used at runtime.
 
 <img src="examples/offline-frontend/fullscreen.png" width="330" alt="Native iOS screenshot of the offline React study board, with a task form, filters and local state">
@@ -30,16 +30,16 @@ preview is recreated; it is not the project's saved learning progress.
 | --- | --- |
 | `frontend packages` | List the fixed bundled browser catalog |
 | `frontend install` | Validate package requests and write the offline lock |
-| `npm install --offline` / `bun install --offline` | Same educational install |
-| `npm ci --offline` / `bun install --frozen-lockfile` | Require the existing lock to match |
+| `npm install --offline` | Same educational install |
+| `npm ci --offline` | Require the existing lock to match |
 | `frontend build` | Bundle from the declarative recipe inside WASI |
-| `npm run build` / `bun run build` | Build only when the package script is `gopherforge build` |
+| `npm run build` | Build only when the package script is `gopherforge build` |
 | `frontend preview` | Check freshness and expose the preview in Output |
-| `npm run preview` / `bun run preview` | Preview only when the package script is `gopherforge preview` |
-| `npm --version` / `bun --version` | Explain this compatibility mode; no invented runtime version |
+| `npm run preview` | Preview only when the package script is `gopherforge preview` |
+| `npm --version` | Explain this compatibility mode; no invented runtime version |
 
 There is no general shell, lifecycle hook execution or subprocess support.
-Other npm/Bun commands report that the full runtime is unavailable.
+Other npm commands report that the full runtime is unavailable.
 
 ## Project files
 
@@ -75,7 +75,7 @@ refusing the build. A successful build replaces only its own output directory.
 Failed builds leave the original project unchanged.
 
 The app writes `gopherforge.frontend.lock.json`. It is its own offline format,
-not `package-lock.json`, `bun.lock` or a claim of npm solver compatibility.
+not `package-lock.json` or a claim of npm solver compatibility.
 Exact versions, `*`, and simple three-component `^` / `~` ranges are accepted
 against the fixed catalog. Git URLs, registry tags and missing packages fail
 without attempting a download. React DOM also requires the pinned React and
@@ -91,7 +91,7 @@ scheduler packages.
 - Existing Go commands for the Go part of the project, independently.
 
 TypeScript is transpiled without a type checker. Unsupported Node built-ins
-fail. Full npm/Bun, Node server code, Vite configuration/plugins, native addons,
+fail. Full npm, Node server code, Vite configuration/plugins, native addons,
 arbitrary package scripts and automatic installation of new packages are absent.
 Importing a complex React project may require adapting its dependencies and
 build configuration to these limits.
@@ -132,9 +132,11 @@ giving the guest networking or pretending arbitrary backend routes are live.
 
 ## Verification
 
-[Dated check record](examples/offline-frontend/check-2026-10-27.json): 36 focused
-simulator checks passed, including the native UI flow and the combined React
-build → Go route-check flow. The record includes source/resource hashes,
-screenshots, the existing unrelated 500-line gate failure and remaining
-physical-device/performance limitations. It is not a claim that the entire
-repository test suite is green or that this feature has shipped to TestFlight.
+[Current npm-only check](examples/offline-frontend/npm-only-check-2026-10-27.json):
+11 focused simulator checks passed, including real React builds, isolation,
+saved projects and the native UI flow. Removed runtime commands are rejected
+without changing project files. The [earlier broader check](examples/offline-frontend/check-2026-10-27.json)
+records 36 checks from the initial prototype, including the combined React
+build → Go route-check flow, plus the existing unrelated 500-line gate failure.
+Both records include source hashes and remaining physical-device/performance
+limitations. This feature has not shipped to TestFlight.

@@ -113,7 +113,7 @@ the embedded-versus-full-screen lesson scrolling behavior.
 Gin-style templates use an educational compatibility layer rather than the full
 upstream Gin framework. Registered handlers are exercised through `httptest`;
 the native app serves compatible local preview files. An arbitrary Go backend
-cannot bind a listener inside the WASI guest. Node.js, npm and Bun are not bundled.
+cannot bind a listener inside the WASI guest. Full Node.js/npm runtimes are not bundled.
 Full Gin/database services need an external native environment.
 
 #### Next-build experiment: isolated offline React
@@ -130,10 +130,9 @@ npm run build
 frontend preview
 ```
 
-Open Output for the preview. `frontend install/build` and `bun install --offline`
-/ `bun run build` are equivalent educational command spellings. They invoke this
-app's bounded frontend builder, **not a full npm or Bun runtime**. The compiler
-transpiles JS/JSX/TS/TSX, bundles browser imports, local JSON and CSS, and handles
+Open Output for the preview. `frontend install/build` and the supported npm
+commands invoke this app's bounded frontend builder, **not a full npm runtime**.
+The compiler transpiles JS/JSX/TS/TSX, bundles browser imports, local JSON and CSS, and handles
 SVG/text imports. TypeScript is not type-checked. Edit components, reducers,
 forms or styles, then rebuild; stale previews are invalidated.
 

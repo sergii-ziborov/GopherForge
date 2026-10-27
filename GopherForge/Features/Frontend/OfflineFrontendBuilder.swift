@@ -28,7 +28,7 @@ actor OfflineFrontendBuilder {
     func build(files: [String: String]) throws -> Result {
         let plan = try plan(files: files)
         guard files[OfflineFrontendRecipe.lockPath] == plan.lock else {
-            throw OfflineFrontendError.message("Run frontend install (or npm install --offline / bun install --offline) before building. The offline lock must match package.json.")
+            throw OfflineFrontendError.message("Run frontend install (or npm install --offline) before building. The offline lock must match package.json.")
         }
         guard files.count <= 2_000, files.values.reduce(0, { $0 + $1.utf8.count }) <= 32 * 1024 * 1024,
               files.keys.allSatisfy(OfflineFrontendPlan.validPath) else {

@@ -11,24 +11,23 @@ enum OfflineFrontendCommand: Equatable {
 
     static func parse(_ fields: [String]) -> Self? {
         switch fields {
-        case ["frontend", "install"], ["npm", "install"], ["npm", "install", "--offline"],
-             ["bun", "install"], ["bun", "install", "--offline"]:
+        case ["frontend", "install"], ["npm", "install"], ["npm", "install", "--offline"]:
             return .install(frozen: false)
-        case ["npm", "ci"], ["npm", "ci", "--offline"], ["bun", "install", "--frozen-lockfile"]:
+        case ["npm", "ci"], ["npm", "ci", "--offline"]:
             return .install(frozen: true)
         case ["frontend", "build"]: return .build(packageScript: false)
-        case ["npm", "run", "build"], ["bun", "run", "build"]: return .build(packageScript: true)
+        case ["npm", "run", "build"]: return .build(packageScript: true)
         case ["frontend", "preview"]: return .preview(packageScript: false)
-        case ["npm", "run", "preview"], ["bun", "run", "preview"]: return .preview(packageScript: true)
+        case ["npm", "run", "preview"]: return .preview(packageScript: true)
         case ["frontend", "packages"]: return .packages
-        case ["npm", "--version"], ["bun", "--version"]: return .capabilities
+        case ["npm", "--version"]: return .capabilities
         default: return nil
         }
     }
 
     static let capabilitiesText = """
-    GopherForge offline frontend mode. npm/Bun command spelling is a compatibility
-    subset, powered by the bundled esbuild WASI tool, not Node.js or the Bun runtime.
+    GopherForge offline frontend mode. npm command spelling is a compatibility
+    subset, powered by the bundled esbuild WASI tool, not a Node.js/npm runtime.
     Packages come only from the bundled catalog. No registry, network, plugins,
     lifecycle scripts, native addons, Vite dev server or arbitrary package scripts.
     Use frontend packages, frontend install, frontend build and frontend preview.

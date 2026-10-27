@@ -10,7 +10,7 @@ struct TerminalPaneView: View {
     static let quickCommands = ["help", "ls", "go build", "go test", "go run", "clear"]
     private var commands: [String] {
         workspace.project?.files[OfflineFrontendRecipe.path] == nil ? Self.quickCommands
-            : ["help", "frontend packages", "npm install --offline", "npm run build", "bun run build", "frontend preview", "go run", "clear"]
+            : ["help", "frontend packages", "npm install --offline", "npm run build", "frontend preview", "go run", "clear"]
     }
 
     var body: some View {
