@@ -1,0 +1,48 @@
+{
+  "version": "1.3.0",
+  "build": "46",
+  "buildId": "1d5bed91-1a1a-4c94-8f65-bbe3ad47b038",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "autoNotifyEnabled": true,
+  "internalBuildState": "IN_BETA_TESTING",
+  "externalBuildState": "READY_FOR_BETA_SUBMISSION",
+  "group": "Internal QA",
+  "groupId": "8bb1ef54-e467-44dd-8678-f6702de1e59a",
+  "betaNotes": "1.3.0 (46) beta: Offline React builds with the documented npm command subset. In Examples > Offline frontend > React + Gin study board, open Terminal: npm install --offline, then npm run build, and Output > Open full screen. React/React DOM/scheduler are bundled; no registry, Node runtime or Bun. Optional gin-replay recipes connect explicit local paths to real Go handlers without sockets; deterministic API state is reconstructed through up to 64 mutations. An external GitHub project verified read/create/update/delete but is NOT included in the app.\n\nSource debugger beta: open Source debugger walkthrough, tap gutter line 12, then Run. Without breakpoints Run behaves normally; with them it automatically debugs. Test Continue, Into/Over/Out, Stop, own-source stack and current-frame locals. Breakpoints persist per project; temporary probes never overwrite source. No conditional breakpoints, expression watches or vendor/stdlib stepping. Debug runs are not performance measurements.\n\nCheck saved projects, ordinary Go run/test and learning Continue. API preview state is temporary and shared between preview sizes; rebuilding/reopening the project resets it.",
+  "checkedOn": "2026-10-27",
+  "archive": {
+    "version": "1.3.0",
+    "build": "46",
+    "sourceCommit": "6adb1ecfa9c66cb3bbf539b0fdfdc79a87ff5abf",
+    "frontendManifest": {
+      "format": 1,
+      "esbuild": "0.28.2",
+      "sourceSHA256": "0624de69a9c93025050d04c28e9d012c0efb0ffb7b554793aa4b07d266866e20",
+      "sha256": {
+        "bundler.wasm": "62aaebd2e82a42440ec9d53b1e515526747a32809587cc4faa2ca4d960e14e24",
+        "packages.json": "a66398ddec175f1c29a01c2dd43da218486be8b3c7adcedb27bd97e049ab26dc",
+        "THIRD_PARTY_NOTICES.txt": "1c630453b4683186643fa3fc87bf559305fedad03eb8e15642e981a50181c953"
+      }
+    },
+    "externalGitHubSourceIncluded": false,
+    "signing": "archive succeeded",
+    "ipaSHA256": "b7a8cbe4ab609321f81b8ef4444eb9cd62eb1d8012e9ce8ac4790c19fb654b1c",
+    "ipaBytes": 67678045,
+    "validation": "VERIFY SUCCEEDED with no errors",
+    "upload": "UPLOAD SUCCEEDED with no errors",
+    "deliveryUUID": "1d5bed91-1a1a-4c94-8f65-bbe3ad47b038"
+  },
+  "appStoreVersions": [
+    {
+      "versionString": "1.2.0",
+      "appVersionState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL"
+    },
+    {
+      "versionString": "1.1.6",
+      "appVersionState": "READY_FOR_DISTRIBUTION",
+      "releaseType": "AFTER_APPROVAL"
+    }
+  ]
+}

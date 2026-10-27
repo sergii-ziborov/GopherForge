@@ -19,7 +19,7 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 27 October 2026 | Changes |
 | --- | --- | --- |
-| **1.3.0 (46)** | Beta preparation | Offline React/npm subset, isolated Go API capability and automatic source debugging with breakpoints. |
+| **1.3.0 (46)** | Internal QA TestFlight | Offline React/npm subset, isolated Go API capability and automatic source debugging with breakpoints. |
 | **1.2.0 (45)** | TestFlight · Waiting for App Review | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
@@ -34,6 +34,10 @@ Automatic publication after approval is enabled. It includes the expanded
 curriculum, corrected exercise examples and the selected dark teal gopher icon.
 Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
+**1.3.0 (46)** is available in Internal QA TestFlight with the documented offline
+npm/React mode, bounded local Go API capability and automatic source debugger.
+The external GitHub project used for verification is not bundled in the app.
+[Beta receipt](docs/releases/1.3.0-beta.json) · [Focused QA](docs/releases/1.3.0-beta-qa.json).
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
