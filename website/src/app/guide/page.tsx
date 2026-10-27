@@ -134,6 +134,30 @@ export default function AppGuide() {
                   </figcaption>
                 </figure>
               ) : null}
+              {s.id === "course" || s.id === "environment" ? (
+                <figure className="guide-screen">
+                  <img
+                    src={
+                      s.id === "course"
+                        ? "/images/guide-course.png"
+                        : "/images/guide-agents.png"
+                    }
+                    width="1320"
+                    height="2868"
+                    loading="lazy"
+                    alt={
+                      s.id === "course"
+                        ? "Native GopherForge 1.2.0 course showing 186 lessons and 23 units"
+                        : "Native coding-agent lesson with a four-step workflow and practical Go guidance"
+                    }
+                  />
+                  <figcaption>
+                    {s.id === "course"
+                      ? "The expanded native course. Opening a lesson saves a place; completion records a separate learning event."
+                      : "Worked guidance for external coding tools, available in the same native learning library."}
+                  </figcaption>
+                </figure>
+              ) : null}
             </section>
           ))}
           <section className="reading-section" id="questions">

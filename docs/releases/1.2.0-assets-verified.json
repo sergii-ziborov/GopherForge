@@ -1,0 +1,299 @@
+{
+  "checkedAt": "2026-10-27T07:56:44.775359+00:00",
+  "version": "1.2.0",
+  "build": "45",
+  "versionId": "fd8e104b-f25e-465c-aa7f-b3dbe311d8d5",
+  "screenshots": 55,
+  "sets": [
+    {
+      "displayType": "APP_IPHONE_58",
+      "images": 10,
+      "files": [
+        "iphone-6.1-00-code-build39.png",
+        "iphone-6.1-03-course-build45.png",
+        "iphone-6.1-08-interview-build45.png",
+        "iphone-6.1-09-around-go-build45.png",
+        "iphone-6.1-04-lesson-build39.png",
+        "02-tests-build33.png",
+        "01-compiler-build33.png",
+        "05-lab-build33.png",
+        "06-projects-build33.png",
+        "07-graphics-build33.png"
+      ],
+      "state": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_DUO",
+      "images": 5,
+      "files": [
+        "iphone-duo-00-code-build39.png",
+        "iphone-duo-03-course-build45.png",
+        "iphone-duo-08-interview-build45.png",
+        "iphone-duo-09-around-go-build45.png",
+        "iphone-duo-04-lesson-build39.png"
+      ],
+      "state": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_67",
+      "images": 10,
+      "files": [
+        "iphone-6.9-00-code-build39.png",
+        "iphone-6.9-03-course-build45.png",
+        "iphone-6.9-08-interview-build45.png",
+        "iphone-6.9-09-around-go-build45.png",
+        "iphone-6.9-04-lesson-build39.png",
+        "02-tests-build33.png",
+        "01-compiler-build33.png",
+        "05-lab-build33.png",
+        "06-projects-build33.png",
+        "07-graphics-build33.png"
+      ],
+      "state": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "images": 10,
+      "files": [
+        "ipad-13-00-code-build39.png",
+        "ipad-13-03-course-build45.png",
+        "ipad-13-08-interview-build45.png",
+        "ipad-13-09-around-go-build45.png",
+        "ipad-13-04-lesson-build39.png",
+        "02-tests-build33.png",
+        "01-compiler-build33.png",
+        "05-lab-build33.png",
+        "06-projects-build33.png",
+        "07-graphics-build33.png"
+      ],
+      "state": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_65",
+      "images": 10,
+      "files": [
+        "iphone-6.5-00-code-build39.png",
+        "iphone-6.5-03-course-build45.png",
+        "iphone-6.5-08-interview-build45.png",
+        "iphone-6.5-09-around-go-build45.png",
+        "iphone-6.5-04-lesson-build39.png",
+        "02-tests-build33.png",
+        "01-compiler-build33.png",
+        "05-lab-build33.png",
+        "06-projects-build33.png",
+        "07-graphics-build33.png"
+      ],
+      "state": "COMPLETE"
+    },
+    {
+      "displayType": "APP_IPHONE_61",
+      "images": 10,
+      "files": [
+        "iphone-6.3-00-code-build39.png",
+        "iphone-6.3-03-course-build45.png",
+        "iphone-6.3-08-interview-build45.png",
+        "iphone-6.3-09-around-go-build45.png",
+        "iphone-6.3-04-lesson-build39.png",
+        "02-tests-build33.png",
+        "01-compiler-build33.png",
+        "05-lab-build33.png",
+        "06-projects-build33.png",
+        "07-graphics-build33.png"
+      ],
+      "state": "COMPLETE"
+    }
+  ],
+  "updatedScreenshots": 18,
+  "inheritedScreenshots": 37,
+  "newLearningScreenshots": [
+    {
+      "set": "APP_IPHONE_58",
+      "fileName": "iphone-6.1-03-course-build45.png",
+      "id": "a6c00019-5e3c-8faf-8028-38a80330f216",
+      "imageSize": [
+        1170,
+        2532
+      ]
+    },
+    {
+      "set": "APP_IPHONE_58",
+      "fileName": "iphone-6.1-08-interview-build45.png",
+      "id": "ee400019-5e3c-8faf-8001-66485a2ad3b5",
+      "imageSize": [
+        1170,
+        2532
+      ]
+    },
+    {
+      "set": "APP_IPHONE_58",
+      "fileName": "iphone-6.1-09-around-go-build45.png",
+      "id": "c7800019-5e3c-8faf-8020-12374dc13b9d",
+      "imageSize": [
+        1170,
+        2532
+      ]
+    },
+    {
+      "set": "APP_IPHONE_DUO",
+      "fileName": "iphone-duo-03-course-build45.png",
+      "id": "b0000019-5e3c-8faf-802d-053aec0795f1",
+      "imageSize": [
+        2853,
+        2007
+      ]
+    },
+    {
+      "set": "APP_IPHONE_DUO",
+      "fileName": "iphone-duo-08-interview-build45.png",
+      "id": "85c00019-5e3c-8faf-8033-281a888cdef4",
+      "imageSize": [
+        1398,
+        2034
+      ]
+    },
+    {
+      "set": "APP_IPHONE_DUO",
+      "fileName": "iphone-duo-09-around-go-build45.png",
+      "id": "24800019-5e3c-8faf-8016-6062c1756a78",
+      "imageSize": [
+        1398,
+        2034
+      ]
+    },
+    {
+      "set": "APP_IPHONE_67",
+      "fileName": "iphone-6.9-03-course-build45.png",
+      "id": "5a800019-5e3c-8faf-8024-6b618ac47643",
+      "imageSize": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "set": "APP_IPHONE_67",
+      "fileName": "iphone-6.9-08-interview-build45.png",
+      "id": "2a000019-5e3c-8faf-803d-c70a20e5b738",
+      "imageSize": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "set": "APP_IPHONE_67",
+      "fileName": "iphone-6.9-09-around-go-build45.png",
+      "id": "c7800019-5e3c-8faf-8004-ab4421a966f9",
+      "imageSize": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "set": "APP_IPAD_PRO_3GEN_129",
+      "fileName": "ipad-13-03-course-build45.png",
+      "id": "6d800019-5e3c-8faf-8024-d88c83ba78fa",
+      "imageSize": [
+        2064,
+        2752
+      ]
+    },
+    {
+      "set": "APP_IPAD_PRO_3GEN_129",
+      "fileName": "ipad-13-08-interview-build45.png",
+      "id": "b4000019-5e3c-8faf-803c-a3dabf3f6908",
+      "imageSize": [
+        2064,
+        2752
+      ]
+    },
+    {
+      "set": "APP_IPAD_PRO_3GEN_129",
+      "fileName": "ipad-13-09-around-go-build45.png",
+      "id": "1e400019-5e3c-8faf-8025-9963c9404769",
+      "imageSize": [
+        2064,
+        2752
+      ]
+    },
+    {
+      "set": "APP_IPHONE_65",
+      "fileName": "iphone-6.5-03-course-build45.png",
+      "id": "62800019-5e3c-8faf-8015-0ddf1b4eff3f",
+      "imageSize": [
+        1284,
+        2778
+      ]
+    },
+    {
+      "set": "APP_IPHONE_65",
+      "fileName": "iphone-6.5-08-interview-build45.png",
+      "id": "40000019-5e3c-8faf-8012-c75f73750fa8",
+      "imageSize": [
+        1284,
+        2778
+      ]
+    },
+    {
+      "set": "APP_IPHONE_65",
+      "fileName": "iphone-6.5-09-around-go-build45.png",
+      "id": "d3400019-5e3c-8faf-8000-2e8bf042e99f",
+      "imageSize": [
+        1284,
+        2778
+      ]
+    },
+    {
+      "set": "APP_IPHONE_61",
+      "fileName": "iphone-6.3-03-course-build45.png",
+      "id": "90c00019-5e3c-8faf-8003-9af4a49aabec",
+      "imageSize": [
+        1206,
+        2622
+      ]
+    },
+    {
+      "set": "APP_IPHONE_61",
+      "fileName": "iphone-6.3-08-interview-build45.png",
+      "id": "b1400019-5e3c-8faf-8010-b2295d81d75a",
+      "imageSize": [
+        1206,
+        2622
+      ]
+    },
+    {
+      "set": "APP_IPHONE_61",
+      "fileName": "iphone-6.3-09-around-go-build45.png",
+      "id": "8bc00019-5e3c-8faf-803d-c9e2ea0b431f",
+      "imageSize": [
+        1206,
+        2622
+      ]
+    }
+  ],
+  "headerAndSearchActive": true,
+  "creative": [
+    {
+      "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+      "state": "ACTIVE",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "fileName": "1.2.0-header.png",
+      "size": [
+        3840,
+        1646
+      ]
+    },
+    {
+      "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
+      "state": "ACTIVE",
+      "imageState": "PREPARE_FOR_SUBMISSION",
+      "fileName": "1.2.0-search-results.png",
+      "size": [
+        2880,
+        1920
+      ]
+    }
+  ],
+  "metadataMatchesSavedSource": true,
+  "reviewContactComplete": true,
+  "accountRequired": false,
+  "screenshotOrder": "Editor, Course, Interview, agents, other project features"
+}

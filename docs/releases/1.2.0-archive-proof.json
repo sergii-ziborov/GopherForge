@@ -1,0 +1,27 @@
+{
+  "version": "1.2.0",
+  "build": "45",
+  "appSourceCommit": "8adfc1a",
+  "ipaSHA256": "f5d30e09c5d03763c313294b4dac742ffc6fa89eea5cc3d4e3fe0b1e89994777",
+  "sizeBytes": 62167255,
+  "contentMatchesRepository": true,
+  "units": 23,
+  "teachingLessons": 186,
+  "challenges": 22,
+  "readings": 139,
+  "interviewGuides": 92,
+  "algorithmLabs": 12,
+  "algorithmScenarios": 36,
+  "newReadings": 15,
+  "agentCourseReadings": 4,
+  "agentInterviewGuides": 8,
+  "iconSHA256": "4903b25dc07b0f1d44ef012b5d0625b0d3b63a2e26ea19c79eacab4a033ce588",
+  "minimumOSVersion": "18.0",
+  "deviceFamily": [
+    1,
+    2
+  ],
+  "validation": "passed",
+  "upload": "succeeded",
+  "testFlight": "IN_BETA_TESTING"
+}

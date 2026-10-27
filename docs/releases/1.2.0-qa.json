@@ -1,0 +1,18 @@
+{
+  "version": "1.2.0",
+  "build": "45",
+  "result": "Passed",
+  "nativeUnitChecks": 26,
+  "continueUIChecks": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "progress": "New agent reading completion survives relaunch and Continue reopens the completed reading",
+  "unitChecks": "New SQL/agent/JSON/concurrency bookmarks and completion reload from persistent stores",
+  "environment": "UI test passed on a clean dedicated iPhone simulator after the older QA device stalled",
+  "readingProgramChecks": 55,
+  "exerciseSolutions": 44,
+  "predictionPrograms": 22,
+  "algorithmLabs": 12,
+  "webTests": 21,
+  "httpRoutes": 27
+}

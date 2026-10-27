@@ -19,7 +19,7 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 27 October 2026 | Changes |
 | --- | --- | --- |
-| **1.2.0 (45)** | In preparation | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
+| **1.2.0 (45)** | TestFlight · Waiting for App Review | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
 | **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
@@ -28,16 +28,17 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
 The store currently distributes **1.1.6 (44)**, verified on 27 October 2026.
-**1.2.0 (45)** is being prepared with the expanded curriculum, corrected
-exercise examples and the selected dark teal gopher icon. Web material is
-available with the same stable identifiers. Existing completion, bookmarks
+**1.2.0 (45)** is available in Internal QA TestFlight and submitted to App Review.
+Automatic publication after approval is enabled. It includes the expanded
+curriculum, corrected exercise examples and the selected dark teal gopher icon.
+Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
-[Submission receipt](docs/releases/1.1.6-submission.json) ·
-[Asset verification](docs/releases/1.1.6-assets-verified.json) ·
-[QA results](docs/releases/1.1.6-qa.json) ·
+[Submission receipt](docs/releases/1.2.0-submission.json) ·
+[Asset verification](docs/releases/1.2.0-assets-verified.json) ·
+[QA results](docs/releases/1.2.0-qa.json) ·
 [Version history](https://gopherforge.app/updates) ·
 [Release records](docs/releases).
 
@@ -107,6 +108,15 @@ Native code and lessons remove the lower scroll-edge backdrop and keep extra
 end space inside scrollable content. This adds no source lines and preserves
 the embedded-versus-full-screen lesson scrolling behavior.
 
+### Web previews and Gin compatibility
+
+Gin-style templates use an educational compatibility layer rather than the full
+upstream Gin framework. Registered handlers are exercised through `httptest`;
+the native app serves compatible local preview files. An arbitrary Go backend
+cannot bind a listener inside the WASI guest. Node.js, npm and Bun are not bundled.
+Build a frontend in an external development environment before importing
+compatible static output; run full Gin/database services in that environment.
+
 ### JSON v2, modern concurrency, SQL and agents
 
 The 1.2.0 curriculum adds fifteen worked readings. Three cover JSON v2 contracts,
@@ -134,8 +144,8 @@ Interview self-assessment is stored locally, independently from lesson completio
 
 Current native screens, captured from the app rather than reconstructed mockups:
 
-<img src="docs/screenshots/buffer44-course-continue.png" width="300" alt="Course with 171 teaching lessons and Continue pointing to the borrowed-buffer reading">
-<img src="docs/screenshots/root43-interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
+<img src="docs/screenshots/release45/course.png" width="300" alt="GopherForge 1.2.0 course with 186 teaching lessons in 23 units">
+<img src="docs/screenshots/release45/interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
 
 ### Next.js website
 

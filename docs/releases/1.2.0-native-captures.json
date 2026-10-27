@@ -1,0 +1,236 @@
+[
+  {
+    "path": "docs/app-store/screenshots/iphone-6.9/03-course.png",
+    "sha256": "9c7e0bb9df5a0a07dd015d78489aebd1777ef57447d3d2007499557967eb8fd8",
+    "size": [
+      1320,
+      2868
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.9/08-interview.png",
+    "sha256": "35a04137423c836d16ea4dd2bd3760d19476c8690139f10c52d9dc6cdd4d9a11",
+    "size": [
+      1320,
+      2868
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.9/09-around-go.png",
+    "sha256": "59c6ae9f6d5b99eb16101df15097fa415b015bf8774c24861869aa8297160db6",
+    "size": [
+      1320,
+      2868
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/ipad-13/03-course.png",
+    "sha256": "16da3a478a062407b86ddad387ad70d61c902bd515f4ce2186b0ebf6a0a7bf44",
+    "size": [
+      2064,
+      2752
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/ipad-13/08-interview.png",
+    "sha256": "50c9a00e3ce1bfabba321a94c43b581686af4150c676a55803a6f8726551cdd2",
+    "size": [
+      2064,
+      2752
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/ipad-13/09-around-go.png",
+    "sha256": "4c4e9ab971a3cee36785c68de737239610865cbb25ed4aa3d736d2cdccce0f07",
+    "size": [
+      2064,
+      2752
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.1/03-course.png",
+    "sha256": "6e52763e8881991e1b602d338ccb7647aecce60c99259682372f823a94072ea4",
+    "size": [
+      1170,
+      2532
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.1/08-interview.png",
+    "sha256": "254af169ed74bee4df7bc57fca457f8f3eec3386541b09a8d84731ce70eb069d",
+    "size": [
+      1170,
+      2532
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.1/09-around-go.png",
+    "sha256": "e663ae86886b9ce34addff08b382f4629e672f94f8b4cee695725d80e26c1a81",
+    "size": [
+      1170,
+      2532
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.3/03-course.png",
+    "sha256": "bea0841e29fdf39aba1426643fcb0fd168662958d66e42c2a63a712be67fa122",
+    "size": [
+      1206,
+      2622
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.3/08-interview.png",
+    "sha256": "d0fbb947431ae710b3dc8b858dcafd37e3fa6fa2d462fd25afffdea465c9ce5c",
+    "size": [
+      1206,
+      2622
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.3/09-around-go.png",
+    "sha256": "6c87d6993b7381c6be7974e5c0bc53aa231c0fcdf39127042f6eec485318cfef",
+    "size": [
+      1206,
+      2622
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.5/03-course.png",
+    "sha256": "19bfbd48b659d8ea9c8fe66a2f26b7ca551b4aba905d292526b2529c5b559cb4",
+    "size": [
+      1284,
+      2778
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.5/08-interview.png",
+    "sha256": "48e9e8ffb8d165ba23c59c60c4cb8e3893cf121ddbdd124c149f0822650b8913",
+    "size": [
+      1284,
+      2778
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-6.5/09-around-go.png",
+    "sha256": "ca1a045c00efc3aef72337e9a2182a420faabbba5dba4f893f3f7f8a3f8d02cf",
+    "size": [
+      1284,
+      2778
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Primary display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-duo/03-course.png",
+    "sha256": "dc931e622afda859a50bb202fc3d472de8da15f77ce012c63c9a096daab5764f",
+    "size": [
+      2853,
+      2007
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Open display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-duo/08-interview.png",
+    "sha256": "00c087ebbc5971c373d0e04b3e08c86232f4b87c7259c9741dd78de2a4503314",
+    "size": [
+      1398,
+      2034
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Closed display"
+  },
+  {
+    "path": "docs/app-store/screenshots/iphone-duo/09-around-go.png",
+    "sha256": "c1af37dcdd6c634039461ded31eecdab3a075e58c941b5ff7e541632a4bbeba8",
+    "size": [
+      1398,
+      2034
+    ],
+    "version": "1.2.0",
+    "build": 45,
+    "nativeAppSource": "8adfc1a",
+    "source": "Native installed optimized simulator build; RGB PNG, no compositing",
+    "screen": "Closed display"
+  }
+]
