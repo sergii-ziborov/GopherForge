@@ -1,22 +1,23 @@
 {
-  "checkedAt": "2026-10-27T06:58:33.554422+00:00",
-  "sourceCommit": "8adfc1a",
-  "imageDigest": "sha256:c79ae58949e2fbd90b19b96467c2d358277d1164153b5a063214cc6c10f4ead7",
-  "deploymentJob": "gopherforge-curriculum45-8adfc1a",
+  "checkedAt": "2026-10-27T08:03:42.345378+00:00",
+  "sourceCommit": "fb4c07e",
+  "imageDigest": "sha256:d591995b5193bbf728f35a945f3b8bb96bdebcaae42868d691c93e102ba338d2",
+  "deploymentJob": "gopherforge-review45-fb4c07e",
   "deploymentState": "succeeded",
   "publicRoutesChecked": 27,
   "canonicalDescriptionsStructuredDataAndSitemap": "passed",
   "publicGuide": "https://gopherforge.app/guide",
-  "guideWords": 2057,
   "newReadings": 15,
   "newAlgorithmLabs": 4,
-  "nativeReleaseAtPublication": "1.2.0 in preparation",
+  "nativeReleaseAtPublication": "1.2.0 (45) Waiting for App Review",
   "publicNativeAtPublication": "1.1.6 (44)",
   "priceRetained": "USD6.99",
   "feedTimer": "active",
   "container": "running healthy",
   "visualProof": [
-    "docs/screenshots/release45/guide-desktop-public.png",
-    "docs/screenshots/release45/guide-mobile-public.png"
-  ]
+    "docs/screenshots/release45/guide-submitted-public.png"
+  ],
+  "nativeAppSourceCommit": "8adfc1a",
+  "guideBodyWords": 2170,
+  "nativeGuideImagesVerified": 2
 }
