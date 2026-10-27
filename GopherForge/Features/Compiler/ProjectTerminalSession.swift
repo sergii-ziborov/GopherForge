@@ -62,6 +62,13 @@ final class ProjectTerminalSession {
             show(path)
         case .modules:
             showModule()
+        case let .unavailableRuntime(tool):
+            append(.failure, """
+                \(tool) is not installed in GopherForge. Node.js, npm and Bun commands \
+                cannot run in this console. Build the frontend in an external \
+                development environment, then import compatible HTML, CSS and \
+                browser JavaScript for the local preview.
+                """)
         case let .unknown(text):
             append(.failure, unknownMessage(for: text))
         case .build, .run, .test, .vet, .format:

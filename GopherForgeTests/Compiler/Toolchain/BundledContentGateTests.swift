@@ -58,6 +58,36 @@ final class BundledContentGateTests: XCTestCase {
     }
 
     @MainActor
+    func testGinSitesRunThroughTerminal() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appending(path: "gin-terminal-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let workspace = WorkspaceModel(
+            compiler: compiler,
+            library: ProjectLibrary(storageURL: root.appending(path: "projects.json"))
+        )
+        defer {
+            workspace.siteServer.stop()
+            try? FileManager.default.removeItem(at: root)
+        }
+        await workspace.prepare()
+        XCTAssertTrue(workspace.toolchain.isReady, workspace.toolchain.detail)
+        let terminal = ProjectTerminalSession(workspace: workspace)
+
+        for example in GoExampleLibrarySites.all {
+            XCTAssertTrue(workspace.open(example.project()))
+            terminal.input = "go run"
+            await terminal.submit()
+            let result = try XCTUnwrap(workspace.lastResult, example.id)
+            XCTAssertTrue(result.succeeded, "\(example.id): \(report(result))")
+            XCTAssertEqual(result.stdout, example.expectedOutput, example.id)
+            XCTAssertTrue(terminal.transcript.contains { $0.text == example.expectedOutput }, example.id)
+            XCTAssertFalse(terminal.isBusy)
+            XCTAssertNotNil(workspace.sitePreviewURL, example.id)
+        }
+        await workspace.flush()
+    }
+
+    @MainActor
     func testGinProjectRunsWhenOpenedInWorkspace() async throws {
         let root = FileManager.default.temporaryDirectory
             .appending(path: "gin-workspace-\(UUID().uuidString)", directoryHint: .isDirectory)

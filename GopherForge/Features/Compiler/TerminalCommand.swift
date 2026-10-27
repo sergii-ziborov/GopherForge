@@ -18,6 +18,7 @@ enum TerminalCommand: Equatable {
     case printWorkingDirectory
     case clear
     case help
+    case unavailableRuntime(String)
     case unknown(String)
 
     static func parse(_ input: String) -> TerminalCommand {
@@ -43,6 +44,8 @@ enum TerminalCommand: Equatable {
         case ("pwd", _): return .printWorkingDirectory
         case ("clear", _): return .clear
         case ("help", _): return .help
+        case ("node", _), ("npm", _), ("npx", _), ("bun", _), ("bunx", _):
+            return .unavailableRuntime(head)
         default: return .unknown(input.trimmingCharacters(in: .whitespaces))
         }
     }
@@ -72,5 +75,8 @@ enum TerminalCommand: Equatable {
       cat <file>    print a project file
       pwd           print the module root
       clear         clear this transcript
+
+    Node.js, npm and Bun are not installed. Local web previews run browser
+    JavaScript in WebKit; they do not run Node.js or Bun commands.
     """
 }

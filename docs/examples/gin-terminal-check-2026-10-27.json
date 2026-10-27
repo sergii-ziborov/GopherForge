@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-27T08:42:10.279951+00:00",
+  "scope": "Source follow-up after submission of 1.2.0 (45); these terminal messages are not in uploaded build45",
+  "result": "Passed",
+  "passedTests": 12,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "3BA152DC-ECD5-45BB-8447-60E8B742FAEA",
+    "deviceName": "GopherForge Release45 Phone",
+    "modelName": "iPhone 17 Pro Max",
+    "osBuildNumber": "23F77",
+    "osVersion": "26.5",
+    "platform": "iOS Simulator"
+  },
+  "runtimeAvailability": {
+    "Node.js": "not bundled",
+    "npm": "not bundled",
+    "Bun": "not bundled"
+  },
+  "unavailableCommandsChecked": [
+    "npm install",
+    "npm run build",
+    "npx vite",
+    "bun install",
+    "bun run build",
+    "bunx vite",
+    "node server.js"
+  ],
+  "unsupportedCommands": "Reported as failure; project source unchanged; no compiler result; console remains usable",
+  "ginProjects": [
+    "site.cafe",
+    "site.notes",
+    "site.shop"
+  ],
+  "ginRun": "ProjectTerminalSession.submit(go run) -> real WorkspaceModel -> bundled WASI Go compiler; exact route output checked for all three projects",
+  "ginCompatibility": "Bundled educational Gin-compatible subset, httptest route checks; native host serves preview files. Not an upstream live Gin server or npm/Bun integration.",
+  "preview": "Local HTML/CSS/JS, JSON and 404 responses; WebKit JS assets and fetch; cafe button, pinned note and shop cart interaction passed",
+  "runtimeWarnings": [
+    {
+      "issueType": "Runtime Warning",
+      "message": "Thread running at User-initiated quality-of-service class waiting on a lower QoS thread running at Default quality-of-service class. Investigate ways to avoid priority inversions",
+      "source": "GopherForge/Compiler/Execution/Sandbox/WasiProcessRunner.swift"
+    }
+  ],
+  "sourceFilesSHA256": {
+    "GopherForge/Features/Compiler/TerminalCommand.swift": "de182cf315a70747e050a626192f7cf3dea9b34fb18fe55aee082f93c1bb36eb",
+    "GopherForge/Features/Compiler/ProjectTerminalSession.swift": "fdd7b4f60769438250733fccf14131824d8719c7ce0ec7634dedada96595e86a",
+    "GopherForgeTests/Workspace/ProjectTerminalSessionTests.swift": "169afc1293fb2b0035fbee33c98e3705980c06f12b22553d0197a9086b1dc9c3",
+    "GopherForgeTests/Compiler/Toolchain/BundledContentGateTests.swift": "dfee395a156f9d0845ec694153d9f1b71a925149ee85a21176dfde0687cb0a31"
+  },
+  "resultBundles": [
+    "build/gin-terminal/console-and-preview.xcresult",
+    "build/gin-terminal/bundled-gin-terminal.xcresult"
+  ]
+}

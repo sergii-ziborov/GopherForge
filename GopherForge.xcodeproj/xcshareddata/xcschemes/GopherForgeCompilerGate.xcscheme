@@ -102,6 +102,9 @@
                   Identifier = "BundledContentGateTests/testEveryGinSiteRunsWithTheBundledCompiler()">
                </Test>
                <Test
+                  Identifier = "BundledContentGateTests/testGinSitesRunThroughTerminal()">
+               </Test>
+               <Test
                   Identifier = "BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()">
                </Test>
                <Test

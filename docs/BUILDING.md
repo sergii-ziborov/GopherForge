@@ -81,6 +81,24 @@ toolchain and clear their caches so a cached artifact cannot stand in for a
 new build. Keep `SWIFT_SUPPRESS_WARNINGS=NO`: dependency warning suppression
 can conflict with WasmKit's warnings-as-errors setting during builds.
 
+### Gin examples through the project console
+
+`BundledContentGateTests/testGinSitesRunThroughTerminal` opens all three site
+templates in a real workspace, submits `go run` through `ProjectTerminalSession`
+and checks each route transcript against the template's expected output. Run it
+with the `GopherForgeCompilerGate` scheme and
+`-only-testing:GopherForgeTests/BundledContentGateTests/testGinSitesRunThroughTerminal`.
+
+`LocalSiteServerTests` separately checks local pages, JSON, asset loading and
+JavaScript interactions in WebKit. These examples use the documented educational
+Gin-compatible subset; their Go routes run through `httptest`, while the native
+host serves the web files. This does not verify an arbitrary upstream Gin server.
+
+Node.js, npm and Bun are not bundled. `ProjectTerminalSessionTests` checks that
+their commands fail clearly without running Go or changing the open Gin project,
+and that project inspection still works afterward. A host Mac's installed
+JavaScript tools do not make them available in the iOS console.
+
 Simulator checks do not establish physical-device offline, thermal or memory
 behavior. Check those separately on hardware.
 
