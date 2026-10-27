@@ -2,23 +2,26 @@ import SwiftUI
 import SafariServices
 import WebKit
 
-/// The on-device site: a real localhost URL and the page it serves.
+/// The project's preview, either a local site or the isolated frontend viewer.
 struct SitePreviewSection: View {
     let url: URL
     var generation: Int = 0
+    var offlineFiles: [String: String]?
     @State private var showingBrowser = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Site on this device", systemImage: "globe")
+            Label(offlineFiles == nil ? "Site on this device" : "Isolated offline preview", systemImage: offlineFiles == nil ? "globe" : "network.slash")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .accessibilityIdentifier(AccessibilityID.outputSitePreview)
 
-            Text(url.absoluteString)
-                .font(.caption.monospaced())
-                .textSelection(.enabled)
-                .accessibilityIdentifier(AccessibilityID.outputSite)
+            if offlineFiles == nil {
+                Text(url.absoluteString)
+                    .font(.caption.monospaced())
+                    .textSelection(.enabled)
+                    .accessibilityIdentifier(AccessibilityID.outputSite)
+            }
 
             Button {
                 showingBrowser = true
@@ -27,10 +30,18 @@ struct SitePreviewSection: View {
                     .font(.caption.weight(.semibold))
             }
             .sheet(isPresented: $showingBrowser) {
-                SiteBrowserView(url: url)
+                if let offlineFiles {
+                    NavigationStack {
+                        OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles)
+                            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showingBrowser = false } } }
+                    }
+                } else { SiteBrowserView(url: url) }
             }
 
-            SiteWebView(url: url, generation: generation)
+            Group {
+                if let offlineFiles { OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles) }
+                else { SiteWebView(url: url, generation: generation) }
+            }
                 .frame(maxWidth: .infinity)
                 .frame(height: 280)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -39,8 +50,9 @@ struct SitePreviewSection: View {
                         .strokeBorder(Color(.separator), lineWidth: 0.5)
                 )
 
-            Text("Go checks the Gin routes without opening a port. The app serves "
-                 + "this project's web files on this device.")
+            Text(offlineFiles == nil
+                 ? "Go checks the Gin routes without opening a port. The app serves this project's web files on this device."
+                 : "Generated React/JS assets and local JSON only. No network or TCP listener. Temporary preview storage. Go routes are checked separately.")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }

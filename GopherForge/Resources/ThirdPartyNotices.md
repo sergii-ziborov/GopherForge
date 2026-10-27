@@ -4,8 +4,9 @@ GopherForge is proprietary software. The components below are bundled or linked
 under their own licences. Nothing here is relicensed. Unknown terms — including
 any Go module you vendor later — stay with that module's own `LICENSE` file.
 
-Apple's binary scan sees four WebAssembly tools and a zipped standard library.
+The bundled Go toolchain contains four WebAssembly tools and a zipped standard library.
 Those are **unmodified upstream Go**, not third-party native iOS libraries.
+The offline frontend compiler is a separate esbuild Go API driver built as WebAssembly.
 `goroot.zip` keeps the `.a` export archives out of iOS's library scan. Zip
 reading is this app's own code, not a third-party archive library. Each
 family is grouped below so a reviewer can match licence to binary.
@@ -61,6 +62,27 @@ derived Swift keyword list from Swift Syntax, both Apache-2.0; see the upstream
 `NOTICE.txt` for those attributions.
 
 <https://github.com/swiftwasm/WasmKit/tree/0.3.1>
+
+### esbuild 0.28.2
+
+Copyright © 2020 Evan Wallace. **MIT License.**
+
+The offline JSX/TypeScript browser bundler uses the esbuild Go API inside WASI.
+Its complete MIT notice and the Go runtime / golang.org/x/sys BSD notices ship at
+`Frontend/THIRD_PARTY_NOTICES.txt`. No Node.js or Bun runtime is bundled.
+
+<https://github.com/evanw/esbuild>
+
+### React 19.3.1, React DOM 19.3.1 and scheduler 0.28.0
+
+Copyright © Meta Platforms, Inc. and affiliates. **MIT License.**
+
+Pinned browser package sources are bundled in `Frontend/packages.json`, including
+the full original `LICENSE` and `package.json` for each package. Package archives
+are checked against pinned SHA-512 integrity values during app preparation;
+the installed app does not access a package registry.
+
+<https://github.com/facebook/react>
 
 Module zips and the bundled `goroot.zip` are read by this app's own zip
 reader. There is no third-party zip library in the binary.

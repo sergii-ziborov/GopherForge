@@ -11,6 +11,7 @@ fi
 
 "$SCRIPT_DIR/fetch_toolchain.sh"
 python3 "$SCRIPT_DIR/package_toolchain.py"
+python3 "$SCRIPT_DIR/prepare_frontend.py"
 xcodegen generate --spec "$PROJECT_ROOT/project.yml" --project "$PROJECT_ROOT"
 
 echo "Generated $PROJECT_ROOT/GopherForge.xcodeproj"

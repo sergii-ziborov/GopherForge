@@ -101,6 +101,39 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Open full screen"].exists)
     }
 
+    func testOfflineReactExampleBuildsFromTerminalAndOpensFullScreen() {
+        app.launchArguments = ["-GopherForgeSection", Section.projects.rawValue, "-GopherForgeEmptyLibrary"]
+        app.launch()
+        let examples = app.buttons[AccessibilityIdentifier.projectsExamples]
+        XCTAssertTrue(examples.waitForExistence(timeout: 10))
+        examples.tap()
+        let board = app.buttons["example.site.react-offline"]
+        for _ in 0..<8 where !board.isHittable { app.swipeUp() }
+        XCTAssertTrue(board.exists && board.isHittable)
+        board.tap()
+        let open = app.buttons[AccessibilityIdentifier.exampleOpen]
+        XCTAssertTrue(open.waitForExistence(timeout: 10))
+        open.tap()
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        let input = app.textFields["terminal.input"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        send("npm install --offline", to: input)
+        let lock = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Offline frontend lock ready'")).firstMatch
+        XCTAssertTrue(lock.waitForExistence(timeout: 20))
+        send("npm run build", to: input)
+        let ready = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Offline preview ready in Output'")).firstMatch
+        XCTAssertTrue(ready.waitForExistence(timeout: 90), app.debugDescription)
+        if app.buttons["terminal.hideKeyboard"].isHittable { app.buttons["terminal.hideKeyboard"].tap() }
+        XCTAssertTrue(app.selectWorkspacePane("output"))
+        let heading = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS 'understanding.'")).firstMatch
+        XCTAssertTrue(heading.waitForExistence(timeout: 20), app.debugDescription)
+        attachScreenshot(named: "offline-react-output")
+        app.buttons["Open full screen"].tap()
+        XCTAssertTrue(app.webViews.buttons["Add task"].firstMatch.waitForExistence(timeout: 20))
+        attachScreenshot(named: "offline-react-fullscreen")
+        app.buttons["Done"].tap()
+    }
+
     /// The Files tree on a phone is a drawer. A left-to-right swipe from the
     /// leading edge has to open it — the toolbar button is not the only way in.
     func testALeadingSwipeOpensFilesOnThePhone() throws {

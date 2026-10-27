@@ -11,12 +11,20 @@ struct OutputStreamView: View {
     var onRetryPackages: () -> Void = {}
     var siteURL: URL?
     var siteGeneration: Int = 0
+    var offlineFiles: [String: String]?
 
     var body: some View {
         if let progress {
             progressPanel(progress)
         } else if result != nil || !packageProblems.isEmpty || siteURL != nil {
             resultPanel(result)
+        } else if offlineFiles != nil {
+            EmptyDockMessage(
+                systemImage: "shippingbox",
+                title: "Build the offline frontend",
+                message: "In Terminal, run npm install --offline, then npm run build and frontend preview. Rebuild after editing source files.",
+                tint: WorkspacePane.output.tint
+            )
         } else {
             EmptyDockMessage(
                 systemImage: "terminal",
@@ -60,7 +68,7 @@ struct OutputStreamView: View {
                     }
                 }
                 if let siteURL {
-                    SitePreviewSection(url: siteURL, generation: siteGeneration)
+                    SitePreviewSection(url: siteURL, generation: siteGeneration, offlineFiles: offlineFiles)
                 }
                 if let result, !result.stdout.isEmpty {
                     StreamSection(title: "stdout", text: result.stdout, tint: .primary)

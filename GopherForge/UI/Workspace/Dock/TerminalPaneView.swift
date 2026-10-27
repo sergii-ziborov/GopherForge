@@ -8,6 +8,10 @@ struct TerminalPaneView: View {
     var keyboardCommandsOnly = false
 
     static let quickCommands = ["help", "ls", "go build", "go test", "go run", "clear"]
+    private var commands: [String] {
+        workspace.project?.files[OfflineFrontendRecipe.path] == nil ? Self.quickCommands
+            : ["help", "frontend packages", "npm install --offline", "npm run build", "bun run build", "frontend preview", "go run", "clear"]
+    }
 
     var body: some View {
         content
@@ -35,7 +39,7 @@ struct TerminalPaneView: View {
             if !keyboardCommandsOnly {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 7) {
-                        ForEach(Self.quickCommands, id: \.self) { command in
+                        ForEach(commands, id: \.self) { command in
                             Button {
                                 session.input = command
                                 Task { await session.submit() }

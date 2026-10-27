@@ -72,6 +72,9 @@ targets:
       - path: build/Resources/Toolchain
         type: folder
         buildPhase: resources
+      - path: build/Resources/Frontend
+        type: folder
+        buildPhase: resources
       # A folder reference rather than a group: these are Go sources that must
       # reach the bundle with their directory structure intact, because the
       # structure is the import path.
@@ -145,6 +148,10 @@ targets:
       - package: SwiftSystem
         product: SystemPackage
     preBuildScripts:
+      - name: Prepare offline frontend compiler
+        script: |
+          /usr/bin/python3 "$SRCROOT/scripts/prepare_frontend.py"
+        basedOnDependencyAnalysis: false
       - name: Prepare bundled Go toolchain
         script: |
           "$SRCROOT/scripts/fetch_toolchain.sh"
@@ -264,6 +271,7 @@ schemes:
             - BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
             - BundledContentGateTests/testEveryGinSiteRunsWithTheBundledCompiler()
             - BundledContentGateTests/testGinSitesRunThroughTerminal()
+            - BundledContentGateTests/testOfflineReactTemplateGoRoutesRunWithoutNetworking()
             - BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()
             - BundledContentGateTests/testExampleIdentifiersAreUnique()
             - LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()
@@ -315,6 +323,7 @@ schemes:
             - BundledContentGateTests/testEveryExampleCompilesAndPrintsWhatItClaims()
             - BundledContentGateTests/testEveryGinSiteRunsWithTheBundledCompiler()
             - BundledContentGateTests/testGinSitesRunThroughTerminal()
+            - BundledContentGateTests/testOfflineReactTemplateGoRoutesRunWithoutNetworking()
             - BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()
             - BundledContentGateTests/testExampleIdentifiersAreUnique()
             - LessonSolutionGateTests/testEveryCompileLessonHasAnAnswerThatPassesItsOwnTest()

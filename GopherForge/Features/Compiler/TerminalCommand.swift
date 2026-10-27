@@ -18,6 +18,7 @@ enum TerminalCommand: Equatable {
     case printWorkingDirectory
     case clear
     case help
+    case frontend(OfflineFrontendCommand)
     case unavailableRuntime(String)
     case unknown(String)
 
@@ -28,6 +29,7 @@ enum TerminalCommand: Equatable {
             .map(String.init)
         guard let head = fields.first else { return .unknown("") }
         let rest = Array(fields.dropFirst())
+        if let command = OfflineFrontendCommand.parse(fields) { return .frontend(command) }
 
         switch (head, rest.first) {
         case ("go", "build"): return .build
@@ -76,7 +78,13 @@ enum TerminalCommand: Equatable {
       pwd           print the module root
       clear         clear this transcript
 
-    Node.js, npm and Bun are not installed. Local web previews run browser
-    JavaScript in WebKit; they do not run Node.js or Bun commands.
+      frontend packages   list bundled browser packages
+      frontend install    prepare the offline frontend lock
+      frontend build      bundle JS/TS/JSX with the WASI tool
+      frontend preview    check the isolated preview is ready
+
+    npm install --offline / npm run build and bun install --offline /
+    bun run build are compatible spellings for this educational offline mode.
+    Full Node.js/npm/Bun runtimes and arbitrary package scripts are not included.
     """
 }

@@ -31,6 +31,7 @@ final class ProjectTerminalSession {
 
     private let maximumEntries = 200
     private unowned let workspace: WorkspaceModel
+    private let frontend = OfflineFrontendBuilder()
 
     init(workspace: WorkspaceModel) {
         self.workspace = workspace
@@ -62,17 +63,64 @@ final class ProjectTerminalSession {
             show(path)
         case .modules:
             showModule()
+        case let .frontend(command):
+            await runFrontend(command)
         case let .unavailableRuntime(tool):
             append(.failure, """
                 \(tool) is not installed in GopherForge. Node.js, npm and Bun commands \
-                cannot run in this console. Build the frontend in an external \
-                development environment, then import compatible HTML, CSS and \
-                browser JavaScript for the local preview.
+                cannot run as full runtimes in this console. The educational \
+                offline frontend subset supports frontend install/build/preview \
+                and compatible npm/Bun spellings. Type help for its limits.
                 """)
         case let .unknown(text):
             append(.failure, unknownMessage(for: text))
         case .build, .run, .test, .vet, .format:
             await runPhase(command)
+        }
+    }
+
+    private func runFrontend(_ command: OfflineFrontendCommand) async {
+        do {
+            if command == .capabilities { append(.output, OfflineFrontendCommand.capabilitiesText); return }
+            if command == .packages {
+                append(.output, "Bundled offline packages (no registry access):\n" + (try await frontend.packageSummary()))
+                return
+            }
+            workspace.commitEditorText()
+            guard let snapshot = workspace.project?.files else { throw OfflineFrontendError.message("Open a frontend project first.") }
+            let generation = workspace.projectGeneration
+            let revision = workspace.sourceRevision
+            try command.validateScript(in: snapshot)
+            switch command {
+            case let .install(frozen):
+                let plan = try await frontend.plan(files: snapshot)
+                workspace.commitEditorText()
+                guard workspace.projectGeneration == generation, workspace.sourceRevision == revision else { throw OfflineFrontendError.message("The project changed. Run install again.") }
+                if frozen, snapshot[OfflineFrontendRecipe.lockPath] != plan.lock {
+                    throw OfflineFrontendError.message("The offline lock is missing or stale. Run frontend install first.")
+                }
+                var files = snapshot
+                files[OfflineFrontendRecipe.lockPath] = plan.lock
+                workspace.replaceFiles(with: files)
+                append(.output, "Offline frontend lock ready. Packages are staged from the bundled catalog at build time; no scripts or downloads run.\n" + plan.packages.map { "\($0.name)@\($0.version)" }.joined(separator: "\n"))
+            case .build:
+                append(.output, "Building locally in WASI. No network, shell, project plugins or lifecycle hooks.")
+                let result = try await frontend.build(files: snapshot)
+                workspace.commitEditorText()
+                guard workspace.projectGeneration == generation, workspace.sourceRevision == revision else { throw OfflineFrontendError.message("Source changed during bundling; the result was discarded. Build again.") }
+                var files = snapshot.filter { !$0.key.hasPrefix(result.outputDirectory + "/") }
+                files.merge(result.generated) { _, generated in generated }
+                workspace.replaceFiles(with: files)
+                append(.output, result.stdout)
+                append(.output, "Offline preview ready in Output. This is a browser build, not a Node/Bun server or a TypeScript type check.")
+            case .preview:
+                guard OfflineFrontendPlan.previewReady(files: snapshot) else { throw OfflineFrontendError.message("Run frontend build first; generated assets are missing or source changed.") }
+                workspace.refreshSitePreview()
+                append(.output, "Isolated offline preview is ready in Output. External networking is blocked; preview storage is temporary.")
+            case .packages, .capabilities: break
+            }
+        } catch {
+            append(.failure, error.localizedDescription)
         }
     }
 

@@ -94,10 +94,46 @@ JavaScript interactions in WebKit. These examples use the documented educational
 Gin-compatible subset; their Go routes run through `httptest`, while the native
 host serves the web files. This does not verify an arbitrary upstream Gin server.
 
-Node.js, npm and Bun are not bundled. `ProjectTerminalSessionTests` checks that
-their commands fail clearly without running Go or changing the open Gin project,
-and that project inspection still works afterward. A host Mac's installed
-JavaScript tools do not make them available in the iOS console.
+Full Node.js, npm and Bun runtimes are not bundled. Unsupported runtime commands
+fail clearly without running Go or changing the project. The next-build offline
+frontend experiment accepts a documented command subset; a host Mac's installed
+JavaScript tools do not become available in the iOS console.
+
+### Offline React frontend (next build)
+
+`scripts/prepare_frontend.py` runs during bootstrap and app builds. Go 1.24+ and
+curl are needed on the build host. It compiles the committed esbuild Go driver
+to WASI, verifies pinned package archives with SHA-512, retains their licenses,
+and stages `Frontend/` resources with SHA-256 checksums. This preparation may
+use the network on a clean build host; **the installed app never downloads a
+compiler or frontend package**. Do not replace it with runtime registry access.
+
+Focused simulator checks, using an owned simulator UUID:
+
+```bash
+DEVELOPER_DIR=/Applications/Xcode-27.1-RC.app/Contents/Developer \
+  xcodebuild -project GopherForge.xcodeproj -scheme GopherForge \
+  -configuration Gate -destination 'platform=iOS Simulator,id=<simulator-UUID>' \
+  -parallel-testing-enabled NO -only-testing:GopherForgeTests/OfflineFrontendTests \
+  -only-testing:GopherForgeTests/ProjectTerminalSessionTests \
+  -only-testing:GopherForgeTests/LocalSiteServerTests \
+  SWIFT_SUPPRESS_WARNINGS=NO test
+```
+
+These tests execute the bundled WASI compiler, render React in the production
+WebKit scheme handler, exercise a form, reducer, filter, CSS and local JSON,
+and verify that preview requests cannot reach a known working loopback HTTP
+listener. Terminal checks cover offline/frozen installs, actual builds,
+autosave, stale-preview invalidation and failure without file replacement.
+An unsupported `node:fs` import must fail instead of gaining filesystem access.
+
+`BundledContentGateTests/testOfflineReactTemplateGoRoutesRunWithoutNetworking`
+runs install → frontend build → Go Run through the real project console using
+the compiler-gate scheme. It checks exact Gin-compatible route output, retained
+React preview freshness and the absence of a TCP listener. The native UI flow
+`WorkspaceFlowUITests/testOfflineReactExampleBuildsFromTerminalAndOpensFullScreen`
+opens the actual example, types the commands and captures embedded/full-screen
+WebKit views.
 
 Simulator checks do not establish physical-device offline, thermal or memory
 behavior. Check those separately on hardware.

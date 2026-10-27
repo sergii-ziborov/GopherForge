@@ -1,0 +1,95 @@
+{
+  "checkedAt": "2026-10-27T11:14:03.062042+00:00",
+  "scope": "Next-build source experiment; not included in submitted App Store/TestFlight 1.2.0 (45)",
+  "result": "Focused functional gates passed",
+  "passedTests": 36,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "3BA152DC-ECD5-45BB-8447-60E8B742FAEA",
+    "deviceName": "GopherForge Release45 Phone",
+    "modelName": "iPhone 17 Pro Max",
+    "osBuildNumber": "23F77",
+    "osVersion": "26.5",
+    "platform": "iOS Simulator"
+  },
+  "coverage": [
+    "Actual bundled esbuild WASI: TypeScript and multi-file React TSX/CSS build",
+    "Production offline WebKit factory: components, form input, reducer, filter, lazy component, CSS and local JSON",
+    "A reachable loopback HTTP probe receives no preview fetch/image requests; network APIs and popups disabled",
+    "Other project hosts and Go source files are unavailable to the preview",
+    "Fixed-catalog semver ranges, transitive requirements, rejected missing packages and escaping/owned output paths",
+    "npm/Bun educational command parsing, frozen locks, current editor buffer, persisted project output, stale preview invalidation, failed build preservation and rejected Node built-ins",
+    "Existing local Gin previews and WebKit interactions remain functional",
+    "Native UI: open example, type npm install/build, view React in Output and full screen",
+    "Combined console flow: npm install --offline -> npm run build -> go run; exact route checks, current React preview and no native TCP listener"
+  ],
+  "runtimeAvailability": {
+    "compiler": "esbuild 0.28.2 WASI",
+    "bundledBrowserPackages": [
+      "react@19.3.1",
+      "react-dom@19.3.1",
+      "scheduler@0.28.0"
+    ],
+    "Node.js": "not bundled",
+    "npm/Bun": "documented educational command subset; full runtimes not bundled"
+  },
+  "limits": "No registry, cloud, project plugins, arbitrary scripts, Node built-ins or live arbitrary Go HTTP backend; TypeScript transpilation only; preview JSON fixtures are separate from Gin httptest checks",
+  "resultBundles": [
+    "build/frontend-prototype/final-verified.xcresult",
+    "build/frontend-prototype/combined-flow.xcresult"
+  ],
+  "screenshots": [
+    "docs/examples/offline-frontend/output.png",
+    "docs/examples/offline-frontend/fullscreen.png"
+  ],
+  "excludedKnownBaselineFailure": {
+    "test": "ThirdPartyNoticesTests/testAppAndTeachingSourcesStayWithinTheLineBudget",
+    "evidence": "The first broad selection ran it and failed on existing HEAD files, independently of the frontend changes. Later focused selection excludes this global 500-line gate.",
+    "unchangedExistingOffenders": {
+      "GopherForge/UI/Projects/ProjectNavigatorView.swift": 585,
+      "GopherForge/Features/Compiler/WorkspaceModel.swift": 967
+    },
+    "firstResultBundle": "build/frontend-prototype/offline-suite2.xcresult"
+  },
+  "remainingLimits": [
+    "No physical-device thermal, battery or peak-memory measurement",
+    "Existing WASI stream-capture priority inversion warnings remain; simulator functional checks pass"
+  ],
+  "frontendResourceManifest": {
+    "format": 1,
+    "esbuild": "0.28.2",
+    "sourceSHA256": "16024effacf8e3f2a7828b00cb475ac46726514f18689aa214c8f196721ea4e5",
+    "sha256": {
+      "bundler.wasm": "f85011ec585810a496762f778c69bdfde2dde598bab5a8ce8f0133dcfc370872",
+      "packages.json": "a66398ddec175f1c29a01c2dd43da218486be8b3c7adcedb27bd97e049ab26dc",
+      "THIRD_PARTY_NOTICES.txt": "1c630453b4683186643fa3fc87bf559305fedad03eb8e15642e981a50181c953"
+    }
+  },
+  "bundledResourceBytes": {
+    "THIRD_PARTY_NOTICES.txt": 6724,
+    "bundler.wasm": 13338866,
+    "manifest.json": 421,
+    "packages.json": 8638836
+  },
+  "sourceFilesSHA256": {
+    "GopherForge/Features/Frontend/OfflineFrontendBuilder.swift": "7dce76b70b0e4b90d6361ca16fc4f9174eba723f67ffce49822c7e5a942fee5d",
+    "GopherForge/Features/Frontend/OfflineFrontendCommand.swift": "c6f419a51038a58e0ecef676c5d56011cc2875d16c68fbf6ec94650825ad5f9d",
+    "GopherForge/Features/Frontend/OfflineFrontendPlan.swift": "0d3c9d8249b9e141f62e3cb998f8a30f2684adb9c4d5b6124674699fca3e4939",
+    "GopherForge/Features/Frontend/OfflinePreviewResources.swift": "833e9e1d8c589cb921059b3cadb8a4d85d3aa947ed3b3ba87dd9c6199a8158a3",
+    "GopherForge/Features/Compiler/ProjectTerminalSession.swift": "51d77a56e91405926797f07f221bc6b8289d983f22817fcb7f6c6c311536f80b",
+    "GopherForge/UI/Workspace/Dock/OfflineFrontendWebView.swift": "597d2702855c9680d8922857dcadc782902e2e15f941c9ab2bff54075aba192c",
+    "GopherForge/UI/Workspace/Dock/OfflinePreviewPolicy.swift": "09687bb5b447ebf79b51a50f0474abaffe11b9bfa1f1fcb400cdc30f5613381c",
+    "GopherForge/Examples/Projects/GoExampleProjectReactStudy.swift": "9684cbf8c55d628463625f7466b8d972f0dc45125cbed2b964e0031400f614a8",
+    "GopherForgeTests/Workspace/OfflineFrontendTests.swift": "97528b901c5807f0805d4e86cbdb3ec261f33fdfe73afb5159374103a0bb4463",
+    "GopherForgeTests/Workspace/ProjectTerminalSessionTests.swift": "0734e1e1a89dd6a6eaa9730521e93812b28eade08759781a591c43dbac285427",
+    "GopherForgeTests/Compiler/Toolchain/BundledContentGateTests.swift": "d0aad7569ef4d759ac5e0086b4edfdd95f11ab0d93ab3ea63bb30deea6f444bc",
+    "GopherForgeUITests/WorkspaceFlowUITests.swift": "2ec3d8dd4ec72f1e7e2bc757bfd403ca32f2d41aa38bcd0fc30f0ff6e637f332",
+    "tools/frontend-bundler/THIRD_PARTY_NOTICES.txt": "1c630453b4683186643fa3fc87bf559305fedad03eb8e15642e981a50181c953",
+    "tools/frontend-bundler/go.mod": "c9bc08a5fe02ae582374eafce835d9a1bd4b25740982b938e2b854bf61d6b1d0",
+    "tools/frontend-bundler/go.sum": "ef1d7c49203909a4e744a66d90d63fd8241e22cc91eca433da92a35c628c52dc",
+    "tools/frontend-bundler/main.go": "d1d7751e8129c1df769ee546b3e4b5b9879d3c8b945d90cf415e9d3777762926",
+    "tools/frontend-bundler/packages.json": "91d46023897f1fb4d9bca4e068b74198a62c3a197395b5fd137bb42a2fe72e91"
+  }
+}

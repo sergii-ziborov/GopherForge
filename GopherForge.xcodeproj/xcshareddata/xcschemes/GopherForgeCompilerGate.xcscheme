@@ -105,6 +105,9 @@
                   Identifier = "BundledContentGateTests/testGinSitesRunThroughTerminal()">
                </Test>
                <Test
+                  Identifier = "BundledContentGateTests/testOfflineReactTemplateGoRoutesRunWithoutNetworking()">
+               </Test>
+               <Test
                   Identifier = "BundledContentGateTests/testGinProjectRunsWhenOpenedInWorkspace()">
                </Test>
                <Test

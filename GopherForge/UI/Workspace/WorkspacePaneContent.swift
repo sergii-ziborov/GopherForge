@@ -73,9 +73,10 @@ struct WorkspacePaneContent: View {
                 progress: workspace.runningStep,
                 packageProblems: workspace.packageProblems,
                 onRetryPackages: { Task { await workspace.retryPackageDownloads() } },
-                siteURL: workspace.lastResult?.phase == .run && workspace.lastResult?.succeeded == true
+                siteURL: workspace.sitePreviewURL?.scheme == OfflinePreviewResources.scheme || (workspace.lastResult?.phase == .run && workspace.lastResult?.succeeded == true)
                     ? workspace.sitePreviewURL : nil,
-                siteGeneration: workspace.siteGeneration
+                siteGeneration: workspace.siteGeneration,
+                offlineFiles: workspace.project?.files[OfflineFrontendRecipe.path] != nil ? workspace.project?.files : nil
             )
         case .tests:
             TestResultListView(tests: workspace.lastResult?.tests ?? [])

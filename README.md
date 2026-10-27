@@ -114,8 +114,40 @@ Gin-style templates use an educational compatibility layer rather than the full
 upstream Gin framework. Registered handlers are exercised through `httptest`;
 the native app serves compatible local preview files. An arbitrary Go backend
 cannot bind a listener inside the WASI guest. Node.js, npm and Bun are not bundled.
-Build a frontend in an external development environment before importing
-compatible static output; run full Gin/database services in that environment.
+Full Gin/database services need an external native environment.
+
+#### Next-build experiment: isolated offline React
+
+The working branch adds **React + Gin study board** in Examples → Offline
+frontend. This feature is **not in the submitted 1.2.0 (45) binary**. It bundles
+esbuild 0.28.2 as WASI and a fixed browser catalog: React / React DOM 19.3.1
+and scheduler 0.28.0. The installed app needs no registry or server for this mode.
+
+```text
+frontend packages
+npm install --offline
+npm run build
+frontend preview
+```
+
+Open Output for the preview. `frontend install/build` and `bun install --offline`
+/ `bun run build` are equivalent educational command spellings. They invoke this
+app's bounded frontend builder, **not a full npm or Bun runtime**. The compiler
+transpiles JS/JSX/TS/TSX, bundles browser imports, local JSON and CSS, and handles
+SVG/text imports. TypeScript is not type-checked. Edit components, reducers,
+forms or styles, then rebuild; stale previews are invalidated.
+
+The preview reads generated assets and `web/api/*.json` through an isolated
+WebKit scheme with no TCP listener. External HTTP(S), WebSockets, workers,
+frames and popups are blocked. Preview browser data is temporary. Project
+sources and generated output are autosaved in the project library.
+
+Only bundled package versions are accepted. Package scripts must explicitly
+use `gopherforge build` / `gopherforge preview`; lifecycle hooks, arbitrary
+scripts, Node APIs, native addons, Vite plugins and remote package installation
+are not supported. Gin route checks and frontend JSON fixtures are separate:
+this does **not** turn WASI into an arbitrary live Go backend. See the
+[offline frontend guide](docs/OFFLINE_FRONTEND.md) for the recipe and limits.
 
 ### JSON v2, modern concurrency, SQL and agents
 
