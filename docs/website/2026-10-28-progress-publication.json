@@ -1,0 +1,54 @@
+{
+  "publishedAt": "2026-10-28T14:14:08.180027+00:00",
+  "sourceCommit": "674ebaf",
+  "imageDigest": "sha256:3ae628378e7059eaf99f3084a3dd4381ff605c6ce5cfdecdd194d281410638fb",
+  "hostwatchJob": "gopherforge-progress-r3-674ebaf-20261028",
+  "jobState": "succeeded",
+  "rollbackImage": "localhost/gopherforge-web:rollback-progress-674ebaf",
+  "earlierAttempt": "gopherforge-progress-674ebaf-20261028 rolled back after a pnpm symlink packaging error; corrected image passed separate server route checks",
+  "webTests": 27,
+  "nativeLearningChecks": 34,
+  "browserQA": [
+    "File chooser preview",
+    "Merge preserves marks",
+    "Reload retains Continue",
+    "Download JSON read back",
+    "Desktop and 390px form inspection"
+  ],
+  "checks": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/learn",
+      "status": 200
+    },
+    {
+      "path": "/interview",
+      "status": 200
+    },
+    {
+      "path": "/guide",
+      "status": 200
+    },
+    {
+      "path": "/updates",
+      "status": 200
+    },
+    {
+      "path": "/news/feed",
+      "status": 200
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200
+    },
+    {
+      "path": "/api/health",
+      "status": 200
+    }
+  ],
+  "nativeTestFlight": "1.3.0 (47), source 1f514c3",
+  "nativeDraftChanges": "Not included in build 47; current development build 48"
+}
