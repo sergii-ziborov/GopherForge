@@ -17,10 +17,10 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 27 October 2026 | Changes |
+| Version | Status, checked 28 October 2026 | Changes |
 | --- | --- | --- |
-| **1.3.0 (46)** | Internal QA TestFlight | Offline React/npm subset, isolated Go API capability and automatic source debugging with breakpoints. |
-| **1.2.0 (45)** | TestFlight · Waiting for App Review | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
+| **1.3.0 (46)** | TestFlight · Waiting for App Review | Offline React/npm subset, isolated Go API capability and automatic source debugging with breakpoints. |
+| **1.2.0 (45)** | Available on the App Store | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
 | **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
@@ -28,16 +28,16 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.1.6 (44)**, verified on 27 October 2026.
-**1.2.0 (45)** is available in Internal QA TestFlight and submitted to App Review.
-Automatic publication after approval is enabled. It includes the expanded
+The store currently distributes **1.2.0 (45)**, verified on 28 October 2026.
+It includes the expanded
 curriculum, corrected exercise examples and the selected dark teal gopher icon.
 Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
-**1.3.0 (46)** is available in Internal QA TestFlight with the documented offline
-npm/React mode, bounded local Go API capability and automatic source debugger.
+**1.3.0 (46)** is available in Internal QA TestFlight and submitted to App Review
+with the documented offline npm/React mode, bounded local Go API capability and
+automatic source debugger. Automatic publication after approval is enabled.
 The external GitHub project used for verification is not bundled in the app.
-[Beta receipt](docs/releases/1.3.0-beta.json) · [Focused QA](docs/releases/1.3.0-beta-qa.json).
+[Review submission](docs/releases/1.3.0-submission.json) · [Store assets](docs/releases/1.3.0-assets-verified.json) · [Review QA](docs/releases/1.3.0-review-qa.json) · [Beta receipt](docs/releases/1.3.0-beta.json) · [Focused QA](docs/releases/1.3.0-beta-qa.json).
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
@@ -123,7 +123,7 @@ Full Gin/database services need an external native environment.
 
 #### 1.3.0 beta: isolated offline React and source debugging
 
-The beta adds **React + Gin study board** in Examples → Offline frontend. This feature is **not in the submitted 1.2.0 (45) binary**. It bundles
+The beta adds **React + Gin study board** in Examples → Offline frontend. This feature is **not in the current App Store 1.2.0 (45) binary**. It bundles
 esbuild 0.28.2 as WASI and a fixed browser catalog: React / React DOM 19.3.1
 and scheduler 0.28.0. The installed app needs no registry or server for this mode.
 

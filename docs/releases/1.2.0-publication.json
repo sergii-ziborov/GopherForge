@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-28T11:12:27.936309+00:00",
+  "version": "1.2.0",
+  "build": "45",
+  "versionId": "fd8e104b-f25e-465c-aa7f-b3dbe311d8d5",
+  "appStoreState": "READY_FOR_DISTRIBUTION",
+  "releaseDate": "2026-10-27T16:31:49Z",
+  "trackName": "GopherForge: Go Compiler",
+  "price": 6.99,
+  "currency": "USD",
+  "storeUrl": "https://apps.apple.com/us/app/gopherforge-go-compiler/id6809702319?uo=4",
+  "lookupCountry": "us",
+  "source": "Apple App Store public lookup and App Store Connect API"
+}

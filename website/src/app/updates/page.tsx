@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge release history: current App Store availability, 1.3.0 beta offline npm/React builds and source debugging, plus the 1.2.0 curriculum expansion and current App Store availability.",
+    "GopherForge release history: version 1.2.0 on the App Store, plus 1.3.0 offline npm/React builds and Go source debugging in TestFlight and App Review.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -18,7 +18,8 @@ export default function Updates() {
       </h1>
       <section className="release" id="v130">
         <span className="release-badge muted">
-          {releases.beta.status.toUpperCase()} · PRIVATE BETA
+          {releases.next.status.toUpperCase()} ·{" "}
+          {releases.beta.status.toUpperCase()}
         </span>
         <h2>
           GopherForge {releases.beta.version}{" "}
@@ -26,8 +27,9 @@ export default function Updates() {
         </h2>
         <p>
           Build a React interface offline and trace your Go program one
-          statement at a time. This beta is separate from the current App Store
-          release and the 1.2.0 review submission.
+          statement at a time. Version 1.3.0 is available in private TestFlight
+          and submitted to App Review. The App Store currently distributes
+          1.2.0.
         </p>
         <ul>
           <li>
@@ -61,12 +63,9 @@ export default function Updates() {
         </Link>
       </section>
       <section className="release" id="v120">
-        <span className="release-badge muted">
-          WEB AVAILABLE · {releases.next.status.toUpperCase()}
-        </span>
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
         <h2>
-          GopherForge {releases.next.version}{" "}
-          <small>build {releases.next.build}</small>
+          GopherForge 1.2.0 <small>build 45</small>
         </h2>
         <p>
           The expanded library has 186 teaching lessons, 139 worked readings and

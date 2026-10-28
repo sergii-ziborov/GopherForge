@@ -81,7 +81,7 @@ export default function AppGuide() {
         />
         <div>
           <p className="eyebrow">
-            THE APP, EXPLAINED · UPDATED 27 OCTOBER 2026
+            THE APP, EXPLAINED · UPDATED 28 OCTOBER 2026
           </p>
           <h1>
             Your Go workbench.
@@ -93,7 +93,7 @@ export default function AppGuide() {
             with GopherForge on iPhone, iPad and the web.
           </p>
           <p className="small-note">
-            App Store: {releases.public.version}. Expanded library:{" "}
+            App Store: {releases.public.version}. Next release:{" "}
             {releases.next.version} · {releases.next.status}. Beta:{" "}
             {releases.beta.version} ({releases.beta.build}) ·{" "}
             {releases.beta.status}.{" "}

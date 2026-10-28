@@ -1,0 +1,72 @@
+{
+  "checkedOn": "2026-10-28",
+  "version": "1.3.0",
+  "build": "46",
+  "result": "Passed",
+  "nativeUIAndColdCacheChecks": [
+    {
+      "resultBundle": "build/review46/app-review28/iphone-6.9.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/iphone-6.3-space.xcresult",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/iphone-6.3-repaint.xcresult",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/iphone-6.1.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/iphone-6.5.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/ipad-13-r2.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/iphone-6.5-r2.xcresult",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/cold-library.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "resultBundle": "build/review46/app-review28/cold-real-cache.xcresult",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "focusedRegression": "docs/releases/1.3.0-beta-qa.json",
+  "websiteTests": 21,
+  "nextBuildAndTypeScript": "Passed",
+  "appProductCodeUnchangedSinceUploadedArchive": true,
+  "notes": [
+    "Real device-sized native screenshots; opaque RGB conversion only.",
+    "Screenshot checks wait for the new WebKit sheet to paint.",
+    "iPad UI queries select the first instance of shared debugger controls in its two panes; terminal quick commands use the same command handler.",
+    "Earlier failed attempts and their diagnostics are retained in build/review46/app-review28. Mac lock and low host disk affected initial automation; no full-suite green claim."
+  ]
+}

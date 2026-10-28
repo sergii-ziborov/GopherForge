@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import { releases } from "@/lib/releases";
+import guide from "@/content/app-guide.json";
 import { lessons, units } from "@/lib/course";
 import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
@@ -40,26 +42,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified:
         path === "/news"
           ? news[0].modifiedAt
-          : [
-                "",
-                "/guide",
-                "/learn",
-                "/interview",
-                "/updates",
-                "/support",
-              ].includes(path)
-            ? curriculumUpdatedOn
-            : path.startsWith("/learn/units/")
-              ? changedUnits.has(path.split("/").pop()!)
+          : path === "/guide"
+            ? guide.updated
+            : ["", "/updates", "/support"].includes(path)
+              ? releases.checkedOn
+              : ["/learn", "/interview"].includes(path)
                 ? curriculumUpdatedOn
-                : "2026-10-23"
-              : path.startsWith("/learn/")
-                ? lessonUpdatedOn(path.slice(7))
-                : path.startsWith("/interview/")
-                  ? changedInterview.has(decodeURIComponent(path.slice(11)))
+                : path.startsWith("/learn/units/")
+                  ? changedUnits.has(path.split("/").pop()!)
                     ? curriculumUpdatedOn
-                    : "2026-10-20"
-                  : "2026-10-25",
+                    : "2026-10-23"
+                  : path.startsWith("/learn/")
+                    ? lessonUpdatedOn(path.slice(7))
+                    : path.startsWith("/interview/")
+                      ? changedInterview.has(decodeURIComponent(path.slice(11)))
+                        ? curriculumUpdatedOn
+                        : "2026-10-20"
+                      : "2026-10-25",
       ...(path === "/guide"
         ? {
             images: [
