@@ -46,5 +46,13 @@
       "status": 200
     }
   ],
-  "sourcePR": "https://github.com/sergii-ziborov/GopherForge/pull/6"
+  "sourcePR": "https://github.com/sergii-ziborov/GopherForge/pull/6",
+  "runtime": {
+    "state": "running",
+    "user": "10001:10001",
+    "restartPolicy": "unless-stopped",
+    "bootUnit": "gopherforge-web.service",
+    "bootUnitEnabled": true,
+    "postDeployment": "The governed replace recreates with no container restart policy; restore unless-stopped on this owned container afterward. HTTP health verified; no server reboot performed."
+  }
 }
