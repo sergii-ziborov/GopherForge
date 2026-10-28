@@ -48,7 +48,7 @@ extension WorkspaceModel {
     /// stale project, and quitting lost it outright. Losing what someone typed
     /// is worse than any missing language feature.
     func updateEditorText(_ text: String) {
-        guard text != editorText else { return }
+        guard !text.utf8.elementsEqual(editorText.utf8) else { return }
         if debugger.isActive { debugger.stop() }
         if let line = focusedErrorLine, focusedErrorFile == selectedFile,
            Self.line(editorText, number: line) != Self.line(text, number: line) {

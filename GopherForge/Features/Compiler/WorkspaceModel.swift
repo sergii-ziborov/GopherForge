@@ -15,6 +15,9 @@ final class WorkspaceModel {
     private(set) var projectID: UUID?
     private(set) var projectGeneration = 0
     private(set) var sourceRevision: UInt64 = 0
+    private let libraryWriterID = UUID()
+    private var savedSourceFiles: [String: String]?
+    var persistenceNotice: String?
     private var isChangingLibrary = false
     /// Bumps when the navigator should rebuild. A download does not bump it
     /// on every module, or opening a folder waits on the whole project.
@@ -195,7 +198,8 @@ final class WorkspaceModel {
         let previousSave: Task<Void, Never>?
         if let old = self.project, let oldID = projectID, hasUnsavedChanges {
             let oldRevision = sourceRevision
-            previousSave = Task { await save(old, id: oldID, revision: oldRevision) }
+            let oldBase = savedSourceFiles
+            previousSave = Task { await save(old, id: oldID, revision: oldRevision, base: oldBase) }
         } else {
             previousSave = nil
         }
@@ -203,6 +207,7 @@ final class WorkspaceModel {
         projectID = id
         debugger.openProject(id)
         sourceRevision = revision
+        savedSourceFiles = isNew ? nil : project.files
         navigatorRevision &+= 1
         savedRevision = isNew ? 0 : revision
         hasUnsavedChanges = isNew
@@ -252,7 +257,7 @@ final class WorkspaceModel {
     func commitEditorText() {
         guard var project else { return }
         var files = project.files
-        guard files[selectedFile] != editorText else { return }
+        guard files[selectedFile].map({ !$0.utf8.elementsEqual(editorText.utf8) }) ?? true else { return }
         files[selectedFile] = editorText
         project = GopherForgeProject(
             name: project.name,
@@ -289,13 +294,15 @@ final class WorkspaceModel {
     /// process going away, so backgrounding writes rather than waits.
     func flush() async {
         commitEditorText()
+        await remembering?.value
+        commitEditorText()
         guard let project, let projectID else { return }
-        await save(project, id: projectID, revision: sourceRevision)
+        await save(project, id: projectID, revision: sourceRevision, base: savedSourceFiles)
     }
 
     func retrySave() async {
         if let recoveryProject, let recoveryID, let recoveryRevision {
-            await save(recoveryProject, id: recoveryID, revision: recoveryRevision)
+            await save(recoveryProject, id: recoveryID, revision: recoveryRevision, base: recoveryBaseFiles)
         }
         await flush()
         if let pendingBuildRecord {
@@ -377,19 +384,41 @@ final class WorkspaceModel {
 
     private var recoveryID: UUID?
     private var recoveryRevision: UInt64?
+    private var recoveryBaseFiles: [String: String]?
 
-    private func save(_ snapshot: GopherForgeProject, id: UUID, revision: UInt64) async {
+    private func save(
+        _ snapshot: GopherForgeProject, id: UUID, revision: UInt64, base: [String: String]? = nil
+    ) async {
         do {
-            _ = try await library.recordSource(id: id, revision: revision, project: snapshot)
-            if projectID == id {
-                savedRevision = max(savedRevision, revision)
-                hasUnsavedChanges = sourceRevision > savedRevision
+            let stored = try await library.recordSource(
+                id: id, revision: revision, project: snapshot, expectedBase: base, writerID: libraryWriterID
+            )
+            if stored.id != id {
+                persistenceNotice = "Another version changed outside this editor. Your work was saved separately as \(stored.project.name). Both projects are available in Project library."
+            }
+            if projectID == id, revision >= savedRevision {
+                let currentRevision = sourceRevision
+                let newerEdits = currentRevision >= revision ? currentRevision - revision : 0
+                if stored.id != id {
+                    projectID = stored.id
+                    project = project?.renamed(to: stored.project.name)
+                    projectGeneration &+= 1
+                    debugger.stop()
+                    debugger.openProject(stored.id)
+                }
+                savedRevision = max(stored.sourceRevision ?? revision, revision)
+                sourceRevision = savedRevision &+ newerEdits
+                savedSourceFiles = stored.project.files
+                hasUnsavedChanges = newerEdits > 0
+                if sourceRevision != currentRevision || stored.id != id { refreshIdioms() }
+                if hasUnsavedChanges { scheduleAutosave() }
                 if recoveryProject == nil, pendingBuildRecord == nil { saveError = nil }
             }
             if recoveryID == id, recoveryRevision == revision {
                 recoveryProject = nil
                 recoveryID = nil
                 recoveryRevision = nil
+                recoveryBaseFiles = nil
                 saveError = nil
             }
         } catch {
@@ -398,6 +427,7 @@ final class WorkspaceModel {
                 recoveryProject = snapshot
                 recoveryID = id
                 recoveryRevision = revision
+                recoveryBaseFiles = base
             }
         }
     }
@@ -1035,7 +1065,7 @@ final class WorkspaceModel {
         guard var project, !formattedFiles.isEmpty else { return }
         var files = project.files
         var changed = false
-        for (path, contents) in formattedFiles where files[path] != contents {
+        for (path, contents) in formattedFiles where files[path].map({ !$0.utf8.elementsEqual(contents.utf8) }) ?? true {
             files[path] = contents
             changed = true
         }

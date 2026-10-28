@@ -107,7 +107,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         editor.gutter.onToggleBreakpoint = onToggleBreakpoint
         textView.isEditable = !isReadOnly
 
-        let needsTextUpdate = textView.text != text
+        let needsTextUpdate = !(textView.text ?? "").utf8.elementsEqual(text.utf8)
         if needsTextUpdate {
             let selection = textView.selectedRange
             let highlighted = context.coordinator.highlighted(text, fontSize: fontSize)

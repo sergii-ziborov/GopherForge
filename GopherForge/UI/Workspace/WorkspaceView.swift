@@ -167,6 +167,14 @@ struct WorkspaceView: View {
         // The keyboard's actual frame owns this boundary. SwiftUI can retain
         // the previous responder's accessory height when Terminal becomes Code.
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .alert("Conflicting versions kept", isPresented: Binding(
+            get: { workspace.persistenceNotice != nil },
+            set: { if !$0 { workspace.persistenceNotice = nil } }
+        )) {
+            Button("OK") { workspace.persistenceNotice = nil }
+        } message: {
+            Text(workspace.persistenceNotice ?? "")
+        }
         .ignoresSafeArea(duoHingePresent ? .container : [], edges: .top)
         .ignoresSafeArea((duoHingePresent && usesLaptopLayout || isCompactPhoneLandscape || isClosedDuoLandscape) && !softwareKeyboardVisible ? .container : [], edges: .bottom)
         .environment(\.softwareKeyboardAccessoryEnabled, keyboardAccessoryEnabled)
