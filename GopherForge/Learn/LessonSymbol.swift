@@ -233,4 +233,5 @@ enum LessonSymbol {
         GoConcept.functionValue: "function",
     ].merging(byLesson) { original, _ in original }
         .merging(environmentSymbols) { original, _ in original }
+        .merging(Dictionary(uniqueKeysWithValues: InterviewCurriculumExpansion.lessonIDs.map { ($0, "book.closed") })) { original, _ in original }
 }

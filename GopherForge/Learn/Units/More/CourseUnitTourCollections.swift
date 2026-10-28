@@ -5,19 +5,24 @@ import Foundation
 extension CourseUnitCollections {
     static let makeAndNew = Lesson(
         id: "collections.make-and-new",
-        title: "make builds the header; new only allocates",
+        title: "make initializes collections; new returns a pointer",
         objective: "Pick make or new for a slice, a map and a pointer.",
         explanation: """
         The Tour's "Creating a slice with make" page and Effective Go's \
         "Allocation with new" page are the same distinction. `new(T)` \
-        allocates a zero T and returns `*T`. That is all it does. `make` is \
-        only for slices, maps and channels: it allocates the backing store \
-        and returns a usable value, not a pointer to one.
+        allocates a zero T and returns `*T`. Since Go 1.26, `new(expr)` \
+        can instead initialize the new variable with an expression: `new(42)` \
+        returns `*int` pointing at 42. This does not initialize a nil map \
+        when the operand is the map type. `make` is only for slices, maps \
+        and channels: it returns an initialized value, not a pointer to one.
 
         `new(map[string]int)` is a pointer to a nil map. Writing through it \
         panics. `make(map[string]int)` is a map you can write. The same trap \
         exists for a slice: `new([]int)` is `*[]int` pointing at nil; \
-        `make([]int, 0, 8)` is a slice with room.
+        `make([]int, 0, 8)` is a slice with room. `new(make(map[string]int))` \
+        is a pointer to an initialized map, but prefer the map value itself \
+        unless pointer-to-map semantics are specifically needed. Older \
+        language versions reject the expression form of `new`.
         """,
         conceptTags: [GoConcept.makeVsNew, GoConcept.mapZeroValue],
         task: .compile(

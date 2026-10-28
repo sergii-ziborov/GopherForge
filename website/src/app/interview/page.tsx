@@ -8,7 +8,7 @@ import { EditorialIllustration } from "@/components/EditorialIllustration";
 export const metadata: Metadata = {
   title: "Go interview preparation — junior to expert",
   description:
-    "Worked Go interview questions, interactive algorithm traces, concurrency, runtime, MongoDB, Redis, Docker, Kubernetes and coding-agent workflows. Free without registration.",
+    "132 worked Go interview guides: algorithms, concurrency, system design, Gin, security, blockchain, MongoDB, Redis, Kubernetes and coding agents. Free without registration.",
   alternates: { canonical: "/interview" },
 };
 export default function InterviewPage() {

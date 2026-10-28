@@ -11,7 +11,7 @@ import { EditorialIllustration } from "@/components/EditorialIllustration";
 export const metadata: Metadata = {
   title: "Learn Go — the complete course",
   description:
-    "Learn Go with 186 teaching lessons: concurrency, JSON v2, architecture, SQL, MongoDB, Redis, coding agents and deployment. Worked code and self-checks; no account.",
+    "Learn Go with 220 teaching lessons: concurrency, Gin, system design, security, blockchain, SQL, MongoDB, Redis and coding agents. Worked code and self-checks; no account.",
   alternates: { canonical: "/learn" },
 };
 export default function Learn() {
@@ -47,12 +47,12 @@ export default function Learn() {
           </span>
         </div>
         <p className="availability">
-          The web library includes JSON v2, modern concurrency, SQL services and
-          coding-agent lessons prepared for native {releases.next.version}. App
-          Store {releases.public.version} includes Continue. See{" "}
-          <Link href="/updates">version history</Link> for release status.
-          Continue saves your lesson and section in this browser. Web and app
-          progress are stored separately.
+          The expanded web library includes Gin, blockchain infrastructure,
+          service security and production system design, prepared for native{" "}
+          {releases.curriculum.version}. App Store {releases.public.version}{" "}
+          includes Continue. See <Link href="/updates">version history</Link>{" "}
+          for release status. Continue saves your lesson and section in this
+          browser. Web and app progress are stored separately.
         </p>
       </header>
       <StructuredData

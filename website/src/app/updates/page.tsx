@@ -16,6 +16,36 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
+      <section className="release" id="v131">
+        <span className="release-badge muted">
+          WEB AVAILABLE · {releases.curriculum.status.toUpperCase()}
+        </span>
+        <h2>
+          Expanded interview curriculum{" "}
+          <small>native {releases.curriculum.version}</small>
+        </h2>
+        <p>
+          34 new readings and 40 worked interview guides bring the library to
+          220 teaching lessons, 173 readings and 22 prediction challenges in 28
+          units, with 132 interview guides across 15 topics.
+        </p>
+        <p>
+          Explore Gin middleware and request ownership, blockchain package
+          choices and reorg-safe indexing, service security,
+          transaction/outbox/saga design, gRPC, Kafka and production clean code.
+          Architecture &amp; clean code now contains four units and 40 lessons.
+          Existing progress IDs and the twelve interactive algorithm labs are
+          retained.
+        </p>
+        <p>
+          These additions target {releases.curriculum.version}; they are
+          separate from the {releases.next.version} build {releases.next.build}{" "}
+          already waiting for App Review.
+        </p>
+        <Link className="button" href="/learn?direction=design">
+          Explore the expanded learning map →
+        </Link>
+      </section>
       <section className="release" id="v130">
         <span className="release-badge muted">
           {releases.next.status.toUpperCase()} ·{" "}
@@ -40,9 +70,10 @@ export default function Updates() {
           </li>
           <li>
             Restored lesson drafts and pre-solution source, assistance-aware
-            attempts, direct Practice access, and safer Files library restoration.
-            Exact GitHub commit snapshots and visible import omissions; strict
-            terminal validation preserves what a command actually means.
+            attempts, direct Practice access, and safer Files library
+            restoration. Exact GitHub commit snapshots and visible import
+            omissions; strict terminal validation preserves what a command
+            actually means.
           </li>
           <li>
             Documented npm install/build/preview commands, bundled esbuild WASI

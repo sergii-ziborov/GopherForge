@@ -9,7 +9,7 @@ import {
   curriculumUpdatedOn,
   lessonUpdatedOn,
   unitUpdatedOn,
-  changedInterview,
+  interviewUpdatedOn,
 } from "@/lib/curriculum-revision";
 export default function sitemap(): MetadataRoute.Sitemap {
   const origin = "https://gopherforge.app";
@@ -54,9 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
                   : path.startsWith("/learn/")
                     ? lessonUpdatedOn(path.slice(7))
                     : path.startsWith("/interview/")
-                      ? changedInterview.has(decodeURIComponent(path.slice(11)))
-                        ? "2026-10-27"
-                        : "2026-10-20"
+                      ? interviewUpdatedOn(decodeURIComponent(path.slice(11)))
                       : "2026-10-25",
       ...(path === "/guide"
         ? {

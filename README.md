@@ -50,6 +50,10 @@ Release status is a dated snapshot, not a live indicator.
 The app is a one-time purchase: US $6.99, US $4.99 in Ukraine, with localized
 App Store prices elsewhere. No subscription or in-app purchase.
 
+## Current curriculum
+
+The expanded source/web library targets **1.3.1 (49)**: 34 additional readings and 40 worked interview guides. Build 48 remains the separate 1.3.0 App Review candidate; these additions are not in build 48. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md).
+
 ## What you can do
 
 - **Build real Go.** Compile, run, test, vet and format on device. Compiler
@@ -60,7 +64,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** 186 teaching lessons in 23 units, including 139 readings,
+- **Learn Go.** 220 teaching lessons in 28 units, including 173 readings,
   plus 22 prediction challenges. Worked Go programs, diagrams, matching
   reviews and three-choice mistake practice accompany the material.
 - **Continue studying.** Reopen the last course lesson or interview guide.
@@ -69,7 +73,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
   place; it does not mark the material complete.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
-- **Prepare for interviews.** A separate area with 92 worked guides, 12 topics,
+- **Prepare for interviews.** A separate area with 132 worked guides, 15 topics,
   four difficulty levels and twelve interactive algorithm labs with 36 input
   scenarios. Course progress and interview self-assessment stay independent.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 original unit
@@ -80,6 +84,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 ### Architecture and patterns
 
 The course includes **19 architecture lessons**, **eight clean-code lessons**,
+plus **nine production system-design lessons** and **four advanced clean-code lessons**,
 all **23 classic design patterns** and **six concurrency and resilience patterns**.
 Scenario-based architecture ratings compare suitability for tools, domain-rich
 applications and services; they are editorial guidance, not universal rankings.
@@ -186,7 +191,7 @@ projects, testing, Continue, practice, package budgets and the sandbox.
 
 ### Interview preparation and coding agents
 
-Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **92 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
+Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **132 worked guides across 15 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
 
 Twelve algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging, minimum-coin dynamic programming, topological sorting, union-find, LRU eviction and merging closed intervals. Choose among **36 scenarios** and step through computed states, including empty, duplicate, cyclic and unreachable inputs. These deterministic teaching traces include highlighted state, Go implementations and complexity. They do not execute arbitrary web input. `python3 scripts/verify_interview_algorithms.py` compiles all twelve examples, checks the original 500 randomized rounds and new 200-round property cases with Go's race detector.
 

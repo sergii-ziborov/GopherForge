@@ -11,13 +11,13 @@ export const interviewDirections = [
     title: "Design & production",
     description:
       "Connect architecture, network budgets, testing and repeatable builds.",
-    topics: ["design", "http", "testing", "modules"],
+    topics: ["design", "http", "gin", "security", "testing", "modules"],
   },
   {
     id: "ecosystem",
     title: "The Go ecosystem",
     description:
       "Work with databases, containers and coding agents. Reason about their failure modes.",
-    topics: ["mongodb", "redis", "platform", "ai"],
+    topics: ["mongodb", "redis", "platform", "blockchain", "ai"],
   },
 ];

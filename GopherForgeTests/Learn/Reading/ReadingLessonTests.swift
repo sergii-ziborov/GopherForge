@@ -61,11 +61,11 @@ final class ReadingLessonTests: XCTestCase {
     }
 
     func testBundledReadingsAreIntegratedExactlyOnceAndPreserveOriginalCourse() {
-        XCTAssertEqual(ReadingLessonCatalog.all.count, 139)
-        XCTAssertEqual(GoCourseCatalog.units.count, 23)
-        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 186)
+        XCTAssertEqual(ReadingLessonCatalog.all.count, 173)
+        XCTAssertEqual(GoCourseCatalog.units.count, 28)
+        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 220)
         XCTAssertEqual(GoCourseCatalog.challenges.count, 22)
-        XCTAssertEqual(GoCourseCatalog.lessons.count, 208)
+        XCTAssertEqual(GoCourseCatalog.lessons.count, 242)
         for reading in ReadingLessonCatalog.all {
             XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == reading.id }.count, 1, reading.id)
             XCTAssertEqual(GoCourseCatalog.unit(containing: reading.id)?.id, reading.unitID)
@@ -95,7 +95,9 @@ final class ReadingLessonTests: XCTestCase {
             "www.domainlanguage.com", "martinfowler.com", "learn.microsoft.com",
             "grpc.io", "docs.aws.amazon.com", "www.informit.com", "gopherforge.app",
             "developers.openai.com", "learn.chatgpt.com", "code.claude.com", "cursor.com",
-            "www.postgresql.org"]
+            "www.postgresql.org", "microservices.io", "opentelemetry.io", "geth.ethereum.org",
+            "ethereum.org", "eips.ethereum.org", "www.rfc-editor.org", "owasp.org",
+            "protobuf.dev", "kafka.apache.org", "raft.github.io", "www.microsoft.com", "www.cs.columbia.edu"]
         for reading in ReadingLessonCatalog.all {
             XCTAssertGreaterThan(reading.introduction.count, 100, reading.id)
             XCTAssertGreaterThanOrEqual(reading.sections.count, 3, reading.id)

@@ -8,6 +8,7 @@ import { Code } from "@/components/Code";
 import { Prose } from "@/components/Prose";
 import { AlgorithmTrace } from "@/components/AlgorithmTrace";
 import { InterviewAssessment } from "@/components/InterviewAssessment";
+import { interviewUpdatedOn } from "@/lib/curriculum-revision";
 export function generateStaticParams() {
   return interview.questions.map((q) => ({ id: q.id }));
 }
@@ -27,6 +28,7 @@ export async function generateMetadata({
       description: q?.prompt,
       url: interviewURL(id),
       type: "article",
+      modifiedTime: interviewUpdatedOn(id),
     },
   };
 }
@@ -61,6 +63,7 @@ export default async function InterviewDetail({
           isAccessibleForFree: true,
           inLanguage: "en",
           learningResourceType: "Interview preparation",
+          dateModified: interviewUpdatedOn(id),
           educationalLevel: interview.levels[q.level - 1],
           isPartOf: {
             "@type": "CollectionPage",

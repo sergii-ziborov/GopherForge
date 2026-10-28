@@ -25,7 +25,11 @@ enum CourseUnitStyle {
         case "stdlib": "books.vertical"
         case "runtime": "cpu"
         case "services": "network"
-        case "architecture": "square.stack.3d.up"
+        case "architecture", "system-design": "square.stack.3d.up"
+        case "clean-code-production": "checkmark.seal"
+        case "gin": "network"
+        case "blockchain": "link"
+        case "security": "lock.shield"
         case "clean-code": "checkmark.seal"
         case "patterns-creational": "cube.box"
         case "patterns-structural": "square.stack.3d.up"
@@ -53,7 +57,11 @@ enum CourseUnitStyle {
         case "stdlib": Color(hex: 0x4E8F3E)
         case "runtime": GopherForgeTheme.deepBlue
         case "services": GopherForgeTheme.aqua
-        case "architecture": Color(hex: 0x6B4FA8)
+        case "architecture", "system-design": Color(hex: 0x6B4FA8)
+        case "clean-code-production": Color(hex: 0x4E8F3E)
+        case "gin": GopherForgeTheme.aqua
+        case "blockchain": Color(hex: 0xB07B00)
+        case "security": GopherForgeTheme.berry
         case "clean-code": Color(hex: 0x4E8F3E)
         case "patterns-creational": GopherForgeTheme.deepBlue
         case "patterns-structural": Color(hex: 0x6B4FA8)

@@ -347,7 +347,7 @@ enum ReviewMatchCatalog {
             MatchingPair(
                 id: "review.tour.make",
                 prompt: "make vs new",
-                answer: "make builds maps; new only allocates",
+                answer: "make initializes; new returns a pointer",
                 conceptTag: GoConcept.makeVsNew,
                 requiredLessonID: "collections.make-and-new"
             ),
