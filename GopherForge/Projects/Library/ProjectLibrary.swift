@@ -20,6 +20,7 @@ actor ProjectLibrary {
     private var writerRevisions: [String: UInt64] = [:]
     private var requiresExistingDocument: Bool
     private var heldFolderScope: URL?
+    private var restorationFailed = false
 
     /// The library the app uses.
     ///
@@ -44,9 +45,16 @@ actor ProjectLibrary {
     }
 
     init(storageURL: URL? = nil, deviceStorageURL: URL? = nil) {
-        self.storageURL = storageURL ?? ProjectLibraryLocation.fileURL()
         self.deviceStorageURL = deviceStorageURL ?? ProjectLibraryLocation.defaultFileURL()
-        self.requiresExistingDocument = FileManager.default.fileExists(atPath: self.storageURL.path)
+        if let storageURL { self.storageURL = storageURL }
+        else {
+            do { self.storageURL = try ProjectLibraryLocation.restoredFileURL() }
+            catch { self.storageURL = self.deviceStorageURL; restorationFailed = true }
+        }
+        let selectedURL = self.storageURL
+        self.requiresExistingDocument = (storageURL == nil && ProjectLibraryLocation.usesChosenFolder)
+            || FileManager.default.fileExists(atPath: selectedURL.path)
+            || ProjectLibraryDocument.hasRecoveryFiles(beside: selectedURL)
     }
 
     /// Opens an existing library, or copies the current one into an empty
@@ -60,6 +68,7 @@ actor ProjectLibrary {
         let next = try prepareDestination(destination)
         ProjectLibraryLocation.remember(bookmark: bookmark)
         storageURL = destination
+        restorationFailed = false
         requiresExistingDocument = true
         observedSources = Dictionary(uniqueKeysWithValues: next.items.map { ($0.id, ProjectLibraryDocument.sourceDigest($0.project.files)) })
         heldFolderScope?.stopAccessingSecurityScopedResource()
@@ -73,6 +82,7 @@ actor ProjectLibrary {
         let next = try prepareDestination(destination)
         ProjectLibraryLocation.forgetChosenFolder()
         storageURL = destination
+        restorationFailed = false
         requiresExistingDocument = true
         observedSources = Dictionary(uniqueKeysWithValues: next.items.map { ($0.id, ProjectLibraryDocument.sourceDigest($0.project.files)) })
         heldFolderScope?.stopAccessingSecurityScopedResource()
@@ -278,15 +288,17 @@ actor ProjectLibrary {
 
     // MARK: - Storage
 
-    enum StorageError: LocalizedError {
+    enum StorageError: LocalizedError, Equatable {
         case unsupportedSchema
         case verificationFailed
         case missingDocument
+        case bookmarkUnavailable
         var errorDescription: String? {
             switch self {
             case .unsupportedSchema: "This library uses an unsupported format. It has not been changed."
             case .verificationFailed: "The new library could not be verified. The previous location is still active."
             case .missingDocument: "The library file was moved or removed. It has not been replaced with an empty library. Restore its location or export your current work."
+            case .bookmarkUnavailable: "The selected Files or iCloud library could not be restored. Choose its folder again. The on-device library has not been substituted or changed."
             }
         }
     }
@@ -309,12 +321,14 @@ actor ProjectLibrary {
     }
 
     private func state() throws -> State {
+        guard !restorationFailed else { throw StorageError.bookmarkUnavailable }
         let state = try ProjectLibraryDocument.read(storageURL, requireExisting: requiresExistingDocument)
         if FileManager.default.fileExists(atPath: storageURL.path) { requiresExistingDocument = true }
         return state
     }
 
     private func edit<T>(_ update: (inout State) throws -> T) throws -> T {
+        guard !restorationFailed else { throw StorageError.bookmarkUnavailable }
         let result = try ProjectLibraryDocument.modify(storageURL, requireExisting: requiresExistingDocument, update)
         if FileManager.default.fileExists(atPath: storageURL.path) { requiresExistingDocument = true }
         return result

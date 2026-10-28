@@ -6,7 +6,11 @@ import Foundation
 /// and tells the user it was queued. The app drains the queue the next time it
 /// runs, which is the only behaviour that works reliably on iOS.
 enum SharedImportQueue {
+    #if GOPHERFORGE_AUDIT_QA
+    static let appGroupIdentifier = "group.com.sergiiziborov.GopherForgeAuditQA"
+    #else
     static let appGroupIdentifier = "group.com.sergiiziborov.GopherForge"
+    #endif
     private static let storageKey = "pendingGitHubImportURLs"
     private static let maximumPendingImports = 10
 

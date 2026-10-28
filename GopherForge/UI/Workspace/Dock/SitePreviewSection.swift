@@ -7,13 +7,17 @@ struct SitePreviewSection: View {
     let url: URL
     var generation: Int = 0
     var offlineFiles: [String: String]?
+    var project: GopherForgeProject?
+    @Environment(\.openURL) private var openURL
+    @State private var reloadGeneration = 0
     @State private var showingBrowser = false
     @State private var goBackend: OfflineGoBackend?
 
-    init(url: URL, generation: Int = 0, offlineFiles: [String: String]? = nil) {
+    init(url: URL, generation: Int = 0, offlineFiles: [String: String]? = nil, project: GopherForgeProject? = nil) {
         self.url = url
         self.generation = generation
         self.offlineFiles = offlineFiles
+        self.project = project
         if let files = offlineFiles, let data = files[OfflineFrontendRecipe.path]?.data(using: .utf8),
            let recipe = try? JSONDecoder().decode(OfflineFrontendRecipe.self, from: data), recipe.backend == "gin-replay" {
             _goBackend = State(initialValue: OfflineGoBackend(files: files, paths: recipe.backendPaths))
@@ -34,24 +38,28 @@ struct SitePreviewSection: View {
                     .accessibilityIdentifier(AccessibilityID.outputSite)
             }
 
-            Button {
-                showingBrowser = true
-            } label: {
-                Label("Open full screen", systemImage: "safari")
-                    .font(.caption.weight(.semibold))
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 16) { previewActions }
+                VStack(alignment: .leading, spacing: 12) { previewActions }
             }
+            .font(.callout)
             .sheet(isPresented: $showingBrowser) {
                 if let offlineFiles {
                     NavigationStack {
-                        OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles, backend: goBackend, accessibilityID: "offline.preview.fullscreen")
-                            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showingBrowser = false } } }
+                        OfflineFrontendWebView(url: url, generation: generation + reloadGeneration, files: offlineFiles, backend: goBackend, accessibilityID: "offline.preview.fullscreen")
+                            .navigationTitle("Web preview")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .confirmationAction) { Button("Done") { showingBrowser = false } }
+                                ToolbarItem(placement: .bottomBar) { shareAction }
+                            }
                     }
                 } else { SiteBrowserView(url: url) }
             }
 
             Group {
-                if let offlineFiles { OfflineFrontendWebView(url: url, generation: generation, files: offlineFiles, backend: goBackend) }
-                else { SiteWebView(url: url, generation: generation) }
+                if let offlineFiles { OfflineFrontendWebView(url: url, generation: generation + reloadGeneration, files: offlineFiles, backend: goBackend) }
+                else { SiteWebView(url: url, generation: generation + reloadGeneration) }
             }
                 .frame(maxWidth: .infinity)
                 .frame(height: 280)
@@ -68,6 +76,42 @@ struct SitePreviewSection: View {
                     : "Generated React/JS assets and local JSON only. No network or TCP listener. Temporary preview storage. Go routes are checked separately.")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+            Text(offlineFiles == nil
+                 ? "This address works only on this device while its preview is running. iOS may suspend it when you switch apps. Share the project for someone else to open."
+                 : "This isolated preview opens inside GopherForge. Share the project archive for someone else to open; it has no public web address.")
+                .font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder private var previewActions: some View {
+        Button { showingBrowser = true } label: {
+            Label("Open full screen", systemImage: "arrow.up.left.and.arrow.down.right")
+        }
+        .accessibilityIdentifier("preview.fullscreen")
+        Button { reloadGeneration += 1 } label: {
+            Label("Reload", systemImage: "arrow.clockwise")
+        }
+        .accessibilityIdentifier("preview.reload")
+        Menu {
+            if offlineFiles == nil {
+                Button { openURL(url) } label: { Label("Open in Browser", systemImage: "safari") }
+                    .accessibilityIdentifier("preview.externalBrowser")
+                ShareLink(item: url, message: Text("Local GopherForge preview — this address works only on the device running the project.")) {
+                    Label("Share local address", systemImage: "link")
+                }
+                .accessibilityIdentifier("preview.shareLocalAddress")
+            }
+            shareAction
+        } label: { Label("Share / Open", systemImage: "square.and.arrow.up") }
+        .accessibilityIdentifier("preview.actions")
+    }
+
+    @ViewBuilder private var shareAction: some View {
+        if let project {
+            ShareLink(item: ProjectExport(project: project), preview: SharePreview(project.name)) {
+                Label("Share project…", systemImage: "shippingbox")
+            }
+            .accessibilityIdentifier("preview.shareProject")
         }
     }
 }

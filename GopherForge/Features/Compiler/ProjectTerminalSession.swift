@@ -27,6 +27,7 @@ final class ProjectTerminalSession {
 
     private(set) var transcript: [Entry] = []
     private(set) var isBusy = false
+    private(set) var frontendFailure: String?
     var input = ""
 
     private let maximumEntries = 200
@@ -81,12 +82,31 @@ final class ProjectTerminalSession {
         }
     }
 
-    private func runFrontend(_ command: OfflineFrontendCommand) async {
+    /// The Output action uses exactly the terminal's bounded offline pipeline.
+    func buildPreview() async {
+        guard !isBusy, !workspace.isRunning, !workspace.debugger.isActive else { return }
+        isBusy = true
+        defer { isBusy = false }
+        let generation = workspace.projectGeneration
+        append(.command, "$ frontend install")
+        guard await runFrontend(.install(frozen: false)) else { return }
+        guard workspace.projectGeneration == generation else {
+            frontendFailure = "The project changed. Build its preview from Output again."
+            append(.failure, frontendFailure!)
+            return
+        }
+        append(.command, "$ frontend build")
+        _ = await runFrontend(.build(packageScript: false))
+    }
+
+    @discardableResult
+    private func runFrontend(_ command: OfflineFrontendCommand) async -> Bool {
+        frontendFailure = nil
         do {
-            if command == .capabilities { append(.output, OfflineFrontendCommand.capabilitiesText); return }
+            if command == .capabilities { append(.output, OfflineFrontendCommand.capabilitiesText); return true }
             if command == .packages {
                 append(.output, "Bundled offline packages (no registry access):\n" + (try await frontend.packageSummary()))
-                return
+                return true
             }
             workspace.commitEditorText()
             guard !workspace.debugger.isActive else { throw OfflineFrontendError.message("Stop the source debugger before changing the frontend build.") }
@@ -122,8 +142,11 @@ final class ProjectTerminalSession {
                 append(.output, "Isolated offline preview is ready in Output. External networking is blocked; preview storage is temporary.")
             case .packages, .capabilities: break
             }
+            return true
         } catch {
+            frontendFailure = error.localizedDescription
             append(.failure, error.localizedDescription)
+            return false
         }
     }
 

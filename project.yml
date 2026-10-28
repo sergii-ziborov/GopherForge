@@ -33,6 +33,7 @@ configs:
   Debug: debug
   Release: release
   Gate: release
+  AuditQA: release
 
 settings:
   base:
@@ -45,6 +46,11 @@ settings:
     SUPPORTS_MACCATALYST: NO
     ENABLE_USER_SCRIPT_SANDBOXING: NO
   configs:
+    AuditQA:
+      SWIFT_ENABLE_TESTABILITY: YES
+      ENABLE_TESTABILITY: YES
+      ONLY_ACTIVE_ARCH: YES
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) GOPHERFORGE_AUDIT_QA"
     Gate:
       SWIFT_ENABLE_TESTABILITY: YES
       ENABLE_TESTABILITY: YES
@@ -82,7 +88,7 @@ targets:
     info:
       path: GopherForge/Resources/Info.plist
       properties:
-        CFBundleDisplayName: GopherForge
+        CFBundleDisplayName: "$(APP_DISPLAY_NAME)"
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         ITSAppUsesNonExemptEncryption: false
@@ -114,7 +120,7 @@ targets:
           - CFBundleTypeRole: Editor
             CFBundleURLName: com.sergiiziborov.GopherForge
             CFBundleURLSchemes:
-              - gopherforge
+              - "$(APP_URL_SCHEME)"
         CFBundleDocumentTypes:
           - CFBundleTypeName: GopherForge Project
             CFBundleTypeRole: Editor
@@ -169,12 +175,14 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge
         PRODUCT_NAME: GopherForge
+        APP_DISPLAY_NAME: GopherForge
+        APP_URL_SCHEME: gopherforge
         MARKETING_VERSION: "1.3.0"
         CURRENT_PROJECT_VERSION: 48
         CODE_SIGN_ENTITLEMENTS: GopherForge/GopherForge.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: GopherForge
+        INFOPLIST_KEY_CFBundleDisplayName: "$(APP_DISPLAY_NAME)"
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -182,6 +190,15 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         CODE_SIGN_STYLE: Automatic
+
+      configs:
+        AuditQA:
+          PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeAuditQA
+          APP_DISPLAY_NAME: GopherForge Audit QA
+          APP_URL_SCHEME: gopherforge-auditqa
+          CODE_SIGN_ENTITLEMENTS: GopherForge/AuditQA.entitlements
+          GENERATE_INFOPLIST_FILE: NO
+          INFOPLIST_FILE: build/AuditQA/Info.plist
 
   GopherForgeShare:
     type: app-extension
@@ -214,6 +231,10 @@ targets:
         CODE_SIGN_STYLE: Automatic
         APPLICATION_EXTENSION_API_ONLY: YES
         SKIP_INSTALL: YES
+      configs:
+        AuditQA:
+          PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeAuditQA.Share
+          CODE_SIGN_ENTITLEMENTS: GopherForge/AuditQA.entitlements
 
   GopherForgeUITests:
     type: bundle.ui-testing
@@ -227,6 +248,9 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeUITests
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: GopherForge
+      configs:
+        AuditQA:
+          PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeAuditQA.UITests
 
   GopherForgeTests:
     type: bundle.unit-test
@@ -242,6 +266,9 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeTests
         GENERATE_INFOPLIST_FILE: YES
+      configs:
+        AuditQA:
+          PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeAuditQA.Tests
 
 schemes:
   GopherForge:

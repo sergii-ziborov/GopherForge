@@ -50,6 +50,47 @@ final class ProjectTerminalSessionTests: XCTestCase {
         await workspace.flush()
     }
 
+    func testOutputBuildPreviewUsesCurrentBufferWithoutChangingTerminalInput() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "output-preview-\(UUID())")
+        let workspace = WorkspaceModel(library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
+        defer { workspace.siteServer.stop(); try? FileManager.default.removeItem(at: root) }
+        XCTAssertTrue(workspace.open(GoExampleProjectReactStudy.board.project()))
+        workspace.select(file: "web/src/main.tsx")
+        workspace.replaceEditorText(workspace.editorText + "\ndocument.title = 'Output action proof';")
+        let terminal = ProjectTerminalSession(workspace: workspace)
+        terminal.input = "cat main.go"
+        await terminal.buildPreview()
+        XCTAssertNil(terminal.frontendFailure)
+        XCTAssertFalse(terminal.isBusy)
+        XCTAssertEqual(terminal.input, "cat main.go")
+        let files = try XCTUnwrap(workspace.project?.files)
+        XCTAssertTrue(OfflineFrontendPlan.previewReady(files: files))
+        XCTAssertTrue(files["web/dist/assets/app.js"]?.contains("Output action proof") == true)
+        XCTAssertEqual(workspace.sitePreviewURL?.scheme, OfflinePreviewResources.scheme)
+        XCTAssertFalse(workspace.siteServer.isListening, "The Output shortcut must preserve offline isolation")
+        XCTAssertNil(workspace.lastResult, "A frontend build is not a Go run")
+        await workspace.flush()
+    }
+
+    func testOutputPreviewFailureIsVisibleAndDoesNotRunTheBuildOrOverwriteSource() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "output-preview-error-\(UUID())")
+        let workspace = WorkspaceModel(library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
+        defer { try? FileManager.default.removeItem(at: root) }
+        let original = GoExampleProjectReactStudy.board.project()
+        var files = original.files
+        files["package.json"] = #"{"dependencies":{"unavailable-package":"1.0.0"}}"#
+        let project = original.replacingFiles(files)
+        XCTAssertTrue(workspace.open(project))
+        let terminal = ProjectTerminalSession(workspace: workspace)
+        await terminal.buildPreview()
+        XCTAssertTrue(terminal.frontendFailure?.contains("No download was attempted") == true)
+        XCTAssertFalse(terminal.isBusy)
+        XCTAssertNil(workspace.sitePreviewURL)
+        XCTAssertEqual(workspace.project?.files, project.files)
+        XCTAssertFalse(terminal.transcript.contains { $0.text == "$ frontend build" })
+        await workspace.flush()
+    }
+
     func testMissingJavaScriptRuntimesFailWithoutChangingTheGinProject() async throws {
         let root = FileManager.default.temporaryDirectory
             .appending(path: "terminal-runtime-\(UUID().uuidString)", directoryHint: .isDirectory)

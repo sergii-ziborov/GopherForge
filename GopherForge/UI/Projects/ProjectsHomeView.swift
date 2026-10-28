@@ -9,6 +9,7 @@ struct ProjectsHomeView: View {
     @Environment(WorkspaceModel.self) private var workspace
     @Environment(AppNavigation.self) private var navigation
     @State private var filePick: FilePick?
+    @State private var isFilePickerPresented = false
     @State private var recents: [ProjectLibraryItem] = []
     @State private var importFailure: String?
     private let library = ProjectLibrary.shared
@@ -57,6 +58,7 @@ struct ProjectsHomeView: View {
 
                 Button {
                     filePick = .openProject
+                    isFilePickerPresented = true
                 } label: {
                     Label("Open from iCloud or Files", systemImage: "icloud.and.arrow.down")
                 }
@@ -64,6 +66,7 @@ struct ProjectsHomeView: View {
 
                 Button {
                     filePick = .libraryFolder
+                    isFilePickerPresented = true
                 } label: {
                     Label(
                         "Open library in iCloud / Files…",
@@ -143,10 +146,7 @@ struct ProjectsHomeView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .fileImporter(
-            isPresented: Binding(
-                get: { filePick != nil },
-                set: { if !$0 { filePick = nil } }
-            ),
+            isPresented: $isFilePickerPresented,
             allowedContentTypes: filePick?.contentTypes ?? [.folder],
             allowsMultipleSelection: false
         ) { result in
@@ -176,12 +176,14 @@ struct ProjectsHomeView: View {
                         importFailure = error.localizedDescription
                     }
                 }
-            case .openProject, .none:
+            case .openProject:
                 do {
                     open(try LocalProjectImporter.loadPicked(at: url))
                 } catch {
                     importFailure = error.localizedDescription
                 }
+            case .none:
+                importFailure = "The file selection expired. Open the picker again; no project or library was changed."
             }
         case let .failure(error):
             importFailure = error.localizedDescription

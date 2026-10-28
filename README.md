@@ -134,6 +134,12 @@ npm run build
 frontend preview
 ```
 
+The upcoming native build 48 also offers **Output → Build & Preview**, plus
+full-screen, reload and project sharing controls. Legacy static previews can
+open in the browser or share their on-device address; isolated React previews
+keep their WebKit-only origin and share the project archive. A loopback address
+is not a public link. See [preview controls](docs/OFFLINE_FRONTEND.md#preview-controls-next-native-build-48).
+
 Open Output for the preview. `frontend install/build` and the supported npm
 commands invoke this app's bounded frontend builder, **not a full npm runtime**.
 The compiler transpiles JS/JSX/TS/TSX, bundles browser imports, local JSON and CSS, and handles

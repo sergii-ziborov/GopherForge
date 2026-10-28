@@ -25,6 +25,27 @@ are autosaved with the project. Browser state is temporary; it is not the projec
 The Go API session is shared between embedded and full-screen previews and
 resets when you rebuild or reopen the project.
 
+## Preview controls (next native build 48)
+
+Output now offers **Build & Preview** whenever an offline recipe is present but
+its generated assets are missing or stale. It runs the same bounded
+`frontend install` → `frontend build` operations as Terminal and displays a build
+failure in Output. A successful Go Run no longer hides the frontend setup.
+This shortcut does not execute project package scripts or download packages.
+
+The embedded viewer offers **Open full screen**, **Reload**, and **Share / Open**.
+An isolated frontend has no externally usable URL: its custom origin belongs to
+the app's WebKit configuration and its network restrictions remain installed.
+Use **Share project…** to send the `.tar.gz` snapshot; the recipient can import
+and build it in GopherForge. Preview browser state is not included in that archive.
+
+For legacy static sites, **Open in Browser** and **Share local address** use the
+actual loopback address, not the port printed by a Gin route exercise. The link
+works only on the device running the preview, while iOS permits the app to run;
+it is not a published website or a link another device can open. **Share
+project…** remains available for sending the actual files. No upload occurs
+when a preview opens.
+
 ## Commands
 
 | Command | Meaning |

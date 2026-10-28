@@ -32,6 +32,7 @@
 		0E61F36D9B54BDF9CCC58796 /* IdiomFindingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79732B19BD87F55DC83A2DEC /* IdiomFindingListView.swift */; };
 		0EA626C2AD663B7F63C1D22D /* WasmKitWASI in Frameworks */ = {isa = PBXBuildFile; productRef = A14ABA489AC51CC3786A32DF /* WasmKitWASI */; };
 		0ED9664DA8F381C980E67A70 /* SharedImportQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7442C8C031DA767437A047 /* SharedImportQueue.swift */; };
+		0F34ABBB3E8A25A07B8712A9 /* AuditLibraryFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AB5ECECB394985E9DE86CF /* AuditLibraryFixtures.swift */; };
 		0FC5EF3F245E6DAE199D84A7 /* DiagnosticListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8633A85AE7E269D986AA96CA /* DiagnosticListView.swift */; };
 		0FFBFADFE5A01889D06A58F7 /* GoExampleGinReplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C926408E0282672C445B541 /* GoExampleGinReplay.swift */; };
 		100E2FD4400FEB2536D1926B /* GoModSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D01E61E6FDC1727AFFD01DB /* GoModSyntaxHighlighter.swift */; };
@@ -264,6 +265,7 @@
 		8DDFDB030B24826C2D73454F /* OfflineFrontendCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBF027508246AFEE3493A4C /* OfflineFrontendCommand.swift */; };
 		902A4ADC722BC174BEF3C45D /* LessonHintCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C3987E99D274363DC18576 /* LessonHintCatalogTests.swift */; };
 		90AC5DF3FBB1FAD1BE7B0959 /* QuizTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A285D7E837939C9A6FD1E07 /* QuizTests.swift */; };
+		9254309210F0971BA302EEB5 /* ProjectLibraryRestorationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C80B890501331526FF61BB /* ProjectLibraryRestorationTests.swift */; };
 		925E04E2058F33A2CF95F604 /* MistakeProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0547D9D66CDA7E41F608A8C /* MistakeProgressTests.swift */; };
 		92E1222E4563655FE8C61A7E /* LessonGuides.json in Resources */ = {isa = PBXBuildFile; fileRef = 113625E88D01B6E032E2FC45 /* LessonGuides.json */; };
 		936702E25A6319765271A7F9 /* GoSourceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B8ECB9A0279E8530D497FED /* GoSourceSnapshot.swift */; };
@@ -352,9 +354,11 @@
 		C548CA170BD6D77C71ADA525 /* GoProgramArtifactsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71BD6CFE208A7DC6F0357D9 /* GoProgramArtifactsTests.swift */; };
 		C54E8F3C1AA748CD1220E1D4 /* GoPackageSearchClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C44D1B6FF174E0839CFA6E0 /* GoPackageSearchClient.swift */; };
 		C610D26CF744A1D838E1A42A /* ReadingLessons.json in Resources */ = {isa = PBXBuildFile; fileRef = E4A5DD243872D873DA39B8D9 /* ReadingLessons.json */; };
+		C6807AA28629AF63B356C9AE /* FileProviderAuditUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C24A061E7E4350BAE786CD0 /* FileProviderAuditUITests.swift */; };
 		C6A6AF019571FD0BCB5700D2 /* IncrementalBuildGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D858A4A3C9E4D0D55D39E3FD /* IncrementalBuildGateTests.swift */; };
 		C73F08B18C439E6746CBEB0B /* GoLexicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617347315A90E62186D6CC90 /* GoLexicon.swift */; };
 		C7C7F805C1AB6FB6A22D1158 /* GoStepFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B71A42B7797F09587C8C461 /* GoStepFingerprint.swift */; };
+		C8E4C84977F88772EC0856AE /* SitePreviewFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28E305EE456CF29B9E363B9 /* SitePreviewFlowUITests.swift */; };
 		C95CA7009054B8E978FA03C3 /* QuizQuestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98FF9B9266B1F4463AC6B16D /* QuizQuestionCard.swift */; };
 		C96D8861F42F1FD96AE7C2C5 /* CourseUnitCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F499797F9502D677FE668694 /* CourseUnitCore.swift */; };
 		C97952C07DD01A8199214A21 /* ProjectDependencyDraftCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656F28E421F8CF0F2C9863C4 /* ProjectDependencyDraftCache.swift */; };
@@ -651,6 +655,7 @@
 		35599580F956A43D91D212BC /* 06-projects.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-projects.png"; sourceTree = "<group>"; };
 		358770D3AC2E27538D5519AD /* duo-native-lesson.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-native-lesson.png"; sourceTree = "<group>"; };
 		359F9010686758E6BB36593D /* 10-debugger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "10-debugger.png"; sourceTree = "<group>"; };
+		35C6830AB1AA3CE61FCAAFF5 /* AuditQA.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AuditQA.entitlements; sourceTree = "<group>"; };
 		3628443C2A799F530F7A443E /* 1.1.5-assets-verified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.5-assets-verified.json"; sourceTree = "<group>"; };
 		37892BDEF2714BEA13EE326F /* 03-course.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-course.png"; sourceTree = "<group>"; };
 		37EE545DA389C966512C64D9 /* IdiomRuleCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdiomRuleCatalog.swift; sourceTree = "<group>"; };
@@ -716,6 +721,7 @@
 		546124EB787BB266850E420E /* guide-desktop-public.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guide-desktop-public.png"; sourceTree = "<group>"; };
 		5479ED60F8D258335831A77A /* publication-2026-10-20-interview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "publication-2026-10-20-interview.json"; sourceTree = "<group>"; };
 		54DEFF62DDC7B9C765AAD895 /* 01-compiler.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "01-compiler.png"; sourceTree = "<group>"; };
+		55AB5ECECB394985E9DE86CF /* AuditLibraryFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuditLibraryFixtures.swift; sourceTree = "<group>"; };
 		55BA00FF9B101AB7DC4C147D /* GzipStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipStream.swift; sourceTree = "<group>"; };
 		561A45FE7DBE0B929409F1A1 /* Toolchain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Toolchain; path = build/Resources/Toolchain; sourceTree = SOURCE_ROOT; };
 		5650C4A8A07425299A025AA1 /* SpotTheBugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotTheBugView.swift; sourceTree = "<group>"; };
@@ -852,6 +858,7 @@
 		8BEA8411FC2782F4D0A93303 /* WasmSandboxResourceLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WasmSandboxResourceLimiter.swift; sourceTree = "<group>"; };
 		8BEA87D196D14A17100B832C /* OfflineFrontendBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineFrontendBuilder.swift; sourceTree = "<group>"; };
 		8C18A30D1D678743818A5B95 /* GoToolInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToolInvocation.swift; sourceTree = "<group>"; };
+		8C24A061E7E4350BAE786CD0 /* FileProviderAuditUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderAuditUITests.swift; sourceTree = "<group>"; };
 		8C4059A8A10B39CFE204CE35 /* ProjectExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectExport.swift; sourceTree = "<group>"; };
 		8CD1691342E06D3FE20649C2 /* duo-book-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duo-book-code.png"; sourceTree = "<group>"; };
 		8D93A0FFE175960182792D8D /* InterviewPrepUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewPrepUITests.swift; sourceTree = "<group>"; };
@@ -875,6 +882,7 @@
 		93F571F24CF9233ED9B063FF /* iphone-landscape-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iphone-landscape-code.png"; sourceTree = "<group>"; };
 		9441B7F23AC891AEAF3F41A0 /* QuizSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizSummaryView.swift; sourceTree = "<group>"; };
 		94A525B31530DE79BB52F9A5 /* SourceFileBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFileBadge.swift; sourceTree = "<group>"; };
+		950817D0B69BFED5DE978309 /* 2026-10-28-progress-publication.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "2026-10-28-progress-publication.json"; sourceTree = "<group>"; };
 		9525CD5E1D83615D81970E82 /* 02-tests.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-tests.png"; sourceTree = "<group>"; };
 		952B7660BB66A3887DB13125 /* GitHubImportModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubImportModel.swift; sourceTree = "<group>"; };
 		95E957A89FA7C8E679FA8EE5 /* jsonv2-published.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "jsonv2-published.png"; sourceTree = "<group>"; };
@@ -1073,11 +1081,13 @@
 		D089D13DC7E257E75F217E02 /* ReadingDesignGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingDesignGuide.swift; sourceTree = "<group>"; };
 		D08AA6F0E11BDD6F0675B99F /* MatchingDrillSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchingDrillSession.swift; sourceTree = "<group>"; };
 		D0A32367A9311E4251EE8FAD /* GoExampleGinVendor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoExampleGinVendor.swift; sourceTree = "<group>"; };
+		D28E305EE456CF29B9E363B9 /* SitePreviewFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SitePreviewFlowUITests.swift; sourceTree = "<group>"; };
 		D34ABD90C88B9C2B1716BE0A /* CourseCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCatalogTests.swift; sourceTree = "<group>"; };
 		D365C616F00F63E73DF24F11 /* 1.1.3-assets-verified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.3-assets-verified.json"; sourceTree = "<group>"; };
 		D36A1267D5AFA3CC73CA3066 /* 1.1.2-build36.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "1.1.2-build36.json"; sourceTree = "<group>"; };
 		D3AA380AA28E196E308D4FC7 /* GoPackageInstallTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPackageInstallTests.swift; sourceTree = "<group>"; };
 		D4A17D6997FAD71BE6AA1538 /* CourseUnitGenerics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseUnitGenerics.swift; sourceTree = "<group>"; };
+		D4C80B890501331526FF61BB /* ProjectLibraryRestorationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLibraryRestorationTests.swift; sourceTree = "<group>"; };
 		D50588A3365FB29B8638BA63 /* 07-graphics.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "07-graphics.png"; sourceTree = "<group>"; };
 		D58DD5211F5B4D4A83D758E2 /* 03-course.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-course.png"; sourceTree = "<group>"; };
 		D5A0F389C54A0D553998EA3E /* LocalSiteServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSiteServer.swift; sourceTree = "<group>"; };
@@ -1224,6 +1234,7 @@
 		00A0357E054E283DC57AACE8 /* GopherForge */ = {
 			isa = PBXGroup;
 			children = (
+				35C6830AB1AA3CE61FCAAFF5 /* AuditQA.entitlements */,
 				DC789B66E16FC26B929A4093 /* GopherForge.entitlements */,
 				829FD56AC5EBAFCEEABA7328 /* App */,
 				C273FD91589CE43217EE7361 /* Compiler */,
@@ -1447,6 +1458,7 @@
 				2A5EF33983EFFF73A23EBAFF /* ProjectImportIntegrityTests.swift */,
 				D6CB6C0D45DC4FDBAC791C79 /* ProjectLibraryConcurrencyTests.swift */,
 				858781A01DD9C70AAC7EDAE3 /* ProjectLibraryLocationTests.swift */,
+				D4C80B890501331526FF61BB /* ProjectLibraryRestorationTests.swift */,
 				72DEDF7F845B96B350E25660 /* ProjectLibraryTests.swift */,
 				FE8D0DA5D5DBF1C698A74548 /* ProjectNavigatorTests.swift */,
 				BB63A7CBF98FDFA6C45656CD /* ProjectTemplateTests.swift */,
@@ -1899,6 +1911,7 @@
 				0C9386BB21632B14F41C77A0 /* 1.3.0-beta-publication.json */,
 				79A2E068994D2E0B009E88D1 /* 1.3.0-review-publication.json */,
 				6E4934A256FA4FFF0E7770C5 /* 2026-10-28-no-accounts-publication.json */,
+				950817D0B69BFED5DE978309 /* 2026-10-28-progress-publication.json */,
 				1CB403278918337B5909743C /* backpressure-assets.json */,
 				99E4A0E870FBB34DB806D800 /* backpressure-publication.json */,
 				AF5F8E5DD1A1E0CCE8DDA8E0 /* backpressure-published.png */,
@@ -2113,6 +2126,7 @@
 		829FD56AC5EBAFCEEABA7328 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				55AB5ECECB394985E9DE86CF /* AuditLibraryFixtures.swift */,
 				25DDDB0972123E4EDE57A10F /* GopherForgeApp.swift */,
 			);
 			path = App;
@@ -2320,6 +2334,7 @@
 			isa = PBXGroup;
 			children = (
 				6BBA06BE7BCA49B5D662AF30 /* AppStoreScreenshotUITests.swift */,
+				8C24A061E7E4350BAE786CD0 /* FileProviderAuditUITests.swift */,
 				8D93A0FFE175960182792D8D /* InterviewPrepUITests.swift */,
 				271C25BE41FB7AE2407FF88B /* LearnFlowUITests.swift */,
 				34C7385283C97071A97CA643 /* LearningReturnUITests.swift */,
@@ -2327,6 +2342,7 @@
 				8B67F371C72CE619591EF4C1 /* NavigatorFlowUITests.swift */,
 				F6991E38B3FC70579A332FA1 /* PracticeFlowUITests.swift */,
 				70E08404B3DE3980BE70B916 /* ProgrammingEnvironmentComplianceUITests.swift */,
+				D28E305EE456CF29B9E363B9 /* SitePreviewFlowUITests.swift */,
 				FF8F4969F41DE58BE2B58FA7 /* UITestSearch.swift */,
 				0664342BA459DDDED704BA9B /* WorkspaceFlowUITests.swift */,
 			);
@@ -3093,6 +3109,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03CF7B658160805DC15E7E2C /* AppStoreScreenshotUITests.swift in Sources */,
+				C6807AA28629AF63B356C9AE /* FileProviderAuditUITests.swift in Sources */,
 				378905A16612D3289F4BC20A /* InterviewPrepUITests.swift in Sources */,
 				A93F57742BCAB238A3AFAE9B /* LearnFlowUITests.swift in Sources */,
 				FAFE07CD6A581BA97D06C0A4 /* LearningReturnUITests.swift in Sources */,
@@ -3100,6 +3117,7 @@
 				308D25F5FB8697DA4344A590 /* NavigatorFlowUITests.swift in Sources */,
 				6675E7D99579DD431CF59B7E /* PracticeFlowUITests.swift in Sources */,
 				89FDC7B3F125C9C41922998A /* ProgrammingEnvironmentComplianceUITests.swift in Sources */,
+				C8E4C84977F88772EC0856AE /* SitePreviewFlowUITests.swift in Sources */,
 				0AFE360844E691FBA52ED120 /* UITestSearch.swift in Sources */,
 				8C20F1ED14F7669BD5202A28 /* WorkspaceFlowUITests.swift in Sources */,
 			);
@@ -3119,6 +3137,7 @@
 				75F446191B4C0FBEB9C2989E /* AppNavigation.swift in Sources */,
 				4BE9A93E56452CCFBF263657 /* AppSection.swift in Sources */,
 				858539E0376038CB4D1475B9 /* AppearanceMode.swift in Sources */,
+				0F34ABBB3E8A25A07B8712A9 /* AuditLibraryFixtures.swift in Sources */,
 				FF29BCBE746205D993CA264D /* BoundedDownload.swift in Sources */,
 				F56517527B26C507BD30832A /* CSSSyntaxHighlighter.swift in Sources */,
 				EBC8FD8D6906A4C4BE44F23F /* CodeEditorView.swift in Sources */,
@@ -3512,6 +3531,7 @@
 				C1B23C486109E7952AD63B5E /* ProjectImportIntegrityTests.swift in Sources */,
 				CE429D8BB9C7D4392D820DB4 /* ProjectLibraryConcurrencyTests.swift in Sources */,
 				B0B0329E63AD3A7C005B7599 /* ProjectLibraryLocationTests.swift in Sources */,
+				9254309210F0971BA302EEB5 /* ProjectLibraryRestorationTests.swift in Sources */,
 				8904285672AE9EAE4C509C53 /* ProjectLibraryTests.swift in Sources */,
 				690C22B736AA020F04DF7342 /* ProjectNavigatorTests.swift in Sources */,
 				63D60519180018D4A2388165 /* ProjectPathNormalizerTests.swift in Sources */,
@@ -3559,9 +3579,75 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		079A22F8342DB4DD27649ECB /* AuditQA */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = XMS5ZC28UJ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) GOPHERFORGE_AUDIT_QA";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_ENABLE_TESTABILITY = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = AuditQA;
+		};
 		1F326611E118491C14D064CA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = GopherForge;
+				APP_URL_SCHEME = gopherforge;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3569,7 +3655,7 @@
 				CURRENT_PROJECT_VERSION = 48;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -3672,6 +3758,28 @@
 			};
 			name = Debug;
 		};
+		655F6247392C10823430D369 /* AuditQA */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = GopherForge/AuditQA.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 48;
+				INFOPLIST_FILE = GopherForgeShare/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForgeAuditQA.Share;
+				PRODUCT_NAME = GopherForgeShare;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = AuditQA;
+		};
 		6C4007D57360C9A1BF99C5AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3727,6 +3835,37 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GopherForge.app/GopherForge";
 			};
 			name = Release;
+		};
+		9B9A49D18BEF67EEC87F0861 /* AuditQA */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APP_DISPLAY_NAME = "GopherForge Audit QA";
+				APP_URL_SCHEME = "gopherforge-auditqa";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GopherForge/AuditQA.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 48;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = build/AuditQA/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForgeAuditQA;
+				PRODUCT_NAME = GopherForge;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = AuditQA;
 		};
 		AD6F72FE8CB167F7AAD28E06 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -3791,6 +3930,8 @@
 		BFDF41681F168844161C9071 /* Gate */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = GopherForge;
+				APP_URL_SCHEME = gopherforge;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3798,7 +3939,7 @@
 				CURRENT_PROJECT_VERSION = 48;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -3817,9 +3958,28 @@
 			};
 			name = Gate;
 		};
+		D5A80055C12855EC0CBCC2F6 /* AuditQA */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForgeAuditQA.Tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GopherForge.app/GopherForge";
+			};
+			name = AuditQA;
+		};
 		E41734BA986F91BED27C72D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = GopherForge;
+				APP_URL_SCHEME = gopherforge;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = GopherForge/GopherForge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3827,7 +3987,7 @@
 				CURRENT_PROJECT_VERSION = 48;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GopherForge/Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = GopherForge;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -3867,6 +4027,23 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Gate;
+		};
+		EDE00EED89566DE8660C1C58 /* AuditQA */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sergiiziborov.GopherForgeAuditQA.UITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GopherForge;
+			};
+			name = AuditQA;
 		};
 		EFC18507C40A6C0AC8270434 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4010,52 +4187,57 @@
 		4087320E18B57CE3E372AB07 /* Build configuration list for PBXNativeTarget "GopherForgeShare" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
+				655F6247392C10823430D369 /* AuditQA */,
 				EFC18507C40A6C0AC8270434 /* Debug */,
 				E5BA0E1DB2F3F78C78CD9C46 /* Gate */,
 				6C4007D57360C9A1BF99C5AD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = AuditQA;
 		};
 		66B6BD1293E912F48225FB80 /* Build configuration list for PBXNativeTarget "GopherForgeUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
+				EDE00EED89566DE8660C1C58 /* AuditQA */,
 				F1E8E968E3B9282573696C9B /* Debug */,
 				FE6392C90A740F445078DEE9 /* Gate */,
 				F3723C946C1604665FF8FBB4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = AuditQA;
 		};
 		7C87E5E18E4E2946F9897852 /* Build configuration list for PBXNativeTarget "GopherForge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
+				9B9A49D18BEF67EEC87F0861 /* AuditQA */,
 				E41734BA986F91BED27C72D9 /* Debug */,
 				BFDF41681F168844161C9071 /* Gate */,
 				1F326611E118491C14D064CA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = AuditQA;
 		};
 		B615293807EF640825CA5BDA /* Build configuration list for PBXNativeTarget "GopherForgeTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
+				D5A80055C12855EC0CBCC2F6 /* AuditQA */,
 				48E14DFFFE3C9BD1F76DF523 /* Debug */,
 				86D4E9646C863804A7024F88 /* Gate */,
 				9127CD83AE17A37E8B855ED6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = AuditQA;
 		};
 		EE4C328A04DD7F36796B6481 /* Build configuration list for PBXProject "GopherForge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
+				079A22F8342DB4DD27649ECB /* AuditQA */,
 				5082E60C3D47D226A4085A83 /* Debug */,
 				F471D80F45E774D86DF0CF74 /* Gate */,
 				AD6F72FE8CB167F7AAD28E06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = AuditQA;
 		};
 /* End XCConfigurationList section */
 

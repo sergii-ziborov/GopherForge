@@ -17,7 +17,13 @@ enum ProjectLibraryDocument {
         var coordinationError: NSError?
         var result: Result<State, Error>?
         NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &coordinationError) { coordinated in
-            result = Result { try decode(coordinated) }
+            result = Result {
+                var state = try decode(coordinated)
+                for version in NSFileVersion.unresolvedConflictVersionsOfItem(at: coordinated) ?? [] {
+                    merge(try decode(version.url), into: &state)
+                }
+                return state
+            }
         }
         if let coordinationError { throw coordinationError }
         guard let result else { throw ProjectLibrary.StorageError.verificationFailed }
@@ -38,13 +44,7 @@ enum ProjectLibraryDocument {
                 let conflicts = NSFileVersion.unresolvedConflictVersionsOfItem(at: coordinated) ?? []
                 for version in conflicts {
                     let other = try decode(version.url) // Fail closed on corrupt/future versions.
-                    for item in other.items {
-                        let known = state.items.first { $0.id == item.id }
-                        guard known?.project != item.project
-                            || known.map({ sourceDigest($0.project.files) }) != sourceDigest(item.project.files) else { continue }
-                        let copy = recoveryCopy(item, reason: "iCloud recovery", stable: true)
-                        if !state.items.contains(where: { $0.id == copy.id }) { state.items.append(copy) }
-                    }
+                    merge(other, into: &state)
                     try backup(try Data(contentsOf: version.url), beside: coordinated)
                 }
                 let value = try update(&state)
@@ -87,15 +87,33 @@ enum ProjectLibraryDocument {
         return hash.finalize().map { String(format: "%02x", $0) }.joined()
     }
 
-    static func recoveryCopy(_ item: ProjectLibraryItem, reason: String, stable: Bool = false) -> ProjectLibraryItem {
+    static func merge(_ other: State, into state: inout State) {
+        for item in other.items {
+            let known = state.items.first { $0.id == item.id }
+            if known?.project == item.project,
+               known.map({ sourceDigest($0.project.files) }) == sourceDigest(item.project.files) { continue }
+            var salt = 0
+            while true {
+                let copy = recoveryCopy(item, reason: "iCloud recovery", stable: true, salt: salt)
+                guard let existing = state.items.first(where: { $0.id == copy.id }) else { state.items.append(copy); break }
+                if existing.project == copy.project,
+                   sourceDigest(existing.project.files) == sourceDigest(copy.project.files) { break }
+                salt += 1 // Even an externally constructed UUID collision cannot discard source.
+            }
+        }
+    }
+
+    static func recoveryCopy(_ item: ProjectLibraryItem, reason: String, stable: Bool = false, salt: Int = 0) -> ProjectLibraryItem {
         let encoder = JSONEncoder.gopherForge
         encoder.outputFormatting = .sortedKeys
-        let hash = SHA256.hash(data: (try? encoder.encode(item)) ?? Data()).map { String(format: "%02x", $0) }.joined()
+        var bytes = (try? encoder.encode(item)) ?? Data()
+        if salt > 0 { bytes.append(Data("/\(salt)".utf8)) }
+        let hash = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
         let uuid = "\(hash.prefix(8))-\(hash.dropFirst(8).prefix(4))-\(hash.dropFirst(12).prefix(4))-\(hash.dropFirst(16).prefix(4))-\(hash.dropFirst(20).prefix(12))"
         return ProjectLibraryItem(
             id: stable ? UUID(uuidString: uuid)! : UUID(),
             project: item.project.renamed(to: "\(item.project.name) (\(reason))"),
-            lastOpenedAt: Date(), sourceRevision: item.sourceRevision,
+            lastOpenedAt: stable ? item.lastOpenedAt : Date(), sourceRevision: item.sourceRevision,
             folder: item.folder, tags: item.tags, isFavorite: false,
             summary: "A conflicting version was kept separately. Compare both projects before deleting either."
         )
@@ -103,6 +121,11 @@ enum ProjectLibraryDocument {
 
     private static func backupFolder(_ url: URL) -> URL {
         url.deletingLastPathComponent().appending(path: ".gopherforge-backups/" + url.lastPathComponent, directoryHint: .isDirectory)
+    }
+
+    static func hasRecoveryFiles(beside url: URL) -> Bool {
+        ((try? FileManager.default.contentsOfDirectory(atPath: backupFolder(url).path)) ?? [])
+            .contains { $0.hasSuffix(".json") }
     }
 
     private static func backup(_ data: Data, beside url: URL) throws {
