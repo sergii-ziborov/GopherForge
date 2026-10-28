@@ -6,8 +6,8 @@
     "status": "Available on the App Store"
   },
   "next": {
-    "version": "1.3.0",
-    "build": 48,
+    "version": "1.3.1",
+    "build": 49,
     "status": "Waiting for App Review"
   },
   "toolchain": "Go 1.27.1",
@@ -21,5 +21,10 @@
     "version": "1.3.1",
     "build": 49,
     "status": "Internal QA TestFlight"
+  },
+  "previousCandidate": {
+    "version": "1.3.0",
+    "build": 48,
+    "status": "Superseded by 1.3.1 (49)"
   }
 }

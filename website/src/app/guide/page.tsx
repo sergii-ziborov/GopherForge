@@ -9,7 +9,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "GopherForge Guide: Go Compiler for iPhone & iPad",
   description:
-    "Learn GopherForge on iPhone and iPad: offline Go, npm/React builds, local Gin-compatible APIs, breakpoints, tests, Continue and sandbox limits. Includes 1.3.0 beta steps.",
+    "Learn GopherForge on iPhone and iPad: offline Go, npm/React builds, local Gin-compatible APIs, breakpoints, tests, Continue and sandbox limits. Includes 1.3.1 workflows.",
   alternates: { canonical: "/guide" },
   openGraph: {
     title: "The complete GopherForge app guide",
@@ -93,7 +93,7 @@ export default function AppGuide() {
             with GopherForge on iPhone, iPad and the web.
           </p>
           <p className="small-note">
-            App Store: {releases.public.version}. Next release:{" "}
+            App Store: {releases.public.version}. App Review:{" "}
             {releases.next.version} · {releases.next.status}. Beta:{" "}
             {releases.beta.version} ({releases.beta.build}) ·{" "}
             {releases.beta.status}.{" "}
@@ -173,7 +173,7 @@ export default function AppGuide() {
                     loading="lazy"
                     alt={
                       s.id === "course"
-                        ? "Native GopherForge 1.2.0 course showing 186 lessons and 23 units"
+                        ? "Native GopherForge 1.3.1 course showing 220 teaching lessons and 28 units"
                         : "Native coding-agent lesson with a four-step workflow and practical Go guidance"
                     }
                   />

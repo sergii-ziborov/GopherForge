@@ -19,8 +19,8 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 28 October 2026 | Changes |
 | --- | --- | --- |
-| **1.3.1 (49)** | Internal QA TestFlight | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
-| **1.3.0 (48)** | Internal QA TestFlight · Waiting for App Review | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
+| **1.3.1 (49)** | Internal QA TestFlight · Waiting for App Review | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
+| **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
 | **1.2.0 (45)** | Available on the App Store | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
@@ -30,15 +30,17 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
 The store currently distributes **1.2.0 (45)**, verified on 28 October 2026.
-It includes the expanded
-curriculum, corrected exercise examples and the selected dark teal gopher icon.
+It includes the earlier 186-lesson curriculum, corrected exercise examples and
+the selected dark teal gopher icon.
 Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
-**1.3.0 (48)** is available in Internal QA TestFlight and submitted to App Review
-with direct web previews, restored lesson drafts and Practice, source-safety
-fixes, the documented offline npm/React mode and automatic source debugging. Automatic publication after approval is enabled.
+**1.3.1 (49)** is available in Internal QA TestFlight and submitted to App Review.
+It includes the 220-lesson course and 132 interview guides together with the direct
+web previews, restored lesson drafts, source-safety fixes, offline React mode and
+automatic source debugging from build 48. Automatic publication after approval is enabled.
+The previous 1.3.0 (48) review was superseded; no store release of 1.3.0 is claimed.
 The external GitHub project used for verification is not bundled in the app.
-[Review submission](docs/releases/1.3.0-build48-submission.json) · [Store assets](docs/releases/1.3.0-assets-verified.json) · [Build 48 QA](docs/audits/2026-10-28-web-preview.md) · [Beta receipt](docs/releases/1.3.0-build48-beta.json) · [Original frontend/debugger QA](docs/releases/1.3.0-beta-qa.json).
+[Review submission](docs/releases/1.3.1-build49-submission.json) · [Store assets](docs/releases/1.3.1-build49-assets.json) · [Build 48 QA](docs/audits/2026-10-28-web-preview.md) · [Beta receipt](docs/releases/1.3.1-build49-beta.json) · [Build 49 QA](docs/releases/1.3.1-build49-qa.json) · [Original frontend/debugger QA](docs/releases/1.3.0-beta-qa.json).
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
@@ -53,7 +55,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 
 ## Current curriculum
 
-The expanded source/web library is available in **1.3.1 (49) Internal QA TestFlight**: 34 additional readings and 40 worked interview guides. Build 48 remains the separate 1.3.0 App Review candidate; these additions are not in build 48. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md) · [TestFlight receipt](docs/releases/1.3.1-build49-beta.json).
+The expanded source/web library is available in **1.3.1 (49) Internal QA TestFlight**: 34 additional readings and 40 worked interview guides. Build 49 is also the current App Review submission, replacing build 48. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md) · [TestFlight receipt](docs/releases/1.3.1-build49-beta.json).
 
 ## What you can do
 
@@ -202,8 +204,8 @@ Interview self-assessment is stored locally, independently from lesson completio
 
 Current native screens, captured from the app rather than reconstructed mockups:
 
-<img src="docs/screenshots/release45/course.png" width="300" alt="GopherForge 1.2.0 course with 186 teaching lessons in 23 units">
-<img src="docs/screenshots/release45/interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
+<img src="docs/screenshots/release49/course.png" width="300" alt="GopherForge 1.3.1 course with 220 teaching lessons in 28 units">
+<img src="docs/screenshots/release49/interview.png" width="300" alt="GopherForge 1.3.1 Interview with 132 guides, Continue and topic path">
 
 ### Next.js website
 

@@ -1,6 +1,6 @@
 # Go interview coverage audit — 28 October 2026
 
-The source and web catalogs now contain **220 teaching lessons**, including **173 readings**, plus **22 prediction challenges**, across **28 units**. Interview contains **132 worked guides**, **15 topics**, four levels and the existing **12 interactive algorithm demonstrations / 36 cases**. Native curriculum: **1.3.1 (49), VALID / IN_BETA_TESTING in Internal QA TestFlight**. The separate **1.3.0 (48)** App Review candidate does not contain this expansion.
+The source and web catalogs now contain **220 teaching lessons**, including **173 readings**, plus **22 prediction challenges**, across **28 units**. Interview contains **132 worked guides**, **15 topics**, four levels and the existing **12 interactive algorithm demonstrations / 36 cases**. Native curriculum: **1.3.1 (49), VALID / IN_BETA_TESTING in Internal QA TestFlight**. The current **1.3.1 (49)** App Review submission includes the expansion and supersedes the earlier 1.3.0 (48) candidate.
 
 ## Additions
 
@@ -55,3 +55,7 @@ The [expanded course](https://gopherforge.app/learn) and [Interview](https://gop
 - Browser verification retained the existing completion mark and restored a new lesson’s exact section after reload.
 
 Reproduce the example checks with `GO=/path/to/go1.27.3 python3 scripts/verify_curriculum_examples.py` and `python3 scripts/verify_interview_algorithms.py` using the selected Go toolchain on PATH. These checks validate native examples, not an unrestricted WASI environment or a real blockchain node.
+
+## Final publication recheck
+
+The final check found the curriculum build had reached TestFlight while App Review still used build 48. The review was replaced with **1.3.1 (49)**, automatic release enabled, descriptions and review notes updated, and **12 fresh Course/Interview screenshots across six native sizes** delivered. All 55 listing screenshots and both creative placements were checked. See [submission receipt](../releases/1.3.1-build49-submission.json) and [asset receipt](../releases/1.3.1-build49-assets.json). Current site/guide/README labels and the guide course image were updated too.

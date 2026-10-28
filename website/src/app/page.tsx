@@ -46,7 +46,8 @@ export default function Home() {
             Regional prices vary.
           </p>
           <p className="small-note">
-            Private 1.3.0 beta: offline React/npm and automatic Go breakpoints.{" "}
+            TestFlight {releases.beta.version} ({releases.beta.build}): expanded
+            Go lessons, offline React and source debugging.{" "}
             <Link href="/guide#offline-react">See what it does →</Link>
           </p>
         </div>

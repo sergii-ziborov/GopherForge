@@ -1,17 +1,17 @@
 {
-  "version": "1.2.0",
-  "build": 45,
+  "version": "1.3.1",
+  "build": 49,
   "default": [
     "00-code.png",
+    "10-debugger.png",
+    "11-react.png",
     "03-course.png",
     "08-interview.png",
     "09-around-go.png",
     "04-lesson.png",
     "02-tests.png",
     "01-compiler.png",
-    "05-lab.png",
-    "06-projects.png",
-    "07-graphics.png"
+    "05-lab.png"
   ],
   "overrides": {
     "iphone-duo": [
@@ -22,7 +22,7 @@
       "docs/app-store/screenshots/iphone-duo/04-lesson.png"
     ]
   },
-  "notes": "Course, Interview and coding-agent screenshots are refreshed from installed build 45 for all six submitted sizes. Other images show unchanged editor, lesson and project features. Native captures are retained with hashes and device identifiers. iPad 11 inherits iPad 13 through Apple automatic scaling. Duo uses an Open-display Course frame and Closed-display Interview/agents frames; both are native supported sizes.",
+  "notes": "Course and Interview were recaptured from the native 1.3.1 (49) Release application for all six submitted sizes, showing 220 teaching lessons / 28 units and 132 interview guides / 15 topics. Other images show retained editor, debugger, React, lesson and project features. The Duo Course and Interview frames use the actual Closed display. All replacements are native-size opaque RGB images with recorded hashes. iPad 11 inherits iPad 13 through Apple automatic scaling.",
   "inheritedProfiles": {
     "ipad-11": {
       "source": "ipad-13",

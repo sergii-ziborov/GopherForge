@@ -58,11 +58,11 @@ export default function Support() {
       <section className="reading-section" id="beta-tools">
         <h2>React/npm and source debugger beta</h2>
         <p>
-          The 1.3.0 TestFlight beta adds a fixed offline browser package catalog
-          and a documented npm command subset. Unknown packages, Node APIs,
-          arbitrary scripts, Vite plugins and Bun are unsupported. The isolated
-          frontend preview blocks external network requests; this differs from
-          legacy local HTML previews.
+          The 1.3.1 TestFlight build includes a fixed offline browser package
+          catalog and a documented npm command subset. Unknown packages, Node
+          APIs, arbitrary scripts, Vite plugins and Bun are unsupported. The
+          isolated frontend preview blocks external network requests; this
+          differs from legacy local HTML previews.
         </p>
         <p>
           Optional Gin-compatible request replay supports small deterministic

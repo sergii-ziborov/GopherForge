@@ -81,9 +81,17 @@ test("sync release record separates the public version from the next native upda
   const r = await read("../src/content/releases.json"),
     c = await read("../src/content/course-version.json");
   assert.equal(c.publicAppVersion, r.public.version);
-  assert.equal(c.appVersion, r.curriculum.version + " — " + r.curriculum.status);
+  assert.equal(
+    c.appVersion,
+    r.curriculum.version + " — " + r.curriculum.status,
+  );
   assert.equal(r.public.version, "1.2.0");
-  assert.equal(r.next.version, "1.3.0");
+  const review = await read(
+    `../../docs/releases/${r.next.version}-build${r.next.build}-submission.json`,
+  );
+  assert.equal(r.next.version, review.version);
+  assert.equal(r.next.build, Number(review.build));
+  assert.equal(review.releaseType, "AFTER_APPROVAL");
   const receipt = await read("../../docs/releases/1.2.0-submission.json");
   assert.equal(r.public.version, receipt.version);
   assert.equal(r.public.build, Number(receipt.build));

@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge release history: version 1.2.0 on the App Store, plus 1.3.0 offline npm/React builds and Go source debugging in TestFlight and App Review.",
+    "GopherForge release history: 1.2.0 on the App Store and 1.3.1 with 220 Go lessons, 132 interview guides, offline React and source debugging.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -18,11 +18,12 @@ export default function Updates() {
       </h1>
       <section className="release" id="v131">
         <span className="release-badge muted">
-          WEB AVAILABLE · {releases.curriculum.status.toUpperCase()}
+          {releases.next.status.toUpperCase()} ·{" "}
+          {releases.beta.status.toUpperCase()}
         </span>
         <h2>
-          Expanded interview curriculum{" "}
-          <small>native {releases.curriculum.version}</small>
+          GopherForge {releases.curriculum.version}{" "}
+          <small>build {releases.curriculum.build}</small>
         </h2>
         <p>
           34 new readings and 40 worked interview guides bring the library to
@@ -38,9 +39,11 @@ export default function Updates() {
           retained.
         </p>
         <p>
-          These additions target {releases.curriculum.version}; they are
-          separate from the {releases.next.version} build {releases.next.build}{" "}
-          already waiting for App Review.
+          Version {releases.next.version} ({releases.next.build}) includes the
+          expanded curriculum and all offline frontend, source-debugging and
+          source-recovery improvements. It is{" "}
+          {releases.next.status.toLowerCase()} with automatic release after
+          approval; Internal QA can install it from TestFlight.
         </p>
         <Link className="button" href="/learn?direction=design">
           Explore the expanded learning map →
@@ -48,17 +51,16 @@ export default function Updates() {
       </section>
       <section className="release" id="v130">
         <span className="release-badge muted">
-          {releases.next.status.toUpperCase()}
+          EARLIER TESTFLIGHT · SUPERSEDED BY 1.3.1
         </span>
         <h2>
-          GopherForge {releases.next.version}{" "}
-          <small>build {releases.next.build}</small>
+          GopherForge 1.3.0 <small>build 48</small>
         </h2>
         <p>
           Build a React interface offline and trace your Go program one
-          statement at a time. Version 1.3.0 is available in private TestFlight
-          and submitted to App Review. The App Store currently distributes
-          1.2.0.
+          statement at a time. These workbench features first appeared in the
+          1.3.0 beta and are included in 1.3.1 (49), which replaces that review
+          candidate. The App Store currently distributes 1.2.0.
         </p>
         <ul>
           <li>
