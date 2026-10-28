@@ -37,7 +37,7 @@ and Continue storage formats are preserved.
 with direct web previews, restored lesson drafts and Practice, source-safety
 fixes, the documented offline npm/React mode and automatic source debugging. Automatic publication after approval is enabled.
 The external GitHub project used for verification is not bundled in the app.
-[Review submission](docs/releases/1.3.0-build48-submission.json) · [Store assets](docs/releases/1.3.0-assets-verified.json) · [Review QA](docs/releases/1.3.0-review-qa.json) · [Beta receipt](docs/releases/1.3.0-build48-beta.json) · [Focused QA](docs/releases/1.3.0-beta-qa.json).
+[Review submission](docs/releases/1.3.0-build48-submission.json) · [Store assets](docs/releases/1.3.0-assets-verified.json) · [Build 48 QA](docs/audits/2026-10-28-web-preview.md) · [Beta receipt](docs/releases/1.3.0-build48-beta.json) · [Original frontend/debugger QA](docs/releases/1.3.0-beta-qa.json).
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
