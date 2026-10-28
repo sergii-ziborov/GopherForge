@@ -13,14 +13,22 @@ enum LocalProjectImporter {
         case "gopherforgeproject":
             return try GopherForgeProjectDocument.read(from: url)
         case "gz", "tgz":
-            let files = try ProjectArchive.files(
-                fromTar: ProjectArchive.gunzip(try Data(contentsOf: url))
-            )
+            let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+            guard size <= GitHubRepositoryImporter.maximumArchiveBytes else { throw ProjectArchive.ArchiveError.tooLarge(size) }
+            let data = try Data(contentsOf: url)
+            guard data.count <= GitHubRepositoryImporter.maximumArchiveBytes else { throw ProjectArchive.ArchiveError.tooLarge(data.count) }
+            var report = ProjectImportReport()
+            report.archiveSHA256 = ProjectImportReport.digest(data)
+            let entries = try ProjectArchive.entries(fromTar: ProjectArchive.gunzip(data), report: &report)
+            let files = ProjectImportFilter.select(entries, report: &report)
             return GopherForgeProject(
                 name: ProjectArchiveNaming.projectName(fromArchive: url.lastPathComponent),
                 files: files,
                 entryFile: ProjectArchiveNaming.entryFile(in: files),
-                provenance: .files()
+                provenance: GopherForgeProject.Provenance(
+                    source: .files, owner: nil, repository: nil, reference: nil,
+                    commit: nil, importedAt: Date(), importReport: report
+                )
             )
         default:
             return try LocalProjectLoader().load(from: url)

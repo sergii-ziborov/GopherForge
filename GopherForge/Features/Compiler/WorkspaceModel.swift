@@ -699,16 +699,7 @@ final class WorkspaceModel {
     }
 
     private func githubReference(of project: GopherForgeProject) -> GitHubRepositoryReference? {
-        guard project.provenance?.source == .github,
-              let owner = project.provenance?.owner,
-              let repository = project.provenance?.repository,
-              !owner.isEmpty, !repository.isEmpty
-        else { return nil }
-        return GitHubRepositoryReference(
-            owner: owner,
-            repository: repository,
-            reference: project.provenance?.reference
-        )
+        project.provenance?.pinnedGitHubReference
     }
 
     private func beginModuleDownload(title: String, status: String, files: [String: String]) {

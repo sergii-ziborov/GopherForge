@@ -31,13 +31,6 @@ struct LocalProjectLoader {
         }
     }
 
-    /// Extensions worth opening in a Go project. Anything else is skipped
-    /// rather than loaded as garbage text.
-    private static let readableExtensions: Set<String> = [
-        "go", "mod", "sum", "md", "txt", "json", "yaml", "yml", "toml", "work",
-        "html", "htm", "js", "mjs", "css",
-    ]
-
     private let fileManager: FileManager
     private let limits: Limits
 
@@ -58,7 +51,9 @@ struct LocalProjectLoader {
         // module root rather than the checkout root is what makes the file
         // tree and the build agree.
         let root = moduleRoot(in: directory) ?? directory
-        let files = try readFiles(under: root)
+        var report = ProjectImportReport()
+        if root != directory { report.scopeNote = "Imported module subfolder: \(root.lastPathComponent). Other checkout folders were not imported." }
+        let files = try readFiles(under: root, report: &report)
 
         guard files.keys.contains(where: { $0.hasSuffix(".go") }) else {
             throw LoadError.noGoFiles
@@ -68,7 +63,10 @@ struct LocalProjectLoader {
             name: root.lastPathComponent,
             files: files,
             entryFile: entryFile(in: files),
-            provenance: .files()
+            provenance: GopherForgeProject.Provenance(
+                source: .files, owner: nil, repository: nil, reference: nil,
+                commit: nil, importedAt: Date(), importReport: report
+            )
         )
     }
 
@@ -84,7 +82,8 @@ struct LocalProjectLoader {
         )) ?? []
         for child in contents.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
             var isDirectory: ObjCBool = false
-            guard fileManager.fileExists(atPath: child.path, isDirectory: &isDirectory),
+            guard (try? child.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true,
+                  fileManager.fileExists(atPath: child.path, isDirectory: &isDirectory),
                   isDirectory.boolValue,
                   fileManager.fileExists(atPath: child.appending(path: "go.mod").path)
             else {
@@ -95,47 +94,45 @@ struct LocalProjectLoader {
         return nil
     }
 
-    private func readFiles(under root: URL) throws -> [String: String] {
-        var files: [String: String] = [:]
+    private func readFiles(under root: URL, report: inout ProjectImportReport) throws -> [String: String] {
+        var entries: [String: Data] = [:]
         var totalBytes = 0
-
-        let enumerator = fileManager.enumerator(
-            at: root,
-            includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
-            options: [.skipsPackageDescendants]
-        )
-
-        while let url = enumerator?.nextObject() as? URL {
-            let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey, .isDirectoryKey])
-            if values?.isDirectory == true, url.lastPathComponent.hasPrefix(".") {
-                enumerator?.skipDescendants()
-                continue
-            }
-            guard values?.isRegularFile == true else { continue }
-            let isFolderMarker = url.lastPathComponent == GopherForgeProject.folderMarker
-            guard isFolderMarker || Self.readableExtensions.contains(url.pathExtension.lowercased()) else {
-                continue
-            }
-            let relativePath = relative(url, to: root)
-            guard isFolderMarker || !relativePath.split(separator: "/").contains(where: { $0.hasPrefix(".") }) else {
-                continue
-            }
-
-            let size = values?.fileSize ?? 0
-            guard size <= limits.maximumFileBytes else { continue }
-
-            totalBytes += size
-            guard totalBytes <= limits.maximumTotalBytes else { throw LoadError.tooLarge }
-            guard files.count < limits.maximumFileCount else {
-                throw LoadError.tooManyFiles(limits.maximumFileCount)
-            }
-
-            guard let data = try? Data(contentsOf: url) else { continue }
-            let text = String(decoding: data, as: UTF8.self)
-            guard !SourceFileLimit.exceedsImportLimit(text, path: relativePath) else { continue }
-            files[relativePath] = text
+        var visited = 0
+        let keys: Set<URLResourceKey> = [.isRegularFileKey, .fileSizeKey, .isDirectoryKey, .isSymbolicLinkKey]
+        var enumerationError: Error?
+        let enumerator = fileManager.enumerator(at: root, includingPropertiesForKeys: Array(keys), options: []) { _, error in
+            enumerationError = error
+            return false
         }
-
+        while let url = enumerator?.nextObject() as? URL {
+            visited += 1
+            guard visited <= 50_000 else { throw LoadError.tooManyFiles(50_000) }
+            let path = relative(url, to: root)
+            let values = try url.resourceValues(forKeys: keys)
+            if values.isSymbolicLink == true {
+                enumerator?.skipDescendants()
+                report.skip(path, "Symbolic link (not followed)")
+                continue
+            }
+            if values.isDirectory == true {
+                if ProjectImportFilter.excludedDirectories.contains(url.lastPathComponent) {
+                    enumerator?.skipDescendants()
+                    report.skip(path + "/", "Metadata or generated dependency directory")
+                }
+                continue
+            }
+            guard values.isRegularFile == true else { report.skip(path, "Non-regular file"); continue }
+            if let reason = ProjectImportFilter.reasonForPath(path) { report.skip(path, reason); continue }
+            guard (values.fileSize ?? 0) <= limits.maximumFileBytes else { report.skip(path, "File byte limit"); continue }
+            let data = try Data(contentsOf: url)
+            guard data.count <= limits.maximumFileBytes else { report.skip(path, "File byte limit"); continue }
+            totalBytes += data.count
+            guard totalBytes <= limits.maximumTotalBytes else { throw LoadError.tooLarge }
+            entries[path] = data
+        }
+        if let enumerationError { throw enumerationError }
+        let files = ProjectImportFilter.select(entries, report: &report, maximumFiles: limits.maximumFileCount, maximumFileBytes: limits.maximumFileBytes)
+        if report.reasons["Snapshot file limit"] != nil { throw LoadError.tooManyFiles(limits.maximumFileCount) }
         return files
     }
 

@@ -93,6 +93,10 @@ struct SettingsView: View {
                     LabeledContent("Go version", value: workspace.toolchain.goVersion)
                     LabeledContent("Compiler and linker", value: formattedSize)
                 }
+                Text("Guest programs: \(WasmSandboxPolicy.memoryLimitLabel) memory; \(WasmSandboxPolicy.outputLimitLabel) kept per output stream. No guaranteed Stop for tight loops and no enforced guest disk-write quota. Close and reopen the app if a run cannot finish.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("settings.executionLimits")
                 Text(workspace.toolchain.detail)
                     .font(.caption)
                     .foregroundStyle(.secondary)

@@ -41,15 +41,8 @@ struct GitHubRepositoryImporter: Sendable {
         }
     }
 
-    /// Extensions worth carrying into a project. Everything else — binaries,
-    /// images, vendored archives — is dropped rather than shown as a screenful
-    /// of replacement characters.
-    static let textExtensions: Set<String> = [
-        "go", "mod", "sum", "md", "txt", "json", "yaml", "yml", "toml", "gitignore",
-        "html", "htm", "js", "mjs", "css",
-    ]
-    /// Files with no extension that are still worth reading.
-    static let textFilenames: Set<String> = ["LICENSE", "NOTICE", "AUTHORS", "Makefile"]
+    static let textExtensions = ProjectImportFilter.extensions
+    static let textFilenames = ProjectImportFilter.names
 
     /// One file the editor can open. Beyond this a "file" is data, and putting
     /// it in a text view helps nobody.
@@ -76,7 +69,10 @@ struct GitHubRepositoryImporter: Sendable {
     }
 
     func importRepository(_ reference: GitHubRepositoryReference) async throws -> GopherForgeProject {
-        guard let url = reference.archiveURL() else { throw ImportError.badURL }
+        let commit = try await resolvedCommit(for: reference)
+        guard let url = GitHubRepositoryReference(
+            owner: reference.owner, repository: reference.repository, reference: commit
+        ).archiveURL() else { throw ImportError.badURL }
 
         let data: Data
         let response: URLResponse
@@ -101,25 +97,28 @@ struct GitHubRepositoryImporter: Sendable {
             }
         }
 
-        return try project(fromArchive: data, reference: reference)
+        return try project(fromArchive: data, reference: reference, commit: commit)
     }
 
     /// Split from the download so the filtering can be tested without a network.
     func project(
         fromArchive data: Data,
         reference: GitHubRepositoryReference,
-        importedAt: Date = Date()
+        importedAt: Date = Date(),
+        commit: String? = nil
     ) throws -> GopherForgeProject {
         let entries: [String: Data]
+        var report = ProjectImportReport()
+        report.archiveSHA256 = ProjectImportReport.digest(data)
         do {
-            entries = try ProjectArchive.entries(fromTar: ProjectArchive.gunzip(data))
+            entries = try ProjectArchive.entries(fromTar: ProjectArchive.gunzip(data), report: &report)
         } catch ProjectArchive.ArchiveError.tooLarge {
             throw ImportError.tooLarge
         } catch {
             throw ImportError.notAnArchive
         }
 
-        let files = Self.keptFiles(in: entries)
+        let files = ProjectImportFilter.select(entries, report: &report)
 
         guard files.keys.contains(where: { $0.hasSuffix(".go") }) else {
             throw ImportError.noGoSource(reference.displayName)
@@ -134,8 +133,9 @@ struct GitHubRepositoryImporter: Sendable {
                 owner: reference.owner,
                 repository: reference.repository,
                 reference: reference.reference,
-                commit: nil,
-                importedAt: importedAt
+                commit: commit,
+                importedAt: importedAt,
+                importReport: report
             )
         )
     }
@@ -143,28 +143,8 @@ struct GitHubRepositoryImporter: Sendable {
     /// Text worth opening, with Go source taken first when the file budget
     /// would otherwise fill up on documentation.
     static func keptFiles(in entries: [String: Data], limit: Int = maximumFiles) -> [String: String] {
-        var essential: [(String, String)] = []
-        var other: [(String, String)] = []
-        for path in entries.keys.sorted() {
-            guard isWorthKeeping(path: path) else { continue }
-            guard let body = entries[path], body.count <= maximumFileBytes else { continue }
-            // Invalid UTF-8 means it was not text after all, whatever the name
-            // said. Dropped rather than mangled.
-            guard let text = String(data: body, encoding: .utf8) else { continue }
-            guard !SourceFileLimit.exceedsImportLimit(text, path: path) else { continue }
-            if SourceFileLimit.isBuildEssential(path) {
-                essential.append((path, text))
-            } else {
-                other.append((path, text))
-            }
-        }
-
-        var files: [String: String] = [:]
-        for (path, text) in essential + other {
-            guard files.count < limit else { break }
-            files[path] = text
-        }
-        return files
+        var report = ProjectImportReport()
+        return ProjectImportFilter.select(entries, report: &report, maximumFiles: limit)
     }
 
     /// Fills in Go source a previous import left out, without replacing files
@@ -181,16 +161,35 @@ struct GitHubRepositoryImporter: Sendable {
     }
 
     static func isWorthKeeping(path: String) -> Bool {
-        let name = path.split(separator: "/").last.map(String.init) ?? path
-        // Repository furniture that is not the code and only adds noise to the
-        // navigator.
-        let ignoredDirectories = [".git/", ".github/", "testdata/", "vendor/"]
-        if ignoredDirectories.contains(where: { path.hasPrefix($0) || path.contains("/\($0)") }) {
-            return false
+        ProjectImportFilter.reasonForPath(path) == nil
+    }
+
+    /// Resolve the requested branch/tag before download. Later restoration uses
+    /// this immutable commit, never whatever a moving branch happens to contain.
+    private func resolvedCommit(for reference: GitHubRepositoryReference) async throws -> String {
+        struct Commit: Decodable { let sha: String }
+        var url = URLComponents()
+        url.scheme = "https"
+        url.host = "api.github.com"
+        url.path = "/repos/\(reference.owner)/\(reference.repository)/commits"
+        url.queryItems = [URLQueryItem(name: "per_page", value: "1")]
+        if let ref = reference.reference { url.queryItems?.append(URLQueryItem(name: "sha", value: ref)) }
+        guard let endpoint = url.url else { throw ImportError.badURL }
+        var request = URLRequest(url: endpoint)
+        request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+        request.setValue("2026-03-10", forHTTPHeaderField: "X-GitHub-Api-Version")
+        request.setValue("GopherForge", forHTTPHeaderField: "User-Agent")
+        let (data, response) = try await BoundedDownload.load(request, limit: 1_024 * 1_024, session: session)
+        switch (response as? HTTPURLResponse)?.statusCode {
+        case 200: break
+        case 404, 409, 422: throw ImportError.notFound(reference.displayName)
+        case 403, 429: throw ImportError.rateLimited
+        default: throw ImportError.unreachable("The repository revision could not be resolved.")
         }
-        if textFilenames.contains(name) { return true }
-        let ext = (name as NSString).pathExtension
-        return !ext.isEmpty && textExtensions.contains(ext)
+        guard let sha = try JSONDecoder().decode([Commit].self, from: data).first?.sha,
+              sha.count == 40, sha.utf8.allSatisfy({ (48...57).contains($0) || (97...102).contains($0) })
+        else { throw ImportError.unreachable("GitHub did not return a complete commit identifier.") }
+        return sha
     }
 
     /// The file worth opening first: the package main with a func main in it,

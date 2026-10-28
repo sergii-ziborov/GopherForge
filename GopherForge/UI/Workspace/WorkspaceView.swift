@@ -100,6 +100,7 @@ struct WorkspaceView: View {
     let dockHeightRange: ClosedRange<Double> = 120...640
     @State var isDrawerOpen = false
     @State var isShowingPackages = false
+    @State var isShowingImportDetails = false
     @State var libraryFolders: [String] = []
     @State var filingItem: ProjectLibraryItem?
 
@@ -180,6 +181,9 @@ struct WorkspaceView: View {
         .environment(\.softwareKeyboardAccessoryEnabled, keyboardAccessoryEnabled)
         .background(Color(pane == .code ? .systemBackground : .secondarySystemBackground).ignoresSafeArea(.container))
         .toolbar(usesLaptopLayout || keyboardVisible || isCompactPhoneLandscape ? .hidden : .visible, for: .tabBar)
+        .sheet(isPresented: $isShowingImportDetails) {
+            if let project = workspace.project { ProjectImportDetailsView(project: project) }
+        }
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
                 PackageBrowserView(allowsProjectChoice: false) {
@@ -444,11 +448,16 @@ struct WorkspaceView: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.projectOrganize)
                 if let project = workspace.project {
+                    if project.provenance?.source == .github || project.provenance?.source == .files {
+                        Button { isShowingImportDetails = true } label: {
+                            Label(project.provenance?.importReport?.isPartial == true ? "Partial import — details…" : "Import details…", systemImage: "list.bullet.rectangle")
+                        }
+                    }
                     ShareLink(
                         item: ProjectExport(project: project),
                         preview: SharePreview(project.name)
                     ) {
-                        Label("Export as .tar.gz", systemImage: "square.and.arrow.up")
+                        Label(project.provenance?.importReport?.isPartial == true ? "Export partial snapshot as .tar.gz" : "Export as .tar.gz", systemImage: "square.and.arrow.up")
                     }
                     .accessibilityIdentifier(AccessibilityID.exportProject)
                 }

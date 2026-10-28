@@ -50,9 +50,8 @@ enum ProjectArchive {
     // MARK: - Reading
 
     static func files(fromTar data: Data) throws -> [String: String] {
-        try entries(fromTar: data).reduce(into: [:]) { files, entry in
-            files[entry.key] = String(decoding: entry.value, as: UTF8.self)
-        }
+        var report = ProjectImportReport()
+        return ProjectImportFilter.select(try entries(fromTar: data), report: &report)
     }
 
     /// Every regular file in the archive, as bytes.
@@ -62,10 +61,16 @@ enum ProjectArchive {
     /// screenful of replacement characters, and the caller is the only one that
     /// knows whether that matters.
     static func entries(fromTar data: Data) throws -> [String: Data] {
+        var report = ProjectImportReport()
+        return try entries(fromTar: data, report: &report)
+    }
+
+    static func entries(fromTar data: Data, report: inout ProjectImportReport) throws -> [String: Data] {
         guard data.count >= blockSize else { throw ArchiveError.notATar }
         var files: [String: Data] = [:]
         var offset = 0
         var total = 0
+        var headerCount = 0
         /// A name carried by a preceding long-name header, which applies to the
         /// next entry only.
         var pendingName: String?
@@ -76,6 +81,9 @@ enum ProjectArchive {
             guard let entry = Entry(block: block) else { throw ArchiveError.notATar }
             offset += blockSize
 
+            headerCount += 1
+            guard headerCount <= 50_000, entry.size >= 0,
+                  entry.size <= maximumUncompressedBytes else { throw ArchiveError.tooLarge(entry.size) }
             let end = offset + entry.size
             guard end <= data.count else { throw ArchiveError.truncated }
             total += entry.size
@@ -98,7 +106,12 @@ enum ProjectArchive {
                 // of "<length> <key>=<value>\n" records; only the path matters.
                 pendingName = paxPath(in: body) ?? pendingName
                 continue
-            case .globalHeader, .other:
+            case .globalHeader:
+                pendingName = nil
+                continue
+            case .other:
+                let name = pendingName ?? entry.name
+                if !name.hasSuffix("/") { report.skip(name, "Non-regular archive entry") }
                 pendingName = nil
                 continue
             case .file:
@@ -107,8 +120,12 @@ enum ProjectArchive {
 
             let name = pendingName ?? entry.name
             pendingName = nil
+            guard name.utf8.count <= 1_024 else { throw ArchiveError.pathTooLong(String(name.prefix(120))) }
             if let relative = projectPath(from: name) {
+                guard files[relative] == nil else { throw ArchiveError.notATar }
                 files[relative] = body
+            } else {
+                report.skip(name, "Unsafe or unrooted archive path")
             }
         }
 

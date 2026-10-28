@@ -20,6 +20,15 @@ struct GopherForgeProject: Codable, Equatable, Sendable {
         let reference: String?
         let commit: String?
         let importedAt: Date
+        var importReport: ProjectImportReport? = nil
+
+        /// Old unpinned snapshots cannot safely receive files from today's branch.
+        var pinnedGitHubReference: GitHubRepositoryReference? {
+            guard source == .github, let owner, let repository, let commit,
+                  !owner.isEmpty, !repository.isEmpty, commit.count == 40,
+                  commit.utf8.allSatisfy({ (48...57).contains($0) || (97...102).contains($0) }) else { return nil }
+            return GitHubRepositoryReference(owner: owner, repository: repository, reference: commit)
+        }
 
         static func files(at date: Date = Date()) -> Provenance {
             Provenance(

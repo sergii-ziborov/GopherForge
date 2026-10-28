@@ -263,6 +263,9 @@ See [package behavior and limits](docs/PACKAGES.md).
 - Vendoring does not preserve arbitrary non-Go `go:embed` assets. `go.work`
   semantics and full module-version solving are not implemented.
 - A tight infinite loop has no guaranteed Stop; close and reopen the app.
+  There is no enforced aggregate guest file-write quota. Memory and captured
+  output limits do not bound CPU time or writes to allowed guest files.
+  [Execution contract](docs/RUNTIME_LIMITS.md).
 - Compile-and-run has been demonstrated on a physical iPhone. Airplane-mode
   operation and sustained thermal/memory behavior remain unverified; simulator
   checks do not establish those results.
@@ -318,3 +321,7 @@ The two new course readings are
 [pool ownership](https://gopherforge.app/learn/runtime.pool-ownership).
 The native catalog is the source for both platforms; browser and app progress
 remain independent.
+
+## Audit roadmap — development branch
+
+The [28 October audit plan](docs/audits/2026-10-28-plan.md) tracks source-safety fixes before further learning and Playground work. The current development branch adds coordinated library writes, preserved conflict copies, scoped dependency publication, reviewed file-specific idiom repairs, strict terminal commands and a [visible import inventory](docs/IMPORT_SNAPSHOTS.md). These are not claims that every roadmap package or physical provider gate has passed. Apple release identity remains in `docs/releases/`; source implementation is not the same as a shipped build.

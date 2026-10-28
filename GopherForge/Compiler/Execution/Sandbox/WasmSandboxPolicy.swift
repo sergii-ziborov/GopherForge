@@ -2,8 +2,9 @@ import Foundation
 
 /// The bounds every guest program runs under.
 ///
-/// These are product limits, not suggestions: the sandbox gate test asserts a
-/// program that asks for more is stopped rather than allowed to grow.
+/// Memory/table growth and captured output are bounded. This is not a CPU
+/// deadline or a filesystem quota; ordinary tight loops are not interruptible.
+/// The sandbox gate tests assert the specific growth limits below.
 enum WasmSandboxPolicy {
     static let writableGuestDirectory = "/sandbox"
     static let userProgramMemoryLimitBytes = 64 * 1024 * 1024
