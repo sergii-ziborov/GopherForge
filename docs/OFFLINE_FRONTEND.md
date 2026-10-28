@@ -25,7 +25,7 @@ are autosaved with the project. Browser state is temporary; it is not the projec
 The Go API session is shared between embedded and full-screen previews and
 resets when you rebuild or reopen the project.
 
-## Preview controls (next native build 48)
+## Preview controls (native build 48)
 
 Output now offers **Build & Preview** whenever an offline recipe is present but
 its generated assets are missing or stale. It runs the same bounded

@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-28T14:54:50.842864+00:00",
+  "sourceCommit": "fbc0c69",
+  "configuration": "AuditQA",
+  "bundleIdentifier": "com.sergiiziborov.GopherForgeAuditQA",
+  "result": "Passed",
+  "passedTests": 1,
+  "failedTests": 0,
+  "device": "Physical iPhone 13 mini, iOS 26.5",
+  "scenario": [
+    "Select owned library A through the system Files folder picker",
+    "Edit A; background, terminate and relaunch; restore its bookmark and saved source",
+    "Select separate library B, edit and relaunch",
+    "Reopen A and B and verify each unique saved marker without the other library marker"
+  ],
+  "scope": "Apple local Files provider in the isolated QA app Documents. Not a claim of remote iCloud synchronization or arbitrary third-party provider behavior.",
+  "primaryApp": "Separate TestFlight app/container preserved; no replacement or deletion",
+  "testBundle": "build/audit47/physical-library-return48-icon.xcresult",
+  "earlierFailures": "Retained: folder picker Cancel/Browse assumptions and icon/text tap navigation were corrected in the UI driver.",
+  "cleanup": "After exported evidence, the isolated QA app and QA runner were uninstalled. The primary TestFlight app was confirmed as 1.3.0 (47) and preserved."
+}

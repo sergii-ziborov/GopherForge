@@ -33,6 +33,18 @@ export default function Updates() {
         </p>
         <ul>
           <li>
+            Build &amp; Preview directly from Output, full-screen and reload
+            controls, project archive sharing, and device-only browser/address
+            actions for static previews. Isolated React origins remain inside
+            GopherForge.
+          </li>
+          <li>
+            Restored lesson drafts and pre-solution source, assistance-aware
+            attempts, direct Practice access, and safer Files library restoration.
+            Exact GitHub commit snapshots and visible import omissions; strict
+            terminal validation preserves what a command actually means.
+          </li>
+          <li>
             Documented npm install/build/preview commands, bundled esbuild WASI
             and a fixed React catalog. No Node server, Bun or registry
             downloads.

@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-28T15:02:15.784997+00:00",
+  "sourceCommit": "fbc0c69",
+  "imageDigest": "sha256:7ea54b2dfe884a80923ac1549ece258f77242fe2dab37ee9483f8ae9a4cc8e30",
+  "hostwatchJob": "gopherforge-preview48-fbc0c69-20261028",
+  "state": "succeeded",
+  "guideStatus": "Controls are marked upcoming native build 48; public 1.2.0, beta47 and review46 still identified separately",
+  "rollbackImage": "localhost/gopherforge-web:rollback-preview48-fbc0c69",
+  "webTests": 27,
+  "nextBuild": "passed",
+  "separateServerChecks": 6,
+  "publicHTTPS": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/guide",
+      "status": 200
+    },
+    {
+      "path": "/learn",
+      "status": 200
+    },
+    {
+      "path": "/interview",
+      "status": 200
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200
+    },
+    {
+      "path": "/api/health",
+      "status": 200
+    }
+  ]
+}

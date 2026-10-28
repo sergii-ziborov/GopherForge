@@ -1,6 +1,6 @@
 # Direct web preview — 28 October 2026
 
-Candidate source: native 1.3.0 build 48, not yet uploaded at this checkpoint.
+Native 1.3.0 build 48, source `fbc0c69`: uploaded, VALID, available in Internal QA TestFlight and WAITING_FOR_REVIEW. See the build-48 release receipts.
 
 The reported React + Gin Output showed only successful `httptest` route checks.
 The frontend had not been built, and the old build instructions were visible
@@ -34,4 +34,6 @@ cross-device live URL is claimed. Browser session state is not in the archive.
 
 These are focused gates, not a claim that the complete test suite or all 18
 audit packages have passed. The final ownership guard was added after the
-45-check gate and is included in the subsequent candidate verification.
+45-check gate; all five terminal/build ownership checks then passed in
+`build/audit47/preview48-owner-final.xcresult`. The isolated physical Files A/B
+switch/edit/process-relaunch flow also passed; see `2026-10-28-physical-files.json`.

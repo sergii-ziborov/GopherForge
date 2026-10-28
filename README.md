@@ -19,7 +19,7 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 28 October 2026 | Changes |
 | --- | --- | --- |
-| **1.3.0 (46)** | TestFlight · Waiting for App Review | Offline React/npm subset, isolated Go API capability and automatic source debugging with breakpoints. |
+| **1.3.0 (48)** | Internal QA TestFlight · Waiting for App Review | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
 | **1.2.0 (45)** | Available on the App Store | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
@@ -33,11 +33,11 @@ It includes the expanded
 curriculum, corrected exercise examples and the selected dark teal gopher icon.
 Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
-**1.3.0 (46)** is available in Internal QA TestFlight and submitted to App Review
-with the documented offline npm/React mode, bounded local Go API capability and
-automatic source debugger. Automatic publication after approval is enabled.
+**1.3.0 (48)** is available in Internal QA TestFlight and submitted to App Review
+with direct web previews, restored lesson drafts and Practice, source-safety
+fixes, the documented offline npm/React mode and automatic source debugging. Automatic publication after approval is enabled.
 The external GitHub project used for verification is not bundled in the app.
-[Review submission](docs/releases/1.3.0-submission.json) · [Store assets](docs/releases/1.3.0-assets-verified.json) · [Review QA](docs/releases/1.3.0-review-qa.json) · [Beta receipt](docs/releases/1.3.0-beta.json) · [Focused QA](docs/releases/1.3.0-beta-qa.json).
+[Review submission](docs/releases/1.3.0-build48-submission.json) · [Store assets](docs/releases/1.3.0-assets-verified.json) · [Review QA](docs/releases/1.3.0-review-qa.json) · [Beta receipt](docs/releases/1.3.0-build48-beta.json) · [Focused QA](docs/releases/1.3.0-beta-qa.json).
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
@@ -134,11 +134,11 @@ npm run build
 frontend preview
 ```
 
-The upcoming native build 48 also offers **Output → Build & Preview**, plus
+Native build 48 also offers **Output → Build & Preview**, plus
 full-screen, reload and project sharing controls. Legacy static previews can
 open in the browser or share their on-device address; isolated React previews
 keep their WebKit-only origin and share the project archive. A loopback address
-is not a public link. See [preview controls](docs/OFFLINE_FRONTEND.md#preview-controls-next-native-build-48).
+is not a public link. See [preview controls](docs/OFFLINE_FRONTEND.md#preview-controls-native-build-48).
 
 Open Output for the preview. `frontend install/build` and the supported npm
 commands invoke this app's bounded frontend builder, **not a full npm runtime**.
