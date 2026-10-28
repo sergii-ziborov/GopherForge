@@ -1,6 +1,6 @@
 # Go interview coverage audit — 28 October 2026
 
-The source and web catalogs now contain **220 teaching lessons**, including **173 readings**, plus **22 prediction challenges**, across **28 units**. Interview contains **132 worked guides**, **15 topics**, four levels and the existing **12 interactive algorithm demonstrations / 36 cases**. Native curriculum candidate: **1.3.1 (49)**. The separate **1.3.0 (48)** App Review candidate does not contain this expansion.
+The source and web catalogs now contain **220 teaching lessons**, including **173 readings**, plus **22 prediction challenges**, across **28 units**. Interview contains **132 worked guides**, **15 topics**, four levels and the existing **12 interactive algorithm demonstrations / 36 cases**. Native curriculum: **1.3.1 (49), VALID / IN_BETA_TESTING in Internal QA TestFlight**. The separate **1.3.0 (48)** App Review candidate does not contain this expansion.
 
 ## Additions
 

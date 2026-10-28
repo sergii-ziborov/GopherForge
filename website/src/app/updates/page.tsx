@@ -48,12 +48,11 @@ export default function Updates() {
       </section>
       <section className="release" id="v130">
         <span className="release-badge muted">
-          {releases.next.status.toUpperCase()} ·{" "}
-          {releases.beta.status.toUpperCase()}
+          {releases.next.status.toUpperCase()}
         </span>
         <h2>
-          GopherForge {releases.beta.version}{" "}
-          <small>build {releases.beta.build}</small>
+          GopherForge {releases.next.version}{" "}
+          <small>build {releases.next.build}</small>
         </h2>
         <p>
           Build a React interface offline and trace your Go program one

@@ -1,6 +1,6 @@
 {
   "source": "Native GoCourseCatalog + ReadingLessons.json",
-  "appVersion": "1.3.1 \u2014 In development \u2014 expanded curriculum",
+  "appVersion": "1.3.1 \u2014 Internal QA TestFlight",
   "publicAppVersion": "1.2.0",
   "catalogSHA256": "5759341cbb83c1c08e6580daef85bef67d10813d3a32ca0d3be1a5e1c67e1f99",
   "units": 28,
