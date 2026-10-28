@@ -11,6 +11,9 @@ struct LessonDetailView: View {
 
     @State private var model: LessonModel
     @State private var showsFailureHelp = false
+    @State private var confirmsDraftReset = false
+    @State private var showsPredictionAnswer = false
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(LearnProgress.self) private var progress
 
     init(lesson: Lesson) {
@@ -69,6 +72,7 @@ struct LessonDetailView: View {
                     LessonReferenceHintCard(hint: model.hint, tint: tint)
                 }
 
+                if lesson.requiresCompiler { draftControls }
                 taskSection
 
                 if lesson.requiresCompiler, !model.canCheck, !model.isChecking {
@@ -82,7 +86,8 @@ struct LessonDetailView: View {
                     LessonVerdictView(
                         result: result,
                         solution: lesson.idiomaticSolution,
-                        onHelp: result.succeeded ? nil : { showsFailureHelp = true }
+                        onHelp: result.succeeded ? nil : { model.noteHintRead(); showsFailureHelp = true },
+                        onSolutionShown: { model.noteSolutionRevealed() }
                     )
                 }
 
@@ -125,6 +130,16 @@ struct LessonDetailView: View {
                 )
             }
         }
+        .confirmationDialog("Start a new attempt with the current starter?", isPresented: $confirmsDraftReset, titleVisibility: .visible) {
+            Button("Reset this draft", role: .destructive) { model.resetDraft(); Task { await model.saveDraft() } }
+        } message: {
+            Text("Only this lesson’s draft is reset. Completion and test history are kept.")
+        }
+        .onDisappear { Task { await model.saveDraft() } }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active { Task { await model.saveDraft() } }
+        }
+        .onChange(of: showsPredictionAnswer) { _, shown in if shown { model.noteSolutionRevealed() } }
         .onAppear { progress.visitLesson(lesson.id) }
         .task {
             await model.loadProgress()
@@ -152,6 +167,33 @@ struct LessonDetailView: View {
                 }
             }
         }
+    }
+
+    private var draftControls: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if model.draftRestored { Label("Your saved code is restored", systemImage: "arrow.counterclockwise").font(.caption) }
+            if model.draftContentChanged {
+                Text("This lesson’s starter or tests changed. Your earlier code is kept. Reset the draft only when you want the new starter.")
+                    .font(.caption).foregroundStyle(GopherForgeTheme.warning)
+            }
+            if let error = model.draftSaveError {
+                Text(error).font(.caption).foregroundStyle(.red)
+                Button("Retry saving draft") { Task { await model.saveDraft() } }
+            }
+            if model.assistanceLevel == .solutionInserted {
+                Text("A provided solution was inserted in this attempt. A passing compiler check still verifies the code, but does not establish an unaided solution.").font(.caption).foregroundStyle(.secondary)
+            }
+            HStack {
+                if model.ownTextBeforeSolution != nil {
+                    Button("Restore my code") { model.restoreOwnCode() }
+                        .accessibilityIdentifier("lesson.restoreOwnCode")
+                }
+                Spacer()
+                Button("Start again") { confirmsDraftReset = true }
+                    .accessibilityIdentifier("lesson.resetDraft")
+            }.font(.caption)
+        }
+        .accessibilityIdentifier("lesson.draftStatus")
     }
 
     // MARK: - Finishing
@@ -284,6 +326,7 @@ struct LessonDetailView: View {
         Task {
             await model.check()
             if model.result?.succeeded == false {
+                model.noteHintRead()
                 showsFailureHelp = true
             }
             // The course is showing this lesson's state too, and a pass it
@@ -301,6 +344,7 @@ struct LessonDetailView: View {
             // keep the failure visible with its real diagnostics instead of
             // returning to an unexplained red count.
             if model.result?.succeeded == false {
+                model.noteHintRead()
                 showsFailureHelp = true
             }
         }
@@ -314,7 +358,7 @@ struct LessonDetailView: View {
         case .reading:
             EmptyView()
         case let .guidedTyping(target):
-            LessonSection(title: "Type this until it is automatic", systemImage: "keyboard", tint: tint) {
+            LessonSection(title: "Worked syntax example", systemImage: "keyboard", tint: tint) {
                 CodeBlock(title: "", code: target)
             }
         case let .fillGaps(template, blanks):
@@ -331,7 +375,7 @@ struct LessonDetailView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     CodeBlock(title: "", code: source)
                     Text(LearningProse.inline(question)).font(.callout.weight(.medium))
-                    DisclosureGroup("Show the answer") {
+                    DisclosureGroup("Show the answer", isExpanded: $showsPredictionAnswer) {
                         LearningProse(text: answer)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, 4)
@@ -357,6 +401,8 @@ struct LessonVerdictView: View {
     let result: CompilationResult
     let solution: String?
     let onHelp: (() -> Void)?
+    var onSolutionShown: () -> Void = {}
+    @State private var referenceExpanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -404,7 +450,10 @@ struct LessonVerdictView: View {
             }
 
             if result.succeeded, let solution {
-                CodeBlock(title: "How Go would usually write it", code: solution)
+                DisclosureGroup("Compare a reference answer", isExpanded: $referenceExpanded) {
+                    CodeBlock(title: "How Go would usually write it", code: solution)
+                }
+                .onChange(of: referenceExpanded) { _, expanded in if expanded { onSolutionShown() } }
             }
         }
         .padding(14)

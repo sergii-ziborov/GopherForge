@@ -1,3 +1,6 @@
+import { lessons } from "@/lib/course";
+import { ProgressTransfer } from "@/components/ProgressTransfer";
+import { curriculumUpdatedOn } from "@/lib/curriculum-revision";
 import type { Metadata } from "next";
 import { interview } from "@/lib/interview";
 import { InterviewIndex } from "@/components/InterviewIndex";
@@ -64,6 +67,11 @@ export default function InterviewPage() {
         )}
         topics={interview.topics}
         levels={interview.levels}
+      />
+      <ProgressTransfer
+        lessons={lessons.map((l) => l.id)}
+        interview={interview.questions.map((q) => q.id)}
+        revision={curriculumUpdatedOn}
       />
     </section>
   );

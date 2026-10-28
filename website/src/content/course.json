@@ -5290,7 +5290,7 @@
               "A requirement to keep all code in main"
             ],
             "correct" : "One process with explicit local responsibilities",
-            "explanation" : "Start splitting when different responsibilities change independently or teams need ownership boundaries. A simple monolith can scale through replicas; shared mutable state and database contention still need measurement. Avoid hiding every function behind an interface.",
+            "explanation" : "Start splitting when different responsibilities change independently or teams need ownership boundaries.",
             "hint" : "The entry point decides how to report failure; total only parses and computes. The result is 36. There is no remote call, queue or dependency container because this variation has not appeared in the problem.",
             "question" : "Which statement best describes Simple monolith: start with one executable?"
           },
@@ -5328,6 +5328,10 @@
             {
               "body" : "Measure request latency, database time, queue depth and memory before extracting services. A process can have multiple replicas and background workers while remaining a monolith, provided shared state is durable and concurrency-safe. Start by improving indexes or isolating a slow worker. If one capability later needs independent deployment, keep its existing API and extract behind that seam. Expect remote timeouts and partial failure to become new work after extraction.",
               "title" : "Scale only the measured bottleneck"
+            },
+            {
+              "body" : "Start splitting when different responsibilities change independently or teams need ownership boundaries. A simple monolith can scale through replicas; shared mutable state and database contention still need measurement. Avoid hiding every function behind an interface.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "One process with explicit local responsibilities. Start splitting when different responsibilities change independently or teams need ownership boundaries. A simple monolith can scale through replicas; shared mutable state and database contention still need measurement. Avoid hiding every function behind an interface."
@@ -5380,8 +5384,8 @@
               "Automatic dependency inversion"
             ],
             "correct" : "Separate responsibilities without requiring network tiers",
-            "explanation" : "A feature may touch every horizontal layer, so keep mapping work proportional to the value it protects. Layering alone does not invert dependencies, create transactions or make storage replaceable. A single function is simpler for a one-off script.",
-            "hint" : "Register enforces a rule before Store changes. main acts as the transport for this small example and prints success followed by the stored name. Concrete dependencies are enough here; a boundary interface can be introduced when there is a caller need.",
+            "explanation" : "A feature may touch every horizontal layer, so keep mapping work proportional to the value it protects.",
+            "hint" : "Register enforces a rule before Store changes.",
             "question" : "Which statement best describes Layered architecture: transport, application, storage?"
           },
           "references" : [
@@ -5422,6 +5426,14 @@
             {
               "body" : "If one small feature repeatedly changes controller, manager, service, repository and mapper with no distinct decision in most layers, collapse unnecessary forwarding. Organize files by feature within a layer or introduce a vertical slice. Preserve stable cross-cutting policy such as authentication at a clear boundary. Test each layer only for the behavior it owns: request mapping, business invariant or persistence contract, rather than duplicating the same happy-path assertion five times.",
               "title" : "Reduce horizontal change amplification"
+            },
+            {
+              "body" : "A feature may touch every horizontal layer, so keep mapping work proportional to the value it protects. Layering alone does not invert dependencies, create transactions or make storage replaceable. A single function is simpler for a one-off script.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Register enforces a rule before Store changes. main acts as the transport for this small example and prints success followed by the stored name. Concrete dependencies are enough here; a boundary interface can be introduced when there is a caller need.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Separate responsibilities without requiring network tiers. A feature may touch every horizontal layer, so keep mapping work proportional to the value it protects. Layering alone does not invert dependencies, create transactions or make storage replaceable. A single function is simpler for a one-off script."
@@ -5474,7 +5486,7 @@
               "All modules may write each other’s tables"
             ],
             "correct" : "Business capabilities expose APIs in one deployment",
-            "explanation" : "One database can support atomic changes, but bypassing module APIs destroys ownership. Enforce dependency direction with package boundaries and review. Extract a service only when independent scaling, release cadence or isolation pays for remote failures.",
+            "explanation" : "One database can support atomic changes, but bypassing module APIs destroys ownership.",
             "hint" : "Shipping receives the one query it needs instead of the billing map. Both calls stay in the same process. In a real module layout these declarations belong in separate packages, with internal implementation hidden behind each module API.",
             "question" : "Which statement best describes Modular monolith: boundaries inside one deployment?"
           },
@@ -5513,6 +5525,10 @@
             {
               "body" : "A module is ready for service extraction when its contract, ownership and data access are already explicit. First find direct table reads, shared pointers and cross-module transactions; these are migration work. Put a network adapter behind the existing consumer contract and introduce timeouts, versioning and retry-safe operations. Run contract tests before switching traffic. Keep the monolith if the same team deploys everything together and local transactions still provide more value than independent release timing.",
               "title" : "Extract without breaking every caller"
+            },
+            {
+              "body" : "One database can support atomic changes, but bypassing module APIs destroys ownership. Enforce dependency direction with package boundaries and review. Extract a service only when independent scaling, release cadence or isolation pays for remote failures.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Business capabilities expose APIs in one deployment. One database can support atomic changes, but bypassing module APIs destroys ownership. Enforce dependency direction with package boundaries and review. Extract a service only when independent scaling, release cadence or isolation pays for remote failures."
@@ -5565,8 +5581,8 @@
               "Every value requires five mapped copies"
             ],
             "correct" : "Source dependencies point inward toward policy",
-            "explanation" : "Model missing products and invalid discounts before using this mechanism in production. Do not create a DTO, interface and mapper for every struct automatically. For a tiny CRUD endpoint, a focused handler and explicit SQL may be easier to change.",
-            "hint" : "Product performs policy without importing storage. Quote depends on its own Prices contract. The outer MemoryPrices implementation satisfies it implicitly, and main wires the concrete choice. The inward source dependency differs from the runtime lookup direction.",
+            "explanation" : "Model missing products and invalid discounts before using this mechanism in production.",
+            "hint" : "Product performs policy without importing storage.",
             "question" : "Which statement best describes Clean and Onion: dependencies point toward policy?"
           },
           "references" : [
@@ -5605,6 +5621,14 @@
             {
               "body" : "Construct the application service with an in-memory contract implementation and a controlled clock. Check the invariant, failure result and absence of unwanted side effects. Then verify the production adapter separately against its real storage contract. If starting a router, database and message broker is required to test a price rule, policy still depends on infrastructure somewhere. Clean architecture suits long-lived business rules, while a short one-purpose tool may be clearer with fewer boundaries.",
               "title" : "Prove independence with a focused test"
+            },
+            {
+              "body" : "Model missing products and invalid discounts before using this mechanism in production. Do not create a DTO, interface and mapper for every struct automatically. For a tiny CRUD endpoint, a focused handler and explicit SQL may be easier to change.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Product performs policy without importing storage. Quote depends on its own Prices contract. The outer MemoryPrices implementation satisfies it implicitly, and main wires the concrete choice. The inward source dependency differs from the runtime lookup direction.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Source dependencies point inward toward policy. Model missing products and invalid discounts before using this mechanism in production. Do not create a DTO, interface and mapper for every struct automatically. For a tiny CRUD endpoint, a focused handler and explicit SQL may be easier to change."
@@ -5657,8 +5681,8 @@
               "A ban on shared domain rules"
             ],
             "correct" : "Group code by use case and reason to change",
-            "explanation" : "Extract a shared domain rule when several slices genuinely enforce the same invariant. Duplicated validation can drift, while an overgeneralized framework can make every change harder. Slices can share infrastructure without sharing their entire application model.",
-            "hint" : "RenameProject owns normalization and validation for one operation. The caller receives an error rather than modifying Name itself. A larger slice can include its HTTP DTO and SQL query without routing through layers that only forward arguments.",
+            "explanation" : "Extract a shared domain rule when several slices genuinely enforce the same invariant.",
+            "hint" : "RenameProject owns normalization and validation for one operation.",
             "question" : "Which statement best describes Vertical slices: organize around a use case?"
           },
           "references" : [
@@ -5696,6 +5720,14 @@
             {
               "body" : "For a command, test invalid input, denied access, success and a failed durable write. For a query, test filtering and response shape without constructing unrelated domain workflows. Preserve the public route and event contracts while reorganizing packages. Extract shared code only after repeated changes reveal one stable responsibility. This approach makes feature changes local but needs conventions so each slice does not invent different error, logging and validation behavior.",
               "title" : "Test one slice end to end at its boundary"
+            },
+            {
+              "body" : "Extract a shared domain rule when several slices genuinely enforce the same invariant. Duplicated validation can drift, while an overgeneralized framework can make every change harder. Slices can share infrastructure without sharing their entire application model.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "RenameProject owns normalization and validation for one operation. The caller receives an error rather than modifying Name itself. A larger slice can include its HTTP DTO and SQL query without routing through layers that only forward arguments.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Group code by use case and reason to change. Extract a shared domain rule when several slices genuinely enforce the same invariant. Duplicated validation can drift, while an overgeneralized framework can make every change harder. Slices can share infrastructure without sharing their entire application model."
@@ -5748,8 +5780,8 @@
               "A requirement to model every SQL row as an aggregate"
             ],
             "correct" : "Protects invariants within a consistency boundary",
-            "explanation" : "Use richer models where business language and rules justify them. A reporting query can return a projection without reconstructing every aggregate. Too many tiny entities and repositories obscure straightforward CRUD; bounded contexts can remain packages in one executable.",
-            "hint" : "The Basket operation checks the invariant before mutation, so a rejected addition leaves three items. This illustrates an aggregate rule, not durable storage. Concurrent database writes need transactions or version checks to preserve the same invariant.",
+            "explanation" : "Use richer models where business language and rules justify them.",
+            "hint" : "The Basket operation checks the invariant before mutation, so a rejected addition leaves three items.",
             "question" : "Which statement best describes DDD: bounded contexts and aggregates?"
           },
           "references" : [
@@ -5787,6 +5819,14 @@
             {
               "body" : "Start with scenarios from domain experts and encode examples as tests: duplicate line, cancelled order, price change and concurrent update. CRUD administration often needs a simple data model rather than repositories, aggregates and domain services. Introduce an anti-corruption adapter when integrating a foreign model so its vocabulary does not leak everywhere. DDD has a high communication and modeling cost; it pays when rules and language are complex, not merely when a project has many tables.",
               "title" : "Use domain modeling selectively"
+            },
+            {
+              "body" : "Use richer models where business language and rules justify them. A reporting query can return a projection without reconstructing every aggregate. Too many tiny entities and repositories obscure straightforward CRUD; bounded contexts can remain packages in one executable.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The Basket operation checks the invariant before mutation, so a rejected addition leaves three items. This illustrates an aggregate rule, not durable storage. Concurrent database writes need transactions or version checks to preserve the same invariant.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Protects invariants within a consistency boundary. Use richer models where business language and rules justify them. A reporting query can return a projection without reconstructing every aggregate. Too many tiny entities and repositories obscure straightforward CRUD; bounded contexts can remain packages in one executable."
@@ -5839,7 +5879,7 @@
               "Always requires two databases"
             ],
             "correct" : "Separates the write model from the read model",
-            "explanation" : "If a projection becomes asynchronous, explain stale reads and rebuild procedures to clients and operators. Ordinary CRUD may not need separate models. Add CQRS where read shapes and write rules diverge, rather than to make simple storage appear architectural.",
+            "explanation" : "If a projection becomes asynchronous, explain stale reads and rebuild procedures to clients and operators.",
             "hint" : "Deposit is the command boundary; Summary is the query shape. Both read the same in-memory state here, so there is no projection lag. Separating methods does not by itself require queues, extra services or event replay.",
             "question" : "Which statement best describes CQRS: different models for commands and queries?"
           },
@@ -5878,6 +5918,10 @@
             {
               "body" : "A projection test should apply duplicate input and verify it does not double-count. Test out-of-order events according to the chosen policy, a restart from the saved cursor and schema changes. Rebuild a new projection beside the old one, compare counts and representative queries, then switch readers. Separate read/write models when their needs differ enough to pay for synchronization. A small application with one ordinary CRUD shape can keep one model.",
               "title" : "Rebuild and test a projection"
+            },
+            {
+              "body" : "If a projection becomes asynchronous, explain stale reads and rebuild procedures to clients and operators. Ordinary CRUD may not need separate models. Add CQRS where read shapes and write rules diverge, rather than to make simple storage appear architectural.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Separates the write model from the read model. If a projection becomes asynchronous, explain stale reads and rebuild procedures to clients and operators. Ordinary CRUD may not need separate models. Add CQRS where read shapes and write rules diverge, rather than to make simple storage appear architectural."
@@ -5930,8 +5974,8 @@
               "Means adding log messages to CRUD"
             ],
             "correct" : "Rebuilds authoritative state from accepted events",
-            "explanation" : "Choose this when temporal history and reconstruction are core requirements. Replay must not resend emails or charge cards. Event evolution, privacy deletion and projection rebuilds are significant costs; an audit table is often enough for a conventional service.",
-            "hint" : "Replaying both events yields 30; replaying the prefix yields 50. The slice only demonstrates deterministic reduction. A real event store also needs append version checks, durable writes, event schemas and a policy for replaying external side effects.",
+            "explanation" : "Choose this when temporal history and reconstruction are core requirements.",
+            "hint" : "Replaying both events yields 30; replaying the prefix yields 50.",
             "question" : "Which statement best describes Event sourcing: state from a durable history?"
           },
           "references" : [
@@ -5969,6 +6013,14 @@
             {
               "body" : "An event handler updating a projection can be replayed; an external payment requires a durable idempotency key and side-effect policy. Test rebuilding an empty projection from the whole stream and compare state with incremental processing. Test conflicting expected versions and malformed historical events. Adopt event sourcing when historical reconstruction and domain behavior justify its substantial operational cost. An append-only audit log beside ordinary state may solve a simpler audit requirement more cheaply.",
               "title" : "Separate replay from external side effects"
+            },
+            {
+              "body" : "Choose this when temporal history and reconstruction are core requirements. Replay must not resend emails or charge cards. Event evolution, privacy deletion and projection rebuilds are significant costs; an audit table is often enough for a conventional service.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Replaying both events yields 30; replaying the prefix yields 50. The slice only demonstrates deterministic reduction. A real event store also needs append version checks, durable writes, event schemas and a policy for replaying external side effects.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Rebuilds authoritative state from accepted events. Choose this when temporal history and reconstruction are core requirements. Replay must not resend emails or charge cards. Event evolution, privacy deletion and projection rebuilds are significant costs; an audit table is often enough for a conventional service."
@@ -6021,8 +6073,8 @@
               "Every event is delivered exactly once automatically"
             ],
             "correct" : "Repeating a message does not repeat its business effect",
-            "explanation" : "Buffering can isolate timing, but it does not guarantee business completion. Define dead-letter handling, retry limits and observability. A transactional outbox can bridge a database commit and later publication; a plain goroutine cannot replace durable messaging.",
-            "hint" : "Two deliveries of event-1 create one effect. This single-goroutine memory map demonstrates deduplication only. Production deduplication must commit the event identity and business effect atomically; otherwise a crash can lose work or repeat the effect.",
+            "explanation" : "Buffering can isolate timing, but it does not guarantee business completion.",
+            "hint" : "Two deliveries of event-1 create one effect.",
             "question" : "Which statement best describes Event-driven services: delivery and idempotency?"
           },
           "references" : [
@@ -6060,6 +6112,14 @@
             {
               "body" : "Test a crash after database commit but before publish, after publish but before marking the outbox sent, and after the consumer effect but before acknowledgement. Verify duplicates do not repeat the effect and that lag is visible in metrics. Monitor oldest unprocessed age, backlog and failure count, not only whether the worker process is alive. Use events for meaningful decoupling; a synchronous local call is clearer when a caller needs an immediate answer and no durable handoff.",
               "title" : "Exercise the crash windows"
+            },
+            {
+              "body" : "Buffering can isolate timing, but it does not guarantee business completion. Define dead-letter handling, retry limits and observability. A transactional outbox can bridge a database commit and later publication; a plain goroutine cannot replace durable messaging.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Two deliveries of event-1 create one effect. This single-goroutine memory map demonstrates deduplication only. Production deduplication must commit the event identity and business effect atomically; otherwise a crash can lose work or repeat the effect.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Repeating a message does not repeat its business effect. Buffering can isolate timing, but it does not guarantee business completion. Define dead-letter handling, retry limits and observability. A transactional outbox can bridge a database commit and later publication; a plain goroutine cannot replace durable messaging."
@@ -6112,8 +6172,8 @@
               "A failed lookup is always equivalent to zero stock"
             ],
             "correct" : "Adds independent ownership and partial remote failures",
-            "explanation" : "Independent ownership helps teams with different release and scaling needs. It also requires tracing, deployment automation and data consistency design. Start with a modular monolith when one team can operate it; high request volume alone is not a service-count target.",
-            "hint" : "The dependency contract distinguishes a business answer from a failed lookup. The fake models a remote failure deterministically without opening a socket. A real adapter must add deadlines, authentication and response validation rather than treating failure as zero stock.",
+            "explanation" : "Independent ownership helps teams with different release and scaling needs.",
+            "hint" : "The dependency contract distinguishes a business answer from a failed lookup.",
             "question" : "Which statement best describes Microservices: pay for independent ownership?"
           },
           "references" : [
@@ -6152,6 +6212,14 @@
             {
               "body" : "Choose one capability whose independent scaling, release cadence or fault isolation is measured to matter. Put an adapter behind its current contract, move ownership deliberately and define the migration source of truth. Shadow read traffic can compare results without duplicating mutations. Test backward-compatible API changes before rolling out producers and consumers separately. Observability, deploy automation, secrets, on-call and recovery are part of the design cost, not optional work after the code has been split.",
               "title" : "Plan extraction and rollback"
+            },
+            {
+              "body" : "Independent ownership helps teams with different release and scaling needs. It also requires tracing, deployment automation and data consistency design. Start with a modular monolith when one team can operate it; high request volume alone is not a service-count target.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The dependency contract distinguishes a business answer from a failed lookup. The fake models a remote failure deterministically without opening a socket. A real adapter must add deadlines, authentication and response validation rather than treating failure as zero stock.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Adds independent ownership and partial remote failures. Independent ownership helps teams with different release and scaling needs. It also requires tracing, deployment automation and data consistency design. Start with a modular monolith when one team can operate it; high request volume alone is not a service-count target."
@@ -6204,8 +6272,8 @@
               "One shared service must own every business domain"
             ],
             "correct" : "Defines units, outcomes and compatibility at a boundary",
-            "explanation" : "Broad shared services can reduce integration duplication but become release bottlenecks. Avoid a universal service that owns every domain. Microservices emphasize independent capability ownership; SOA is a broader service integration approach, so real systems can share ideas from both.",
-            "hint" : "The request and response encode units in field names. The example uses a local function so the contract is visible without transport code. An RPC adapter would still need to distinguish validation errors, deadline expiry and unavailable dependencies.",
+            "explanation" : "Broad shared services can reduce integration duplication but become release bottlenecks.",
+            "hint" : "The request and response encode units in field names.",
             "question" : "Which statement best describes SOA and RPC: stable service contracts?"
           },
           "references" : [
@@ -6244,6 +6312,14 @@
             {
               "body" : "Run contract fixtures against old and new request shapes. Test that a server accepting a new field still handles older callers, and that clients tolerate allowed unknown fields according to the protocol. Record latency and error rate per operation without logging credentials or whole sensitive payloads. RPC or service-oriented integration can centralize a genuine shared capability, but a synchronous dependency on many services can become a distributed call chain with poor availability.",
               "title" : "Verify mixed-version deployment"
+            },
+            {
+              "body" : "Broad shared services can reduce integration duplication but become release bottlenecks. Avoid a universal service that owns every domain. Microservices emphasize independent capability ownership; SOA is a broader service integration approach, so real systems can share ideas from both.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The request and response encode units in field names. The example uses a local function so the contract is visible without transport code. An RPC adapter would still need to distinguish validation errors, deadline expiry and unavailable dependencies.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Defines units, outcomes and compatibility at a boundary. Broad shared services can reduce integration duplication but become release bottlenecks. Avoid a universal service that owns every domain. Microservices emphasize independent capability ownership; SOA is a broader service integration approach, so real systems can share ideas from both."
@@ -6296,7 +6372,7 @@
               "Requires a BFF for every screen"
             ],
             "correct" : "Shapes an API around one client’s needs",
-            "explanation" : "One extra boundary helps clients with genuinely different data and release needs. If all clients need the same API, a shared endpoint may be simpler. Do not duplicate pricing or authorization policy in every BFF; client shaping is its main reason to change.",
+            "explanation" : "One extra boundary helps clients with genuinely different data and release needs.",
             "hint" : "Home maps a rich internal object to the client view without copying InternalNote. In a real BFF, downstream calls can fail independently; define timeout budgets and whether partial data is acceptable before parallelizing aggregation.",
             "question" : "Which statement best describes BFF: an API shaped for one client?"
           },
@@ -6335,6 +6411,10 @@
             {
               "body" : "Use fixtures for complete results, one optional dependency timeout and one essential dependency failure. Verify authorization on the aggregate response and prevent internal service errors from exposing private topology. Track fan-out count and deadline exhaustion. Introduce a BFF when distinct clients actually need different composition; one frontend calling one simple API rarely needs another deployable intermediary.",
               "title" : "Test screen contracts and graceful degradation"
+            },
+            {
+              "body" : "One extra boundary helps clients with genuinely different data and release needs. If all clients need the same API, a shared endpoint may be simpler. Do not duplicate pricing or authorization policy in every BFF; client shaping is its main reason to change.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Shapes an API around one client’s needs. One extra boundary helps clients with genuinely different data and release needs. If all clients need the same API, a shared endpoint may be simpler. Do not duplicate pricing or authorization policy in every BFF; client shaping is its main reason to change."
@@ -6387,7 +6467,7 @@
               "The platform removes all operational decisions"
             ],
             "correct" : "Processes bounded invocations with external durable state",
-            "explanation" : "Functions suit bounded event-driven tasks and variable workloads. Long-running connections or strict latency targets may favor a continuously running service. Check the chosen platform’s actual Go runtime, resource limits and billing; serverless does not mean operations-free.",
+            "explanation" : "Functions suit bounded event-driven tasks and variable workloads.",
             "hint" : "Handle is pure application behavior, independent of a provider SDK. An outer adapter decodes the event and serializes the result. Moving a side effect into this function would require an idempotency policy, not a process-global seen map.",
             "question" : "Which statement best describes Serverless handlers: bounded work and retry-safe effects?"
           },
@@ -6426,6 +6506,10 @@
             {
               "body" : "Observe cold and warm latency, failures, throttling, queue age and per-invocation cost. Test execution with no warmed globals and interrupted work, not only by calling the function twice inside one test process. Use serverless for bounded independently triggered work where its scaling and operations model fits. Long-lived connections, latency-sensitive steady load or complex coordination may be simpler in a service or worker.",
               "title" : "Measure the real operational fit"
+            },
+            {
+              "body" : "Functions suit bounded event-driven tasks and variable workloads. Long-running connections or strict latency targets may favor a continuously running service. Check the chosen platform’s actual Go runtime, resource limits and billing; serverless does not mean operations-free.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Processes bounded invocations with external durable state. Functions suit bounded event-driven tasks and variable workloads. Long-running connections or strict latency targets may favor a continuously running service. Check the chosen platform’s actual Go runtime, resource limits and billing; serverless does not mean operations-free."
@@ -6478,8 +6562,8 @@
               "More goroutines always improve throughput"
             ],
             "correct" : "Composes ordered transformations with explicit handoffs",
-            "explanation" : "Use stages when transformations compose naturally and need separate tests. Shared state between stages undermines isolation. A single expression is simpler for one trivial transformation, and unbounded channel buffers do not solve a slow downstream consumer.",
-            "hint" : "The pipeline first trims and then capitalizes, so order matters. Function values make each stage independently reusable. This synchronous version avoids goroutine management; later streaming versions can preserve the same stage boundaries with explicit error propagation.",
+            "explanation" : "Use stages when transformations compose naturally and need separate tests.",
+            "hint" : "The pipeline first trims and then capitalizes, so order matters.",
             "question" : "Which statement best describes Pipes and filters: data through independent stages?"
           },
           "references" : [
@@ -6517,6 +6601,14 @@
             {
               "body" : "Verify a stage with empty input, invalid input, a slow consumer and cancellation halfway through. Check that completion waits for owned goroutines and that no sender is left writing to a closed channel. Benchmark representative data before adding concurrency: parsing small records in separate goroutines can cost more than a loop. Pipes and filters suit stream transformations; they are less helpful when each stage requires shared mutable domain state and distributed transactions.",
               "title" : "Test pressure as well as transformation"
+            },
+            {
+              "body" : "Use stages when transformations compose naturally and need separate tests. Shared state between stages undermines isolation. A single expression is simpler for one trivial transformation, and unbounded channel buffers do not solve a slow downstream consumer.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The pipeline first trims and then capitalizes, so order matters. Function values make each stage independently reusable. This synchronous version avoids goroutine management; later streaming versions can preserve the same stage boundaries with explicit error propagation.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Composes ordered transformations with explicit handoffs. Use stages when transformations compose naturally and need separate tests. Shared state between stages undermines isolation. A single expression is simpler for one trivial transformation, and unbounded channel buffers do not solve a slow downstream consumer."
@@ -6569,8 +6661,8 @@
               "Go plugins work identically on every platform"
             ],
             "correct" : "Lets a small core invoke explicitly registered behavior",
-            "explanation" : "Extensions in the same process can panic, block or access shared resources; an interface is not a security sandbox. Use subprocess or RPC isolation for untrusted extensions. Native plugin loading is not supported by GopherForge’s WASI runtime.",
-            "hint" : "The core dispatches through a function contract, and the startup map explicitly selects available behavior. This static registry needs no runtime code loading. Validate duplicate names and extension capabilities when building a larger registry.",
+            "explanation" : "Extensions in the same process can panic, block or access shared resources; an interface is not a security sandbox.",
+            "hint" : "The core dispatches through a function contract, and the startup map explicitly selects available behavior.",
             "question" : "Which statement best describes Microkernel: a small core with explicit extensions?"
           },
           "references" : [
@@ -6608,6 +6700,14 @@
             {
               "body" : "Test extensions against a shared contract, including invalid configuration and cleanup. Prefer one small extension point justified by a real variation over a generic object bag with string keys and reflection. A registry of two ordinary functions may be enough. A microkernel pays off when third-party or product-specific variation evolves independently; if every extension changes with the core, a direct function call is often easier to understand.",
               "title" : "Resist a universal extension API"
+            },
+            {
+              "body" : "Extensions in the same process can panic, block or access shared resources; an interface is not a security sandbox. Use subprocess or RPC isolation for untrusted extensions. Native plugin loading is not supported by GopherForge’s WASI runtime.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The core dispatches through a function contract, and the startup map explicitly selects available behavior. This static registry needs no runtime code loading. Validate duplicate names and extension capabilities when building a larger registry.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Lets a small core invoke explicitly registered behavior. Extensions in the same process can panic, block or access shared resources; an interface is not a security sandbox. Use subprocess or RPC isolation for untrusted extensions. Native plugin loading is not supported by GopherForge’s WASI runtime."
@@ -6660,8 +6760,8 @@
               "An in-memory slice survives process failure"
             ],
             "correct" : "Separates acceptance from eventual job completion",
-            "explanation" : "Use a durable queue and idempotent worker for valuable work. Record status and propagate trace identifiers so accepted jobs do not disappear operationally. A goroutine can handle disposable local work, but cannot promise completion after the process exits.",
-            "hint" : "The example exposes acceptance and later consumption as different operations. Its slice is a single-process teaching queue: a crash loses jobs and Next removes them before work completes. A durable broker needs acknowledgments or leases and redelivery handling.",
+            "explanation" : "Use a durable queue and idempotent worker for valuable work.",
+            "hint" : "The example exposes acceptance and later consumption as different operations.",
             "question" : "Which statement best describes Web, queue, worker: make slow work durable?"
           },
           "references" : [
@@ -6699,6 +6799,14 @@
             {
               "body" : "Monitor oldest pending age, queue depth, active leases, completion latency and exhausted retries. Test a crash after the effect but before status update, cancellation while waiting, and a worker that loses its lease. Use an outbox when job creation and an application state change must commit together. Separate web and worker deployment only when resource or scaling needs justify it; they can initially share one executable and a durable queue.",
               "title" : "Operate and test the backlog"
+            },
+            {
+              "body" : "Use a durable queue and idempotent worker for valuable work. Record status and propagate trace identifiers so accepted jobs do not disappear operationally. A goroutine can handle disposable local work, but cannot promise completion after the process exits.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The example exposes acceptance and later consumption as different operations. Its slice is a single-process teaching queue: a crash loses jobs and Next removes them before work completes. A durable broker needs acknowledgments or leases and redelivery handling.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Separates acceptance from eventual job completion. Use a durable queue and idempotent worker for valuable work. Record status and propagate trace identifiers so accepted jobs do not disappear operationally. A goroutine can handle disposable local work, but cannot promise completion after the process exits."
@@ -6748,8 +6856,8 @@
               "Every integer should mean milliseconds implicitly"
             ],
             "correct" : "Reduce ambiguity with types and precise API names",
-            "explanation" : "Choose brevity in small scopes and precision at boundaries. A long name cannot repair a confused responsibility. Keep comments for contracts, assumptions and reasons; let gofmt handle alignment rather than preserving a personal formatting convention.",
-            "hint" : "Delay has a duration type rather than an undocumented integer unit. NextDelay returns both a value and a decision, so zero is not overloaded to mean stop. Attempt numbering must still be documented: this example uses a zero-based attempt index.",
+            "explanation" : "Choose brevity in small scopes and precision at boundaries.",
+            "hint" : "Delay has a duration type rather than an undocumented integer unit.",
             "question" : "Which statement best describes Names that expose responsibility?"
           },
           "references" : [
@@ -6788,6 +6896,14 @@
             {
               "body" : "Read a call without opening its implementation. Can you tell whether the result may be partial, who owns returned bytes and which error means missing? Rename or document the contract when the answer is unclear. Test a malformed ID and an empty value before claiming a constructor makes invalid states impossible. During a rename, keep public compatibility or provide a migration path; internal clarity and external API stability are separate concerns.",
               "title" : "Review names with a caller and a failure"
+            },
+            {
+              "body" : "Choose brevity in small scopes and precision at boundaries. A long name cannot repair a confused responsibility. Keep comments for contracts, assumptions and reasons; let gofmt handle alignment rather than preserving a personal formatting convention.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Delay has a duration type rather than an undocumented integer unit. NextDelay returns both a value and a decision, so zero is not overloaded to mean stop. Attempt numbering must still be documented: this example uses a zero-based attempt index.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Reduce ambiguity with types and precise API names. Choose brevity in small scopes and precision at boundaries. A long name cannot repair a confused responsibility. Keep comments for contracts, assumptions and reasons; let gofmt handle alignment rather than preserving a personal formatting convention."
@@ -6829,7 +6945,7 @@
               "Requires explicit implements declarations"
             ],
             "correct" : "States the behavior needed by its caller",
-            "explanation" : "Do not define a giant interface beside an implementation merely to mock it. Avoid typed nil pointers inside interface results, and test empty input as well as the successful path. For a local helper with one implementation, a concrete parameter may be clearer.",
+            "explanation" : "Do not define a giant interface beside an implementation merely to mock it.",
             "hint" : "FirstByte accepts only the Read behavior that io.ReadFull needs, so a string reader works without an inheritance relationship. The error still belongs to the result: an empty reader would return EOF, not a valid zero byte.",
             "question" : "Which statement best describes Small interfaces belong near the consumer?"
           },
@@ -6869,6 +6985,10 @@
             {
               "body" : "Clock, payment and durable storage boundaries often benefit from a small substitute in a test. A pure arithmetic helper rarely needs its own interface. Keep a compile-time implementation check near an adapter when it helps detect drift, and exercise the adapter contract as well. If every interface has exactly one consumer-independent clone of a large concrete method set, reconsider whether the abstraction is protecting a real boundary or only adding navigation.",
               "title" : "Introduce substitution where change is real"
+            },
+            {
+              "body" : "Do not define a giant interface beside an implementation merely to mock it. Avoid typed nil pointers inside interface results, and test empty input as well as the successful path. For a local helper with one implementation, a concrete parameter may be clearer.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "States the behavior needed by its caller. Do not define a giant interface beside an implementation merely to mock it. Avoid typed nil pointers inside interface results, and test empty input as well as the successful path. For a local helper with one implementation, a concrete parameter may be clearer."
@@ -6910,7 +7030,7 @@
               "Formatting with %v preserves the error chain"
             ],
             "correct" : "Adds context while preserving a cause for errors.Is",
-            "explanation" : "Expose stable error categories only when they are part of the package contract. Implementation details can become accidental API commitments when wrapped. Panic is appropriate for violated programmer assumptions in some APIs, not an ordinary missing record or malformed request.",
+            "explanation" : "Expose stable error categories only when they are part of the package contract.",
             "hint" : "Wrapping preserves ErrMissing for errors.Is while adding the project operation for a human. The program prints once at the boundary. Replacing %w with %v would keep the message but lose this cause chain.",
             "question" : "Which statement best describes Errors: preserve cause and choose one reporting boundary?"
           },
@@ -6953,6 +7073,10 @@
             {
               "body" : "Assert errors.Is or errors.As for categories that callers are allowed to depend on, and check state was not partially committed after failure. Test a wrapped cancellation and a typed-nil implementation. Avoid comparing whole human messages unless their exact text is a deliberate contract. Panic and recover are not a substitute for expected validation errors. Do not recover a panic and silently return success; recover only at a defined boundary with a clear failed-operation result.",
               "title" : "Test cancellation and the public error promise"
+            },
+            {
+              "body" : "Expose stable error categories only when they are part of the package contract. Implementation details can become accidental API commitments when wrapped. Panic is appropriate for violated programmer assumptions in some APIs, not an ordinary missing record or malformed request.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Adds context while preserving a cause for errors.Is. Expose stable error categories only when they are part of the package contract. Implementation details can become accidental API commitments when wrapped. Panic is appropriate for violated programmer assumptions in some APIs, not an ordinary missing record or malformed request."
@@ -6994,8 +7118,8 @@
               "A mutex fixes access that ignores the lock"
             ],
             "correct" : "Defines who may retain and mutate shared data",
-            "explanation" : "Copies cost memory and time, so measure large buffers before copying everywhere. A documented transfer or read-only borrowing contract may be preferable in a hot path. Mutexes protect shared access only when every relevant access follows the same lock discipline.",
-            "hint" : "The constructor copies input and Bytes copies output, so neither caller mutation changes the retained message. This makes the ownership contract concrete. It does not make arbitrary maps, nested pointers or concurrent methods safe automatically.",
+            "explanation" : "Copies cost memory and time, so measure large buffers before copying everywhere.",
+            "hint" : "The constructor copies input and Bytes copies output, so neither caller mutation changes the retained message.",
             "question" : "Which statement best describes Ownership: copy mutable data deliberately?"
           },
           "references" : [
@@ -7034,6 +7158,14 @@
             {
               "body" : "The code that successfully acquires a resource should define who closes it. Defer cleanup immediately after acquisition unless a documented ownership transfer occurs. A producer closes the channel it owns; arbitrary receivers should not close it to signal cancellation. Pass context for cancellation rather than sharing a mutable stop boolean. For a library API, document whether Close waits for goroutines and whether concurrent calls are supported.",
               "title" : "Make cleanup ownership visible"
+            },
+            {
+              "body" : "Copies cost memory and time, so measure large buffers before copying everywhere. A documented transfer or read-only borrowing contract may be preferable in a hot path. Mutexes protect shared access only when every relevant access follows the same lock discipline.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The constructor copies input and Bytes copies output, so neither caller mutation changes the retained message. This makes the ownership contract concrete. It does not make arbitrary maps, nested pointers or concurrent methods safe automatically.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Defines who may retain and mutate shared data. Copies cost memory and time, so measure large buffers before copying everywhere. A documented transfer or read-only borrowing contract may be preferable in a hot path. Mutexes protect shared access only when every relevant access follows the same lock discipline."
@@ -7075,7 +7207,7 @@
               "Validation should wait until the first request"
             ],
             "correct" : "Rejects invalid combinations before acquiring resources",
-            "explanation" : "Use functional options only when they improve an evolving API. A constructor with many independent options can hide invalid combinations; validate the final configuration before opening files or starting goroutines, and clean up partial acquisition on later failure.",
+            "explanation" : "Use functional options only when they improve an evolving API.",
             "hint" : "NewPool rejects zero workers and a queue smaller than the worker count. The successful caller receives a valid configuration. No goroutines are started in this example, which keeps validation separate from lifecycle and cleanup.",
             "question" : "Which statement best describes Configuration: validate once at construction?"
           },
@@ -7115,6 +7247,10 @@
             {
               "body" : "Cover an empty required address, malformed duration, negative retry count and a timeout smaller than a required operation budget. Verify secrets never appear in error text or diagnostic dumps. Constructors should fail with actionable context rather than leaving partially initialized workers alive. Functional options can help an API with many independent options, but they do not remove the need to validate incompatible choices after all options are applied.",
               "title" : "Test invalid combinations before deployment"
+            },
+            {
+              "body" : "Use functional options only when they improve an evolving API. A constructor with many independent options can hide invalid combinations; validate the final configuration before opening files or starting goroutines, and clean up partial acquisition on later failure.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Rejects invalid combinations before acquiring resources. Use functional options only when they improve an evolving API. A constructor with many independent options can hide invalid combinations; validate the final configuration before opening files or starting goroutines, and clean up partial acquisition on later failure."
@@ -7156,7 +7292,7 @@
               "Only happy paths belong in a table"
             ],
             "correct" : "Checks results and errors against a public contract",
-            "explanation" : "Add integration tests where real serialization, SQL or network contracts matter. Table shape alone does not make a test meaningful. Fuzz properties such as round-trip encoding or no panics when the input space is larger than the useful handpicked examples.",
+            "explanation" : "Add integration tests where real serialization, SQL or network contracts matter.",
             "hint" : "The cases distinguish trimmed content from two forms of empty input and verify both the value and error presence. In a _test.go file, place the loop in TestNormalize and report the case with t.Errorf or t.Run rather than panic.",
             "question" : "Which statement best describes Behavior tests: tables and boundary cases?"
           },
@@ -7196,6 +7332,10 @@
             {
               "body" : "Inject time and randomness where the caller needs a predictable boundary, and wait for owned goroutines before a test returns. The race detector finds executions with conflicting accesses; one clean run does not prove every possible schedule safe. A benchmark needs representative input and allocation measurements, not an architecture score. Keep a failing regression for the user-visible defect while resisting tests that merely restate the implementation line by line.",
               "title" : "Treat nondeterminism as a design signal"
+            },
+            {
+              "body" : "Add integration tests where real serialization, SQL or network contracts matter. Table shape alone does not make a test meaningful. Fuzz properties such as round-trip encoding or no panics when the input space is larger than the useful handpicked examples.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Checks results and errors against a public contract. Add integration tests where real serialization, SQL or network contracts matter. Table shape alone does not make a test meaningful. Fuzz properties such as round-trip encoding or no panics when the input space is larger than the useful handpicked examples."
@@ -7237,8 +7377,8 @@
               "Is proven correct by fewer lines alone"
             ],
             "correct" : "Changes structure while preserving an explicit contract",
-            "explanation" : "Run go test and go vet for correctness, race tests for exercised concurrency, and benchmarks for a suspected performance issue. A shorter function is not automatically faster or clearer. Change a boundary only after its existing users and failure behavior are understood.",
-            "hint" : "The boundary values 1000 and 1001 make the tariff transition visible. Moving this decision out of a handler lets the same cases protect a later structural edit. The zero case verifies that invalid input is rejected before a quote is returned.",
+            "explanation" : "Run go test and go vet for correctness, race tests for exercised concurrency, and benchmarks for a suspected performance issue.",
+            "hint" : "The boundary values 1000 and 1001 make the tariff transition visible.",
             "question" : "Which statement best describes Refactoring: make the safe change small?"
           },
           "references" : [
@@ -7277,6 +7417,14 @@
             {
               "body" : "After callers use the new boundary, remove the old shared helper and inspect imports for hidden dependencies. Run focused unit and adapter tests and a small end-to-end path for the affected feature. Measure performance if the change introduces allocations, serialization or remote calls. Do not keep two permanent implementations just because both compile; unfinished migrations multiply maintenance cost and eventually let behavior diverge.",
               "title" : "Use deletion as the final proof of extraction"
+            },
+            {
+              "body" : "Run go test and go vet for correctness, race tests for exercised concurrency, and benchmarks for a suspected performance issue. A shorter function is not automatically faster or clearer. Change a boundary only after its existing users and failure behavior are understood.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The boundary values 1000 and 1001 make the tariff transition visible. Moving this decision out of a handler lets the same cases protect a later structural edit. The zero case verifies that invalid input is rejected before a quote is returned.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Changes structure while preserving an explicit contract. Run go test and go vet for correctness, race tests for exercised concurrency, and benchmarks for a suspected performance issue. A shorter function is not automatically faster or clearer. Change a boundary only after its existing users and failure behavior are understood."
@@ -7318,8 +7466,8 @@
               "SOLID requires inheritance trees in Go"
             ],
             "correct" : "Requires preserving behavior as well as method signatures",
-            "explanation" : "Go has no class inheritance hierarchy to organize by default. Favor composition and concrete values until substitution matters. A type can satisfy an interface and still violate its semantic contract, such as discarding partial reads; test those contracts rather than counting interfaces.",
-            "hint" : "UpperReader decorates Read while preserving its byte count and error. It changes ASCII letters only, which is an explicit scope rather than a Unicode claim. Consumers still use io.Reader, so the abstraction protects a behavior that actually varies.",
+            "explanation" : "Go has no class inheritance hierarchy to organize by default.",
+            "hint" : "UpperReader decorates Read while preserving its byte count and error.",
             "question" : "Which statement best describes SOLID in Go: principles without class scaffolding?"
           },
           "references" : [
@@ -7358,6 +7506,14 @@
             {
               "body" : "A small stable function is often better than a registry, factory and configurable strategy system for one use case. Introduce variation at a demonstrated seam, then keep dependencies explicit. A new requirement that changes a business rule is not automatically a failure of open/closed design. Evaluate how many files and contracts a realistic change touches, and whether the abstraction makes tests and ownership clearer. Prefer readable composition and concrete values over copying class-oriented ceremony.",
               "title" : "Balance extensibility against current complexity"
+            },
+            {
+              "body" : "Go has no class inheritance hierarchy to organize by default. Favor composition and concrete values until substitution matters. A type can satisfy an interface and still violate its semantic contract, such as discarding partial reads; test those contracts rather than counting interfaces.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "UpperReader decorates Read while preserving its byte count and error. It changes ASCII letters only, which is an explicit scope rather than a Unicode claim. Consumers still use io.Reader, so the abstraction protects a behavior that actually varies.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Requires preserving behavior as well as method signatures. Go has no class inheritance hierarchy to organize by default. Favor composition and concrete values until substitution matters. A type can satisfy an interface and still violate its semantic contract, such as discarding partial reads; test those contracts rather than counting interfaces."
@@ -7418,8 +7574,8 @@
               "Is any switch that returns a value"
             ],
             "correct" : "Varies creation through an algorithm’s supplied hook",
-            "explanation" : "Use a plain constructor when the caller can create the dependency directly. Real writers can fail, so production report code should return write errors and define who closes the writer. A factory function should not hide expensive creation or ownership rules.",
-            "hint" : "Report.Write owns the stable algorithm and calls the supplied creation hook. main chooses a buffer product without rewriting the report logic. The type assertion is used only to inspect this known test product, not as the algorithm’s dependency.",
+            "explanation" : "Use a plain constructor when the caller can create the dependency directly.",
+            "hint" : "Report.Write owns the stable algorithm and calls the supplied creation hook.",
             "question" : "Which statement best describes Factory Method: supply the creation step?"
           },
           "references" : [
@@ -7445,6 +7601,14 @@
             {
               "body" : "Use a plain constructor when the caller can create the dependency directly. Real writers can fail, so production report code should return write errors and define who closes the writer. A factory function should not hide expensive creation or ownership rules.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Use a plain constructor when the caller can create the dependency directly. Real writers can fail, so production report code should return write errors and define who closes the writer. A factory function should not hide expensive creation or ownership rules.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Report.Write owns the stable algorithm and calls the supplied creation hook. main chooses a buffer product without rewriting the report logic. The type assertion is used only to inspect this known test product, not as the algorithm’s dependency.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Varies creation through an algorithm’s supplied hook. Use a plain constructor when the caller can create the dependency directly. Real writers can fail, so production report code should return write errors and define who closes the writer. A factory function should not hide expensive creation or ownership rules."
@@ -7498,7 +7662,7 @@
             ],
             "correct" : "Creates compatible products from one selected family",
             "explanation" : "This helps when families vary together and incompatible combinations cause bugs. Adding a new product role changes every factory, so a config struct or a single constructor is often cheaper for a small stable set of values.",
-            "hint" : "Screen requests two distinct product roles from the same factory, keeping the family consistent. Dark can be replaced with another factory implementing both methods. In a real package, keep constructors controlled if mixed families would violate invariants.",
+            "hint" : "Screen requests two distinct product roles from the same factory, keeping the family consistent.",
             "question" : "Which statement best describes Abstract Factory: compatible product families?"
           },
           "references" : [
@@ -7523,6 +7687,10 @@
             {
               "body" : "This helps when families vary together and incompatible combinations cause bugs. Adding a new product role changes every factory, so a config struct or a single constructor is often cheaper for a small stable set of values.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Screen requests two distinct product roles from the same factory, keeping the family consistent. Dark can be replaced with another factory implementing both methods. In a real package, keep constructors controlled if mixed families would violate invariants.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Creates compatible products from one selected family. This helps when families vary together and incompatible combinations cause bugs. Adding a new product role changes every factory, so a config struct or a single constructor is often cheaper for a small stable set of values."
@@ -7733,8 +7901,8 @@
               "Automatically retries a failed initialization"
             ],
             "correct" : "Synchronizes creation but not later object mutation",
-            "explanation" : "OnceValue caches a panic as well as a result; it is not a retry mechanism for transient startup failures. Separate immutable configuration from mutable clients, and inject the latter. Shared uniqueness can complicate parallel tests, shutdown and replacement.",
-            "hint" : "The closure creates one Config for its owner and returns the same pointer twice. OnceValue synchronizes initialization, not future mutation of Region. Keeping the owner local makes the lifetime visible and avoids a hidden process-wide dependency.",
+            "explanation" : "OnceValue caches a panic as well as a result; it is not a retry mechanism for transient startup failures.",
+            "hint" : "The closure creates one Config for its owner and returns the same pointer twice.",
             "question" : "Which statement best describes Singleton: once does not mean global mutable state?"
           },
           "references" : [
@@ -7760,6 +7928,14 @@
             {
               "body" : "OnceValue caches a panic as well as a result; it is not a retry mechanism for transient startup failures. Separate immutable configuration from mutable clients, and inject the latter. Shared uniqueness can complicate parallel tests, shutdown and replacement.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "OnceValue caches a panic as well as a result; it is not a retry mechanism for transient startup failures. Separate immutable configuration from mutable clients, and inject the latter. Shared uniqueness can complicate parallel tests, shutdown and replacement.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The closure creates one Config for its owner and returns the same pointer twice. OnceValue synchronizes initialization, not future mutation of Region. Keeping the owner local makes the lifetime visible and avoids a hidden process-wide dependency.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Synchronizes creation but not later object mutation. OnceValue caches a panic as well as a result; it is not a retry mechanism for transient startup failures. Separate immutable configuration from mutable clients, and inject the latter. Shared uniqueness can complicate parallel tests, shutdown and replacement."
@@ -7821,7 +7997,7 @@
             ],
             "correct" : "Translates an existing interface for a different caller",
             "explanation" : "Use an adapter for an actual mismatch. If you own both sides and can make their contracts agree directly, another wrapper may add no value. Adapter changes the interface; Decorator usually preserves it while adding behavior.",
-            "hint" : "SensorAdapter translates Celsius into Fahrenheit and satisfies the consumer’s method implicitly. Display does not know the source API. In a real sensor adapter, also translate unavailable readings and calibration failures without inventing a valid zero temperature.",
+            "hint" : "SensorAdapter translates Celsius into Fahrenheit and satisfies the consumer’s method implicitly.",
             "question" : "Which statement best describes Adapter: translate one contract into another?"
           },
           "references" : [
@@ -7846,6 +8022,10 @@
             {
               "body" : "Use an adapter for an actual mismatch. If you own both sides and can make their contracts agree directly, another wrapper may add no value. Adapter changes the interface; Decorator usually preserves it while adding behavior.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "SensorAdapter translates Celsius into Fahrenheit and satisfies the consumer’s method implicitly. Display does not know the source API. In a real sensor adapter, also translate unavailable readings and calibration failures without inventing a valid zero temperature.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Translates an existing interface for a different caller. Use an adapter for an actual mismatch. If you own both sides and can make their contracts agree directly, another wrapper may add no value. Adapter changes the interface; Decorator usually preserves it while adding behavior."
@@ -7898,7 +8078,7 @@
               "Requires one concrete type per combination"
             ],
             "correct" : "Separates two independently varying design dimensions",
-            "explanation" : "If only one dimension varies, Strategy or a direct function argument may describe the design more clearly. Bridge is planned separation; Adapter often retrofits existing incompatible APIs. Do not add both layers when there is no second independent variation.",
+            "explanation" : "If only one dimension varies, Strategy or a direct function argument may describe the design more clearly.",
             "hint" : "Report data and rendering policy vary separately through composition. A different report abstraction can reuse the same renderer. The function contract stays small because only one operation varies in this example.",
             "question" : "Which statement best describes Bridge: two independent dimensions of variation?"
           },
@@ -7924,6 +8104,10 @@
             {
               "body" : "If only one dimension varies, Strategy or a direct function argument may describe the design more clearly. Bridge is planned separation; Adapter often retrofits existing incompatible APIs. Do not add both layers when there is no second independent variation.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "If only one dimension varies, Strategy or a direct function argument may describe the design more clearly. Bridge is planned separation; Adapter often retrofits existing incompatible APIs. Do not add both layers when there is no second independent variation.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Separates two independently varying design dimensions. If only one dimension varies, Strategy or a direct function argument may describe the design more clearly. Bridge is planned separation; Adapter often retrofits existing incompatible APIs. Do not add both layers when there is no second independent variation."
@@ -7976,7 +8160,7 @@
               "Requires every leaf to support child mutation"
             ],
             "correct" : "Gives leaves and groups a common recursive operation",
-            "explanation" : "Uniform operations can be elegant, but a group-only mutation API need not be forced onto leaves. Define depth limits or iterative traversal for untrusted trees. Shared nodes and cycles change ownership and may cause duplicate counting or infinite recursion.",
+            "explanation" : "Uniform operations can be elegant, but a group-only mutation API need not be forced onto leaves.",
             "hint" : "File and Folder satisfy the same Size operation, so the root recursively sums to nine. The interface hides whether a child is a leaf or group. This example assumes an acyclic owned tree and small nonnegative sizes.",
             "question" : "Which statement best describes Composite: treat leaves and groups uniformly?"
           },
@@ -8002,6 +8186,10 @@
             {
               "body" : "Uniform operations can be elegant, but a group-only mutation API need not be forced onto leaves. Define depth limits or iterative traversal for untrusted trees. Shared nodes and cycles change ownership and may cause duplicate counting or infinite recursion.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Uniform operations can be elegant, but a group-only mutation API need not be forced onto leaves. Define depth limits or iterative traversal for untrusted trees. Shared nodes and cycles change ownership and may cause duplicate counting or infinite recursion.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Gives leaves and groups a common recursive operation. Uniform operations can be elegant, but a group-only mutation API need not be forced onto leaves. Define depth limits or iterative traversal for untrusted trees. Shared nodes and cycles change ownership and may cause duplicate counting or infinite recursion."
@@ -8054,8 +8242,8 @@
               "Wrapper order can never affect behavior"
             ],
             "correct" : "Adds behavior while retaining the consumer contract",
-            "explanation" : "Preserve cancellation, errors and optional interfaces that callers actually depend on. A wrapper around http.ResponseWriter can accidentally hide streaming capabilities. Use a direct call when one fixed concern does not need composable wrapping.",
-            "hint" : "Both wrappers retain Operation and delegate exactly once. The shown input produces the same result for these two wrappers, but that does not prove commutativity: metrics around authorization may count rejected calls while metrics inside it may not.",
+            "explanation" : "Preserve cancellation, errors and optional interfaces that callers actually depend on.",
+            "hint" : "Both wrappers retain Operation and delegate exactly once.",
             "question" : "Which statement best describes Decorator: add behavior while preserving the contract?"
           },
           "references" : [
@@ -8081,6 +8269,14 @@
             {
               "body" : "Preserve cancellation, errors and optional interfaces that callers actually depend on. A wrapper around http.ResponseWriter can accidentally hide streaming capabilities. Use a direct call when one fixed concern does not need composable wrapping.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Preserve cancellation, errors and optional interfaces that callers actually depend on. A wrapper around http.ResponseWriter can accidentally hide streaming capabilities. Use a direct call when one fixed concern does not need composable wrapping.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Both wrappers retain Operation and delegate exactly once. The shown input produces the same result for these two wrappers, but that does not prove commutativity: metrics around authorization may count rejected calls while metrics inside it may not.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Adds behavior while retaining the consumer contract. Preserve cancellation, errors and optional interfaces that callers actually depend on. A wrapper around http.ResponseWriter can accidentally hide streaming capabilities. Use a direct call when one fixed concern does not need composable wrapping."
@@ -8133,8 +8329,8 @@
               "Must own all domain rules"
             ],
             "correct" : "Provides a focused entry point to a subsystem",
-            "explanation" : "A facade can become a god object if it owns every policy. Keep it focused on one client workflow, delegate domain rules, and use transactions or durable workflows where partial effects matter. A simple helper function can be the whole facade in Go.",
-            "hint" : "Buy hides two local state changes behind one operation and validates before mutating. This single-owner in-memory example cannot fail after validation. Replacing Sent with an email or payment call introduces a new failure boundary that must be designed explicitly.",
+            "explanation" : "A facade can become a god object if it owns every policy.",
+            "hint" : "Buy hides two local state changes behind one operation and validates before mutating.",
             "question" : "Which statement best describes Facade: one useful entry point over a subsystem?"
           },
           "references" : [
@@ -8159,6 +8355,14 @@
             {
               "body" : "A facade can become a god object if it owns every policy. Keep it focused on one client workflow, delegate domain rules, and use transactions or durable workflows where partial effects matter. A simple helper function can be the whole facade in Go.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "A facade can become a god object if it owns every policy. Keep it focused on one client workflow, delegate domain rules, and use transactions or durable workflows where partial effects matter. A simple helper function can be the whole facade in Go.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Buy hides two local state changes behind one operation and validates before mutating. This single-owner in-memory example cannot fail after validation. Replacing Sent with an email or payment call introduces a new failure boundary that must be designed explicitly.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Provides a focused entry point to a subsystem. A facade can become a god object if it owns every policy. Keep it focused on one client workflow, delegate domain rules, and use transactions or durable workflows where partial effects matter. A simple helper function can be the whole facade in Go."
@@ -8211,8 +8415,8 @@
               "Guarantees an unbounded cache saves memory"
             ],
             "correct" : "Shares immutable intrinsic state across many uses",
-            "explanation" : "An unbounded intern table can retain data forever and consume more memory than it saves. Measure object counts and retained size, bound the cache where necessary, and do not share mutable per-use fields such as selection or position inside the flyweight.",
-            "hint" : "Two placements share the same Glyph pointer but retain different positions. Treat shape as immutable after registration. The map is owned by one goroutine here; sharing Catalog concurrently would require synchronization or immutable publication.",
+            "explanation" : "An unbounded intern table can retain data forever and consume more memory than it saves.",
+            "hint" : "Two placements share the same Glyph pointer but retain different positions.",
             "question" : "Which statement best describes Flyweight: share immutable intrinsic state?"
           },
           "references" : [
@@ -8238,6 +8442,14 @@
             {
               "body" : "An unbounded intern table can retain data forever and consume more memory than it saves. Measure object counts and retained size, bound the cache where necessary, and do not share mutable per-use fields such as selection or position inside the flyweight.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "An unbounded intern table can retain data forever and consume more memory than it saves. Measure object counts and retained size, bound the cache where necessary, and do not share mutable per-use fields such as selection or position inside the flyweight.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Two placements share the same Glyph pointer but retain different positions. Treat shape as immutable after registration. The map is owned by one goroutine here; sharing Catalog concurrently would require synchronization or immutable publication.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Shares immutable intrinsic state across many uses. An unbounded intern table can retain data forever and consume more memory than it saves. Measure object counts and retained size, bound the cache where necessary, and do not share mutable per-use fields such as selection or position inside the flyweight."
@@ -8290,7 +8502,7 @@
               "A cache never changes freshness semantics"
             ],
             "correct" : "Controls access while preserving the subject interface",
-            "explanation" : "Choose a TTL or invalidation policy for changing data and include authorization scope in cache keys where needed. Distinguish a cached empty value from a cache miss. If callers need fresh state, a direct lookup may be the only correct behavior.",
+            "explanation" : "Choose a TTL or invalidation policy for changing data and include authorization scope in cache keys where needed.",
             "hint" : "The proxy invokes its subject once for the repeated key and returns the cached value on the second call. The closure is deliberately single-owner and unbounded for this tiny example; it is not a concurrent production cache.",
             "question" : "Which statement best describes Proxy: control access to an existing operation?"
           },
@@ -8316,6 +8528,10 @@
             {
               "body" : "Choose a TTL or invalidation policy for changing data and include authorization scope in cache keys where needed. Distinguish a cached empty value from a cache miss. If callers need fresh state, a direct lookup may be the only correct behavior.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Choose a TTL or invalidation policy for changing data and include authorization scope in cache keys where needed. Distinguish a cached empty value from a cache miss. If callers need fresh state, a direct lookup may be the only correct behavior.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Controls access while preserving the subject interface. Choose a TTL or invalidation policy for changing data and include authorization scope in cache keys where needed. Distinguish a cached empty value from a cache miss. If callers need fresh state, a direct lookup may be the only correct behavior."
@@ -8377,7 +8593,7 @@
             ],
             "correct" : "Makes a varying algorithm an explicit dependency",
             "explanation" : "Use direct branching for a small fixed choice that does not need independent extension. A strategy is not a justification for a new interface around every expression. Document whether it may mutate input, return errors or run concurrently.",
-            "hint" : "Present controls copying and delegates ordering to the selected function. The original slice remains unchanged, so strategy selection does not surprise its caller with mutation. A reverse ordering function could be supplied without editing Present.",
+            "hint" : "Present controls copying and delegates ordering to the selected function.",
             "question" : "Which statement best describes Strategy: choose an algorithm explicitly?"
           },
           "references" : [
@@ -8403,6 +8619,10 @@
             {
               "body" : "Use direct branching for a small fixed choice that does not need independent extension. A strategy is not a justification for a new interface around every expression. Document whether it may mutate input, return errors or run concurrently.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Present controls copying and delegates ordering to the selected function. The original slice remains unchanged, so strategy selection does not surprise its caller with mutation. A reverse ordering function could be supplied without editing Present.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Makes a varying algorithm an explicit dependency. Use direct branching for a small fixed choice that does not need independent extension. A strategy is not a justification for a new interface around every expression. Document whether it may mutate input, return errors or run concurrently."
@@ -8455,7 +8675,7 @@
               "A closure alone is a durable message format"
             ],
             "correct" : "Captures an action and the data needed to execute it",
-            "explanation" : "For durable queues, serialize a command schema and validate it on receipt; a closure cannot survive process exit. Undo of external work often needs a compensating business action with its own possible failures. Use a direct function for one immediate action.",
+            "explanation" : "For durable queues, serialize a command schema and validate it on receipt; a closure cannot survive process exit.",
             "hint" : "Rename captures the receiver, requested name and old name. Do is guarded against repetition; Undo restores the prior value. This assumes no independent mutation between execution and undo and one owner of the receiver.",
             "question" : "Which statement best describes Command: represent an action as a value?"
           },
@@ -8481,6 +8701,10 @@
             {
               "body" : "For durable queues, serialize a command schema and validate it on receipt; a closure cannot survive process exit. Undo of external work often needs a compensating business action with its own possible failures. Use a direct function for one immediate action.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "For durable queues, serialize a command schema and validate it on receipt; a closure cannot survive process exit. Undo of external work often needs a compensating business action with its own possible failures. Use a direct function for one immediate action.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Captures an action and the data needed to execute it. For durable queues, serialize a command schema and validate it on receipt; a closure cannot survive process exit. Undo of external work often needs a compensating business action with its own possible failures. Use a direct function for one immediate action."
@@ -8533,7 +8757,7 @@
               "Makes handler order irrelevant"
             ],
             "correct" : "May handle, reject or delegate in a defined order",
-            "explanation" : "Ordering is part of behavior: authentication should usually precede work that leaks private data. Keep chains observable and avoid handlers that silently swallow failures. If every step must always run, an explicit sequence or result-collecting validator may be clearer.",
+            "explanation" : "Ordering is part of behavior: authentication should usually precede work that leaks private data.",
             "hint" : "Validate delegates in order and returns immediately on an error. The second check is never asked about an empty string after the first failure. An HTTP middleware chain can use a similar continuation shape with a next handler.",
             "question" : "Which statement best describes Chain of Responsibility: ordered handlers?"
           },
@@ -8560,6 +8784,10 @@
             {
               "body" : "Ordering is part of behavior: authentication should usually precede work that leaks private data. Keep chains observable and avoid handlers that silently swallow failures. If every step must always run, an explicit sequence or result-collecting validator may be clearer.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Ordering is part of behavior: authentication should usually precede work that leaks private data. Keep chains observable and avoid handlers that silently swallow failures. If every step must always run, an explicit sequence or result-collecting validator may be clearer.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "May handle, reject or delegate in a defined order. Ordering is part of behavior: authentication should usually precede work that leaks private data. Keep chains observable and avoid handlers that silently swallow failures. If every step must always run, an explicit sequence or result-collecting validator may be clearer."
@@ -8612,7 +8840,7 @@
               "May ignore early termination"
             ],
             "correct" : "Must stop producing when yield returns false",
-            "explanation" : "For fallible streams, define how errors are delivered, such as iter.Seq2[Value, error] or an Err method. Resource-owning iterators need cleanup on early termination. Ranging a slice is simpler when the caller already owns a small in-memory collection.",
+            "explanation" : "For fallible streams, define how errors are delivered, such as iter.Seq2[Value, error] or an Err method.",
             "hint" : "CountTo hides how values are generated and stops immediately after the caller breaks at two. iter.Seq is available from Go 1.23. The iterator uses no goroutine or channel because synchronous production is enough.",
             "question" : "Which statement best describes Iterator: yield values without exposing storage?"
           },
@@ -8639,6 +8867,10 @@
             {
               "body" : "For fallible streams, define how errors are delivered, such as iter.Seq2[Value, error] or an Err method. Resource-owning iterators need cleanup on early termination. Ranging a slice is simpler when the caller already owns a small in-memory collection.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "For fallible streams, define how errors are delivered, such as iter.Seq2[Value, error] or an Err method. Resource-owning iterators need cleanup on early termination. Ranging a slice is simpler when the caller already owns a small in-memory collection.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Must stop producing when yield returns false. For fallible streams, define how errors are delivered, such as iter.Seq2[Value, error] or an Err method. Resource-owning iterators need cleanup on early termination. Ranging a slice is simpler when the caller already owns a small in-memory collection."
@@ -8691,7 +8923,7 @@
               "Requires participants to know each other directly"
             ],
             "correct" : "Centralizes interaction rules among collaborators",
-            "explanation" : "As participants grow, split mediators by use case instead of accumulating unrelated branches. A facade mainly simplifies client access; a mediator coordinates participant interaction. Direct calls are easier when only two simple components collaborate once.",
+            "explanation" : "As participants grow, split mediators by use case instead of accumulating unrelated branches.",
             "hint" : "Submit owns the collaboration rule: notification only follows valid input. The two collaborators do not reference each other. This uses function dependencies because the roles are small and their lifetime is controlled by main.",
             "question" : "Which statement best describes Mediator: centralize collaboration deliberately?"
           },
@@ -8717,6 +8949,10 @@
             {
               "body" : "As participants grow, split mediators by use case instead of accumulating unrelated branches. A facade mainly simplifies client access; a mediator coordinates participant interaction. Direct calls are easier when only two simple components collaborate once.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "As participants grow, split mediators by use case instead of accumulating unrelated branches. A facade mainly simplifies client access; a mediator coordinates participant interaction. Direct calls are easier when only two simple components collaborate once.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Centralizes interaction rules among collaborators. As participants grow, split mediators by use case instead of accumulating unrelated branches. A facade mainly simplifies client access; a mediator coordinates participant interaction. Direct calls are easier when only two simple components collaborate once."
@@ -8769,8 +9005,8 @@
               "Should expose all mutable internals to the caretaker"
             ],
             "correct" : "Lets the owner restore previously captured state",
-            "explanation" : "Large histories need memory limits, deltas or durable versioning. Snapshots of external resources cannot rewind the outside world. For simple value types an ordinary copy may be sufficient; for concurrent editing a stale restore needs a conflict policy.",
-            "hint" : "The snapshot copies lines on save and restore, preventing later edits from changing the saved history. The originator owns both operations. Across package boundaries the unexported fields keep the caretaker from modifying snapshot internals directly.",
+            "explanation" : "Large histories need memory limits, deltas or durable versioning.",
+            "hint" : "The snapshot copies lines on save and restore, preventing later edits from changing the saved history.",
             "question" : "Which statement best describes Memento: retain a restorable snapshot?"
           },
           "references" : [
@@ -8796,6 +9032,14 @@
             {
               "body" : "Large histories need memory limits, deltas or durable versioning. Snapshots of external resources cannot rewind the outside world. For simple value types an ordinary copy may be sufficient; for concurrent editing a stale restore needs a conflict policy.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Large histories need memory limits, deltas or durable versioning. Snapshots of external resources cannot rewind the outside world. For simple value types an ordinary copy may be sufficient; for concurrent editing a stale restore needs a conflict policy.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The snapshot copies lines on save and restore, preventing later edits from changing the saved history. The originator owns both operations. Across package boundaries the unexported fields keep the caretaker from modifying snapshot internals directly.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Lets the owner restore previously captured state. Large histories need memory limits, deltas or durable versioning. Snapshots of external resources cannot rewind the outside world. For simple value types an ordinary copy may be sufficient; for concurrent editing a stale restore needs a conflict policy."
@@ -8848,7 +9092,7 @@
               "Can retain callbacks forever without lifecycle cost"
             ],
             "correct" : "Needs explicit delivery and unsubscribe semantics",
-            "explanation" : "Decide whether delivery is synchronous, ordered, droppable or buffered before introducing goroutines. Slow or panicking listeners can affect the subject. Retained callbacks can also retain large object graphs, so unsubscribe on the owner’s lifecycle boundary.",
+            "explanation" : "Decide whether delivery is synchronous, ordered, droppable or buffered before introducing goroutines.",
             "hint" : "The subscription returns its own cleanup operation. After stop, a later notification has no effect on total. The example assumes a single owner, no reentrant map mutation and listeners whose order does not matter.",
             "question" : "Which statement best describes Observer: subscribe, notify and unsubscribe?"
           },
@@ -8874,6 +9118,10 @@
             {
               "body" : "Decide whether delivery is synchronous, ordered, droppable or buffered before introducing goroutines. Slow or panicking listeners can affect the subject. Retained callbacks can also retain large object graphs, so unsubscribe on the owner’s lifecycle boundary.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Decide whether delivery is synchronous, ordered, droppable or buffered before introducing goroutines. Slow or panicking listeners can affect the subject. Retained callbacks can also retain large object graphs, so unsubscribe on the owner’s lifecycle boundary.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Needs explicit delivery and unsubscribe semantics. Decide whether delivery is synchronous, ordered, droppable or buffered before introducing goroutines. Slow or panicking listeners can affect the subject. Retained callbacks can also retain large object graphs, so unsubscribe on the owner’s lifecycle boundary."
@@ -8926,8 +9174,8 @@
               "Multiple booleans prevent invalid combinations automatically"
             ],
             "correct" : "Restricts behavior to valid transitions from current state",
-            "explanation" : "Persisted state machines need concurrency control, transition audit and idempotency. Do not create a type for each enum value when a short switch is clear. State varies because lifecycle changes; Strategy is typically selected as an interchangeable policy by a caller.",
-            "hint" : "Approve rejects a transition from Draft, then succeeds after Submit. One enum avoids contradictory submitted and approved booleans. This demonstrates the state-machine intent; the classic object State pattern delegates to separate state objects when their behaviors justify it.",
+            "explanation" : "Persisted state machines need concurrency control, transition audit and idempotency.",
+            "hint" : "Approve rejects a transition from Draft, then succeeds after Submit.",
             "question" : "Which statement best describes State: behavior follows a valid lifecycle?"
           },
           "references" : [
@@ -8952,6 +9200,14 @@
             {
               "body" : "Persisted state machines need concurrency control, transition audit and idempotency. Do not create a type for each enum value when a short switch is clear. State varies because lifecycle changes; Strategy is typically selected as an interchangeable policy by a caller.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Persisted state machines need concurrency control, transition audit and idempotency. Do not create a type for each enum value when a short switch is clear. State varies because lifecycle changes; Strategy is typically selected as an interchangeable policy by a caller.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Approve rejects a transition from Draft, then succeeds after Submit. One enum avoids contradictory submitted and approved booleans. This demonstrates the state-machine intent; the classic object State pattern delegates to separate state objects when their behaviors justify it.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Restricts behavior to valid transitions from current state. Persisted state machines need concurrency control, transition audit and idempotency. Do not create a type for each enum value when a short switch is clear. State varies because lifecycle changes; Strategy is typically selected as an interchangeable policy by a caller."
@@ -9004,7 +9260,7 @@
               "Lets optional hooks bypass mandatory validation safely"
             ],
             "correct" : "Fixes algorithm order while supplying selected steps",
-            "explanation" : "If every step varies independently, a plain pipeline may be clearer than a framework with many hooks. Validate required callbacks at construction. Use error-returning steps and cleanup rules for real I/O, and avoid hooks that can silently skip mandatory security checks.",
+            "explanation" : "If every step varies independently, a plain pipeline may be clearer than a framework with many hooks.",
             "hint" : "Run fixes loading before formatting and owns the result prefix. Callers replace steps without changing this order. This is a composition-based Go adaptation of Template Method, rather than a claim that Go supports virtual method overrides.",
             "question" : "Which statement best describes Template Method: fixed workflow, supplied steps?"
           },
@@ -9030,6 +9286,10 @@
             {
               "body" : "If every step varies independently, a plain pipeline may be clearer than a framework with many hooks. Validate required callbacks at construction. Use error-returning steps and cleanup rules for real I/O, and avoid hooks that can silently skip mandatory security checks.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "If every step varies independently, a plain pipeline may be clearer than a framework with many hooks. Validate required callbacks at construction. Use error-returning steps and cleanup rules for real I/O, and avoid hooks that can silently skip mandatory security checks.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Fixes algorithm order while supplying selected steps. If every step varies independently, a plain pipeline may be clearer than a framework with many hooks. Validate required callbacks at construction. Use error-returning steps and cleanup rules for real I/O, and avoid hooks that can silently skip mandatory security checks."
@@ -9162,7 +9422,7 @@
             ],
             "correct" : "Evaluates a defined expression language against a context",
             "explanation" : "Keep a grammar small and bound input length, tree depth and evaluation cost for untrusted rules. A normal function is simpler when rules never change as data. Larger languages usually deserve a proper parser, type checker and diagnostics.",
-            "hint" : "And evaluates two named conditions from an explicit environment and short-circuits on false. The program constructs an AST directly; it includes no parser. Unknown names currently mean false, which is a policy to validate rather than hide in a production rule system.",
+            "hint" : "And evaluates two named conditions from an explicit environment and short-circuits on false.",
             "question" : "Which statement best describes Interpreter: evaluate a deliberately small language?"
           },
           "references" : [
@@ -9188,6 +9448,10 @@
             {
               "body" : "Keep a grammar small and bound input length, tree depth and evaluation cost for untrusted rules. A normal function is simpler when rules never change as data. Larger languages usually deserve a proper parser, type checker and diagnostics.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "And evaluates two named conditions from an explicit environment and short-circuits on false. The program constructs an AST directly; it includes no parser. Unknown names currently mean false, which is a policy to validate rather than hide in a production rule system.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Evaluates a defined expression language against a context. Keep a grammar small and bound input length, tree depth and evaluation cost for untrusted rules. A normal function is simpler when rules never change as data. Larger languages usually deserve a proper parser, type checker and diagnostics."
@@ -9248,8 +9512,8 @@
               "Makes downstream capacity unlimited"
             ],
             "correct" : "Limits active work independently of queue capacity",
-            "explanation" : "This finite example drains every job. Production cancellation must reach job production and result sends so an early consumer exit cannot strand workers. Measure downstream limits and queue latency; more workers can overload a database rather than increase useful throughput.",
-            "hint" : "Two workers share one input channel; a coordinator closes results only after both have exited. The receiver drains results concurrently with production, so unbuffered sends can progress. The sum is stable even though individual result order is not.",
+            "explanation" : "This finite example drains every job.",
+            "hint" : "Two workers share one input channel; a coordinator closes results only after both have exited.",
             "question" : "Which statement best describes Worker pool: bound simultaneous work?"
           },
           "references" : [
@@ -9275,6 +9539,14 @@
             {
               "body" : "This finite example drains every job. Production cancellation must reach job production and result sends so an early consumer exit cannot strand workers. Measure downstream limits and queue latency; more workers can overload a database rather than increase useful throughput.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "This finite example drains every job. Production cancellation must reach job production and result sends so an early consumer exit cannot strand workers. Measure downstream limits and queue latency; more workers can overload a database rather than increase useful throughput.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Two workers share one input channel; a coordinator closes results only after both have exited. The receiver drains results concurrently with production, so unbuffered sends can progress. The sum is stable even though individual result order is not.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Limits active work independently of queue capacity. This finite example drains every job. Production cancellation must reach job production and result sends so an early consumer exit cannot strand workers. Measure downstream limits and queue latency; more workers can overload a database rather than increase useful throughput."
@@ -9327,7 +9599,7 @@
               "Guarantees a single deterministic arrival order"
             ],
             "correct" : "Closes merged output after every producer has finished",
-            "explanation" : "When a consumer may stop early, use context-aware sends and ensure upstream producers also stop. Merely buffering out to a guessed size hides the lifecycle problem. A simple sequential loop is easier when there is no parallel work to overlap.",
+            "explanation" : "When a consumer may stop early, use context-aware sends and ensure upstream producers also stop.",
             "hint" : "Each forwarding goroutine signals completion, and only the coordinator closes out. main consumes the full merge, so every producer can finish. The sum is deterministic; the individual values can arrive in several valid orders.",
             "question" : "Which statement best describes Fan-out and fan-in: merge without assuming order?"
           },
@@ -9353,6 +9625,10 @@
             {
               "body" : "When a consumer may stop early, use context-aware sends and ensure upstream producers also stop. Merely buffering out to a guessed size hides the lifecycle problem. A simple sequential loop is easier when there is no parallel work to overlap.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "When a consumer may stop early, use context-aware sends and ensure upstream producers also stop. Merely buffering out to a guessed size hides the lifecycle problem. A simple sequential loop is easier when there is no parallel work to overlap.",
+              "title" : "Practical limits and cautions"
             }
           ],
           "takeaway" : "Closes merged output after every producer has finished. When a consumer may stop early, use context-aware sends and ensure upstream producers also stop. Merely buffering out to a guessed size hides the lifecycle problem. A simple sequential loop is easier when there is no parallel work to overlap."
@@ -9405,8 +9681,8 @@
               "Guarantees no value can race with cancellation"
             ],
             "correct" : "Requires blocking work to observe the cancellation signal",
-            "explanation" : "Cancel on all completion paths to release timers and derived contexts. Do not replace completion waiting with time.Sleep. Real I/O adapters must support deadlines or cancellation themselves; passing a context does not interrupt an arbitrary blocking function.",
-            "hint" : "The producer can leave a blocked send through ctx.Done and closes its own output on return. main cancels after the first value, then drains until completion. A racing send may already be ready when cancellation arrives, so cancellation does not promise zero additional values.",
+            "explanation" : "Cancel on all completion paths to release timers and derived contexts.",
+            "hint" : "The producer can leave a blocked send through ctx.Done and closes its own output on return.",
             "question" : "Which statement best describes Cancellation: propagate an exit path through every handoff?"
           },
           "references" : [
@@ -9432,6 +9708,14 @@
             {
               "body" : "Cancel on all completion paths to release timers and derived contexts. Do not replace completion waiting with time.Sleep. Real I/O adapters must support deadlines or cancellation themselves; passing a context does not interrupt an arbitrary blocking function.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Cancel on all completion paths to release timers and derived contexts. Do not replace completion waiting with time.Sleep. Real I/O adapters must support deadlines or cancellation themselves; passing a context does not interrupt an arbitrary blocking function.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The producer can leave a blocked send through ctx.Done and closes its own output on return. main cancels after the first value, then drains until completion. A racing send may already be ready when cancellation arrives, so cancellation does not promise zero additional values.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Requires blocking work to observe the cancellation signal. Cancel on all completion paths to release timers and derived contexts. Do not replace completion waiting with time.Sleep. Real I/O adapters must support deadlines or cancellation themselves; passing a context does not interrupt an arbitrary blocking function."
@@ -9484,8 +9768,8 @@
               "Prevents all possible request deadlocks"
             ],
             "correct" : "Serializes mutation through one goroutine’s messages",
-            "explanation" : "Serialize only what needs one owner; a busy owner can become a bottleneck. Define mailbox capacity and overload behavior, and avoid a cycle of owners synchronously waiting for each other. Channel ownership and a mutex are alternatives chosen by the lifecycle, not by fashion.",
-            "hint" : "Only Counter reads or writes total. Every request has a reply, so main knows when its change is applied, and done confirms shutdown. The caller must always receive the reply here; abandoned requests would require cancellation or a different response design.",
+            "explanation" : "Serialize only what needs one owner; a busy owner can become a bottleneck.",
+            "hint" : "Only Counter reads or writes total.",
             "question" : "Which statement best describes Single owner: serialize state through messages?"
           },
           "references" : [
@@ -9511,6 +9795,14 @@
             {
               "body" : "Serialize only what needs one owner; a busy owner can become a bottleneck. Define mailbox capacity and overload behavior, and avoid a cycle of owners synchronously waiting for each other. Channel ownership and a mutex are alternatives chosen by the lifecycle, not by fashion.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Serialize only what needs one owner; a busy owner can become a bottleneck. Define mailbox capacity and overload behavior, and avoid a cycle of owners synchronously waiting for each other. Channel ownership and a mutex are alternatives chosen by the lifecycle, not by fashion.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "Only Counter reads or writes total. Every request has a reply, so main knows when its change is applied, and done confirms shutdown. The caller must always receive the reply here; abandoned requests would require cancellation or a different response design.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Serializes mutation through one goroutine’s messages. Serialize only what needs one owner; a busy owner can become a bottleneck. Define mailbox capacity and overload behavior, and avoid a cycle of owners synchronously waiting for each other. Channel ownership and a mutex are alternatives chosen by the lifecycle, not by fashion."
@@ -9563,8 +9855,8 @@
               "Unlimited nested retries improve outage recovery"
             ],
             "correct" : "Needs bounded attempts and an idempotent effect contract",
-            "explanation" : "Keep attempt limits small and cap exponential delay before shifts can overflow. This mechanism omits jitter for deterministic teaching. Never blindly retry a payment without a durable idempotency contract, and avoid nested retry layers that multiply traffic during an outage.",
-            "hint" : "The operation succeeds on attempt three; permanent errors would stop immediately. The backoff wait observes cancellation. The supplied operation is local and immediate; a real remote operation should accept the same context so the deadline also reaches I/O.",
+            "explanation" : "Keep attempt limits small and cap exponential delay before shifts can overflow.",
+            "hint" : "The operation succeeds on attempt three; permanent errors would stop immediately.",
             "question" : "Which statement best describes Retry: bounded attempts and idempotent effects?"
           },
           "references" : [
@@ -9590,6 +9882,14 @@
             {
               "body" : "Keep attempt limits small and cap exponential delay before shifts can overflow. This mechanism omits jitter for deterministic teaching. Never blindly retry a payment without a durable idempotency contract, and avoid nested retry layers that multiply traffic during an outage.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "Keep attempt limits small and cap exponential delay before shifts can overflow. This mechanism omits jitter for deterministic teaching. Never blindly retry a payment without a durable idempotency contract, and avoid nested retry layers that multiply traffic during an outage.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "The operation succeeds on attempt three; permanent errors would stop immediately. The backoff wait observes cancellation. The supplied operation is local and immediate; a real remote operation should accept the same context so the deadline also reaches I/O.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Needs bounded attempts and an idempotent effect contract. Keep attempt limits small and cap exponential delay before shifts can overflow. This mechanism omits jitter for deterministic teaching. Never blindly retry a payment without a durable idempotency contract, and avoid nested retry layers that multiply traffic during an outage."
@@ -9642,8 +9942,8 @@
               "Makes a failing dependency healthy automatically"
             ],
             "correct" : "Rejects calls during an outage and probes for recovery",
-            "explanation" : "A concurrent implementation must lock state and admit only a bounded number of half-open probes. Classify which failures count, expose metrics, and avoid treating authorization errors as an outage. Prefer a proven library when failure windows and concurrent recovery become complex.",
-            "hint" : "After two failures, a third call is rejected without invoking fail. Advancing the injected clock permits a successful recovery probe and resets the count. This is a single-owner teaching breaker; sequential execution permits one probe at a time implicitly.",
+            "explanation" : "A concurrent implementation must lock state and admit only a bounded number of half-open probes.",
+            "hint" : "After two failures, a third call is rejected without invoking fail.",
             "question" : "Which statement best describes Circuit breaker: stop calls while a dependency recovers?"
           },
           "references" : [
@@ -9668,6 +9968,14 @@
             {
               "body" : "A concurrent implementation must lock state and admit only a bounded number of half-open probes. Classify which failures count, expose metrics, and avoid treating authorization errors as an outage. Prefer a proven library when failure windows and concurrent recovery become complex.",
               "title" : "Tradeoffs and the simpler alternative"
+            },
+            {
+              "body" : "A concurrent implementation must lock state and admit only a bounded number of half-open probes. Classify which failures count, expose metrics, and avoid treating authorization errors as an outage. Prefer a proven library when failure windows and concurrent recovery become complex.",
+              "title" : "Practical limits and cautions"
+            },
+            {
+              "body" : "After two failures, a third call is rejected without invoking fail. Advancing the injected clock permits a successful recovery probe and resets the count. This is a single-owner teaching breaker; sequential execution permits one probe at a time implicitly.",
+              "title" : "How to read this example"
             }
           ],
           "takeaway" : "Rejects calls during an outage and probes for recovery. A concurrent implementation must lock state and admit only a bounded number of half-open probes. Classify which failures count, expose metrics, and avoid treating authorization errors as an outage. Prefer a proven library when failure windows and concurrent recovery become complex."

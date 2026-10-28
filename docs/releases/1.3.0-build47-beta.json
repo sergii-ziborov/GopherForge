@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-28T13:31:53.622277+00:00",
+  "version": "1.3.0",
+  "build": "47",
+  "buildId": "e64e1842-6dc5-4570-abed-f05a66027184",
+  "processingState": "VALID",
+  "buildAudienceType": "APP_STORE_ELIGIBLE",
+  "group": "Internal QA",
+  "groupId": "8bb1ef54-e467-44dd-8678-f6702de1e59a",
+  "autoNotifyEnabled": true,
+  "internalBuildState": "IN_BETA_TESTING",
+  "externalBuildState": "READY_FOR_BETA_SUBMISSION",
+  "sourceCommit": "1f514c3",
+  "ipaSHA256": "1ea37ad317302eef633f219fc052067ef55d203bf2c9a3bac27010260448383a",
+  "validation": "VERIFY SUCCEEDED with no errors",
+  "upload": "UPLOAD SUCCEEDED with no errors",
+  "nativeFocusedChecks": 115,
+  "nativeUIChecks": 4,
+  "physicalProviderVerified": false,
+  "appReviewBuildStill46": true,
+  "betaNotes": "1.3.0 (47) \u2014 audit stage 1. Source safety and import honesty.\n\nIdiom Apply now reviews the exact file/line and refuses stale source. Unsafe getter and early-return advice is advisory only. Async dependency downloads cannot replace a different project or newer editor source. Unsupported Go flags/targets/arguments are rejected instead of silently ignored.\n\nLibrary: existing Files/iCloud libraries are opened without overwriting. Switching waits for current source to save. Coordinated library transactions reread fresh state, retain conflicting source as a separate project and make bounded backups. Please verify on your real Files provider: make a disposable project in each of two test libraries; switch between them, edit, restart and check both remain intact. Keep an independent export during beta testing. Physical provider synchronization is not yet verified.\n\nImport: GitHub snapshots pin an exact commit. UTF-8 testdata/vendor/CI and JSX/TSX are retained within limits. Project > Import details lists retained paths and omissions. Binary assets/history remain outside this text snapshot; partial export is labelled. Legacy unpinned projects do not silently receive files from a moving branch.\n\nSettings states the ordinary native execution limits: memory and captured output are bounded; tight-loop Stop and a guest filesystem-write quota are not guaranteed. The existing source debugger, educational offline npm/React subset and explicit local Gin replay remain available.\n\n115 focused model/integration checks and 4 native UI checks passed, including the offline React terminal/full-screen flow. This candidate does NOT include the next lesson-draft/practice changes under development. No full-suite, physical-provider or airplane-mode device claim."
+}

@@ -10,8 +10,7 @@ struct Lesson: Identifiable, Equatable, Sendable {
     enum Task: Equatable, Sendable {
         /// Worked examples and explanations, completed by the reader.
         case reading
-        /// Type the shape until it is muscle memory. Wrong keys are recorded
-        /// and never inserted.
+        /// A worked syntax example, read and self-marked. No typing score.
         case guidedTyping(target: String)
         /// Fill the holes in an otherwise complete program.
         case fillGaps(template: String, blanks: [String])

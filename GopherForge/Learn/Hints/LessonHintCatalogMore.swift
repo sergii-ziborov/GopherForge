@@ -67,7 +67,7 @@ extension LessonHintCatalog {
 
     private static let stdlib: [LessonHint] = [
         entry("stdlib.io", hint: "ReadAll the reader, write the uppercased string to the writer.", nuance: "Accept io.Reader and io.Writer, not *os.File. The test passes a buffer on purpose."),
-        entry("stdlib.json", hint: "The field tag is the name on the wire. Unmarshal needs a pointer.", nuance: "Without the pointer Unmarshal fills a copy. omitempty skips zeros, including false and 0."),
+        entry("stdlib.json", hint: "The field tag is the name on the wire. Unmarshal needs a pointer.", nuance: "Unmarshal needs a non-nil pointer; a non-pointer returns InvalidUnmarshalError. omitempty skips zero values, including false and 0."),
         entry("stdlib.time", hint: "Duration constants are multiplications. A bare 5 is five nanoseconds.", nuance: "Time comparison uses Before, After, Equal — a Time carries a monotonic reading too."),
         entry("stdlib.sort", hint: "slices.SortFunc with cmp.Compare on year, then name.", nuance: "The comparator returns a number, not a bool. That is the C/Go convention, not JS."),
         entry("stdlib.context", hint: "select on a timer and ctx.Done(). Stop the timer. Return ctx.Err() when cancelled.", nuance: "Sleep cannot be cancelled. A timer plus select can. Never store a context on a struct."),

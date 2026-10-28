@@ -8,7 +8,7 @@ import { news, newsURL, newsImage } from "@/lib/news";
 import {
   curriculumUpdatedOn,
   lessonUpdatedOn,
-  changedUnits,
+  unitUpdatedOn,
   changedInterview,
 } from "@/lib/curriculum-revision";
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -39,10 +39,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paths.map((path) => ({
       url: origin + path,
-      lastModified:
-        path === "/news/feed"
-          ? "2026-10-28"
-          : path === "/news"
+      lastModified: ["/news/feed", "/learn", "/interview"].includes(path)
+        ? "2026-10-28"
+        : path === "/news"
           ? news[0].modifiedAt
           : path === "/guide"
             ? guide.updated
@@ -51,14 +50,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
               : ["/learn", "/interview"].includes(path)
                 ? curriculumUpdatedOn
                 : path.startsWith("/learn/units/")
-                  ? changedUnits.has(path.split("/").pop()!)
-                    ? curriculumUpdatedOn
-                    : "2026-10-23"
+                  ? unitUpdatedOn(path.split("/").pop()!)
                   : path.startsWith("/learn/")
                     ? lessonUpdatedOn(path.slice(7))
                     : path.startsWith("/interview/")
                       ? changedInterview.has(decodeURIComponent(path.slice(11)))
-                        ? curriculumUpdatedOn
+                        ? "2026-10-27"
                         : "2026-10-20"
                       : "2026-10-25",
       ...(path === "/guide"

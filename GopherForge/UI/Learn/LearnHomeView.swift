@@ -92,6 +92,15 @@ struct LearnHomeView: View {
                     stats: stats
                 )
 
+                NavigationLink { PracticeLibraryView() } label: {
+                    Label("Practice · code, predictions and labs", systemImage: "pencil.and.outline")
+                        .font(.callout.weight(.semibold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
+                        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 18))
+                }
+                .accessibilityIdentifier("learn.practiceLibrary")
+
                 unitPath
 
                 if !weakest.isEmpty {

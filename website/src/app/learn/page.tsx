@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { interview } from "@/lib/interview";
+import { ProgressTransfer } from "@/components/ProgressTransfer";
+import { curriculumUpdatedOn } from "@/lib/curriculum-revision";
 import { StructuredData } from "@/components/StructuredData";
 import { releases } from "@/lib/releases";
 import type { Metadata } from "next";
@@ -98,6 +101,11 @@ export default function Learn() {
           title: u.title,
           summary: u.summary,
         }))}
+      />
+      <ProgressTransfer
+        lessons={lessons.map((l) => l.id)}
+        interview={interview.questions.map((q) => q.id)}
+        revision={curriculumUpdatedOn}
       />
       <section className="unit-directory">
         <h2>Browse by subject.</h2>

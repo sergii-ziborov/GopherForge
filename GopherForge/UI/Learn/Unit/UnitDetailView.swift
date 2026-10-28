@@ -39,6 +39,10 @@ struct UnitDetailView: View {
                     .accessibilityIdentifier("architecture.compare")
                 }
 
+                NavigationLink { PracticeLibraryView(unitID: unit.id) } label: {
+                    Label("Practice this unit", systemImage: "pencil.and.outline")
+                }
+                .accessibilityIdentifier("unit.practice.\(unit.id)")
                 lessonPath
             }
             .padding(.horizontal, 18)

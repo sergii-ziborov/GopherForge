@@ -3525,3 +3525,41 @@ details p {
     padding: 8px;
   }
 }
+
+.progress-transfer {
+  margin: 2rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.progress-transfer summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.progress-transfer p {
+  max-width: 72ch;
+}
+.progress-transfer-file {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+.progress-transfer-file input {
+  max-width: 100%;
+  font: inherit;
+}
+.progress-transfer-preview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.progress-transfer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.progress-transfer [role="status"]:empty {
+  display: none;
+}

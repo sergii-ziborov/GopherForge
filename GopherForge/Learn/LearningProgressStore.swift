@@ -18,6 +18,7 @@ actor LearningProgressStore {
     }
 
     private let storageURL: URL
+    nonisolated let drafts: LessonDraftStore
     private let maximumAttempts = 500
     private let maximumDrills = 500
     private let maximumRuns = 1_000
@@ -46,6 +47,7 @@ actor LearningProgressStore {
                 .appending(path: "GopherForge", directoryHint: .isDirectory)
                 .appending(path: "learning-progress.json")
         }
+        drafts = LessonDraftStore(folder: self.storageURL.deletingPathExtension().appendingPathExtension("drafts"))
     }
 
     func attempts() throws -> [LessonAttempt] {
