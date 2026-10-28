@@ -46,6 +46,6 @@
   "nativeUIFlows": 4,
   "simulatorOnly": true,
   "publicNetworkDuringExampleExecution": false,
-  "xcodeResultBundleFinalization": "pending; test process outputs report all 43 passed",
+  "xcodeResultBundleFinalization": "Passed",
   "preservedPriorIDs": true
 }

@@ -40,6 +40,10 @@ This is a broad preparation map, not a guarantee that a finite course contains e
 - Three broken reference paths were replaced with authoritative Ethereum/GNU/author-hosted resources. Initial link audit: 287 successful responses, three 404s, one 403 and 52 rate-limited responses. Access restrictions are not presented as proof of broken content.
 - Every prior lesson/question ID remains present. Existing payloads are otherwise preserved except the documented corrections/reference repairs. No progress format or migration was changed.
 
+## Publication
+
+The [expanded course](https://gopherforge.app/learn) and [Interview](https://gopherforge.app/interview) are live. The shared catalog, app guide, release availability, metadata and sitemap are synchronized. Fifteen representative public HTTPS routes and all 74 new lesson/question sitemap entries passed checks. [Website receipt](../website/2026-10-28-curriculum49-publication.json).
+
 ## Verification
 
 - **40 new complete Go examples executed with semantic output assertions**, native Go 1.27.3. Pinned QA dependencies: Gin v1.12.0, go-ethereum v1.17.10 and gRPC v1.85.0. Dependencies were prepared first; execution disabled registry access and used only explicit local httptest servers. No public RPC, transaction broadcast or private key was used.
@@ -47,7 +51,7 @@ This is a broad preparation map, not a guarantee that a finite course contains e
 - **12 existing interactive algorithm implementations** passed boundary tests, 500 randomized comparison rounds and 200 additional property rounds under the race detector.
 - **27 website tests passed**, including exact native/web parity, unique lesson routes, complete direction/topic membership and local progress restoration.
 - Next.js production build passed. The sitemap and metadata include the new lesson/unit/question routes and content edit dates; release history distinguishes public, review and curriculum candidate versions.
-- **43 focused native checks passed**: 39 model checks and four UI flows, including Gin/blockchain navigation, reading Continue after relaunch, existing interview self-assessment persistence and restoration of a learner’s own edited source. Simulator checks do not certify physical-device airplane-mode behavior. Xcode’s result-bundle finalization is tracked separately from the completed test outputs.
+- **43 focused native checks passed**: 39 model checks and four UI flows, including Gin/blockchain navigation, reading Continue after relaunch, existing interview self-assessment persistence and restoration of a learner’s own edited source. Simulator checks do not certify physical-device airplane-mode behavior. The finalized Xcode result bundle reports Passed (43 passed, zero failures).
 - Browser verification retained the existing completion mark and restored a new lesson’s exact section after reload.
 
 Reproduce the example checks with `GO=/path/to/go1.27.3 python3 scripts/verify_curriculum_examples.py` and `python3 scripts/verify_interview_algorithms.py` using the selected Go toolchain on PATH. These checks validate native examples, not an unrestricted WASI environment or a real blockchain node.
