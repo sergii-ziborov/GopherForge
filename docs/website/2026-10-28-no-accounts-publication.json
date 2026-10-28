@@ -1,0 +1,64 @@
+{
+  "publishedAt": "2026-10-28T13:03:42.422622+00:00",
+  "sourceCommit": "8cc9dd7",
+  "siteImage": "sha256:d72aa1d66b62c490859ab705789481e337745601213e314d49e54e6ba81732a1",
+  "rollbackImage": "localhost/gopherforge-web:rollback-audit47-8cc9dd7",
+  "hostwatchJob": "gopherforge-noaccounts-8cc9dd7-20261028",
+  "jobState": "succeeded",
+  "scope": "SITE-01; website only. Native audit fixes not yet uploaded.",
+  "checks": [
+    {
+      "path": "/login",
+      "status": 308,
+      "location": "/learn"
+    },
+    {
+      "path": "/register",
+      "status": 308,
+      "location": "/learn"
+    },
+    {
+      "path": "/login?from=news",
+      "status": 308,
+      "location": "/news/feed?from=news"
+    },
+    {
+      "path": "/register?from=news",
+      "status": 308,
+      "location": "/news/feed?from=news"
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/guide",
+      "status": 200
+    },
+    {
+      "path": "/learn",
+      "status": 200
+    },
+    {
+      "path": "/interview",
+      "status": 200
+    },
+    {
+      "path": "/updates",
+      "status": 200
+    },
+    {
+      "path": "/news/feed",
+      "status": 200,
+      "noAccountLinks": true
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200
+    },
+    {
+      "path": "/api/health",
+      "status": 200
+    }
+  ]
+}
