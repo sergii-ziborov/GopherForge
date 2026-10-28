@@ -30,4 +30,13 @@ final class TerminalCommandTests: XCTestCase {
         XCTAssertTrue(TerminalCommand.helpText.contains("go build"))
         XCTAssertTrue(TerminalCommand.helpText.contains("not a shell"))
     }
+    func testUnsupportedArgumentsNeverDegradeToAnOrdinaryPhase() {
+        for command in ["go test -race", "go test -run TestPass", "go test -bench .", "go run ./cmd/foo arg1", "go build ./cmd/foo", "go mod tidy", "gofmt -w main.go", "go test --unknown", "go run --", "go run ''", "go test\ngo run", "pwd extra", "ls a b", "cat a.go b.go"] {
+            let parsed = TerminalCommand.parse(command)
+            guard case .unsupported = parsed else { return XCTFail("must reject: \(command)") }
+            XCTAssertNil(parsed.phase, command)
+        }
+        XCTAssertEqual(TerminalCommand.parse("go\ttest"), .test)
+    }
+
 }

@@ -83,4 +83,24 @@ final class ProjectTerminalSessionTests: XCTestCase {
         XCTAssertEqual(terminal.transcript.last?.text, project.files["go.mod"])
         await workspace.flush()
     }
+    func testRejectedGoOptionsDoNotExecuteOrChangeTheProject() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "terminal-strict-\(UUID())")
+        let workspace = WorkspaceModel(library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
+        let project = ProjectTemplate.commandLineTool.project(named: "Untouched")
+        XCTAssertTrue(workspace.open(project))
+        await workspace.libraryUpdated()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let terminal = ProjectTerminalSession(workspace: workspace)
+        for command in ["go test -race", "go test -run TestPass", "go test -bench .", "go run ./cmd/foo arg1", "go build ./cmd/foo", "go mod tidy"] {
+            terminal.input = command
+            await terminal.submit()
+            guard case .failure = terminal.transcript.last?.kind else { return XCTFail(command) }
+            let message = terminal.transcript.last?.text.lowercased() ?? ""
+            XCTAssertTrue(message.contains("not run") || message.contains("nothing was run"))
+            XCTAssertNil(workspace.lastResult)
+            XCTAssertEqual(workspace.project?.files, project.files)
+            XCTAssertFalse(workspace.isRunning)
+        }
+    }
+
 }

@@ -342,4 +342,152 @@ final class WorkspaceAutosaveTests: XCTestCase {
         )
         XCTAssertNil(workspace.sitePreviewURL)
     }
+    func testLibraryChangeClosesTheOldProjectBeforeAnyLaterFlush() async throws {
+        let workspace = await openedWorkspace()
+        let id = try XCTUnwrap(workspace.projectID)
+        workspace.updateEditorText("package main\n// Old library stays here\n")
+        let folder = storageURL.deletingLastPathComponent().appending(path: "other")
+        let destination = folder.appending(path: "recent-projects.json")
+        let other = ProjectLibrary(storageURL: destination)
+        _ = try await other.recordSource(id: id, revision: 9, project: ProjectTemplate.commandLineTool.project(named: "Destination"))
+        let before = try Data(contentsOf: destination)
+        defer { ProjectLibraryLocation.forgetChosenFolder() }
+        let opened = try await workspace.changeLibrary(to: .folder(folder))
+        XCTAssertEqual(opened.map(\.project.name), ["Destination"])
+        XCTAssertNil(workspace.project)
+        await workspace.flush()
+        XCTAssertEqual(try Data(contentsOf: destination), before)
+        let source = ProjectLibrary(storageURL: storageURL)
+        let original = try await source.project(id: id)
+        XCTAssertEqual(original?.project.files["main.go"], "package main\n// Old library stays here\n")
+    }
+
+    func testFailedLibraryChangeRestoresTheCurrentEditorAndItsOwner() async throws {
+        let workspace = await openedWorkspace()
+        let id = workspace.projectID
+        let text = "package main\n// Keep my pending edit\n"
+        workspace.updateEditorText(text)
+        let folder = storageURL.deletingLastPathComponent().appending(path: "invalid")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let invalid = folder.appending(path: "recent-projects.json")
+        try Data("not a library".utf8).write(to: invalid)
+        do { _ = try await workspace.changeLibrary(to: .folder(folder)); XCTFail("must fail") }
+        catch { }
+        XCTAssertEqual(workspace.projectID, id)
+        XCTAssertEqual(workspace.editorText, text)
+        workspace.updateEditorText(text + "// still writable\n")
+        await workspace.flush()
+        let old = ProjectLibrary(storageURL: storageURL)
+        let items = try await old.items()
+        XCTAssertEqual(items.first?.project.files["main.go"], text + "// still writable\n")
+        XCTAssertEqual(try String(contentsOf: invalid, encoding: .utf8), "not a library")
+    }
+
+}
+
+private actor DependencyPreparationBarrier {
+    private var continuation: CheckedContinuation<Void, Never>?
+    private var started = false
+
+    func prepare(_ project: GopherForgeProject) async -> GopherForgeProject {
+        started = true
+        await withCheckedContinuation { continuation = $0 }
+        var files = project.files
+        files["vendor/example.com/dep/dep.go"] = "package dep\n"
+        return project.replacingFiles(files)
+    }
+
+    func waitUntilStarted() async throws {
+        let deadline = Date().addingTimeInterval(5)
+        while !started && Date() < deadline { try await Task.sleep(for: .milliseconds(10)) }
+        if !started { throw NSError(domain: "Dependency preparation never started", code: 1) }
+    }
+
+    func resume() { continuation?.resume(); continuation = nil }
+}
+
+@MainActor
+final class DependencyPublicationTests: XCTestCase {
+    func testDelayedRunAndRetryNeverReplaceAnotherProjectOrNewerEdits() async throws {
+        for retry in [false, true] {
+            for change in 0..<3 {
+                let root = FileManager.default.temporaryDirectory.appending(path: "dependency-owner-\(UUID())")
+                let url = root.appending(path: "projects.json")
+                let library = ProjectLibrary(storageURL: url)
+                let barrier = DependencyPreparationBarrier()
+                let workspace = WorkspaceModel(library: library, dependencyPreparationOverride: { await barrier.prepare($0) })
+                let original = ProjectTemplate.commandLineTool.project(named: "A")
+                workspace.open(original)
+                await workspace.libraryUpdated()
+                let task = Task {
+                    if retry { await workspace.retryPackageDownloads() }
+                    else { await workspace.run(.run) }
+                }
+                try await barrier.waitUntilStarted()
+                switch change {
+                case 0: XCTAssertTrue(workspace.open(ProjectTemplate.commandLineTool.project(named: "B")))
+                case 1:
+                    workspace.updateEditorText(workspace.editorText + "\n// new owner edit\n")
+                    _ = try workspace.createFile(named: "extra.go")
+                default:
+                    workspace.select(file: "go.mod")
+                    workspace.updateEditorText("module changed.example/owner\n\ngo 1.27\n")
+                }
+                let keptID = try XCTUnwrap(workspace.projectID)
+                let kept = try XCTUnwrap(workspace.project)
+                await workspace.flush() // A background flush must not publish download snapshots.
+                await barrier.resume()
+                await task.value
+                XCTAssertEqual(workspace.projectID, keptID)
+                XCTAssertEqual(workspace.project?.files, kept.files)
+                XCTAssertNil(workspace.project?.files["vendor/example.com/dep/dep.go"])
+                await workspace.flush()
+                let fresh = ProjectLibrary(storageURL: url)
+                let stored = try await fresh.project(id: keptID)
+                XCTAssertEqual(stored?.project.files, kept.files)
+                if change != 0 {
+                    XCTAssertEqual(workspace.lastResult?.phase, .setup)
+                }
+                try? FileManager.default.removeItem(at: root)
+            }
+        }
+    }
+
+    func testUnchangedOwnerCanPublishPreparedDependencies() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "dependency-valid-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let library = ProjectLibrary(storageURL: root.appending(path: "projects.json"))
+        let barrier = DependencyPreparationBarrier()
+        let workspace = WorkspaceModel(library: library, dependencyPreparationOverride: { await barrier.prepare($0) })
+        workspace.open(ProjectTemplate.commandLineTool.project(named: "A"))
+        await workspace.libraryUpdated()
+        let original = workspace.editorText
+        let task = Task { await workspace.retryPackageDownloads() }
+        try await barrier.waitUntilStarted()
+        await barrier.resume()
+        await task.value
+        XCTAssertNotNil(workspace.project?.files["vendor/example.com/dep/dep.go"])
+        XCTAssertEqual(workspace.editorText, original)
+        await workspace.flush()
+        let items = try await library.items()
+        XCTAssertEqual(items.first?.project.files, workspace.project?.files)
+    }
+
+    func testDraftCacheRequiresTheSameOwnerAndExactBaseFiles() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "dependency-cache-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let cache = ProjectDependencyDraftCache(root: root)
+        let owner = UUID()
+        let base = ["main.go": "package main\n", "go.mod": "module example.com/app\n"]
+        var prepared = base
+        prepared["vendor/example.com/dep/dep.go"] = "package dep\n"
+        await cache.save(owner: owner, base: base, files: prepared)
+        let recovered = await cache.load(owner: owner, base: base)
+        XCTAssertEqual(recovered, prepared)
+        let otherOwner = await cache.load(owner: UUID(), base: base)
+        let edited = await cache.load(owner: owner, base: ["main.go": "changed"])
+        XCTAssertNil(otherOwner)
+        XCTAssertNil(edited)
+        XCTAssertEqual(base["main.go"], "package main\n")
+    }
 }

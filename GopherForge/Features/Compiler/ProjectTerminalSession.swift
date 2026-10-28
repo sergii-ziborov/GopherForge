@@ -74,6 +74,8 @@ final class ProjectTerminalSession {
                 """)
         case let .unknown(text):
             append(.failure, unknownMessage(for: text))
+        case let .unsupported(message):
+            append(.failure, message)
         case .build, .run, .test, .vet, .format:
             await runPhase(command)
         }

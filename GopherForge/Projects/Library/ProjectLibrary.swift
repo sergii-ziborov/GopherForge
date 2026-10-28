@@ -13,11 +13,13 @@ import Foundation
 /// Go source measured in kilobytes, and the thing to revisit first if that
 /// stops being true.
 actor ProjectLibrary {
-    private struct State: Codable {
+    private struct State: Codable, Equatable {
         var items: [ProjectLibraryItem]
+        var schemaVersion: Int? = 1
     }
 
     private var storageURL: URL
+    private let deviceStorageURL: URL
     private var cachedState: State?
 
     /// The library the app uses.
@@ -42,25 +44,31 @@ actor ProjectLibrary {
             .appending(path: "projects.json")
     }
 
-    init(storageURL: URL? = nil) {
+    init(storageURL: URL? = nil, deviceStorageURL: URL? = nil) {
         self.storageURL = storageURL ?? ProjectLibraryLocation.fileURL()
+        self.deviceStorageURL = deviceStorageURL ?? ProjectLibraryLocation.defaultFileURL()
     }
 
     /// Moves the library JSON into a folder the owner picked (Files or
     /// iCloud Drive) and remembers that folder for the next launch.
     func adoptFolder(_ folder: URL) throws -> [ProjectLibraryItem] {
-        let current = try state()
-        try ProjectLibraryLocation.remember(folder: folder)
-        storageURL = ProjectLibraryLocation.fileURL()
-        try persist(current)
+        let access = folder.startAccessingSecurityScopedResource()
+        defer { if access { folder.stopAccessingSecurityScopedResource() } }
+        let bookmark = try ProjectLibraryLocation.bookmark(for: folder)
+        let destination = folder.appending(path: "recent-projects.json")
+        let next = try prepareDestination(destination)
+        ProjectLibraryLocation.remember(bookmark: bookmark)
+        storageURL = destination
+        cachedState = next
         return try items()
     }
 
     func useOnDeviceLibrary() throws -> [ProjectLibraryItem] {
-        let current = try state()
+        let destination = deviceStorageURL
+        let next = try prepareDestination(destination)
         ProjectLibraryLocation.forgetChosenFolder()
-        storageURL = ProjectLibraryLocation.defaultFileURL()
-        try persist(current)
+        storageURL = destination
+        cachedState = next
         return try items()
     }
 
@@ -250,6 +258,38 @@ actor ProjectLibrary {
 
     // MARK: - Storage
 
+    enum StorageError: LocalizedError {
+        case unsupportedSchema
+        case verificationFailed
+        var errorDescription: String? {
+            switch self {
+            case .unsupportedSchema: "This library uses an unsupported format. It has not been changed."
+            case .verificationFailed: "The new library could not be verified. The previous location is still active."
+            }
+        }
+    }
+
+    private func readState(at url: URL) throws -> State {
+        let decoded = try JSONDecoder.gopherForge.decode(State.self, from: Data(contentsOf: url))
+        guard (decoded.schemaVersion ?? 1) == 1 else { throw StorageError.unsupportedSchema }
+        return decoded
+    }
+
+    /// Existing libraries are opened, never replaced by the current library.
+    /// A new destination receives a verified copy; the old document is kept.
+    private func prepareDestination(_ destination: URL) throws -> State {
+        if FileManager.default.fileExists(atPath: destination.path) {
+            return try readState(at: destination)
+        }
+        let current = try state()
+        try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+        // Refuse a destination that appeared since the initial existence check.
+        let encoded = try JSONEncoder.gopherForge.encode(current)
+        try encoded.write(to: destination, options: .withoutOverwriting)
+        guard try Data(contentsOf: destination) == encoded else { throw StorageError.verificationFailed }
+        return try readState(at: destination)
+    }
+
     private func state() throws -> State {
         if let cachedState { return cachedState }
         guard FileManager.default.fileExists(atPath: storageURL.path) else {
@@ -257,8 +297,7 @@ actor ProjectLibrary {
             cachedState = empty
             return empty
         }
-        let data = try Data(contentsOf: storageURL)
-        let decoded = try JSONDecoder.gopherForge.decode(State.self, from: data)
+        let decoded = try readState(at: storageURL)
         cachedState = decoded
         return decoded
     }

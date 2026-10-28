@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State private var isConfirmingPackageCleanup = false
     @State private var isConfirmingReset = false
     @State private var libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder
+    @State private var libraryChangeError: String?
     private let progress = LearningProgressStore.shared
 
     var body: some View {
@@ -37,13 +38,17 @@ struct SettingsView: View {
                         : "On this device"
                 )
                 if libraryUsesChosenFolder {
-                    Button("Keep library on this device") {
+                    Button("Open on-device library") {
                         Task {
-                            _ = try? await ProjectLibrary.shared.useOnDeviceLibrary()
+                            do {
+                                _ = try await workspace.changeLibrary(to: .onDevice)
+                                libraryChangeError = nil
+                            } catch { libraryChangeError = error.localizedDescription }
                             libraryUsesChosenFolder = ProjectLibraryLocation.usesChosenFolder
                         }
                     }
                 }
+                if let libraryChangeError { Text(libraryChangeError).foregroundStyle(.red) }
                 Text("Open a `.tar.gz` or folder from iCloud Drive on Projects, "
                     + "or pick a folder there to keep the whole library.")
                     .font(.caption)

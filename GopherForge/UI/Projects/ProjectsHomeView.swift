@@ -66,7 +66,7 @@ struct ProjectsHomeView: View {
                     filePick = .libraryFolder
                 } label: {
                     Label(
-                        "Keep library in iCloud…",
+                        "Open library in iCloud / Files…",
                         systemImage: "externaldrive.badge.icloud"
                     )
                 }
@@ -76,18 +76,19 @@ struct ProjectsHomeView: View {
                     Button {
                         Task {
                             do {
-                                recents = try await library.useOnDeviceLibrary()
+                                recents = try await workspace.changeLibrary(to: .onDevice)
                             } catch {
                                 importFailure = error.localizedDescription
                             }
                         }
                     } label: {
-                        Label("Keep library on this device", systemImage: "internaldrive")
+                        Label("Open on-device library", systemImage: "internaldrive")
                     }
                 }
             } footer: {
                 Text("Projects stay on this device unless you pick an iCloud Drive "
-                    + "or Files folder for the library. Export a project from its "
+                    + "or Files folder for the library. Existing libraries are opened; "
+                    + "an empty folder receives a copy. The previous library is kept. Export a project from its "
                     + "file menu — in Project library, or the ⋯ menu in the editor.")
             }
 
@@ -170,7 +171,7 @@ struct ProjectsHomeView: View {
             case .libraryFolder:
                 Task {
                     do {
-                        recents = try await library.adoptFolder(url)
+                        recents = try await workspace.changeLibrary(to: .folder(url))
                     } catch {
                         importFailure = error.localizedDescription
                     }

@@ -40,7 +40,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...paths.map((path) => ({
       url: origin + path,
       lastModified:
-        path === "/news"
+        path === "/news/feed"
+          ? "2026-10-28"
+          : path === "/news"
           ? news[0].modifiedAt
           : path === "/guide"
             ? guide.updated

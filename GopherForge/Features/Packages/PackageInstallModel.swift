@@ -144,6 +144,10 @@ final class PackageInstallModel {
         phase = .idle
     }
 
+    func refuseStalePublication() {
+        phase = .failed("The project changed during installation. Your source was kept; the downloaded result was not applied. Install again for the current project.")
+    }
+
     /// Errors people can act on. The wording is the same one a build uses when
     /// it downloads a package itself.
     static func describe(_ error: any Error, path: String) -> String {

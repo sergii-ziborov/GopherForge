@@ -34,13 +34,20 @@ enum ProjectLibraryLocation {
 
     /// Remembers a folder the owner picked in Files or iCloud Drive.
     static func remember(folder url: URL) throws {
+        remember(bookmark: try bookmark(for: url))
+    }
+
+    static func bookmark(for url: URL) throws -> Data {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-        let bookmark = try url.bookmarkData(
+        return try url.bookmarkData(
             options: [],
             includingResourceValuesForKeys: nil,
             relativeTo: nil
         )
+    }
+
+    static func remember(bookmark: Data) {
         UserDefaults.standard.set(bookmark, forKey: bookmarkDefaultsKey)
     }
 

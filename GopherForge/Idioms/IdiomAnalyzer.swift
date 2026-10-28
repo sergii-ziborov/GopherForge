@@ -13,14 +13,14 @@ struct IdiomAnalyzer: Sendable {
         self.rules = rules
     }
 
-    func analyze(_ snapshot: GoSourceSnapshot) -> [IdiomFinding] {
+    func analyze(_ snapshot: GoSourceSnapshot, origin: IdiomFinding.Origin? = nil) -> [IdiomFinding] {
         snapshot.files
             .filter { $0.key.hasSuffix(".go") }
             .sorted { $0.key < $1.key }
-            .flatMap { analyze(source: $0.value, fileName: $0.key) }
+            .flatMap { analyze(source: $0.value, fileName: $0.key, origin: origin) }
     }
 
-    func analyze(source: String, fileName: String) -> [IdiomFinding] {
+    func analyze(source: String, fileName: String, origin: IdiomFinding.Origin? = nil) -> [IdiomFinding] {
         let lines = source.components(separatedBy: "\n")
         var findings: [IdiomFinding] = []
         var depth = 0
@@ -51,7 +51,9 @@ struct IdiomAnalyzer: Sendable {
                         fileName: fileName,
                         line: context.lineNumber,
                         confidence: rule.confidence,
-                        suggestedReplacement: match.suggestedReplacement
+                        suggestedReplacement: match.suggestedReplacement,
+                        analyzedSource: source,
+                        origin: origin
                     )
                 )
             }

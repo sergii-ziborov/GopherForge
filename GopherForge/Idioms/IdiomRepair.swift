@@ -21,6 +21,7 @@ enum IdiomRepair {
         guard let replacement = finding.suggestedReplacement else {
             throw RepairError.notRepairable
         }
+        guard source == finding.analyzedSource else { throw RepairError.sourceChanged }
         var lines = source.components(separatedBy: "\n")
         let index = finding.line - 1
         guard lines.indices.contains(index) else { throw RepairError.lineOutOfRange }
