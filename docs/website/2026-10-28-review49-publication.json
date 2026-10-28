@@ -1,0 +1,159 @@
+{
+  "checkedAt": "2026-10-28T18:49:51.123058+00:00",
+  "sourceCommit": "4ffb0c0",
+  "url": "https://gopherforge.app",
+  "state": "succeeded",
+  "jobId": "gopherforge-review49-4ffb0c0-20261028",
+  "imageDigest": "sha256:16cb77ce2efc37257c404bd979b72ede7b3b4e713694c23b49e0e2b0dc392242",
+  "publicApp": "1.2.0 (45)",
+  "reviewApp": "1.3.1 (49)",
+  "reviewState": "WAITING_FOR_REVIEW",
+  "automaticReleaseAfterApproval": true,
+  "testFlight": "1.3.1 (49) Internal QA",
+  "freshNativeLearningScreenshots": 12,
+  "nativeCaptureSizes": 6,
+  "websiteChecksPassed": 27,
+  "liveHTTPS": {
+    "base": "https://gopherforge.app",
+    "routes": [
+      {
+        "path": "/learn",
+        "status": 200,
+        "verifiedVisibleText": [
+          "242",
+          "28",
+          "173"
+        ]
+      },
+      {
+        "path": "/interview",
+        "status": 200,
+        "verifiedVisibleText": [
+          "132",
+          "15"
+        ]
+      },
+      {
+        "path": "/learn/units/system-design",
+        "status": 200,
+        "verifiedVisibleText": [
+          "gRPC",
+          "Kafka"
+        ]
+      },
+      {
+        "path": "/learn/units/clean-code-production",
+        "status": 200,
+        "verifiedVisibleText": [
+          "Composition"
+        ]
+      },
+      {
+        "path": "/learn/units/gin",
+        "status": 200,
+        "verifiedVisibleText": [
+          "Gin"
+        ]
+      },
+      {
+        "path": "/learn/units/blockchain",
+        "status": 200,
+        "verifiedVisibleText": [
+          "Bitcoin",
+          "Cosmos"
+        ]
+      },
+      {
+        "path": "/learn/units/security",
+        "status": 200,
+        "verifiedVisibleText": [
+          "TLS"
+        ]
+      },
+      {
+        "path": "/learn/gin.context-workers",
+        "status": 200,
+        "verifiedVisibleText": [
+          "Gin"
+        ]
+      },
+      {
+        "path": "/learn/blockchain.exact-units",
+        "status": 200,
+        "verifiedVisibleText": [
+          "exact"
+        ]
+      },
+      {
+        "path": "/interview/gin.middleware-flow",
+        "status": 200,
+        "verifiedVisibleText": [
+          "Gin"
+        ]
+      },
+      {
+        "path": "/interview/blockchain.reorg-reconnect",
+        "status": 200,
+        "verifiedVisibleText": [
+          "chain"
+        ]
+      },
+      {
+        "path": "/guide",
+        "status": 200,
+        "verifiedVisibleText": [
+          "220",
+          "132",
+          "1.3.1",
+          "49",
+          "Internal QA TestFlight",
+          "App Review:"
+        ]
+      },
+      {
+        "path": "/updates",
+        "status": 200,
+        "verifiedVisibleText": [
+          "1.3.1",
+          "1.3.0",
+          "48",
+          "Internal QA TestFlight",
+          "Waiting for App Review"
+        ]
+      },
+      {
+        "path": "/support",
+        "status": 200,
+        "verifiedVisibleText": [
+          "220",
+          "173"
+        ]
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "verifiedVisibleText": [
+          "6.99",
+          "TestFlight 1.3.1 (49):"
+        ]
+      }
+    ],
+    "sitemapURLs": 436,
+    "newLessonURLs": 34,
+    "newInterviewURLs": 40,
+    "newDatesCorrect": true
+  },
+  "nativeGuideImage": {
+    "url": "https://gopherforge.app/images/guide-course.png",
+    "sha256": "02fd721ab5a3450875cca402a2a983e848552bbabb8e61b956246a2f6d7508a3",
+    "bytes": 1093137,
+    "matchesNativeBuild49Capture": true
+  },
+  "runtime": {
+    "restartPolicy": "unless-stopped",
+    "systemdService": "enabled",
+    "newsFeedRedelivered": true
+  },
+  "rollbackImage": "localhost/gopherforge-web:rollback-review49-4ffb0c0",
+  "priorPublicationReceipt": "2026-10-28-curriculum49-publication.json"
+}

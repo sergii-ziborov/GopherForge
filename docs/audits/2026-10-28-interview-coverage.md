@@ -42,7 +42,7 @@ This is a broad preparation map, not a guarantee that a finite course contains e
 
 ## Publication
 
-The [expanded course](https://gopherforge.app/learn) and [Interview](https://gopherforge.app/interview) are live. The shared catalog, app guide, release availability, metadata and sitemap are synchronized. Fifteen representative public HTTPS routes and all 74 new lesson/question sitemap entries passed checks. [Website receipt](../website/2026-10-28-curriculum49-publication.json).
+The [expanded course](https://gopherforge.app/learn) and [Interview](https://gopherforge.app/interview) are live. The shared catalog, app guide, release availability, metadata and sitemap are synchronized. Fifteen representative public HTTPS routes and all 74 new lesson/question sitemap entries passed checks. [Website receipt](../website/2026-10-28-review49-publication.json).
 
 ## Verification
 
