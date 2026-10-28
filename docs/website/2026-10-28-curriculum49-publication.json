@@ -1,14 +1,14 @@
 {
   "checkedOn": "2026-10-28",
-  "sourceCommit": "18ec213",
+  "sourceCommit": "9813918607f2933bc23bcc16708fb37eb621409d",
   "url": "https://gopherforge.app",
   "deployment": "gopherforge-web",
-  "jobId": "gopherforge-curriculum49-18ec213-20261028",
+  "jobId": "gopherforge-curriculum49-9813918-20261028",
   "state": "succeeded",
-  "imageDigest": "sha256:5e5fc58d5e5b461bfcb073d78bcb28a43ce50502a279a3b752afe570fb0897c9",
+  "imageDigest": "sha256:6be06da8e5219227766321210d82f799aedf1e7b0098bd30ed74840299b8338e",
   "publicApp": "1.2.0 (45)",
   "reviewApp": "1.3.0 (48)",
-  "expandedCurriculumCandidate": "1.3.1 (49)",
+  "expandedCurriculumCandidate": "1.3.1 (49) \u2014 Internal QA TestFlight",
   "teachingLessons": 220,
   "readings": 173,
   "courseUnits": 28,
@@ -104,7 +104,10 @@
         "status": 200,
         "verifiedVisibleText": [
           "220",
-          "132"
+          "132",
+          "1.3.1",
+          "49",
+          "Internal QA TestFlight"
         ]
       },
       {
@@ -112,7 +115,9 @@
         "status": 200,
         "verifiedVisibleText": [
           "1.3.1",
-          "48"
+          "1.3.0",
+          "48",
+          "Internal QA TestFlight"
         ]
       },
       {
@@ -141,5 +146,6 @@
     "systemdService": "enabled",
     "newsFeedRedelivered": true
   },
-  "rollbackImage": "localhost/gopherforge-web:rollback-curriculum49-18ec213"
+  "rollbackImage": "localhost/gopherforge-web:rollback-curriculum49-9813918",
+  "initialSourceCommit": "18ec213"
 }
