@@ -27,6 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/updates",
     "/guide",
+    "/guide/mcp",
+    "/playground",
     "/support",
     "/privacy",
     "/terms",
@@ -39,23 +41,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paths.map((path) => ({
       url: origin + path,
-      lastModified: ["/news/feed", "/learn", "/interview"].includes(path)
-        ? "2026-10-28"
-        : path === "/news"
-          ? news[0].modifiedAt
-          : path === "/guide"
-            ? guide.updated
-            : ["", "/updates", "/support"].includes(path)
-              ? releases.checkedOn
-              : ["/learn", "/interview"].includes(path)
-                ? curriculumUpdatedOn
-                : path.startsWith("/learn/units/")
-                  ? unitUpdatedOn(path.split("/").pop()!)
-                  : path.startsWith("/learn/")
-                    ? lessonUpdatedOn(path.slice(7))
-                    : path.startsWith("/interview/")
-                      ? interviewUpdatedOn(decodeURIComponent(path.slice(11)))
-                      : "2026-10-25",
+      lastModified: ["/guide/mcp", "/playground"].includes(path)
+        ? "2026-10-29"
+          : ["/learn", "/interview"].includes(path)
+            ? curriculumUpdatedOn
+            : path === "/news/feed" ? "2026-10-28"
+          : path === "/news"
+            ? news[0].modifiedAt
+            : path === "/guide"
+              ? guide.updated
+              : ["", "/updates", "/support"].includes(path)
+                ? releases.checkedOn
+                : ["/learn", "/interview"].includes(path)
+                  ? curriculumUpdatedOn
+                  : path.startsWith("/learn/units/")
+                    ? unitUpdatedOn(path.split("/").pop()!)
+                    : path.startsWith("/learn/")
+                      ? lessonUpdatedOn(path.slice(7))
+                      : path.startsWith("/interview/")
+                        ? interviewUpdatedOn(decodeURIComponent(path.slice(11)))
+                        : "2026-10-25",
       ...(path === "/guide"
         ? {
             images: [

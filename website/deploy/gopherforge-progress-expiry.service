@@ -1,0 +1,13 @@
+[Unit]
+Description=Expire GopherForge published progress snapshots
+
+[Service]
+Type=oneshot
+User=gopherforge-web
+Group=gopherforge-web
+ExecStart=/usr/bin/python3 /srv/apps/gopherforge/cleanup-progress-shares.py
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/apps/gopherforge/progress-shares
+PrivateTmp=yes

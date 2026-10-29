@@ -81,7 +81,7 @@ enum GoCourseCatalog {
             note: "Apply these patterns in your own native services with an explicit threat model. These lessons do not introduce GopherForge accounts or registration."),
         ReadingLessonCatalog.unit("ai", title: "Around Go: coding agents",
             summary: "Use Codex, Claude Code and Cursor with concrete contracts, repository context and meaningful checks.",
-            note: "These lessons teach workflows in your own development environment. GopherForge does not connect your projects to AI providers."),
+            note: "Ordinary projects stay local. The separate development Playground adds explicit opt-in MCP sharing; read the guide for local execution and provider boundaries."),
     ]
 
     static var lessons: [Lesson] {

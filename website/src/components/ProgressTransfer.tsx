@@ -1,5 +1,6 @@
 "use client";
 import { useId, useState } from "react";
+import { ProgressShare } from "./ProgressShare";
 import {
   exportTransfer,
   importTransfer,
@@ -82,79 +83,82 @@ export function ProgressTransfer({
     }
   }
   return (
-    <details className="progress-transfer">
-      <summary>Back up or move your local progress</summary>
-      <p>
-        Download your course marks, interview self-assessments and Continue
-        bookmarks. No account, upload or automatic app sync. Web marks are
-        self-reported, not compiler results.
-      </p>
-      <button className="button secondary" type="button" onClick={download}>
-        Download progress
-      </button>
-      <div className="progress-transfer-file">
-        <label htmlFor={inputID}>Preview a saved progress file</label>
-        <input
-          id={inputID}
-          type="file"
-          accept="application/json,.json"
-          onChange={(event) => {
-            const file = event.currentTarget.files?.[0];
-            event.currentTarget.value = "";
-            void choose(file);
-          }}
-        />
-      </div>
-      {preview && (
-        <section
-          className="progress-transfer-preview"
-          aria-label="Import preview"
-        >
-          <h3>Review before importing</h3>
-          <p>
-            Exported {preview.exportedAt.slice(0, 10)} · content revision{" "}
-            {preview.contentRevision}
-          </p>
-          <ul>
-            <li>
-              {preview.addedLessons} lesson marks to add;{" "}
-              {preview.matchingLessons} already present.
-            </li>
-            <li>{preview.addedAssessments} interview marks to add.</li>
-            <li>
-              {preview.keptAssessmentConflicts} conflicting interview answers:
-              this browser’s answers will stay.
-            </li>
-            <li>
-              Your current Continue bookmarks will stay; missing bookmarks can
-              be filled from this file.
-            </li>
-          </ul>
-          {preview.unknownIDs.length > 0 && (
+    <>
+      <ProgressShare revision={revision} />
+      <details className="progress-transfer">
+        <summary>Back up or move your local progress</summary>
+        <p>
+          Download your course marks, interview self-assessments and Continue
+          bookmarks. No account, upload or automatic app sync. Web marks are
+          self-reported, not compiler results.
+        </p>
+        <button className="button secondary" type="button" onClick={download}>
+          Download progress
+        </button>
+        <div className="progress-transfer-file">
+          <label htmlFor={inputID}>Preview a saved progress file</label>
+          <input
+            id={inputID}
+            type="file"
+            accept="application/json,.json"
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0];
+              event.currentTarget.value = "";
+              void choose(file);
+            }}
+          />
+        </div>
+        {preview && (
+          <section
+            className="progress-transfer-preview"
+            aria-label="Import preview"
+          >
+            <h3>Review before importing</h3>
             <p>
-              {preview.unknownIDs.length} unknown material IDs will be skipped:{" "}
-              {preview.unknownIDs.slice(0, 8).join(", ")}
-              {preview.unknownIDs.length > 8 ? "…" : ""}. Keep the original
-              backup file.
+              Exported {preview.exportedAt.slice(0, 10)} · content revision{" "}
+              {preview.contentRevision}
             </p>
-          )}
-          <div className="progress-transfer-actions">
-            <button className="button" type="button" onClick={apply}>
-              Merge into this browser
-            </button>
-            <button
-              className="button secondary"
-              type="button"
-              onClick={() => setPending(null)}
-            >
-              Cancel
-            </button>
-          </div>
-        </section>
-      )}
-      <p role="status" aria-live="polite">
-        {message}
-      </p>
-    </details>
+            <ul>
+              <li>
+                {preview.addedLessons} lesson marks to add;{" "}
+                {preview.matchingLessons} already present.
+              </li>
+              <li>{preview.addedAssessments} interview marks to add.</li>
+              <li>
+                {preview.keptAssessmentConflicts} conflicting interview answers:
+                this browser’s answers will stay.
+              </li>
+              <li>
+                Your current Continue bookmarks will stay; missing bookmarks can
+                be filled from this file.
+              </li>
+            </ul>
+            {preview.unknownIDs.length > 0 && (
+              <p>
+                {preview.unknownIDs.length} unknown material IDs will be
+                skipped: {preview.unknownIDs.slice(0, 8).join(", ")}
+                {preview.unknownIDs.length > 8 ? "…" : ""}. Keep the original
+                backup file.
+              </p>
+            )}
+            <div className="progress-transfer-actions">
+              <button className="button" type="button" onClick={apply}>
+                Merge into this browser
+              </button>
+              <button
+                className="button secondary"
+                type="button"
+                onClick={() => setPending(null)}
+              >
+                Cancel
+              </button>
+            </div>
+          </section>
+        )}
+        <p role="status" aria-live="polite">
+          {message}
+        </p>
+      </details>
+    </>
   );
 }

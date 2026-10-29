@@ -1,8 +1,8 @@
 {
   "source": "Native GoCourseCatalog + ReadingLessons.json",
-  "appVersion": "1.3.1 \u2014 Internal QA TestFlight",
+  "appVersion": "1.3.1 \u2014 Build 49 content plus development MCP learning notes",
   "publicAppVersion": "1.2.0",
-  "catalogSHA256": "5759341cbb83c1c08e6580daef85bef67d10813d3a32ca0d3be1a5e1c67e1f99",
+  "catalogSHA256": "ebb77d8cbee4f6ff48b9d8fc99e60ea299ceaf8180285fabbe8ba8894798560d",
   "units": 28,
   "lessons": 242,
   "readings": 173

@@ -121,6 +121,13 @@ struct ProjectsHomeView: View {
 
             Section {
                 NavigationLink {
+                    PlaygroundView()
+                } label: {
+                    Label("Playground · people & AI", systemImage: "person.2.wave.2")
+                }
+                .accessibilityIdentifier("projects.playground")
+
+                NavigationLink {
                     ExampleLibraryView()
                 } label: {
                     LabeledContent {

@@ -3563,3 +3563,21 @@ details p {
 .progress-transfer [role="status"]:empty {
   display: none;
 }
+
+/* Collaborative editor: source and device results remain visually distinct. */
+.playground-workbench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, .65fr); gap: 1.25rem; margin: 2rem 0 5rem; }
+.playground-controls { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; border: 1px solid var(--line); border-radius: 20px; padding: 1.4rem; }
+.playground-controls > p, .playground-controls details, .playground-controls aside { flex-basis: 100%; margin: .25rem 0; }
+.playground-controls label { display: grid; gap: .35rem; flex: 1; min-width: min(100%, 16rem); }
+.playground-controls input { width: 100%; min-width: 0; padding: .8rem; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; }
+.playground-editor, .playground-output { min-width: 0; padding: 1.2rem; border: 1px solid var(--line); border-radius: 20px; }
+.playground-files { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+.playground-files button { padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); cursor: pointer; }
+.playground-files button[aria-pressed="true"] { background: #007781; color: white; }
+.playground-editor label { display: block; font-family: var(--font-mono); margin-bottom: .5rem; }
+.playground-editor textarea { box-sizing: border-box; resize: vertical; width: 100%; min-height: 30rem; padding: 1rem; border: 1px solid #41626a; border-radius: 12px; background: #14262d; color: #eef9f6; font: 15px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; tab-size: 4; }
+.playground-output article { border-top: 1px solid var(--line); padding: 1rem 0; }
+.playground-output h2 { font-size: 1.5rem; }
+.playground-output h3 { font-size: 1.1rem; }
+.playground-output pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; }
+@media(max-width: 800px) { .playground-workbench { grid-template-columns: minmax(0, 1fr); } .playground-controls { padding: 1rem; } .playground-editor textarea { min-height: 22rem; } }

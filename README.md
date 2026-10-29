@@ -339,3 +339,13 @@ remain independent.
 ## Audit roadmap — development branch
 
 The [28 October audit plan](docs/audits/2026-10-28-plan.md) tracks source-safety fixes before further learning and Playground work. The current development branch adds coordinated library writes, preserved conflict copies, scoped dependency publication, reviewed file-specific idiom repairs, strict terminal commands and a [visible import inventory](docs/IMPORT_SNAPSHOTS.md). These are not claims that every roadmap package or physical provider gate has passed. Apple release identity remains in `docs/releases/`; source implementation is not the same as a shipped build.
+
+## MCP Playground and progress links — development preview
+
+The next development build adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in submitted native 1.3.1 (49).
+
+Claude, Codex and compatible clients can read a selected room, publish a revision-checked file set and request a run. Only a person pressing Run/Test in the native app invokes the bundled compiler on that device; other participants receive device-attributed Output. No relay compiler, shell, auto-run on edits or browser Go runner is provided. Standard-library multi-file examples are the initial native Playground contract; save an independent project to use ordinary dependency workflows. Native Stop/runtime limits remain unchanged.
+
+Rooms are guest capabilities (Owner/Edit/View), normally one hour, and volatile across relay restarts. Secrets live in fragments and explicit API authorization, not page query strings. The relay can read shared source and Output; this preview is not end-to-end encrypted. Concurrent edits use revision rejection and preserved drafts, not CRDT merging. Save/download an independent copy before expiry.
+
+A progress link is a separately published, read-only, revocable 90-day snapshot. Its HTML and JSON can be read by Grok, Claude, Codex or a teacher. It contains lesson IDs, app-reported compiler marks, interview self-assessments and Continue places; no code, drafts, attempts, names or device identifiers. It is not automatic sync, a backup or a skills certificate. Existing local progress and project identities are preserved.

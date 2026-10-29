@@ -97,7 +97,7 @@ final class ReadingLessonTests: XCTestCase {
             "developers.openai.com", "learn.chatgpt.com", "code.claude.com", "cursor.com",
             "www.postgresql.org", "microservices.io", "opentelemetry.io", "geth.ethereum.org",
             "ethereum.org", "eips.ethereum.org", "www.rfc-editor.org", "owasp.org",
-            "protobuf.dev", "kafka.apache.org", "raft.github.io", "www.microsoft.com", "www.cs.columbia.edu"]
+            "modelcontextprotocol.io", "protobuf.dev", "kafka.apache.org", "raft.github.io", "www.microsoft.com", "www.cs.columbia.edu"]
         for reading in ReadingLessonCatalog.all {
             XCTAssertGreaterThan(reading.introduction.count, 100, reading.id)
             XCTAssertGreaterThanOrEqual(reading.sections.count, 3, reading.id)

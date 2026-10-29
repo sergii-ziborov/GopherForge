@@ -56,6 +56,9 @@ struct LearnHomeView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal, 18).padding(.vertical, 8)
             .accessibilityIdentifier("learn.area")
+            NavigationLink { LearningShareView() } label: {
+                Label("Share progress", systemImage: "square.and.arrow.up").font(.caption)
+            }.padding(.bottom, 6).accessibilityIdentifier("learn.shareProgress")
             if learningTab == 1 { InterviewPrepView() } else { course }
         }
         .toolbar(.hidden, for: .navigationBar)

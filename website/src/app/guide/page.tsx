@@ -81,7 +81,7 @@ export default function AppGuide() {
         />
         <div>
           <p className="eyebrow">
-            THE APP, EXPLAINED · UPDATED 28 OCTOBER 2026
+            THE APP, EXPLAINED · UPDATED 29 OCTOBER 2026
           </p>
           <h1>
             Your Go workbench.

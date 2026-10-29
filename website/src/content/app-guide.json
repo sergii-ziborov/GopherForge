@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28",
+  "updated": "2026-10-29",
   "sections": [
     {
       "id": "start",
@@ -90,6 +90,11 @@
       "id": "audit-beta",
       "title": "Source safety, lesson return and import details in build 48",
       "body": "**The 1.3.1 (49) Internal QA TestFlight build** includes source-safety changes, restored lesson drafts and direct Practice access. This same build is waiting for App Review; the public App Store still distributes 1.2.0. [Version history](/updates) distinguishes the public and beta states.\n\nIn this candidate, opening an existing library in Files opens that library instead of replacing its contents. Switching libraries waits for the open source to save. Conflicting edits are preserved as separately named projects. Test with disposable libraries on your actual Files/iCloud provider, keep independent exports and compare both copies before deleting anything. The local Apple Files-provider flow was checked on a physical iPhone: two separate libraries, edits, switching and process relaunch retained their own source. Remote iCloud synchronization and arbitrary third-party providers remain separate verification tasks. An unreadable saved bookmark or a missing known library now reports a failure instead of silently substituting the on-device library.\n\nGitHub imports resolve a requested branch or tag to a fixed commit before downloading. UTF-8 fixtures, vendor source, CI and React/TypeScript files are retained within limits. **Project → Import details** records the selected scope, retained paths, omissions and archive identity. This is a bounded text snapshot, not a complete worktree: binary assets and Git history are not reconstructed by export. Old unpinned imports do not silently receive files from today’s moving branch.\n\nThe candidate rejects unsupported terminal flags and targets rather than running a different command. Idiom Apply reviews the exact target file and refuses stale source; transformations that cannot be demonstrated safe remain advice. Settings states that memory and captured output are bounded, while a universal native Stop and an aggregate guest file-write quota are not guaranteed."
+    },
+    {
+      "id": "mcp-playground",
+      "title": "MCP Playground and sharing learning progress",
+      "body": "**Development preview:** the website now includes a [shared Playground](/playground) and an [MCP setup guide](/guide/mcp). The native Playground is for the next development build; App Store 1.2.0 and submitted 1.3.1 (49) do not include it.\n\nClaude, Codex and compatible remote MCP clients can read a room, publish revision-checked edits and request a run. A person must press Run/Test in GopherForge on their own device. That device executes locally; everyone else receives Output labelled with the source revision and reporting device. No relay compiler, shell or auto-run is provided. Browser participants edit and read results; browser Go execution is not included.\n\nOn Learn or Interview, publish a read-only 90-day progress snapshot for a teacher or assistant such as Grok. The page also links to JSON. It includes marks and Continue places, excludes source and drafts, does not update automatically and can be revoked from the publishing device. This is explicit sharing, separate from local persistence and backup.\n\nRoom links expire and grant their role to anyone who holds them. The relay can read shared source and Output. Keep a separate native project copy or download the source; a temporary room is not a backup."
     }
   ],
   "faq": [

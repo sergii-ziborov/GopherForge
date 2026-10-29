@@ -24,6 +24,8 @@ struct ContentView: View {
     @State private var shareStatus: String?
     @State private var isImportingShare = false
     @State private var importedShareKeys: Set<String> = []
+    @State private var playgroundURL: URL?
+    @State private var showsPlayground = false
 
     @ViewBuilder var body: some View {
         if #available(iOS 27.1, *) {
@@ -74,7 +76,16 @@ struct ContentView: View {
                 }
             }
             .onOpenURL { url in
-                Task { await consumeSharedImports(opened: url) }
+                if PlaygroundLink.capability(url) != nil {
+                    playgroundURL = url; showsPlayground = !isLocked
+                } else { Task { await consumeSharedImports(opened: url) } }
+            }
+            .sheet(isPresented: $showsPlayground, onDismiss: { playgroundURL = nil }) {
+                if isLocked { AppLockCover(unlock: unlock) } else { NavigationStack {
+                    PlaygroundView(incomingURL: playgroundURL)
+                        .environment(workspace)
+                        .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsPlayground = false } } }
+                } }
             }
             .sheet(isPresented: Binding(
                 get: { workspace.showsDownloadSheet },
@@ -155,10 +166,12 @@ struct ContentView: View {
     private func unlock() async {
         guard requireFaceID else {
             isLocked = false
+            if playgroundURL != nil { showsPlayground = true }
             return
         }
         if await AppLock.authenticate() {
             isLocked = false
+            if playgroundURL != nil { showsPlayground = true }
         }
     }
 

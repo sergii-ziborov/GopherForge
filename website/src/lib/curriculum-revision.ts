@@ -1,6 +1,7 @@
 import expansion from "@/content/interview-expansion.json";
 // Dates describe content edits, not the date the page was requested.
-export const curriculumUpdatedOn = "2026-10-28";
+export const curriculumUpdatedOn = "2026-10-29";
+const expansionUpdatedOn = "2026-10-28";
 const earlierCurriculumOn = "2026-10-27";
 const auditChangedLessons = new Set([
   "architecture.bff",
@@ -84,10 +85,11 @@ const changedLessons = new Set([
   "ai.trust-boundaries",
 ]);
 export function lessonUpdatedOn(id: string) {
+  if (id.startsWith("ai.")) return "2026-10-29";
   return id === "collections.make-and-new" ||
     expansion.lessons.includes(id) ||
     auditChangedLessons.has(id)
-    ? curriculumUpdatedOn
+    ? expansionUpdatedOn
     : changedLessons.has(id)
       ? earlierCurriculumOn
       : ["stdlib.borrowed-buffers", "runtime.pool-ownership"].includes(id)
@@ -110,6 +112,7 @@ export const changedInterview = new Set([
 ]);
 
 export function unitUpdatedOn(id: string) {
+  if (id === "ai") return "2026-10-29";
   return [
     "system-design",
     "clean-code-production",
@@ -119,13 +122,14 @@ export function unitUpdatedOn(id: string) {
     "concurrency",
     "stdlib",
   ].includes(id) || auditChangedUnits.has(id)
-    ? curriculumUpdatedOn
+    ? expansionUpdatedOn
     : changedUnits.has(id)
       ? earlierCurriculumOn
       : "2026-10-23";
 }
 
 export function interviewUpdatedOn(id: string) {
+  if (["ai.workflow", "ai.security"].includes(id)) return "2026-10-29";
   return id === "language.generics" || expansion.questions.includes(id)
     ? expansion.reviewedOn
     : changedInterview.has(id)

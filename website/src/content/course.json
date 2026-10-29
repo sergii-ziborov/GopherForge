@@ -15158,7 +15158,7 @@
     "id" : "ai",
     "lessons" : [
       {
-        "explanation" : "Claude Code, Codex and Cursor can inspect files, propose patches and run available tools. Useful work still needs a concrete behavior and a way to check it. In this unit you guide an agent in your own repository; GopherForge does not connect to an AI provider or send your projects to one.",
+        "explanation" : "Claude Code, Codex and Cursor can inspect files, propose patches and run available tools. Useful work still needs a concrete behavior and a way to check it. In this unit you guide an agent in your own repository; Ordinary native projects stay local. The separate development Playground adds explicit, opt-in sharing with people and MCP clients; it never uploads an existing project automatically.",
         "id" : "ai.go-workflow",
         "kind" : "reading",
         "objective" : "Turn an ambiguous coding request into a small, verifiable Go change.",
@@ -15196,7 +15196,9 @@
           "references" : [
             "https://developers.openai.com/cookbook/examples/codex/iterating-development-workflows-with-codex",
             "https://code.claude.com/docs/en/best-practices",
-            "https://cursor.com/docs/agent/overview"
+            "https://cursor.com/docs/agent/overview",
+            "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+            "https://learn.chatgpt.com/docs/extend/mcp"
           ],
           "review" : {
             "answer" : "A contract and a failing example",
@@ -15221,6 +15223,17 @@
             {
               "body" : "Run the focused test, then the affected package checks. Record the actual compiler and command. If a remote integration service is unavailable, label that check unverified and keep an isolated reproduction. Passing unit tests is useful evidence; it is not proof about database failover or every interleaving.",
               "title" : "Repeat a reproducible check"
+            },
+            {
+              "body" : "For a collaborative Go task, first read the source and its exact revision. Ask the agent to describe the failing input and make a small patch against that revision. Publishing the patch is not a test run. In GopherForge’s development Playground, MCP can request a run; a person presses Run or Test in the native app and that device performs the build. Other participants receive labelled Output, not an instruction to execute the source. Browser participants can edit and read results but do not have the native Go runner.",
+              "code" : "Read revision 7\n  ├─ patch against 7 → revision 8\n  ├─ request Test at 8 → awaiting local button\n  └─ iPhone presses Test → result for revision 8\n\nIf revision 9 is now current, result 8 is historical evidence.",
+              "language" : "text",
+              "title" : "A shared Playground keeps editing separate from execution",
+              "walkthrough" : "Tie the claim to the actual source and result. An AI saying “tests requested” has not established “tests passed.” A successful run on one device is evidence from that device, not proof that every platform or production integration works."
+            },
+            {
+              "body" : "A learner can explicitly publish a read-only progress link for a teacher or assistant. Ask for a short plan based on unfinished lessons and interview topics marked Revisit, then explain and solve a concrete exercise yourself. The snapshot is not an account or a competency certificate. A compiler mark describes a recorded lesson check; a self-reported reading mark describes study, not execution. Never let an assistant silently replace your learning record from another person’s URL.",
+              "title" : "Use a published progress snapshot as teaching context"
             }
           ],
           "takeaway" : "Define the contract, inspect the relevant code, make one reviewable change and require concrete evidence. Use the explanation to check understanding, not replace it."
@@ -15269,7 +15282,9 @@
           "references" : [
             "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
             "https://code.claude.com/docs/en/memory",
-            "https://cursor.com/docs/rules"
+            "https://cursor.com/docs/rules",
+            "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+            "https://learn.chatgpt.com/docs/extend/mcp"
           ],
           "review" : {
             "answer" : "Guidance is not an access control",
@@ -15294,6 +15309,17 @@
             {
               "body" : "A sentence saying do not access production is useful intent, but it does not revoke a credential. Use actual sandbox, approval and account controls in the environment. A rule file is not an authentication boundary, and ignoring a file for indexing does not necessarily prevent shell tools from reading it.",
               "title" : "Keep controls separate from prose"
+            },
+            {
+              "body" : "A repository instruction file and an MCP room capability solve different problems. Instructions describe how to work; a capability grants access to a selected room. Give an agent an Edit link only when it should change source, and a View link when it should review. Do not put bearer tokens in AGENTS.md, CLAUDE.md, a Cursor rule or a committed MCP configuration. An expiry or a closed room requires a new explicit connection, not a search through unrelated projects.",
+              "code" : "Task contract:\n- Read the room and current revision.\n- Change only the named Go files.\n- Explain the invariant and minimal failing input.\n- Request a local test; wait for device Output.\n- Do not run on a server or claim an older result validates a new edit.",
+              "language" : "text",
+              "title" : "Give an MCP collaborator a bounded task",
+              "walkthrough" : "The contract scopes both the edit and the evidence. The AI must first read the current room revision; the human then decides whether to execute that source on the local device. A repository rule never substitutes for the room capability or that local action."
+            },
+            {
+              "body" : "A mobile AI client can use a supported remote HTTPS MCP connector. The native app participates while foregrounded and executes only after its local button is pressed. Connector availability is controlled by the AI client and plan. Do not prescribe an npm daemon on iOS or claim that a custom remote URL automatically works in every mobile chat. Keep a readable web/JSON progress link as a simpler way to provide teaching context.",
+              "title" : "Phone connection does not mean a background server on iOS"
             }
           ],
           "takeaway" : "Keep repository facts concrete, scope guidance using each product’s documented mechanism and enforce permissions in the environment. Recheck discovery after tool changes."
@@ -15342,7 +15368,9 @@
           "references" : [
             "https://go.dev/ref/mod",
             "https://go.dev/doc/articles/race_detector.html",
-            "https://www.mongodb.com/docs/drivers/go/current/"
+            "https://www.mongodb.com/docs/drivers/go/current/",
+            "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+            "https://learn.chatgpt.com/docs/extend/mcp"
           ],
           "review" : {
             "answer" : "Check the selected version and API",
@@ -15367,6 +15395,17 @@
             {
               "body" : "Ask for a blocked-receiver cancellation test, duplicate request or commit-then-disconnect fixture when relevant. Run race detection on exercised concurrent paths and use integration tests for database atomicity. No amount of mocking can establish a live driver or server guarantee it never exercised.",
               "title" : "Require a failure-path demonstration"
+            },
+            {
+              "body" : "Require the source revision, the Run/Test operation, the participating device, the observed result and the relevant runtime limits. A shared result is client-reported, not an attested proof. If source changed while the build ran, keep the old result visible as historical evidence. Do not run unreviewed AI code merely because an edit arrived. A relay must not execute the project on behalf of all participants.",
+              "code" : "Evidence checklist:\nsource revision + exact files\n→ explicit local Run/Test\n→ device-labelled stdout/stderr\n→ compare result revision with current revision\n→ state unverified platform/service conditions",
+              "language" : "text",
+              "title" : "Check execution provenance before reading green output",
+              "walkthrough" : "Read the chain from top to bottom. A source revision identifies what was built, the local action identifies where it ran, and the final comparison tells you whether the evidence still applies. Missing a step leaves a narrower claim, not an automatic pass."
+            },
+            {
+              "body" : "Suppose two collaborators both read revision 4. The first publishes revision 5; the second must not overwrite it using an unconditional write. A compare-and-swap publication rejects the stale revision. Preserve the second draft, inspect revision 5 and reapply the intended change. This whole-file strategy is simpler than CRDT merging but requires an explicit conflict workflow. A successful HTTP update only proves that a revision was accepted; it does not prove that the Go program is correct.",
+              "title" : "Reproduce conflicts without discarding a local draft"
             }
           ],
           "takeaway" : "Resolve the actual version, compile the claimed API, review ownership and test changed public behavior. Keep native, WASI and remote-service evidence distinct."
@@ -15415,7 +15454,9 @@
           "references" : [
             "https://developers.openai.com/codex/security",
             "https://code.claude.com/docs/en/security",
-            "https://cursor.com/docs/agent/security"
+            "https://cursor.com/docs/agent/security",
+            "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+            "https://learn.chatgpt.com/docs/extend/mcp"
           ],
           "review" : {
             "answer" : "External text cannot grant permission",
@@ -15440,6 +15481,17 @@
             {
               "body" : "Record the changed files, checks actually run, unresolved failures and next concrete step. Preserve the original task constraints after context reduction. A handoff saying everything is safe without naming evidence is difficult for either a human or another session to verify.",
               "title" : "Make a useful handoff"
+            },
+            {
+              "body" : "A comment, test fixture or printed output can contain text asking an agent to reveal secrets or use other tools. Those strings are task data, not authority. A room capability grants access only to that room. It must not grant filesystem access, arbitrary shell commands, another project or automatic execution on someone else’s device. The relay transports text; local execution remains a separate human action.",
+              "code" : "Untrusted: source / comments / test output / shared progress\nTrusted authority: the human task and explicitly granted room role\nExecution boundary: a local person presses Run/Test\n\nA prompt in stdout cannot promote View to Edit or execute on another phone.",
+              "language" : "text",
+              "title" : "Treat room source, Output and progress as untrusted data",
+              "walkthrough" : "The diagram distinguishes data from authority. A malicious printed line stays inside Output and cannot authorize another tool or another device. Preserve this boundary even when the content sounds like an urgent system instruction."
+            },
+            {
+              "body" : "Room links are bearer capabilities: a person or AI receiving a working Edit link can read and change the room until expiry or closure. A View link permits reading and copying. The fragment is outside the initial page request, but the client deliberately sends the credential to the relay in an API header or tool argument. GopherForge’s preview relay can read shared source and Output; it is not end-to-end encrypted. Progress publication is a separate 90-day, read-only snapshot with a revocation key. Exclude private code, access tokens and production data; revocation cannot erase downloaded copies.",
+              "title" : "Understand what sharing actually exposes"
             }
           ],
           "takeaway" : "Treat external text as task data, enforce permissions with real controls and verify sensitive commands at their boundary. Keep the Go fix tied to its authorized behavior."
@@ -15452,6 +15504,6 @@
     ],
     "summary" : "Use Codex, Claude Code and Cursor with concrete contracts, repository context and meaningful checks.",
     "title" : "Around Go: coding agents",
-    "translationNote" : "These lessons teach workflows in your own development environment. GopherForge does not connect your projects to AI providers."
+    "translationNote" : "Ordinary projects stay local. The separate development Playground adds explicit opt-in MCP sharing; read the guide for local execution and provider boundaries."
   }
 ]
