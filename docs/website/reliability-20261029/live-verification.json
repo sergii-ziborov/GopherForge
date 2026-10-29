@@ -1,0 +1,24 @@
+{
+  "base": "https://gopherforge.app",
+  "articles": [
+    {
+      "edition": "2026-10-05",
+      "slug": "go-concurrency-invariants-mutex-atomic-snapshots",
+      "proseWords": 2310,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    },
+    {
+      "edition": "2026-10-11",
+      "slug": "go-retries-idempotency-keys-unknown-outcomes",
+      "proseWords": 2404,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    }
+  ],
+  "internalLinksChecked": 19,
+  "generatedImages": 6,
+  "sitemapURLs": 449,
+  "RSSItems": 28,
+  "downloadSourceHashes": "passed",
+  "health": "passed",
+  "emptyEditions": "2026-10-06 through 2026-10-10"
+}

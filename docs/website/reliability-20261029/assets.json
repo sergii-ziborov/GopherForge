@@ -11,7 +11,8 @@
       "height": 1024,
       "bytes": 154406,
       "sha256": "89b0e2664fd8528adc0ad9547a6051c6cd63b46ecbd48f559ddc22dded5e06ba",
-      "alt": "Two separately protected updates converge into one output, illustrating a lost update between synchronized operations."
+      "alt": "Two separately protected updates converge into one output, illustrating a lost update between synchronized operations.",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/invariants-hero.webp"
     },
     {
       "id": "invariants-detail",
@@ -23,7 +24,8 @@
       "height": 1024,
       "bytes": 154264,
       "sha256": "a8c41d589e570771ecb0a2086ca7c1ba3274193ffb3c2f6d2004677f4763ccfe",
-      "alt": "Readers retain a completed configuration while a writer assembles a separate version before atomic publication."
+      "alt": "Readers retain a completed configuration while a writer assembles a separate version before atomic publication.",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/invariants-detail.webp"
     },
     {
       "id": "invariants-infographic",
@@ -35,7 +37,8 @@
       "height": 1024,
       "bytes": 111516,
       "sha256": "d45e98d7cad0e8749df53b797cf667f6ad6584cb405cb3b030948949ec07c565",
-      "alt": "Define, protect, publish and test: identify an invariant, protect its complete transition, publish owned state and test competing operations."
+      "alt": "Define, protect, publish and test: identify an invariant, protect its complete transition, publish owned state and test competing operations.",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/invariants-infographic.webp"
     },
     {
       "id": "retrykey-hero",
@@ -47,7 +50,8 @@
       "height": 1024,
       "bytes": 157328,
       "sha256": "f9b77fbae8770d91cb05a41b45d29844d891324d6b36ae0b26e5bcf51c9365d1",
-      "alt": "A completed operation loses its reply; a repeated ticket matches a stored record and receives the original receipt."
+      "alt": "A completed operation loses its reply; a repeated ticket matches a stored record and receives the original receipt.",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/retrykey-hero.webp"
     },
     {
       "id": "retrykey-detail",
@@ -59,7 +63,8 @@
       "height": 1024,
       "bytes": 142208,
       "sha256": "7087a99faf41e143d1240f718dcffff88d61153a4e65b1f4fd1867a3f2ce2081",
-      "alt": "An effect and its receipt share one commit boundary while the reply channel and an independent external service remain outside it."
+      "alt": "An effect and its receipt share one commit boundary while the reply channel and an independent external service remain outside it.",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/retrykey-detail.webp"
     },
     {
       "id": "retrykey-infographic",
@@ -71,7 +76,8 @@
       "height": 1024,
       "bytes": 95216,
       "sha256": "6431e5986a87cb40aa2d0261ab221a8b152d5c4941479ccc6cc30c5a30bad52d",
-      "alt": "Identify, commit, replay and reconcile: preserve operation identity, record the effect and result, replay matching requests and investigate uncertain outcomes."
+      "alt": "Identify, commit, replay and reconcile: preserve operation identity, record the effect and result, replay matching requests and investigate uncertain outcomes.",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/retrykey-infographic.webp"
     }
   ]
 }
