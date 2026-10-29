@@ -1,0 +1,48 @@
+{
+  "checkedOn": "2026-10-29",
+  "source": "f2a8d0c",
+  "nativeGo": {
+    "toolchain": "go1.27.3 darwin/arm64",
+    "host": "Apple M4",
+    "raceCommand": "GOTOOLCHAIN=go1.27.3 go test -race -count=10 ./...",
+    "result": "passed",
+    "negativeControls": 3,
+    "configurationRuns": 27,
+    "benchmarkRunsPerImplementation": 5,
+    "scope": "Original local native-Go lab. Not a production benchmark, RSS cap test or app-sandbox certification."
+  },
+  "website": {
+    "tests": 37,
+    "testsPassed": 37,
+    "productionBuild": "passed",
+    "responsiveWidths": [390, 1280],
+    "horizontalPageOverflow": false,
+    "tables": "keyboard-focusable horizontally scrollable region; identifiers no longer split between letters",
+    "code": "Go syntax highlighting visually checked on mobile",
+    "liveArticles": 3,
+    "liveGeneratedImages": 9,
+    "downloadSourceHashes": "passed",
+    "internalLinks": 15,
+    "sitemapURLs": 445,
+    "RSSItems": 24
+  },
+  "deployment": {
+    "image": "sha256:615aa384bdab942b6a27e17c1aa0a63e72d06d794d9376b1a8b05ae0168140a0",
+    "running": true,
+    "restartPolicy": "unless-stopped",
+    "persistentProgressMount": "preserved",
+    "disposableSnapshot": "published before replacement, read after replacement, revoked, verified 404 and own test file removed",
+    "externalFeed": "delivered"
+  },
+  "googleRichResults": {
+    "url": "https://search.google.com/test/rich-results/result?id=MBJOHvDElyIFwWVKWuk68g",
+    "testedPage": "https://gopherforge.app/news/go-garbage-collector-gogc-gomemlimit-lab",
+    "crawl": "successful on 29 October 2026",
+    "validArticleItems": 1,
+    "validBreadcrumbItems": 1,
+    "scope": "Structured-data eligibility only; this is not an indexing or ranking guarantee."
+  },
+  "editionDates": ["2026-10-01", "2026-10-03", "2026-10-13"],
+  "actualPublishedAt": "2026-10-29",
+  "emptyEditionsRemain": "4–12 October 2026"
+}
