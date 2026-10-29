@@ -2956,6 +2956,36 @@ details p {
 .news-callout h2 {
   font-size: 2rem;
 }
+.news-archive-progress {
+  text-align: center;
+  padding: 40px 0 20px;
+}
+.news-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.news-pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-decoration: none;
+}
+.news-pagination [aria-current="page"] {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: white;
+}
+.news-card h2 a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 5px;
+}
 .news-callout p {
   max-width: 720px;
   margin-bottom: 0;

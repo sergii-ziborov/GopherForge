@@ -5,6 +5,7 @@ import { lessons, units } from "@/lib/course";
 import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
 import { news, newsURL, newsImage, newsImageSuffixes } from "@/lib/news";
+import { newsPageCount, newsPageURL } from "@/lib/news-pagination";
 import {
   curriculumUpdatedOn,
   lessonUpdatedOn,
@@ -34,6 +35,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/terms",
     "/news",
     "/news/feed",
+    ...Array.from({ length: newsPageCount(news.length) - 1 }, (_, i) =>
+      newsPageURL(i + 2),
+    ),
     ...interview.questions.map((q) => interviewURL(q.id)),
     ...lessons.map((l) => `/learn/${l.id}`),
     ...units.map((u) => `/learn/units/${u.id}`),
@@ -47,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           ? curriculumUpdatedOn
           : path === "/news/feed"
             ? "2026-10-28"
-            : path === "/news"
+            : path === "/news" || path.startsWith("/news/page/")
               ? news[0].modifiedAt
               : path === "/guide"
                 ? guide.updated

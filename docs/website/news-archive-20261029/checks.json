@@ -1,0 +1,43 @@
+{
+  "checkedOn": "2026-10-29",
+  "cause": "16 of 33 archive cards rewrote valid original URLs into missing -small.webp paths",
+  "fix": "Use declared original-image URLs; no guessed thumbnail names",
+  "imageAudit": "All 101 original article images decode locally and match public HTTP responses by SHA256",
+  "webTests": 45,
+  "productionBuild": "passed",
+  "archive": {
+    "pageSize": 9,
+    "staticPages": 4,
+    "SSRCounts": [
+      9,
+      9,
+      9,
+      6
+    ],
+    "uniqueArticles": 33,
+    "uniqueCardImages": 33,
+    "automaticScrollCounts": [
+      9,
+      18,
+      27,
+      33
+    ],
+    "duplicates": 0,
+    "numberedNavigation": "Page 2 opens at scroll position 0 with 9 cards",
+    "noJavaScript": "Server HTML supplies card links and images on all 4 pages",
+    "keyboard": "Focus moves to the first appended article only for manual Show more activation"
+  },
+  "responsive": {
+    "viewportWidth": 390,
+    "documentWidth": 390,
+    "lastPageCards": 6,
+    "brokenLoadedImages": 0
+  },
+  "SEO": {
+    "selfCanonicals": true,
+    "CollectionPagePositions": "passed",
+    "sitemapURLs": 457,
+    "RSSItems": 33
+  },
+  "nativeApp": "No native app binary or submission changed"
+}
