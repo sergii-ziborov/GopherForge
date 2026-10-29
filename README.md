@@ -19,6 +19,7 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 29 October 2026 | Changes |
 | --- | --- | --- |
+| **1.3.2 (51)** | Internal QA TestFlight · Development preview | Guest MCP Playground, local device execution, shared Output, progress links and expanded agent guidance. |
 | **1.3.1 (49)** | Available on the App Store | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
 | **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
 | **1.2.0 (45)** | Previous App Store release | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
@@ -342,10 +343,14 @@ The [28 October audit plan](docs/audits/2026-10-28-plan.md) tracks source-safety
 
 ## MCP Playground and progress links — development preview
 
-Development 1.3.2 (51) adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in public native 1.3.1 (49).
+**1.3.2 (51), available in Internal QA TestFlight,** adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in public native 1.3.1 (49).
 
 Claude, Codex and compatible clients can read a selected room, publish a revision-checked file set and request a run. Only a person pressing Run/Test in the native app invokes the bundled compiler on that device; other participants receive device-attributed Output. No relay compiler, shell, auto-run on edits or browser Go runner is provided. Standard-library multi-file examples are the initial native Playground contract; save an independent project to use ordinary dependency workflows. Native Stop/runtime limits remain unchanged.
 
 Rooms are guest capabilities (Owner/Edit/View), normally one hour, and volatile across relay restarts. Secrets live in fragments and explicit API authorization, not page query strings. The relay can read shared source and Output; this preview is not end-to-end encrypted. Concurrent edits use revision rejection and preserved drafts, not CRDT merging. Save/download an independent copy before expiry.
 
 A progress link is a separately published, read-only, revocable 90-day snapshot. Its HTML and JSON can be read by Grok, Claude, Codex or a teacher. It contains lesson IDs, app-reported compiler marks, interview self-assessments and Continue places; no code, drafts, attempts, names or device identifiers. It is not automatic sync, a backup or a skills certificate. Existing local progress and project identities are preserved.
+
+[Build 51 TestFlight receipt](docs/releases/1.3.2-build51-beta.json) · [Public 1.3.1 release](docs/releases/1.3.1-build49-release.json) · [MCP verification and boundaries](docs/audits/2026-10-29-playground-mcp.md). Intermediate build 50 was expired before final delivery; use build 51.
+
+<img src="docs/screenshots/mcp51/playground-local-run.png" width="300" alt="Native GopherForge Playground running Go locally with syntax highlighting and local Output">

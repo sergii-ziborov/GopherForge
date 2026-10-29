@@ -46,9 +46,9 @@ export default function Home() {
             Regional prices vary.
           </p>
           <p className="small-note">
-            TestFlight {releases.beta.version} ({releases.beta.build}): expanded
-            Go lessons, offline React and source debugging.{" "}
-            <Link href="/guide#offline-react">See what it does →</Link>
+            TestFlight {releases.beta.version} ({releases.beta.build}): MCP Playground
+            and shareable learning-progress links.{" "}
+            <Link href="/guide/mcp">Setup and workflows →</Link>
           </p>
         </div>
         <div className="hero-workbench">

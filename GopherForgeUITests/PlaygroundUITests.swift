@@ -12,8 +12,15 @@ import XCTest
         let run = app.buttons["playground.run"]
         if !run.isHittable { app.swipeUp() }
         XCTAssertTrue(run.waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts["playground.localOutput"].exists)
         run.tap()
+        // A previous local result is intentionally restored after relaunch.
+        // Require this button press to finish a new run, rather than accepting
+        // the old Output's mere presence as evidence of execution.
+        let finished = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label CONTAINS %@", "Local run finished"),
+            object: app.staticTexts["playground.status"]
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 45), .completed)
         let output = app.staticTexts["playground.localOutput"]
         if !output.waitForExistence(timeout: 45) { app.swipeUp() }
         XCTAssertTrue(output.waitForExistence(timeout: 10))

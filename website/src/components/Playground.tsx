@@ -64,6 +64,7 @@ export function Playground() {
     return result as Room;
   }
   function accept(value: Room, replace = false) {
+    const changed = current.current?.id !== value.id || current.current?.revision !== value.revision;
     current.current = value;
     setRoom(value);
     setConnected(true);
@@ -73,6 +74,7 @@ export function Playground() {
       setFiles(value.files);
       dirty.current = false;
       setConflict(false);
+      if (changed || replace) backup(value.files, value.id);
     }
   }
   function backup(value: Record<string, string>, roomID?: string) {
@@ -419,7 +421,7 @@ export function Playground() {
                 ),
             )}
             <p>
-              Native app support is in development build 1.3.2 (51). App Store
+              Native app support is in Internal QA TestFlight 1.3.2 (51). App Store
               1.3.1 (49) does not contain this Playground.
             </p>
           </details>

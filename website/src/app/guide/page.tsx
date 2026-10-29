@@ -93,7 +93,7 @@ export default function AppGuide() {
             with GopherForge on iPhone, iPad and the web.
           </p>
           <p className="small-note">
-            App Store: {releases.public.version}. App Review:{" "}
+            App Store: {releases.public.version}. Next native:{" "}
             {releases.next.version} · {releases.next.status}. Beta:{" "}
             {releases.beta.version} ({releases.beta.build}) ·{" "}
             {releases.beta.status}.{" "}
