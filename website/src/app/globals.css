@@ -3514,7 +3514,8 @@ details p {
   .site-header nav {
     width: 100%;
     gap: 12px;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
   .site-header nav a {
     white-space: nowrap;

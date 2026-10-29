@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-29T08:11:45.896682+00:00",
+  "checkedAt": "2026-10-29T08:27:26.752118+00:00",
   "version": "1.3.2",
   "build": "51",
   "screenshots": 55,
@@ -17,7 +17,8 @@
       ],
       "md5": "54db49af2562fdf692d8f34573025dc5",
       "sha256": "a62516ac07855f8ae63ae0e380254370c1d9116cb4ce0e428272f0bcf11c6ed8",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.9",
@@ -31,7 +32,8 @@
       ],
       "md5": "61cbf443f3266797f8f4ff971607c54e",
       "sha256": "456d4290ba8f49754539f6c1ff1825ad716cdfd9f0b87d18eee21ecdb495575d",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.5",
@@ -45,7 +47,8 @@
       ],
       "md5": "ce9900f03cbf9f50cd61901ebee6f593",
       "sha256": "5697d12f68b938180accfb332c04ac6fe373fa59c0f677212347769a0123e9e1",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.5",
@@ -59,7 +62,8 @@
       ],
       "md5": "c987407a5e65a8746ec489effb75aee8",
       "sha256": "9510f3a3e6f6e5fb60f0fe05154a52c076cd18102c5ed3bea4a65438e6865a8c",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.3",
@@ -73,7 +77,8 @@
       ],
       "md5": "db98c62e8a0c8a792f9272e7941b3854",
       "sha256": "7690127206f2ea6637e8ccec0e0eb0eaa1ee04e16c92e9f630c4af741c9df019",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.3",
@@ -87,7 +92,8 @@
       ],
       "md5": "da3f38c6db9bb369330c6e5910fac9c3",
       "sha256": "f99c79a7d40a1706f731bb934fccf5cbf6dba4b38e9645f63bd154b390cf9491",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.1",
@@ -101,7 +107,8 @@
       ],
       "md5": "ecf9ebc7d97ce09708645b7151434571",
       "sha256": "95e166963b5c2c2d4fe7b902b6d733bee55d5b1f78ce19a889dac612538cacc7",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-6.1",
@@ -115,7 +122,8 @@
       ],
       "md5": "a7a248dcc8c214ac9e5c529cad0c902f",
       "sha256": "fc4a2f9f515b37848bdae6e6cb9ea9afb1133bc20c9f9fa1d5428594a8605790",
-      "state": "UPLOAD_COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "ipad-13",
@@ -129,7 +137,8 @@
       ],
       "md5": "1128469571b0c670069c134c51cef8c9",
       "sha256": "4d09ee8de1347a975e81d5ae183a5db2065128e020e4673ee684f3d2e43fb07d",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "ipad-13",
@@ -143,7 +152,8 @@
       ],
       "md5": "0685619751205e03f9b90059b5102d69",
       "sha256": "3389925d25f2d393e4a22994472fcddbb167cde7426e01bfa3dd04d44e4acaa1",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-duo",
@@ -157,7 +167,8 @@
       ],
       "md5": "6993807a852d00be7d2f5726db7e3417",
       "sha256": "4ae7575d117d08013484aa9065597464d55f868e1303f438218423435de05b20",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     },
     {
       "profile": "iphone-duo",
@@ -171,9 +182,12 @@
       ],
       "md5": "e1783d3d6af0727f427be15599494708",
       "sha256": "c2c73856641714b1e67dc6d3d090d3253f8a014ce038302ba7d966c828b0b449",
-      "state": "COMPLETE"
+      "state": "COMPLETE",
+      "imageAssetPresent": true
     }
   ],
   "retainedScreenshots": 43,
-  "headerAndSearchActive": true
+  "headerAndSearchActive": true,
+  "all55Complete": true,
+  "deliveryCheck": "docs/releases/1.3.2-build51-delivery.json"
 }

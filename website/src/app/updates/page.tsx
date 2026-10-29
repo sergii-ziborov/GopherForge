@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge 1.3.1 is on the App Store with 220 Go lessons and 132 interview guides. The 1.3.2 development preview adds MCP collaboration and shareable progress.",
+    "GopherForge 1.3.1 is on the App Store. Version 1.3.2 (51), with MCP collaboration and shareable progress, is in TestFlight and waiting for App Review.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
