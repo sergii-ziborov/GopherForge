@@ -1,0 +1,77 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "streamio-hero",
+      "prompt": "Premium editorial illustration for the GopherForge engineering website. Landscape 1536x1024. Calm tactile isometric 3D objects, deep navy, teal, ivory, restrained copper accents, soft studio lighting, elegant coherent composition. Opaque background. No logos, watermark, vendor screenshot, fake benchmark, or performance numbers. Use case: scientific-educational. Asset: article hero. Show a finite stream of teal data blocks moving through a transparent reading channel, with the final data block arriving together with a small end marker. A careful little blue gopher engineer receives that last block before closing the gate. Visual metaphor for processing bytes before handling EOF; no text. Make the final block visibly retained, not discarded.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-785dfea6-a83d-47db-b057-f1a69d236cbc.png",
+      "src": "/images/news/streamio-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 135738,
+      "sha256": "04b94cb09eaecb7b9eeb2317e7c0ba3c8dae3db6a0d7a34c7f6e8337711aa175",
+      "alt": "A final data chunk and an end marker arrive together; a gopher receives the bytes before ending the read."
+    },
+    {
+      "id": "streamio-detail",
+      "prompt": "Premium editorial illustration for the GopherForge engineering website. Landscape 1536x1024. Calm tactile isometric 3D objects, deep navy, teal, ivory, restrained copper accents, soft studio lighting, elegant coherent composition. Opaque background. No logos, watermark, vendor screenshot, fake benchmark, or performance numbers. Use case: scientific-educational. Asset: article detail. Show two distinct stages of a bounded input pipeline on a workbench: a byte-budget gate with one extra inspection slot, followed by a parser accepting exactly one complete document. Extra blocks are visibly held outside the accepted document rather than silently cut away. No text, no quantitative labels. Conceptual resource and message boundaries, no security certification imagery.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-cecb5b05-0435-4d26-ab54-82adea18a75c.png",
+      "src": "/images/news/streamio-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 149396,
+      "sha256": "5ab5b31cc8e052825d37bc2455fb4a5d519467d9c29dec9c9a097f87f8ab1c0a",
+      "alt": "Separate conceptual gates enforce an input byte budget and a complete document boundary."
+    },
+    {
+      "id": "streamio-infographic",
+      "prompt": "Premium editorial illustration for the GopherForge engineering website. Landscape 1536x1024. Calm tactile isometric 3D objects, deep navy, teal, ivory, restrained copper accents, soft studio lighting, elegant coherent composition. Opaque background. No logos, watermark, vendor screenshot, fake benchmark, or performance numbers. Use case: infographic-diagram. Asset: article infographic on warm ivory. Four spacious equal panels left to right, exact large headings: READ, BOUND, PARSE, CHECK. READ shows a last chunk received beside an end marker; BOUND shows a finite tray and a separate overflow indicator; PARSE shows one complete structured document; CHECK shows a magnifying lens over successful result and explicit error branch. Use only these four words as text, no tiny explanatory prose. Conceptual workflow, no measured chart.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-dbfa04f9-00a6-49e0-92a9-40dc8061cd11.png",
+      "src": "/images/news/streamio-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 92114,
+      "sha256": "1960a8fdee0fae672c5642579d25925688309aa735e8c09abdc0ae9499e9e0ab",
+      "alt": "Read, bound, parse and check: distinguish returned bytes, finite budgets, document framing and explicit outcomes."
+    },
+    {
+      "id": "gotime-hero",
+      "prompt": "Premium editorial illustration for the GopherForge engineering website. Landscape 1536x1024. Calm tactile isometric 3D objects, deep navy, teal, ivory, restrained copper accents, soft studio lighting, elegant coherent composition. Opaque background. No logos, watermark, vendor screenshot, fake benchmark, or performance numbers. Use case: scientific-educational. Asset: article hero. Show one continuous elegant teal timeline with two local clock faces viewing the same glowing instant from different angled locations, and a separate calendar with a day turning over. Clearly distinguish elapsed duration from a calendar day using visual tracks, without claiming they always have equal length. No text, no real timestamps, no country flags.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-75a00c44-3c05-4154-8e43-ce8751fb3bea.png",
+      "src": "/images/news/gotime-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 131126,
+      "sha256": "1c7dccd9b2dd7b563c45199b9c1bd6b8e9db53bc3ebbf8f6f57608a716edf4de",
+      "alt": "The same instant viewed through different local clocks, with a separate calendar representing civil dates."
+    },
+    {
+      "id": "gotime-detail",
+      "prompt": "Premium editorial illustration for the GopherForge engineering website. Landscape 1536x1024. Calm tactile isometric 3D objects, deep navy, teal, ivory, restrained copper accents, soft studio lighting, elegant coherent composition. Opaque background. No logos, watermark, vendor screenshot, fake benchmark, or performance numbers. Use case: scientific-educational. Asset: article detail. A blue gopher engineer compares a precise stopwatch and a wall calendar on separate connected tracks. The calendar track crosses a daylight-saving offset transition with one shorter spacing between day markers, while the stopwatch track has evenly spaced duration ticks. No numbers, no words, no fake timezone map. Emphasize the distinction between elapsed time and civil schedule, no claim that clocks actually run at different physical rates.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-cc188403-48e7-48dc-a0c3-df00c141b606.png",
+      "src": "/images/news/gotime-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 151996,
+      "sha256": "5279ed921871e0c8dfac14053c2bc0cc0e36f6a5248d4943bdabf9fdeb935024",
+      "alt": "A stopwatch and a calendar follow different tracks, illustrating elapsed duration versus a location-aware calendar day."
+    },
+    {
+      "id": "gotime-infographic",
+      "prompt": "Premium editorial illustration for the GopherForge engineering website. Landscape 1536x1024. Calm tactile isometric 3D objects, deep navy, teal, ivory, restrained copper accents, soft studio lighting, elegant coherent composition. Opaque background. No logos, watermark, vendor screenshot, fake benchmark, or performance numbers. Use case: infographic-diagram. Asset: article infographic on warm ivory. Four spacious panels with exact large headings: DEFINE, LOCATE, CALCULATE, TEST. DEFINE shows an instant token, duration ruler and calendar page as different objects; LOCATE shows a location-tagged clock; CALCULATE shows a deliberate fork between calendar and stopwatch; TEST shows fixed-input examples across a clock offset transition. Only these four words, no tiny prose or unsupported metrics. Elegant readable editorial layout.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-3f9415e5-5cf6-4e28-ae8c-0413664706eb.png",
+      "src": "/images/news/gotime-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 125690,
+      "sha256": "e8692e3aa09a4a7055cb9f007d680d42275719ecec794067fb14402dddac2be2",
+      "alt": "Define, locate, calculate and test: choose a time contract, location rules, arithmetic and fixed transition cases."
+    }
+  ]
+}

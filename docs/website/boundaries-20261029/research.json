@@ -1,0 +1,102 @@
+{
+  "checkedOn": "2026-10-29",
+  "method": "Original practical guides, original standard-library lab and fixed-input experiments. No vendor screenshot, invented benchmark or republished third-party article. Historical archive edition dates remain separate from actual publication on 29 October.",
+  "articles": [
+    {
+      "key": "streamio",
+      "day": "04",
+      "slug": "go-streaming-io-reader-eof-limits-json",
+      "title": "Go streaming I/O: EOF, byte limits and JSON boundaries",
+      "description": "Handle final bytes with EOF, reject oversized input, validate one JSON document and configure Scanner. Tested Go examples with a hands-on Playground exercise.",
+      "category": "GUIDE \u00b7 GO INPUT BOUNDARIES",
+      "keywords": [
+        "Go io.Reader EOF contract",
+        "Go LimitReader size limit",
+        "Go JSON trailing data",
+        "Go Scanner token limit"
+      ],
+      "sources": [
+        {
+          "title": "io.Reader and byte-limited input",
+          "url": "https://pkg.go.dev/io"
+        },
+        {
+          "title": "JSON decoder contracts",
+          "url": "https://pkg.go.dev/encoding/json#Decoder"
+        },
+        {
+          "title": "Buffered readers, Scanner and writers",
+          "url": "https://pkg.go.dev/bufio"
+        },
+        {
+          "title": "HTTP request-body size limits",
+          "url": "https://pkg.go.dev/net/http#MaxBytesReader"
+        },
+        {
+          "title": "Decompression layer",
+          "url": "https://pkg.go.dev/compress/gzip#Reader"
+        },
+        {
+          "title": "Context cancellation",
+          "url": "https://pkg.go.dev/context"
+        },
+        {
+          "title": "HTTP test recorder",
+          "url": "https://pkg.go.dev/net/http/httptest"
+        }
+      ]
+    },
+    {
+      "key": "gotime",
+      "day": "12",
+      "slug": "go-time-utc-dst-monotonic-deadlines",
+      "title": "Go time: UTC, DST, calendar days and reliable deadlines",
+      "description": "Model Go instants, durations and calendar schedules. Test DST, timezone data, timestamp round trips, timer ownership and deadlines with a downloadable lab.",
+      "category": "GUIDE \u00b7 GO TIME CONTRACTS",
+      "keywords": [
+        "Go time UTC DST guide",
+        "Go AddDate vs Add 24 hours",
+        "Go monotonic clock deadlines",
+        "Go timer cancellation tests"
+      ],
+      "sources": [
+        {
+          "title": "Time values and calendar operations",
+          "url": "https://pkg.go.dev/time"
+        },
+        {
+          "title": "Monotonic time support",
+          "url": "https://go.dev/doc/go1.9#monotonic-time"
+        },
+        {
+          "title": "IANA timezone model",
+          "url": "https://data.iana.org/time-zones/tzdb/theory.html"
+        },
+        {
+          "title": "Embedded zone-data fallback",
+          "url": "https://pkg.go.dev/time/tzdata"
+        },
+        {
+          "title": "Internet timestamp representation",
+          "url": "https://www.rfc-editor.org/rfc/rfc3339"
+        },
+        {
+          "title": "Context deadline propagation",
+          "url": "https://pkg.go.dev/context"
+        },
+        {
+          "title": "Versioned timer-channel behavior",
+          "url": "https://go.dev/wiki/Go123Timer"
+        },
+        {
+          "title": "Testing asynchronous time",
+          "url": "https://go.dev/blog/testing-time"
+        },
+        {
+          "title": "Stable testing/synctest contracts",
+          "url": "https://pkg.go.dev/testing/synctest"
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,10 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  streamio:
+    "Read → Bound → Parse → Check. Preserve final bytes, enforce a finite envelope, validate document framing and report the actual outcome. Conceptual workflow, not a throughput benchmark.",
+  gotime:
+    "Define → Locate → Calculate → Test. Name the time contract, select location rules, distinguish elapsed and calendar arithmetic, and test fixed transition cases. Conceptual illustration, not a timezone map.",
   gcpacer:
     "Measure → Bound → Adjust → Verify. Establish live data and allocation demand, bound admitted work, change one runtime setting and verify useful completions. Conceptual illustration, not measured telemetry.",
   heapgraph:

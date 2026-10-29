@@ -1,0 +1,26 @@
+[
+  {
+    "case": "size-overflow",
+    "test": "TestLimitBoundary",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestLimitBoundary (0.00s)\n    main_test.go:43: input \"x\" max 0: \"\", <nil>\nFAIL\nFAIL\tgopherforge.news/boundarieslab/streamio\t0.263s\nFAIL"
+  },
+  {
+    "case": "single-document",
+    "test": "TestSingleDocument",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestSingleDocument (0.00s)\n    main_test.go:77: accepted invalid envelope: {\"id\":\"one\"} {\"id\":\"two\"}\nFAIL\nFAIL\tgopherforge.news/boundarieslab/streamio\t0.407s\nFAIL"
+  },
+  {
+    "case": "calendar-day",
+    "test": "TestCalendarAcrossDST",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestCalendarAcrossDST (0.00s)\n    main_test.go:23: calendar contract: start=2026-03-28 12:00:00 +0100 CET next=2026-03-29 13:00:00 +0200 CEST elapsed=24h0m0s\nFAIL\nFAIL\tgopherforge.news/boundarieslab/gotime\t0.286s\nFAIL"
+  },
+  {
+    "case": "timer-cancellation",
+    "test": "TestWaitCancellationAndJoin",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestWaitCancellationAndJoin (0.00s)\n    main_test.go:72: worker did not join\npanic: deadlock: main bubble goroutine has exited but blocked goroutines remain [recovered, repanicked]\n\ngoroutine 35 [running]:\ntesting.tRunner.func1.2({0x102419320, 0x73371bf161b0})"
+  }
+]

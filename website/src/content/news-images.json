@@ -376,5 +376,41 @@
     "width": 1536,
     "height": 1024,
     "alt": "Performance investigation workflow: reproduce, profile, change one implementation, then recheck behavior and resources."
+  },
+  "streamio-hero": {
+    "src": "/images/news/streamio-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A final data chunk and an end marker arrive together; a gopher receives the bytes before ending the read."
+  },
+  "streamio-detail": {
+    "src": "/images/news/streamio-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Separate conceptual gates enforce an input byte budget and a complete document boundary."
+  },
+  "streamio-infographic": {
+    "src": "/images/news/streamio-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Read, bound, parse and check: distinguish returned bytes, finite budgets, document framing and explicit outcomes."
+  },
+  "gotime-hero": {
+    "src": "/images/news/gotime-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "The same instant viewed through different local clocks, with a separate calendar representing civil dates."
+  },
+  "gotime-detail": {
+    "src": "/images/news/gotime-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A stopwatch and a calendar follow different tracks, illustrating elapsed duration versus a location-aware calendar day."
+  },
+  "gotime-infographic": {
+    "src": "/images/news/gotime-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Define, locate, calculate and test: choose a time contract, location rules, arithmetic and fixed transition cases."
   }
 }

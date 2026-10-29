@@ -628,7 +628,8 @@
       "go-1-27-goroutine-leak-profiles",
       "go-reproducible-build-report-october-21-2026",
       "go-backpressure-concurrency-limits-queues-deadlines",
-      "go-http-graceful-shutdown-kubernetes"
+      "go-http-graceful-shutdown-kubernetes",
+      "go-streaming-io-reader-eof-limits-json"
     ],
     "publishedAt": "2026-10-21",
     "modifiedAt": "2026-10-29",
@@ -1265,7 +1266,8 @@
       "go-1-27-goroutine-leak-profiles",
       "go-backpressure-concurrency-limits-queues-deadlines",
       "go-json-v2-migration-api-compatibility",
-      "go-allocation-profiling-pprof-escape-benchmarks"
+      "go-allocation-profiling-pprof-escape-benchmarks",
+      "go-streaming-io-reader-eof-limits-json"
     ],
     "imagePrefix": "buffers",
     "sections": [
@@ -1602,7 +1604,8 @@
       "go-bytes-buffer-sync-pool-ownership",
       "go-json-v2-migration-api-compatibility",
       "go-database-sql-pool-timeouts-transactions",
-      "go-garbage-collector-gogc-gomemlimit-lab"
+      "go-garbage-collector-gogc-gomemlimit-lab",
+      "go-time-utc-dst-monotonic-deadlines"
     ],
     "imagePrefix": "backpressure",
     "wordCount": 3708,
@@ -1702,7 +1705,7 @@
     "editionDate": "2026-10-27",
     "eventDate": "2026-10-27",
     "publishedAt": "2026-10-27",
-    "modifiedAt": "2026-10-27",
+    "modifiedAt": "2026-10-29",
     "sourceCheckedAt": "2026-10-27",
     "kind": "guide",
     "keywords": [
@@ -1758,7 +1761,8 @@
     "related": [
       "go-backpressure-concurrency-limits-queues-deadlines",
       "go-typed-nil-errors-as-contracts",
-      "go-bytes-buffer-sync-pool-ownership"
+      "go-bytes-buffer-sync-pool-ownership",
+      "go-streaming-io-reader-eof-limits-json"
     ],
     "imagePrefix": "jsonv2",
     "wordCount": 3391,
@@ -2306,7 +2310,8 @@
     "related": [
       "go-http-graceful-shutdown-kubernetes",
       "go-1-27-goroutine-leak-profiles",
-      "go-backpressure-concurrency-limits-queues-deadlines"
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-time-utc-dst-monotonic-deadlines"
     ],
     "wordCount": 2114,
     "proseWordCount": 2114,
@@ -2683,6 +2688,250 @@
       "Go strconv Append benchmark"
     ],
     "editionDate": "2026-10-13",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-streaming-io-reader-eof-limits-json",
+    "title": "Go streaming I/O: EOF, byte limits and JSON boundaries",
+    "description": "Handle final bytes with EOF, reject oversized input, validate one JSON document and configure Scanner. Tested Go examples with a hands-on Playground exercise.",
+    "category": "GUIDE · GO INPUT BOUNDARIES",
+    "eventDate": "2026-10-04",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "streamio",
+    "sections": [
+      {
+        "id": "a-stream-is-not-a-complete-application-message",
+        "title": "A stream is not a complete application message",
+        "body": "A CSV importer works in a small test and silently drops the final record in production. An HTTP endpoint accepts the first JSON object in a request and ignores a second object after it. A log processor reports success after a long line stops its scanner. These failures look unrelated, but each confuses one boundary with another: a read call, an input budget, a token, a document, or a completed business operation.\n\nThis guide builds a practical model for those boundaries. The objective is not to replace every standard helper with a custom loop. It is to understand what the helper promises and what the application must still decide. Reading bytes successfully does not establish that the message was complete, valid, small enough, or safe to commit to a database.\n\nThe downloadable lab contains original standard-library examples and tests. We checked it with native Go 1.27.3 and also built its demonstration programs for wasip1/wasm. Cross-compilation checks the target build; it does not establish production throughput or certify execution in every app sandbox. The examples use in-memory input, so their behavior is reproducible without a remote server or an account."
+      },
+      {
+        "id": "preserve-the-bytes-that-arrive-with-the-final-error",
+        "title": "Preserve the bytes that arrive with the final error",
+        "body": "The [io.Reader contract](https://pkg.go.dev/io#Reader) permits a call to return useful bytes and an error together, including EOF. A caller must consume the returned bytes before interpreting that error. Our fixture returns the four bytes of tail and io.EOF in the same call. The test also uses smaller destination buffers so the example does not depend on everything fitting in one read.\n\n```go\nn, err := r.Read(buf)\nif n > 0 {\n    consume(buf[:n])\n}\nif err != nil {\n    // Handle EOF or the underlying failure after the bytes.\n}\n```\n\nA loop that breaks immediately whenever err is non-nil can lose valid final data. Conversely, treating every short read as the end of the message can stop too early. A short read describes the amount delivered by that call, not necessarily the application's document boundary.\n\nPrefer an appropriate helper such as io.ReadAll or io.Copy when its semantics fit. A hand-written loop also needs a policy for a reader that repeatedly makes no progress, destination failures, cancellation and partial side effects. The small snippet above illustrates ordering; it is not a complete production copy implementation. Its purpose is to make a common incorrect assumption visible and testable."
+      },
+      {
+        "id": "distinguish-truncating-a-stream-from-rejecting-oversized-input",
+        "title": "Distinguish truncating a stream from rejecting oversized input",
+        "body": "A reader limited to N bytes can present an artificial end at that boundary. That is useful for exposing a section of input, but it does not by itself prove the original input ended there. The [io.LimitReader documentation](https://pkg.go.dev/io#LimitReader) defines the stopping behavior. The application must decide whether stopping means success, an allowed prefix, or an oversized-message error.\n\nFor a small document that must fit entirely in a budget, the lab reads at most one extra byte. Exactly N bytes remain acceptable; N plus one establishes overflow. The helper rejects negative limits and the integer-overflow edge before computing max plus one.\n\n```go\nb, err := io.ReadAll(io.LimitReader(r, max+1))\nif int64(len(b)) > max {\n    return nil, ErrTooLarge\n}\nif err != nil {\n    return nil, err\n}\nreturn b, nil\n```\n\nThis is a deliberately bounded buffering design, not a zero-allocation streaming parser. It uses memory proportional to the configured input limit, plus library overhead. That can be the right tradeoff for small API documents because it establishes the whole envelope before business effects begin. It is inappropriate to give the helper an effectively unlimited budget and describe the result as protected merely because a limit parameter exists."
+      },
+      {
+        "id": "make-the-boundary-test-matrix-explicit",
+        "title": "Make the boundary test matrix explicit",
+        "body": "A useful size test covers an empty payload, a zero-byte allowance, one byte below the limit, exactly the limit, and one byte above it. It also covers an underlying reader failure. Our helper returns no accepted payload when the transport fails or the size exceeds the budget. A different application may deliberately expose partial data, but it must label that result as partial rather than silently accept it as complete.\n\n| Input | Limit | Expected result |\n| --- | ---: | --- |\n| Empty | 0 | Accepted empty payload |\n| One byte | 0 | Oversized input |\n| Three bytes | 4 | Complete payload |\n| Four bytes | 4 | Complete payload |\n| Five bytes | 4 | Oversized input |\n\nThe off-by-one case matters because a superficially safe implementation can simply truncate five bytes to four and return success. The lab includes a negative control that changes max plus one to max; the boundary test must then fail. That proves the test can distinguish rejection from truncation.\n\nFor an importer, add a business-level assertion: no record is committed after an incomplete document is rejected. A function can return the right error while another component has already persisted half the input. Unit tests for byte handling and integration tests for effects answer different questions, and both boundaries should remain visible in the design."
+      },
+      {
+        "id": "require-exactly-the-document-your-endpoint-promises",
+        "title": "Require exactly the document your endpoint promises",
+        "body": "A JSON decoder reads the next value. A successful first Decode does not by itself establish that the request contains exactly one value. The [encoding/json decoder reference](https://pkg.go.dev/encoding/json#Decoder) also explains that decoding may buffer beyond the requested value. Reusing the same decoder is therefore important when checking what follows.\n\nThe lab first establishes a finite byte envelope, decodes a typed Event, then asks the same decoder for another value. A second successful value is an error for this single-document API. Clean EOF after optional whitespace is accepted; malformed trailing content is rejected.\n\n```go\nvar extra json.RawMessage\nif err := dec.Decode(&extra); err == nil {\n    return Event{}, ErrTrailingValue\n} else if err != io.EOF {\n    return Event{}, err\n}\n```\n\nChoose the envelope deliberately. A stream of independent JSON values is a valid format when that is the protocol; an endpoint accepting one object has a different contract. Do not apply a single-document check to an intentionally framed multi-message connection and then conclude that streaming is broken. The application's protocol determines whether another value is useful input or a rejected suffix.\n\nFor schema evolution and other parser choices, continue with [JSON compatibility](/news/go-json-v2-migration-api-compatibility) and the [input-policy lesson](/learn/stdlib.json-input-policy)."
+      },
+      {
+        "id": "separate-structural-decoding-from-business-validation",
+        "title": "Separate structural decoding from business validation",
+        "body": "Our Event has a required, nonempty identifier. Successfully decoding null or an empty object does not satisfy that requirement. The helper validates the resulting identifier before returning an accepted event. The tests include null, an empty object, an unknown field, malformed input, trailing text and a second complete value.\n\nDisallowUnknownFields is useful for this specific schema policy, but it is not a general strictness certificate. The lab deliberately shows a duplicate identifier field being accepted with the later string value. That example prevents readers from assuming that one decoder option rejects every kind of ambiguity. If duplicate-key rejection is part of the protocol, implement and test that separate policy with an appropriate parser or token-level validation.\n\nThe business decision should also consider clients. Rejecting newly introduced fields may be desirable for a small internal command, but it can impede a deliberately forward-compatible event format. A required field may need a separate presence representation when an empty value is meaningful. Those choices belong in an API contract and its compatibility tests.\n\nKeep validation before irreversible effects whenever the operation requires atomic acceptance. If a large import intentionally commits incrementally, give records explicit identifiers, document partial completion, and define retry behavior. A parser cannot retroactively make an already committed batch atomic simply by returning an error at the end."
+      },
+      {
+        "id": "understand-token-limits-before-choosing-scanner",
+        "title": "Understand token limits before choosing Scanner",
+        "body": "Scanner is convenient for bounded records, but its default token allowance is finite. The [bufio reference](https://pkg.go.dev/bufio#Scanner) documents the default 64-KiB buffer limit and notes that delimiters can affect the actual maximum token size. The lab's seventy-KiB line fails under the default configuration and succeeds with an explicitly larger token budget.\n\n```go\nscan := bufio.NewScanner(r)\nscan.Buffer(make([]byte, 0, 1024), 128*1024)\nfor scan.Scan() {\n    process(scan.Text())\n}\nif err := scan.Err(); err != nil {\n    return err\n}\n```\n\nAlways inspect the final scanning error. Otherwise a parser can report a clean partial import after a large token stops progress. Configure the budget before scanning begins, and choose it from the record contract rather than increasing it until one failing sample happens to pass.\n\nA per-token allowance is not a whole-stream allowance. Ten million individually small records can still represent too much work. Likewise, collecting every scanned record into a slice defeats a claim of bounded retained memory. Pair token size with limits on total bytes, record count, processing concurrency and retained results. The resource boundary is the whole pipeline, not just the convenient loop at its entrance."
+      },
+      {
+        "id": "buffered-output-has-its-own-completion-boundary",
+        "title": "Buffered output has its own completion boundary",
+        "body": "Successful input parsing does not establish that output reached its destination. A report generator may write several small rows into a buffered writer and receive no immediate error because the bytes are still held locally. The later flush can fail. The [bufio writer reference](https://pkg.go.dev/bufio#Writer) describes the buffering and flush operations; the feature must decide when it is allowed to report completion.\n\nThe lab tests that distinction with an in-memory destination. Before Flush, the destination has no bytes; afterward it contains the expected payload. A separate destination returns an error, and the test requires that Flush expose the failure. This makes a late output failure reproducible without a network service or a full disk.\n\nKeep the completion claim precise. A successful flush through one layer proves that layer accepted the operation under its contract. It does not automatically prove durable storage, remote processing or a committed business transaction. If those stronger guarantees matter, obtain and test the corresponding acknowledgement at that boundary.\n\nFor the importer, this creates a useful pair of questions: did the input form a complete accepted message, and did its intended effect complete successfully? Returning success only after the right acknowledgements prevents a byte-processing helper from accidentally defining the business transaction."
+      },
+      {
+        "id": "budget-transformations-as-well-as-incoming-bytes",
+        "title": "Budget transformations as well as incoming bytes",
+        "body": "An input may pass through decompression, decoding, normalization and object construction before the application uses it. A small compressed representation does not establish a small decoded representation. The [gzip reader reference](https://pkg.go.dev/compress/gzip#Reader) defines the decompression layer; the service still needs a budget for the data produced by that layer.\n\nFor a compressed upload, distinguish wire-byte limits from decoded-byte limits. Place limits where their meanings are clear, preserve the original error, and explain which budget failed. Add a processing deadline and concurrency limit when the endpoint needs them. A byte ceiling alone does not stop a peer from delivering acceptable bytes indefinitely slowly.\n\nThe [HTTP MaxBytesReader API](https://pkg.go.dev/net/http#MaxBytesReader) provides request-body-specific behavior and a size error. Our native tests exercise it with an in-memory request reader and recorder; they do not start a network listener. A real HTTP endpoint should select a status policy and avoid exposing internal diagnostics as its public response.\n\nThese controls complement [backpressure and bounded work](/news/go-backpressure-concurrency-limits-queues-deadlines). A service that admits unlimited concurrent bounded requests can still exceed its overall capacity. Describe per-message limits and system-wide admission separately so that operators know which quantity each setting controls."
+      },
+      {
+        "id": "keep-cancellation-and-cleanup-attached-to-the-owner",
+        "title": "Keep cancellation and cleanup attached to the owner",
+        "body": "Wrapping a generic reader with a context check between reads does not guarantee that an already blocked Read can be interrupted. The transport or underlying implementation needs an actual cancellation mechanism, deadline or owned close operation. The [context package](https://pkg.go.dev/context) supplies cancellation signals; arbitrary I/O implementations do not automatically observe them.\n\nFor a request handler, identify who owns the body and any transformation layers. For a background import, identify who closes the source when the job ends and who waits for workers to exit. An abandoned goroutine holding a reader can preserve both memory and an external resource even after its caller has returned an error.\n\nAvoid deferring cleanup only inside an unbounded outer loop when the resource should end after each record or file. Extract a smaller operation with a clear lifetime if that makes ownership explicit. If cleanup can fail, decide whether it changes the operation's outcome or belongs in a separate diagnostic path.\n\nThe [cancel-and-join lesson](/learn/concurrency.cancel-and-join) connects the signal to actual completion. The companion [time and deadline guide](/news/go-time-utc-dst-monotonic-deadlines) explains why a finite timeout and a business calendar deadline are different contracts. Neither a cancellation signal nor a byte limit proves the worker has actually finished."
+      },
+      {
+        "id": "try-the-failure-cases-in-gopherforge-playground",
+        "title": "Try the failure cases in GopherForge Playground",
+        "body": "[Download the complete I/O and time lab](/downloads/go-boundaries-lab-20261029.zip), then open its streamio/main.go. The program is self-contained and uses standard-library packages. In [GopherForge Playground](/playground), download your current source copy before replacing any existing draft, select main.go and paste the demonstration. Keep your own go.mod in the project. Editing the browser draft does not execute Go.\n\nWhen you want to share an experiment, create a temporary room deliberately. Open that room in a compatible GopherForge app and press the local Run button on the device where execution should happen. Other participants receive device-labelled output for that source revision. Creating a room uploads its source to the relay; simply reading this article does not publish an example or create a room. The [MCP guide](/guide/mcp) explains the capability links and expiry.\n\nChange the payload from four bytes to five while keeping the budget at four. Add a second JSON object, then replace it with whitespace. Increase the scanner's line length past its configured allowance. Before each run, write down the expected accepted value or error. Compare that prediction with the actual output rather than merely checking that the compiler accepted the program.\n\nIf Claude or Codex helps, ask it to propose one input mutation and predict the output without running anything. Review its source edit, press Run yourself, and compare the reported revision. This makes the exercise interactive while keeping execution under the local user's control."
+      },
+      {
+        "id": "test-the-envelope-and-the-effect-independently",
+        "title": "Test the envelope and the effect independently",
+        "body": "Run the full suite with go test rather than inferring correctness from a successful demonstration printout. The native tests exercise small destination buffers, exact limits, oversized data, transport failure, JSON suffixes, required values, duplicate-key behavior and Scanner errors. They also check the HTTP size-error type. The published output is an observation from the included source, not a promise that every library error string remains identical across toolchains.\n\n```sh\ngo test -race -count=50 ./...\ngo run ./streamio\n```\n\nFor a real importer, add controlled destination failures and assertions about committed work. Decide whether a failed operation can be retried, whether its record identifiers are idempotent, and how partial completion is reported. Those are application-level contracts outside the small byte-reading helper.\n\nThe [buffer-ownership article](/news/go-bytes-buffer-sync-pool-ownership) covers another boundary: whether a result remains valid after a reusable buffer changes. Together, envelope size, framing, ownership and effects give a reviewer a concrete way to assess an input path. The useful question is not simply whether the program streams. It is which boundaries it enforces, which failures it reports, and which useful work remains committed when the stream ends unexpectedly."
+      }
+    ],
+    "sources": [
+      {
+        "title": "io.Reader and byte-limited input",
+        "url": "https://pkg.go.dev/io"
+      },
+      {
+        "title": "JSON decoder contracts",
+        "url": "https://pkg.go.dev/encoding/json#Decoder"
+      },
+      {
+        "title": "Buffered readers, Scanner and writers",
+        "url": "https://pkg.go.dev/bufio"
+      },
+      {
+        "title": "HTTP request-body size limits",
+        "url": "https://pkg.go.dev/net/http#MaxBytesReader"
+      },
+      {
+        "title": "Decompression layer",
+        "url": "https://pkg.go.dev/compress/gzip#Reader"
+      },
+      {
+        "title": "Context cancellation",
+        "url": "https://pkg.go.dev/context"
+      },
+      {
+        "title": "HTTP test recorder",
+        "url": "https://pkg.go.dev/net/http/httptest"
+      }
+    ],
+    "related": [
+      "go-time-utc-dst-monotonic-deadlines",
+      "go-json-v2-migration-api-compatibility",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "wordCount": 2288,
+    "proseWordCount": 2288,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go io.Reader EOF contract",
+      "Go LimitReader size limit",
+      "Go JSON trailing data",
+      "Go Scanner token limit"
+    ],
+    "editionDate": "2026-10-04",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-time-utc-dst-monotonic-deadlines",
+    "title": "Go time: UTC, DST, calendar days and reliable deadlines",
+    "description": "Model Go instants, durations and calendar schedules. Test DST, timezone data, timestamp round trips, timer ownership and deadlines with a downloadable lab.",
+    "category": "GUIDE · GO TIME CONTRACTS",
+    "eventDate": "2026-10-12",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "gotime",
+    "sections": [
+      {
+        "id": "start-by-naming-the-kind-of-time-your-feature-uses",
+        "title": "Start by naming the kind of time your feature uses",
+        "body": "A daily report moves an hour after a clock change. A timeout survives a JSON round trip but behaves differently from an in-process measurement. Two timestamps print different local hours while describing the same event. These bugs often begin when an application treats an instant, a duration, a civil date and a recurring local schedule as interchangeable values.\n\nConsider a document service with three requirements. A conversion may run for at most thirty seconds. A daily digest should be sent at the customer's chosen local morning time. A published article belongs to an editorial calendar date. The first is an elapsed-work budget, the second is a schedule tied to location rules, and the third is a date label. One helper that adds a fixed number of nanoseconds cannot express all three contracts correctly.\n\nThis guide develops those distinctions with an original, reproducible Go lab. Its examples use fixed inputs around offset transitions, explicit locations, cancellation and tests with virtual time. They are engineering examples rather than a universal scheduler. The implementation decisions that remain, including missing and repeated local times, are called out instead of being hidden behind a convenient function name."
+      },
+      {
+        "id": "separate-an-instant-from-its-display-representation",
+        "title": "Separate an instant from its display representation",
+        "body": "An instant answers when an event occurred on a timeline. A representation answers how that instant appears in a particular location or format. Our lab constructs a UTC instant and displays the same value in a fixed two-hour offset. The local clock fields differ, but Time.Equal reports that the two values describe the same instant. The == operator compares more representation details and is unsuitable as a casual replacement for that intent.\n\n```go\na := time.Date(2026, 10, 4, 10, 0, 0, 0, time.UTC)\nb := a.In(time.FixedZone(\"display\", 2*60*60))\nfmt.Println(a.Equal(b)) // true\nfmt.Println(a == b)     // false for these representations\n```\n\nThe [time package reference](https://pkg.go.dev/time) defines the comparison and location operations. Use a test that states the intended equivalence. If an API accepts differently offset timestamps for the same event, compare the parsed instants. If the application instead groups reports by the customer's local date, extract that date in the selected location and test that separate grouping rule.\n\nDo not normalize away information that the feature needs. Storing an event instant in UTC is useful, but a future recurring morning appointment may also require its named location and recurrence policy. A stored offset alone cannot explain how a later occurrence should respond when civil-time rules change.\n\nThe [Duration lesson](/learn/stdlib.time) provides a shorter introduction before the calendar and deadline experiments below."
+      },
+      {
+        "id": "use-calendar-arithmetic-for-a-calendar-requirement",
+        "title": "Use calendar arithmetic for a calendar requirement",
+        "body": "The lab's NextDay helper uses AddDate to preserve local calendar intent. It deliberately chooses noon, away from the missing or repeated clock times that require a scheduler policy. In Europe/Zurich, the recorded 2026 spring fixture crosses an offset change: the next calendar noon is twenty-three elapsed hours away. The autumn fixture crosses the reverse transition and takes twenty-five elapsed hours.\n\n```go\nfunc NextDay(t time.Time) time.Time {\n    return t.AddDate(0, 0, 1)\n}\n\ncalendar := NextDay(start)\nelapsed := start.Add(24 * time.Hour)\n```\n\n| Fixture in Europe/Zurich | Next local calendar noon | Elapsed interval |\n| --- | --- | --- |\n| 28 March 2026, noon | 29 March 2026, noon | 23 hours |\n| 24 October 2026, noon | 25 October 2026, noon | 25 hours |\n\nAdding twenty-four elapsed hours lands at a different local hour in these fixtures. The tests verify both the preserved noon and the interval, rather than relying on a screenshot of a formatted date. These are observations using the recorded toolchain and its available zone rules; they are not a claim that every day in that location has an unusual length.\n\nThe practical decision follows the requirement. A timeout for a conversion uses an elapsed duration. A digest scheduled for tomorrow at a local hour uses calendar and location rules. Choosing the wrong operation can create a perfectly valid Go value that violates the feature's contract."
+      },
+      {
+        "id": "treat-missing-and-repeated-local-times-as-product-decisions",
+        "title": "Treat missing and repeated local times as product decisions",
+        "body": "A midday demonstration does not solve a recurrence scheduled inside a clock transition. Some local clock readings never occur during a forward change; others occur twice during a backward change. A scheduler needs an explicit policy: skip an occurrence, choose a defined interpretation, move it to a valid time, or ask the user. The right behavior depends on the feature and must be documented.\n\nThe [IANA time-zone theory](https://data.iana.org/time-zones/tzdb/theory.html) explains why location identifiers represent histories and rule sets rather than simple permanent offsets. Civil-time rules are data that can change. A product promising a local recurring time should preserve the selected location identity and define how updated rules affect future occurrences.\n\nFor the document service, distinguish an already scheduled occurrence from the recurrence template that generated it. The occurrence has a concrete instant and delivery state. The template has a local clock preference, location and policy. Updating the template should not accidentally resend an already delivered digest or erase evidence of the previous schedule.\n\nTest the policy at both transition directions and at an ordinary date. Include a rule-data update in the operational plan when future schedules matter. Our NextDay helper remains intentionally smaller: it demonstrates calendar arithmetic at unambiguous noon and does not claim to implement those missing-time, repeated-time or delivery guarantees."
+      },
+      {
+        "id": "make-zone-data-part-of-the-deployment-evidence",
+        "title": "Make zone data part of the deployment evidence",
+        "body": "A program that loads named locations needs appropriate zone data in its execution environment. The lab imports time/tzdata so its demonstration can use embedded fallback data when external data is unavailable. The [time/tzdata reference](https://pkg.go.dev/time/tzdata) describes that mechanism. The import is an application packaging decision, not a reason for every reusable library to silently change a consumer's binary.\n\nRecord the selected Go toolchain and how the production executable obtains location rules. A desktop environment, a small container and a sandbox may have different available files. A successful test on a developer laptop does not prove that the deployed program has the same environment or future update policy.\n\nThe native lab was checked with Go 1.27.3. We also cross-compiled its standalone demonstration for wasip1/wasm. That validates the selected target's build, not every runtime behavior of every host. If a particular host lacks or restricts a capability, the correct result is an explicit unsupported or failed operation rather than a fabricated successful observation.\n\nThe [runtime packaging lesson](/learn/operations.docker-build) connects this issue to deployment. Shipping an executable is only one part of shipping its operational assumptions. Zone data, certificates, owned storage and configuration all need an intentional source and a way to verify what actually reached the running environment."
+      },
+      {
+        "id": "distinguish-wall-clock-timestamps-from-elapsed-measurements",
+        "title": "Distinguish wall-clock timestamps from elapsed measurements",
+        "body": "A service needs wall-clock timestamps to describe events to other systems. Measuring how long a local operation takes is a different task. Go's [1.9 release notes](https://go.dev/doc/go1.9#monotonic-time) introduced the monotonic-clock support used in time measurements. The key engineering lesson is to keep an in-process elapsed measurement attached to values obtained for that purpose rather than reconstructing it from formatted clock text.\n\n```go\nstart := time.Now()\nperformWork()\nelapsed := time.Since(start)\n```\n\nFormatting, parsing and serialization do not preserve the private process-local measurement context as a portable distributed clock. A JSON timestamp communicates an instant representation, not a monotonic stopwatch that another process can continue exactly. The lab checks that stripping monotonic metadata with Round(0) preserves instant equality; it does not pretend to simulate an operating-system clock correction.\n\nFor the conversion timeout, keep the local start and duration in memory while the operation runs. For an audit record, store a timestamp and an explicitly named duration field if both are needed. Avoid overloading one numeric column with values that sometimes mean an epoch timestamp and sometimes mean an elapsed interval.\n\nAcross processes, clocks and delivery delays introduce additional uncertainty. A remote timestamp can help explain event ordering under a defined system model, but it is not proof of a precise one-way network latency. Use instrumentation designed for the question and state the assumptions that connect the measurement to the conclusion."
+      },
+      {
+        "id": "define-units-and-precision-at-every-serialization-boundary",
+        "title": "Define units and precision at every serialization boundary",
+        "body": "An integer timestamp is incomplete documentation unless its unit and epoch are explicit. Seconds, milliseconds and nanoseconds can all fit into the same language-level integer type for some values while meaning radically different dates. A duration field named timeout is similarly ambiguous when one client sends milliseconds and another assumes seconds.\n\n[RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) provides a standard timestamp representation with offset information. Our example parses one UTC string and one offset string, then verifies that both identify the same instant. This is a useful contract test because the visible local hours differ while the intended event does not.\n\n```text\n2026-10-04T10:00:00Z\n2026-10-04T12:00:00+02:00\n```\n\nChoose and document precision as well as units. If a database or downstream system rounds values, decide whether equality, deduplication and ordering depend on the discarded fraction. Normalize at an agreed boundary and test the round trip through the actual storage or wire format. Comparing a high-precision in-memory value with a rounded persisted value without that policy can create false differences.\n\nFor date-only editorial labels, use a date contract rather than inventing a midnight instant and allowing an arbitrary viewer location to move it to the previous day. GopherForge's article edition date and actual publication date are separate labels for separate purposes. That distinction is a small example of a broader modeling rule: choose a representation that preserves the meaning the feature actually needs."
+      },
+      {
+        "id": "keep-an-absolute-deadline-and-an-attempt-timeout-distinct",
+        "title": "Keep an absolute deadline and an attempt timeout distinct",
+        "body": "A workflow can have one overall deadline while each dependency call receives a smaller attempt budget. Replacing the overall deadline with a fresh full timeout at every layer can extend the operation beyond the user's allowance. Conversely, applying an expired deadline to a newly scheduled future task can reject useful work immediately. Name the owner and lifetime of each budget.\n\nThe [context documentation](https://pkg.go.dev/context) defines deadline and cancellation propagation. A child operation should respect the remaining parent allowance. Releasing a derived context's resources when its work ends is part of ownership. These controls are local execution contracts; a timestamp printed into a queue message does not automatically cancel a worker that never observes it.\n\nFor the document service, record the overall conversion allowance, any per-attempt cap and retry admission policy. A retry must have remaining useful time and an appropriate idempotency contract. Do not restart the entire budget simply because the previous attempt reached its own timeout.\n\nContinue with [backpressure and request budgets](/news/go-backpressure-concurrency-limits-queues-deadlines) and the [context-contract lesson](/learn/clean-production.context-contracts). The article on [I/O boundaries](/news/go-streaming-io-reader-eof-limits-json) covers the corresponding resource issue: checking a context between reads does not necessarily interrupt an already blocked arbitrary reader. A timeout declaration needs a real path to the underlying operation."
+      },
+      {
+        "id": "give-timers-one-owner-and-check-the-selected-semantics",
+        "title": "Give timers one owner and check the selected semantics",
+        "body": "A timer signals that its condition has become ready; it does not prove that the application handled the signal at an exact wall-clock instant. Scheduling delays and work already in progress can separate timer readiness from useful completion. A stopped timer is also not a general broadcast mechanism for ending every worker that refers to it.\n\nGo's [timer-channel migration notes](https://go.dev/wiki/Go123Timer) describe the changes introduced for Go 1.23 and the role of the main module's Go version and compatibility settings. Check those facts for the actual executable before copying old stop-and-drain recipes or assuming a historical buffered-channel behavior. The lab uses a Go 1.25 module and a current selected toolchain; its behavior is tested in that configuration.\n\nOur Wait helper creates one timer, owns its cleanup, and selects between the timer and context cancellation. It checks an already cancelled context before admitting the wait. If cancellation and timer readiness race later, it does not claim a universal priority between simultaneously ready select cases. The tests deliberately avoid using that race as a business rule.\n\nA real workflow should state what completion means. If cancellation must prevent a side effect, verify the condition at the boundary that authorizes that effect. A select result elsewhere in the program is not an atomic transaction spanning a later database write. This is why timer ownership, cancellation and durable work need related but separate contracts."
+      },
+      {
+        "id": "test-time-with-fixed-inputs-and-controlled-progress",
+        "title": "Test time with fixed inputs and controlled progress",
+        "body": "The calendar tests use fixed dates, a named location and exact expected local fields. They do not wait for a real seasonal transition. The equality tests compare representations of a known instant. These pure tests should be fast and explain their failure directly.\n\nFor asynchronous behavior, the lab uses testing/synctest to test a five-second timer and a cancelled hour-long wait without sleeping for those wall-clock durations. The Go team's [testing-time article](https://go.dev/blog/testing-time) explains the motivation for controlled asynchronous tests. The tests check completion and join the worker; merely sending cancellation is insufficient evidence that the goroutine has exited.\n\n```sh\ngo test -race -count=50 ./...\ngo run ./gotime\n```\n\nThe negative control replaces calendar addition with a fixed twenty-four-hour addition. The DST test must fail. Another control removes the cancellation branch from Wait; the cancellation-and-join assertion must reject it. These intentionally broken variants show that the tests enforce a meaningful distinction rather than repeat the implementation in another spelling.\n\nFor production, add integration tests for the real queue, database or scheduler boundary. Fake-time unit tests do not establish clock synchronization between machines, operating-system suspend behavior, or delivery guarantees. The [synctest guide](/news/go-concurrency-tests-synctest-without-sleeps) explains how to keep deterministic unit tests and real-boundary tests complementary."
+      },
+      {
+        "id": "explore-the-model-interactively-in-playground",
+        "title": "Explore the model interactively in Playground",
+        "body": "[Download the I/O and time lab](/downloads/go-boundaries-lab-20261029.zip) and inspect gotime/main.go. Before editing an existing [Playground](/playground) draft, download your own source copy. Paste the self-contained program into main.go and keep a compatible go.mod. The demonstration uses standard-library imports, including the zone-data fallback, and has no network calls.\n\nStart by predicting the spring and autumn outputs. Change the location, the starting date or the operation, then run the program on your selected native device. A fixed-offset location will not reproduce the same seasonal rule changes; that is a useful contrast when exploring the distinction between an offset and a named location. If loading a location fails, keep the error visible rather than substituting a different location silently.\n\nThe browser editor does not execute Go. If you choose to collaborate, create a temporary room, open it in a compatible GopherForge app and press its local Run button. Other participants see output attributed to that device and source revision. Sharing sends source to the relay; the [MCP guide](/guide/mcp) explains capabilities, expiry and how Claude or Codex can help edit without automatically executing code.\n\nAsk an assistant to propose a calendar test case, predict both Add and AddDate results, and explain which requirement each operation satisfies. Review the source and press Run yourself. Keep this as an experiment in semantics: a passing demonstration does not turn NextDay into a complete recurring-job scheduler or prove a particular host's wall-clock behavior under every operational condition."
+      },
+      {
+        "id": "keep-the-time-contract-beside-the-feature",
+        "title": "Keep the time contract beside the feature",
+        "body": "A useful review records the kind of time involved, location rules, accepted representation, precision, timeout ownership, recurrence policy and test cases. It also explains what happens when the process restarts, rules change, a deadline expires or delivery is retried. Those decisions make the code reviewable beyond its use of a familiar time API.\n\nFor the document service, the thirty-second conversion budget stays an elapsed-work constraint. The local morning digest keeps a location-aware recurrence policy and separately tracked occurrences. The editorial date remains a date label. Each feature can now choose its implementation and tests without pretending that all time values have the same meaning.\n\nContinue with the [time-and-units lesson](/learn/clean-production.time-money), [timer ownership](/learn/stdlib.timer-contracts), and [I/O boundaries](/news/go-streaming-io-reader-eof-limits-json). The value of the model is practical: an unexpected timestamp stops being a mysterious formatting bug once the team can identify which contract was crossed and which evidence would demonstrate the intended behavior."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Time values and calendar operations",
+        "url": "https://pkg.go.dev/time"
+      },
+      {
+        "title": "Monotonic time support",
+        "url": "https://go.dev/doc/go1.9#monotonic-time"
+      },
+      {
+        "title": "IANA timezone model",
+        "url": "https://data.iana.org/time-zones/tzdb/theory.html"
+      },
+      {
+        "title": "Embedded zone-data fallback",
+        "url": "https://pkg.go.dev/time/tzdata"
+      },
+      {
+        "title": "Internet timestamp representation",
+        "url": "https://www.rfc-editor.org/rfc/rfc3339"
+      },
+      {
+        "title": "Context deadline propagation",
+        "url": "https://pkg.go.dev/context"
+      },
+      {
+        "title": "Versioned timer-channel behavior",
+        "url": "https://go.dev/wiki/Go123Timer"
+      },
+      {
+        "title": "Testing asynchronous time",
+        "url": "https://go.dev/blog/testing-time"
+      },
+      {
+        "title": "Stable testing/synctest contracts",
+        "url": "https://pkg.go.dev/testing/synctest"
+      }
+    ],
+    "related": [
+      "go-streaming-io-reader-eof-limits-json",
+      "go-concurrency-tests-synctest-without-sleeps",
+      "go-backpressure-concurrency-limits-queues-deadlines"
+    ],
+    "wordCount": 2455,
+    "proseWordCount": 2455,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go time UTC DST guide",
+      "Go AddDate vs Add 24 hours",
+      "Go monotonic clock deadlines",
+      "Go timer cancellation tests"
+    ],
+    "editionDate": "2026-10-12",
     "kind": "guide"
   }
 ]

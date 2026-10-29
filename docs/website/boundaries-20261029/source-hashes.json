@@ -1,0 +1,7 @@
+{
+  "streamio/main.go": "597d80847fbf833aadb80359e8eeaf9062c106d2ff32c28685353ea3c8d44ca2",
+  "streamio/main_test.go": "d15364b41c930f1ebd4c33e8acad3813f069c472720ca54a98f250c9fe530230",
+  "gotime/main.go": "0d2c6a0cabe69791dea9c6cea355ddf266116340deab4373a3446bf62c5e7f99",
+  "gotime/main_test.go": "a48267b9ad8129b48c88dd674e5e99084b5d0917b2f38cbea1a7e605962d68bf",
+  "go.mod": "4055589e105f2ea868a574689bb39434d51451c5997d05d89a8c878b77bd0375"
+}
