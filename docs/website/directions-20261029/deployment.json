@@ -1,0 +1,23 @@
+{
+  "source": "d662f62",
+  "job": "gopherforge-directions-d662f62-20261029",
+  "state": "succeeded",
+  "finishedAt": "2026-10-29T14:08:02.933968485Z",
+  "image": "sha256:5da5e4c37b2b769aeb3aabb9fd7c24dae17d2998fc512b8e8a3de8fb3444d610",
+  "previousImage": "sha256:32ff9f47333ad56ae2d8b023a86deeb768d217631d0dc382e420f1c75d766fce",
+  "rollbackTag": "localhost/gopherforge-web:rollback-before-directions-d662f62",
+  "method": "Hostwatch deployment preview then revision-bound replace, terminal status confirmed; separate candidate preflight passed",
+  "postChecks": {
+    "health": "passed",
+    "persistentShare": "synthetic share survived replacement, HTML/JSON noindex, then revoked and own file removed",
+    "restartPolicy": "unless-stopped",
+    "hostShareBind": "preserved",
+    "externalFeedDelivery": "ok",
+    "sitemapURLs": 451,
+    "RSSItems": 30,
+    "sixGeneratedImages": "HTTP 200 WebP",
+    "internalLinks": 20,
+    "labDownloadHashes": "passed"
+  },
+  "nativeApp": "No native application binary or App Store submission changed for these website articles."
+}
