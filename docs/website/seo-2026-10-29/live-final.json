@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-10-29T09:40:46.922579+00:00",
+  "sourceCommit": "f3bba6f",
+  "HTTP": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/learn",
+      "status": 200
+    },
+    {
+      "path": "/learn/core.short-declaration",
+      "status": 200
+    },
+    {
+      "path": "/learn/units/core",
+      "status": 200
+    },
+    {
+      "path": "/learn/ai.go-workflow",
+      "status": 200
+    },
+    {
+      "path": "/interview/ai.workflow",
+      "status": 200
+    },
+    {
+      "path": "/guide",
+      "status": 200
+    },
+    {
+      "path": "/guide/mcp",
+      "status": 200
+    },
+    {
+      "path": "/news/go-emudhra-urgent-tls-incident-response",
+      "status": 200
+    },
+    {
+      "path": "/news",
+      "status": 200
+    },
+    {
+      "path": "/news/rss.xml",
+      "status": 200
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200
+    },
+    {
+      "path": "/icon.png",
+      "status": 200
+    },
+    {
+      "path": "/apple-icon.png",
+      "status": 200
+    }
+  ],
+  "sitemapURLs": 439,
+  "compiledLessonAndUnitSchemasChecked": 270,
+  "invalidCourseClaimRemoved": true
+}

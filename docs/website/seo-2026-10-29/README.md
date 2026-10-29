@@ -15,3 +15,11 @@ The replacement container retained the published-progress volume and restart pol
 Google accepted a specific indexing request for the new eMudhra article. This is not confirmation that it is indexed. Manual actions and security reports both said **No issues**. Core Web Vitals had insufficient field data; no passing performance score is claimed.
 
 No accounts, tracking SDK, fabricated reviews, automated indexing spam or recurring monitor were added. Sitemap acceptance does not guarantee indexing, traffic or rich-result display.
+
+## Final curriculum follow-up
+
+A representative lesson’s official test found an incomplete nested `Course` entity (missing description and optional provider). Google’s course-list guidance describes instructor-led courses with a roster; this site provides open, self-directed learning without enrollment. The catalog now uses `CollectionPage`, with `LearningResource` for units and lesson relationships, instead of implying eligibility for that course-list feature. All **270 generated lesson/unit pages** were parsed and checked for the obsolete Course type. The final production image is `f3bba6f`; 15 representative HTTPS checks passed after replacement, the 439-URL sitemap is unchanged, and the lesson’s new official test shows **one valid BreadcrumbList, no invalid Course item**. The disposable shared snapshot again survived replacement and was then revoked.
+
+The homepage’s official test detected one valid Software App item and one noncritical recommendation for `aggregateRating`. The US App Store lookup returned zero ratings. We did not fabricate an aggregate rating. That optional recommendation remains documented.
+
+References: [Google course-list eligibility](https://developers.google.com/search/docs/appearance/structured-data/course), [clean article result](https://search.google.com/test/rich-results/result?id=XEtHUits55jUK4XsDkmK5Q), [clean lesson result](https://search.google.com/test/rich-results/result?id=XlCgslid98ep4vwfAPD16A).

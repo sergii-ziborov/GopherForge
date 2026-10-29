@@ -61,5 +61,35 @@
     "persistentMountVerified": true,
     "restartPolicy": "unless-stopped",
     "externalFeedDelivered": true
+  },
+  "finalDeployment": {
+    "sourceCommit": "f3bba6f",
+    "imageDigest": "sha256:6373443b145dc3d87f05faba0901ba1f28a0408a9dfa1a58fa76b2619700011b",
+    "job": "gopherforge-seo-f3bba6f-20261029",
+    "state": "succeeded",
+    "finishedAt": "2026-10-29T09:39:52.810642097Z",
+    "testsPassed": 35,
+    "compiledLearningSchemasChecked": 270,
+    "liveRepresentativeHTTPChecks": 15,
+    "sharedProgressSurvivedReplacement": true,
+    "syntheticShareRevoked": true,
+    "persistentMountVerified": true,
+    "restartPolicy": "unless-stopped",
+    "externalFeedDelivered": true
+  },
+  "learningSchema": {
+    "beforeURL": "https://search.google.com/test/rich-results/result?id=0bxJ4GoH4TIZ2_ipvybdTw",
+    "before": "Incomplete nested Course: missing description and optional provider",
+    "change": "Self-study catalog uses CollectionPage and LearningResource; no Google instructor-led course-list eligibility is claimed. Visible course content, navigation and IDs are unchanged.",
+    "afterURL": "https://search.google.com/test/rich-results/result?id=XlCgslid98ep4vwfAPD16A",
+    "after": "1 valid BreadcrumbList item, no invalid Course item",
+    "screenshot": "rich-results-lesson.jpg"
+  },
+  "homeRichResults": {
+    "url": "https://search.google.com/test/rich-results/result?id=0ja0HZwDromni_MLM0tzOQ",
+    "validSoftwareAppItems": 1,
+    "criticalIssues": 0,
+    "noncriticalIssues": 1,
+    "recommendation": "aggregateRating optional. US App Store lookup showed ratingCount 0; no rating was invented."
   }
 }
