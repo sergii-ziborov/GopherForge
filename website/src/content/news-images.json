@@ -448,5 +448,41 @@
     "width": 1536,
     "height": 1024,
     "alt": "Identify, commit, replay and reconcile: preserve operation identity, record the effect and result, replay matching requests and investigate uncertain outcomes."
+  },
+  "godirections-hero": {
+    "src": "/images/news/godirections-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher chooses among API services, command-line tools, cloud infrastructure and a smaller AI application path."
+  },
+  "godirections-infographic": {
+    "src": "/images/news/godirections-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Search, usage and engineering fit are separate kinds of evidence for evaluating Go."
+  },
+  "godirections-detail": {
+    "src": "/images/news/godirections-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An AI component is surrounded by bounded service queues, cancellation and explicit application boundaries."
+  },
+  "slogfield-hero": {
+    "src": "/images/news/slogfield-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher organizes diagnostic event cards into structured groups while a secret remains outside the event stream."
+  },
+  "slogfield-infographic": {
+    "src": "/images/news/slogfield-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Select, structure, redact and test: design safe diagnostic event fields and verify the resulting schema."
+  },
+  "slogfield-detail": {
+    "src": "/images/news/slogfield-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A completed application receipt and a blocked diagnostic sink follow separate paths with an explicit overflow choice."
   }
 }

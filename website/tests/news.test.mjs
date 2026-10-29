@@ -366,3 +366,64 @@ test("5 and 11 October reliability guides contain deep original labs and six dis
     }
   }
 });
+
+test("6 and 10 October guides preserve multi-source evidence and tested slog boundaries", async () => {
+  const posts = news.filter((n) =>
+    ["godirections", "slogfield"].includes(n.imagePrefix),
+  );
+  assert.equal(posts.length, 2);
+  const manifest = await read(
+    "../../docs/website/directions-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const research = await read(
+    "../../docs/website/directions-20261029/research.json",
+  );
+  assert.deepEqual(
+    research.rankings.slice(0, 3).map((r) => r.GoRank),
+    [11, 17, 12],
+  );
+  const stats = await read(
+    "../../docs/website/directions-20261029/trends-summary.json",
+  );
+  for (const s of Object.values(stats.series)) {
+    assert.equal(s.previous52.weeks, 52);
+    assert.equal(s.latest52.weeks, 52);
+    assert.deepEqual(s.excludedIncomplete, ["2026-10-25"]);
+  }
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("/downloads/go-directions-slog-lab-20261029.zip"));
+    assert.ok(body.includes("](/playground)"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
+    }
+  }
+});

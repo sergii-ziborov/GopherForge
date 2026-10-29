@@ -1,0 +1,140 @@
+{
+  "checkedOn": "2026-10-29",
+  "method": "Primary sources only; direct public Google Trends and PYPL UI observations saved. Separate normalized search series, rankings, survey population, project existence, forecasts and original engineering assessment. TIOBE method change disclosed. No universal growth, hiring or market-share claim. Archive editions 6/10 October; actual publication 29 October. Original stdlib slog lab, synthetic data, no added product logging.",
+  "rankings": [
+    {
+      "source": "TIOBE",
+      "edition": "October 2026",
+      "GoRank": 11,
+      "rating": "1.39%",
+      "caveat": "Mandarin query inclusion changed method; year-to-year table is not an unchanged-process experiment"
+    },
+    {
+      "source": "PYPL",
+      "edition": "Worldwide October 2026",
+      "GoRank": 17,
+      "share": "0.53%",
+      "caveat": "Tutorial query interest, six-month smoothing; shares are not developers"
+    },
+    {
+      "source": "RedMonk",
+      "edition": "January 2026",
+      "published": "2026-04-14",
+      "GoRank": 12,
+      "caveat": "GitHub PR and Stack Overflow correlation; author flags anomalies; not October results"
+    },
+    {
+      "source": "GitHub Octoverse",
+      "edition": "2026 report",
+      "published": "2026-10-28",
+      "observation": "Go included in top-ten language participation series",
+      "caveat": "Monthly distinct participating accounts can count across languages; forecasts separated from observed history; no unsupported Go-specific growth number"
+    }
+  ],
+  "articles": [
+    {
+      "key": "godirections",
+      "day": "06",
+      "slug": "go-popularity-2026-google-trends-cloud-ai-directions",
+      "title": "Go in 2026: popularity rankings, Google Trends and useful directions",
+      "description": "Compare Google Trends, TIOBE, PYPL, RedMonk and GitHub with Go survey evidence. Choose practical paths in APIs, cloud tools and AI application services.",
+      "category": "GUIDE \u00b7 GO ECOSYSTEM AND DIRECTIONS",
+      "keywords": [
+        "Go popularity 2026",
+        "Golang Google Trends TIOBE PYPL",
+        "Go cloud infrastructure AI services",
+        "what is Go used for"
+      ],
+      "sources": [
+        {
+          "title": "Google Trends methodology",
+          "url": "https://support.google.com/trends/answer/4365533?hl=en"
+        },
+        {
+          "title": "Checked Go programming-language topic",
+          "url": "https://trends.google.com/trends/explore?date=today%205-y&q=%2Fm%2F09gbxjr&hl=en"
+        },
+        {
+          "title": "TIOBE October 2026 table and method change",
+          "url": "https://www.tiobe.com/tiobe-index/"
+        },
+        {
+          "title": "TIOBE index definition",
+          "url": "https://www.tiobe.com/tiobe-index/programminglanguages_definition/"
+        },
+        {
+          "title": "PYPL table and tutorial-query method",
+          "url": "https://pypl.github.io/PYPL.html"
+        },
+        {
+          "title": "RedMonk January 2026, published April",
+          "url": "https://redmonk.com/sogrady/2026/04/14/language-rankings-1-26/"
+        },
+        {
+          "title": "GitHub Octoverse 2026 participation and forecasts",
+          "url": "https://github.blog/news-insights/octoverse/octoverse-commits-pushes-reach-new-highs-in-2026-as-developers-build-with-agents/"
+        },
+        {
+          "title": "2025 Go Developer Survey results",
+          "url": "https://go.dev/blog/survey2025"
+        },
+        {
+          "title": "2026 Go survey announcement, not results",
+          "url": "https://go.dev/blog/survey2026-announce"
+        },
+        {
+          "title": "Kubernetes source",
+          "url": "https://github.com/kubernetes/kubernetes"
+        },
+        {
+          "title": "Official MCP Go SDK",
+          "url": "https://github.com/modelcontextprotocol/go-sdk"
+        },
+        {
+          "title": "Ollama source and polyglot application",
+          "url": "https://github.com/ollama/ollama"
+        }
+      ]
+    },
+    {
+      "key": "slogfield",
+      "day": "10",
+      "slug": "go-slog-structured-logging-context-redaction",
+      "title": "Go slog in practice: structured logs, safe fields and failure tests",
+      "description": "Build and test Go slog events with explicit context fields, typed redaction, debug guards and failing writers. Includes original runnable code and schema tests.",
+      "category": "GUIDE \u00b7 GO STRUCTURED LOGGING",
+      "keywords": [
+        "Go slog structured logging tutorial",
+        "Golang slog context redaction",
+        "slog JSONHandler LogValuer",
+        "Go logging failure tests"
+      ],
+      "sources": [
+        {
+          "title": "Structured logging with slog",
+          "url": "https://go.dev/blog/slog"
+        },
+        {
+          "title": "slog package reference",
+          "url": "https://pkg.go.dev/log/slog"
+        },
+        {
+          "title": "Official slog handler guide",
+          "url": "https://github.com/golang/example/tree/master/slog-handler-guide"
+        },
+        {
+          "title": "OWASP logging exclusions and failure testing",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+        },
+        {
+          "title": "Go function call evaluation",
+          "url": "https://go.dev/ref/spec#Calls"
+        },
+        {
+          "title": "Writer byte counts and errors",
+          "url": "https://pkg.go.dev/io#Writer"
+        }
+      ]
+    }
+  ]
+}

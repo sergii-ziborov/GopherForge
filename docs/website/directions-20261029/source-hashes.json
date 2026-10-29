@@ -1,0 +1,16 @@
+{
+  "README.md": "ac74cdaa4a1281bd4d0a10f793049dfb06cdef0b463c97931708ea4a56f17a86",
+  "go.mod": "c01119465b3dd87e48e840fe15b90c1539dfce1f75f30311321b324820542597",
+  "research.json": "8bcad5165bf6efddfd4ebb344ca051aac6741bc7835b22a0120d1eb84a986338",
+  "analyze_trends.py": "f4386c9deeb68d7e672e25573d6a0d720843dc305d6f61f3c97c7b56df2ca388",
+  "test_trends.py": "70a76c126b446eaa8b673217461092fca866007d03caced90782e06ed2454eb9",
+  "trends-summary.json": "58f79e67c0e72242e26d4093d47bc2319d8367b90131f8da673c20a0d0bd5173",
+  "trends-go-topic.csv": "79632e4a6d78324cf776b9fe27220184c4fd2b25047a2e7dfa924797c0289922",
+  "trends-golang.csv": "d810b067bd59dd2e768ff61924f82364d6e1130e5c15039b8a58747a89abe212",
+  "trends-go-topic-ui-tables.json": "144e4b118fa487192fafd5487e2563440a2d42323b3e1a06b8432a762fccd194",
+  "trends-golang-ui-tables.json": "af70ae0eff8d0fc53547d89a34483443c759d5a0be6f92d5f9566c9c52f69ed9",
+  "pypl-ui-table.json": "0508b57453bfa68c717923c284279555e049e0b41fca4a729d4ba7c6e3280d85",
+  "negative-controls.json": "03f9e597d854d9676569f091c66f7c5a847bd727c1de3523e6472f568f692c63",
+  "sloglab/main.go": "1f673b983c8e7e02fa109fafd492ffa4c4fddd106bc085896c46d19add85ee9d",
+  "sloglab/main_test.go": "ef4c8803e5f0a419bd7c772e9ed0333663acf35ee56e52aef5c660adef2a3648"
+}

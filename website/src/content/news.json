@@ -1045,7 +1045,8 @@
     "related": [
       "gopls-0-24-error-contracts-memory",
       "go-slices-backing-array-append-clip-clone",
-      "go-reproducible-build-report-october-21-2026"
+      "go-reproducible-build-report-october-21-2026",
+      "go-popularity-2026-google-trends-cloud-ai-directions"
     ],
     "imagePrefix": "survey",
     "sections": [
@@ -1112,7 +1113,7 @@
     ],
     "wordCount": 2273,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-23",
+    "modifiedAt": "2026-10-29",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1267,7 +1268,8 @@
       "go-backpressure-concurrency-limits-queues-deadlines",
       "go-json-v2-migration-api-compatibility",
       "go-allocation-profiling-pprof-escape-benchmarks",
-      "go-streaming-io-reader-eof-limits-json"
+      "go-streaming-io-reader-eof-limits-json",
+      "go-slog-structured-logging-context-redaction"
     ],
     "imagePrefix": "buffers",
     "sections": [
@@ -1372,7 +1374,8 @@
       "gopls-0-24-error-contracts-memory",
       "go-bytes-buffer-sync-pool-ownership",
       "go-1-27-http-connection-reuse",
-      "go-json-v2-migration-api-compatibility"
+      "go-json-v2-migration-api-compatibility",
+      "go-slog-structured-logging-context-redaction"
     ],
     "imagePrefix": "errors",
     "sections": [
@@ -1434,7 +1437,7 @@
     ],
     "wordCount": 2074,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-27",
+    "modifiedAt": "2026-10-29",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1606,7 +1609,8 @@
       "go-database-sql-pool-timeouts-transactions",
       "go-garbage-collector-gogc-gomemlimit-lab",
       "go-time-utc-dst-monotonic-deadlines",
-      "go-retries-idempotency-keys-unknown-outcomes"
+      "go-retries-idempotency-keys-unknown-outcomes",
+      "go-popularity-2026-google-trends-cloud-ai-directions"
     ],
     "imagePrefix": "backpressure",
     "wordCount": 3708,
@@ -3043,7 +3047,8 @@
     "related": [
       "go-retries-idempotency-keys-unknown-outcomes",
       "go-concurrency-tests-synctest-without-sleeps",
-      "go-heap-graphs-reachability-retained-memory"
+      "go-heap-graphs-reachability-retained-memory",
+      "go-slog-structured-logging-context-redaction"
     ],
     "wordCount": 2310,
     "proseWordCount": 2310,
@@ -3181,6 +3186,248 @@
       "Go transactional outbox retry"
     ],
     "editionDate": "2026-10-11",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-popularity-2026-google-trends-cloud-ai-directions",
+    "title": "Go in 2026: popularity rankings, Google Trends and useful directions",
+    "description": "Compare Google Trends, TIOBE, PYPL, RedMonk and GitHub with Go survey evidence. Choose practical paths in APIs, cloud tools and AI application services.",
+    "category": "GUIDE · GO ECOSYSTEM AND DIRECTIONS",
+    "eventDate": "2026-10-06",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "godirections",
+    "sections": [
+      {
+        "id": "is-go-growing-and-what-should-a-developer-actually-conclude",
+        "title": "Is Go growing, and what should a developer actually conclude?",
+        "body": "Go remains a serious choice for service backends, command-line tools and infrastructure. Whether it is “growing” depends on the population and activity being measured. Searches, tutorial interest, repository participation, production installations and hiring are different quantities. A useful answer must preserve those differences before recommending what to learn or build.\n\nThis guide belongs to our **6 October archive edition**, but was researched and first published on **29 October 2026**. It includes information released after the edition date, explicitly including GitHub's October 2026 report. It is an evidence review and practical planning guide, not a claim that these observations were available on 6 October.\n\nWe checked Google Trends directly, the current TIOBE and PYPL tables, RedMonk's latest listed language-ranking edition, the official Go developer survey and concrete open-source projects. The result is more useful than an uninterrupted-growth headline: Go has established application domains and plausible adjacent opportunities, while the search measurements checked here do not demonstrate continuous growth. The forward-looking recommendations below are our engineering assessment, not measured forecasts of jobs or market share."
+      },
+      {
+        "id": "what-the-google-trends-check-actually-showed",
+        "title": "What the Google Trends check actually showed",
+        "body": "On 29 October we selected **Worldwide, Past 5 years, All categories, Web Search**. We checked both the search term `golang` and the autocomplete topic **Go — Programming language**. We saved the accessible weekly chart tables and excluded the current week beginning 25 October, which was incomplete. The last included week began 18 October. Each average below uses 52 weekly observations within its own series.\n\n| Google Trends selection | Previous 52 complete weeks | Latest 52 complete weeks |\n| --- | ---: | ---: |\n| Go programming-language topic | 70.37 | 61.67 |\n| `golang` search term | 63.94 | 42.56 |\n\nThese are averages of normalized interest points, not search counts. The two rows were retrieved separately; their magnitudes cannot establish that one query has more searches than the other. Both comparisons run downward within their respective captured series. They do not support a claim of uninterrupted search-interest growth. The raw-term related queries also contained unrelated noise, so we did not treat that list as a clean demand survey. [Open the checked topic](https://trends.google.com/trends/explore?date=today%205-y&q=%2Fm%2F09gbxjr&hl=en).\n\nGoogle explains that Trends uses sampled searches and scales relative interest to a 0–100 range for the selected geography and period. That makes it useful for detecting search patterns, but it does not count Go developers or production workloads. A lower relative score could coexist with more deployed services; the data here cannot establish that coexistence or its cause. Changes in search habits are possible explanations to investigate, not explanations proven by this chart. [Google's methodology](https://support.google.com/trends/answer/4365533?hl=en)."
+      },
+      {
+        "id": "tiobe-pypl-redmonk-and-github-measure-different-things",
+        "title": "TIOBE, PYPL, RedMonk and GitHub measure different things",
+        "body": "| Source and edition | Verified Go observation | What that observation describes |\n| --- | --- | --- |\n| TIOBE, October 2026 | Rank 11, rating 1.39%; October 2025 rank shown as 8 | A weighted search-result-based community index |\n| PYPL, Worldwide, October 2026 | Rank 17, share 0.53% | Smoothed relative interest in language tutorials |\n| RedMonk, January 2026, published 14 April | Rank 12 | Combined GitHub and Stack Overflow signals |\n| GitHub Octoverse, October 2026 report | Go appears among the top-ten language participation series | Monthly participating accounts attributed to repository language |\n\nTIOBE's rating is not a percentage of programmers. Its definition relies on search-result counts and weighting. Particularly relevant this month, TIOBE says it added Mandarin Chinese search terms and temporarily removed long-term historical data while adjusting the index. The displayed year-to-year rank is real, but it should not be presented as a clean experiment with an unchanged measurement process. [October table](https://www.tiobe.com/tiobe-index/), [index definition](https://www.tiobe.com/tiobe-index/programminglanguages_definition/).\n\nPYPL's own FAQ describes tutorial queries, normalization relative to Java and six-month smoothing. It is a learning-interest proxy, not a count of running programs. Its dependence on Google Trends also means that PYPL and our direct Trends check are not two independent confirmations of adoption. Treat that dependency explicitly instead of counting every index as another independent vote. [PYPL table and method](https://pypl.github.io/PYPL.html).\n\nRedMonk combines code and discussion signals, places Go twelfth in its January edition, and warns against reading small rank differences too literally. Its author also discusses uncertainty in the GitHub pull-request data and the changing representativeness of Stack Overflow. We preserve the edition and publication dates instead of relabelling that table “October rankings.” [RedMonk's primary report](https://redmonk.com/sogrady/2026/04/14/language-rankings-1-26/).\n\nGitHub's newer report provides another perspective: participating accounts, including more than code commits, are attributed to each repository's primary language; an account can count in several languages. Go is included in its top-ten language series. Future values in the report's chart are forecasts, not observed adoption. We do not turn the chart into an unsupported exact Go growth percentage or equate GitHub accounts with employed Go engineers. [Octoverse 2026 and methodology](https://github.blog/news-insights/octoverse/octoverse-commits-pushes-reach-new-highs-in-2026-as-developers-build-with-agents/).\n\nThe [research and lab bundle](/downloads/go-directions-slog-lab-20261029.zip) contains the captured public Trends tables, PYPL row, reproducible averaging script and source register. The saved numbers describe this retrieval, not a permanently fixed live chart."
+      },
+      {
+        "id": "the-official-survey-explains-use-cases-better-than-a-league-table",
+        "title": "The official survey explains use cases better than a league table",
+        "body": "The **2025 Go Developer Survey**, published in January 2026, reports 5,379 cleaned responses. CLI tools and API services remain central use cases; 55% of respondents build both. More than a third reported cloud-infrastructure tooling. An expanded category covering ML models, tools and agents accounted for 11%. These are answers from the survey population, not percentages of all software developers. [Official results](https://go.dev/blog/survey2025).\n\nThe **2026 survey is still open on this article's publication date**, with results expected later. Its announcement is evidence of an ongoing survey, not a source of new adoption figures. Our [survey participation guide](/news/go-developer-survey-2026-practical-feedback) explains how to contribute concrete feedback. [2026 announcement](https://go.dev/blog/survey2026-announce).\n\nFor an engineering decision, the useful question is therefore more specific: can your team operate a particular Go component reliably, and does that component remove a real constraint? A ranking can justify looking into the ecosystem. It cannot answer whether your database transaction, deployment pipeline or model integration has a sound ownership boundary."
+      },
+      {
+        "id": "direction-one-apis-and-operationally-simple-services",
+        "title": "Direction one: APIs and operationally simple services",
+        "body": "Consider a small catalog service with a database, background reconciliation and a browser frontend. The valuable Go work is not producing the shortest route handler. It is agreeing on request limits, transaction ownership, cancellation, error classification and a deployment that can be rebuilt and rolled back. Those obligations remain whether routing uses the standard library or Gin.\n\nOur assessment is that this remains a strong learning direction because the skills transfer across many service designs. Start with one operation that has a precise success condition. Add a bounded input envelope, a database budget and explicit behavior when the caller disconnects. Then add tests for duplicate requests and ambiguous outcomes. A correct response under failure is a better portfolio artifact than a screenshot showing a large requests-per-second number without workload details.\n\nGin can make HTTP adaptation convenient, but the application should retain its business rules independently of the framework context. Practice [Gin routing and middleware](/learn/gin.routing-middleware), then [response ownership and testing](/learn/gin.errors-testing). Extend the exercise using our [idempotency guide](/news/go-retries-idempotency-keys-unknown-outcomes): what happens when work commits but the reply disappears? That question tests engineering judgment far more directly than asking which framework is currently fashionable."
+      },
+      {
+        "id": "direction-two-platform-tools-controllers-and-clis",
+        "title": "Direction two: platform tools, controllers and CLIs",
+        "body": "Kubernetes provides a concrete, inspectable example of Go in infrastructure. Its repository is evidence that such systems can be built with Go, not proof that every platform team should adopt the language or Kubernetes itself. [Kubernetes source](https://github.com/kubernetes/kubernetes).\n\nA good smaller project is a command that inspects a configuration directory, validates it and produces a deterministic plan. Separate planning from execution. Give dry runs the same validation rules as real runs. Represent partial failure explicitly, and make repeated execution safe where the task permits it. This exercises file ownership, cancellation, error reporting and compatibility without requiring an entire cluster.\n\nA controller-style extension can compare desired and observed state in memory before touching a real API. Define which discrepancies require action, what happens when observations are stale and whether a retry repeats an effect. This exposes the difference between eventually reconciling a resource and blindly looping over a failed command. The language cannot repair a missing reconciliation contract.\n\nLearn the [Go toolbelt](/learn/operations.go-tooling), [container build boundaries](/learn/operations.docker-build) and [Kubernetes workload model](/learn/operations.kubernetes-workloads). Then document the environments you actually tested. A portable Go executable may still require certificates, timezone data, writable directories, native libraries or external services. Operational simplicity comes from specifying those dependencies, not from assuming they disappeared."
+      },
+      {
+        "id": "direction-three-dependable-application-layers-around-ai",
+        "title": "Direction three: dependable application layers around AI",
+        "body": "There are real Go entry points into AI applications. The official [MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk) supports building protocol clients and servers. [Ollama's source](https://github.com/ollama/ollama) illustrates an application that combines Go and native components. These examples establish available building blocks; neither establishes that Go dominates model training or guarantees demand for a new agent framework.\n\nOur assessment is that Go can be useful where a model call needs a dependable surrounding system: bounded admission, explicit tool permissions, cancellation, streaming responses and a service contract that ordinary clients can understand. The model is one component. An application still needs to decide what it may read, which actions require confirmation and how it reports an uncertain external outcome.\n\nA useful learning project exposes two read-only tools over synthetic data. Reject oversized arguments, distinguish invalid input from unavailable dependencies and stop work when its budget expires. Only after those contracts work should you consider a write tool. Keep execution on the device or server explicitly selected by the operator; an AI edit should not silently trigger an execution elsewhere.\n\nOur [agent verification lesson](/learn/ai.verify-generated-go) and [MCP guide](/guide/mcp) apply this discipline to GopherForge. The practical goal is to make generated work inspectable and repeatable. It is not to add an agent label to an unbounded HTTP handler. Combine the exercise with the [backpressure guide](/news/go-backpressure-concurrency-limits-queues-deadlines) before introducing parallel tool calls."
+      },
+      {
+        "id": "where-another-language-or-a-mixed-system-may-fit-better",
+        "title": "Where another language or a mixed system may fit better",
+        "body": "A useful Go strategy includes a rejection rule. If your primary work is exploring a numerical model in an existing notebook ecosystem, forcing the experiment into a Go service may add integration cost before it adds value. If your hard constraint is a particular device SDK or deterministic memory behavior, inspect that environment directly. If a browser UI is the product, a Go backend does not replace the frontend toolchain.\n\nFor a React and Gin project, identify the build boundary: the frontend produces assets, the backend serves routes and APIs, and a deployment supplies the required runtime environment. Test a representative project, including asset paths and failed API calls. Do not assume that every npm package, native addon or development server can run inside every mobile sandbox. Our [application guide](/guide) describes the supported GopherForge workflow and its limits.\n\nMixed systems are often reasonable. A Python model service and a Go gateway may each own a different part of the problem. That split also creates network, versioning and failure boundaries. Measure the cost of those boundaries against the benefit rather than treating a language ranking as permission to add another service. Sometimes the most reliable architectural decision is keeping a small existing system intact."
+      },
+      {
+        "id": "a-practical-evaluation-plan-before-committing-a-team",
+        "title": "A practical evaluation plan before committing a team",
+        "body": "Write down one representative workload, one failure workload and one deployment target. For a service, include realistic payload sizes, dependency latency and cancellation. For a CLI, include malformed files, interrupted work and an unwritable output. For an AI integration, include invalid tool arguments, a slow model and a canceled stream. Synthetic success-only examples hide the costs that determine production usefulness.\n\nRecord observable outcomes before changing implementations: correct completed work, rejected work, error categories, peak memory and the time spent waiting on dependencies. Compare equivalent behavior rather than code that quietly skips validation. Use profiles to identify a bottleneck; a faster parser is irrelevant when a connection pool is exhausted. Our [allocation profiling lab](/news/go-allocation-profiling-pprof-escape-benchmarks) shows how to separate evidence from an attractive benchmark headline.\n\nReview maintainability with another engineer. Can they locate the operation, explain its invariant and run a failing test without contacting the original author? Can they identify configuration, upgrade a dependency and reconstruct the executable? Those questions produce a more useful local assessment than assigning Go an invented universal score out of ten.\n\nFinally, specify a stop condition. If the prototype requires unsupported native dependencies, fails an essential latency target or becomes difficult for the team to maintain, record that outcome. A technology evaluation succeeds when it improves the decision, even when the decision is not to migrate."
+      },
+      {
+        "id": "turn-the-directions-into-a-focused-learning-path",
+        "title": "Turn the directions into a focused learning path",
+        "body": "Build one small system through three stages rather than starting three unrelated frameworks. First, implement a typed in-memory operation with explicit errors. Second, expose it through an HTTP adapter and add cancellation and input bounds. Third, add a CLI or a read-only agent tool that invokes the same application boundary. Explain what is shared and what each adapter must own.\n\nUse the [Playground](/playground) for isolated standard-library experiments, after saving any existing draft. Editing a draft does not execute Go. For collaboration, deliberately create a temporary room and press Run on the selected compatible native device; the relay shares source and device-attributed output. See the [MCP execution model](/guide/mcp) before involving an assistant. Local experiments cannot certify a production cluster or an external model provider.\n\nThen add observability deliberately. The companion [structured logging guide](/news/go-slog-structured-logging-context-redaction) shows how to choose useful fields while keeping secrets and capability links out of diagnostic output. This is a concrete bridge between learning syntax and operating a service: a maintainer can explain what happened without dumping every request into a log."
+      },
+      {
+        "id": "questions-to-ask-when-the-next-ranking-arrives",
+        "title": "Questions to ask when the next ranking arrives",
+        "body": "Before repeating a growth claim, ask what was counted, over which dates, with which denominator and whether the method changed. Check whether a percentage describes a share, a relative increase or percentage points. Ask whether several sources are independent, and distinguish observed history from a forecast. A report can be accurate while still being unsuitable for the conclusion attached to it.\n\nFor your own career or product, translate that evidence into a testable next step. Learn enough Go to build and explain one reliable service, tool or integration. Keep the source small enough to review, but include the failures that matter. Revisit the evidence when the next official survey or index edition arrives rather than treating today's numbers as a permanent verdict.\n\nGo does not need to win every popularity chart to be useful. The defensible opportunity is specific: understand a domain where its ecosystem fits, build clear operational boundaries and demonstrate correctness under realistic constraints. That is a stronger basis for choosing the language than either declaring it inevitable or dismissing it because one search series fell."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Google Trends methodology",
+        "url": "https://support.google.com/trends/answer/4365533?hl=en"
+      },
+      {
+        "title": "Checked Go programming-language topic",
+        "url": "https://trends.google.com/trends/explore?date=today%205-y&q=%2Fm%2F09gbxjr&hl=en"
+      },
+      {
+        "title": "TIOBE October 2026 table and method change",
+        "url": "https://www.tiobe.com/tiobe-index/"
+      },
+      {
+        "title": "TIOBE index definition",
+        "url": "https://www.tiobe.com/tiobe-index/programminglanguages_definition/"
+      },
+      {
+        "title": "PYPL table and tutorial-query method",
+        "url": "https://pypl.github.io/PYPL.html"
+      },
+      {
+        "title": "RedMonk January 2026, published April",
+        "url": "https://redmonk.com/sogrady/2026/04/14/language-rankings-1-26/"
+      },
+      {
+        "title": "GitHub Octoverse 2026 participation and forecasts",
+        "url": "https://github.blog/news-insights/octoverse/octoverse-commits-pushes-reach-new-highs-in-2026-as-developers-build-with-agents/"
+      },
+      {
+        "title": "2025 Go Developer Survey results",
+        "url": "https://go.dev/blog/survey2025"
+      },
+      {
+        "title": "2026 Go survey announcement, not results",
+        "url": "https://go.dev/blog/survey2026-announce"
+      },
+      {
+        "title": "Kubernetes source",
+        "url": "https://github.com/kubernetes/kubernetes"
+      },
+      {
+        "title": "Official MCP Go SDK",
+        "url": "https://github.com/modelcontextprotocol/go-sdk"
+      },
+      {
+        "title": "Ollama source and polyglot application",
+        "url": "https://github.com/ollama/ollama"
+      }
+    ],
+    "related": [
+      "go-slog-structured-logging-context-redaction",
+      "go-developer-survey-2026-practical-feedback",
+      "go-backpressure-concurrency-limits-queues-deadlines"
+    ],
+    "wordCount": 2355,
+    "proseWordCount": 2355,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go popularity 2026",
+      "Golang Google Trends TIOBE PYPL",
+      "Go cloud infrastructure AI services",
+      "what is Go used for"
+    ],
+    "editionDate": "2026-10-06",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-slog-structured-logging-context-redaction",
+    "title": "Go slog in practice: structured logs, safe fields and failure tests",
+    "description": "Build and test Go slog events with explicit context fields, typed redaction, debug guards and failing writers. Includes original runnable code and schema tests.",
+    "category": "GUIDE · GO STRUCTURED LOGGING",
+    "eventDate": "2026-10-10",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "slogfield",
+    "sections": [
+      {
+        "id": "a-log-event-is-an-interface-that-someone-will-depend-on",
+        "title": "A log event is an interface that someone will depend on",
+        "body": "A useful diagnostic event answers a specific operational question without exposing everything the application knows. For a request-completion event, the question might be: which operation finished, with what result, and how long did its application work take? Dumping a request object is an easy implementation and a poor contract. It mixes useful fields with unstable structure, secrets and accidental identifiers.\n\nThis is our **10 October archive guide**, researched and first published on **29 October 2026**. We selected the topic after checking related Google Trends queries, where `golang slog` appeared as a rising query, then verified that our article library lacked a deep treatment. That observation helped select a useful topic; it does not prove production adoption or make this an announcement of a new Go package.\n\nGo introduced `log/slog` in Go 1.21. It provides structured events and separates the logger frontend from handlers that process them. The original [Go announcement](https://go.dev/blog/slog) explains that architecture. Here we use it to investigate a narrower question: can our event schema remain useful when requests fail, values contain secrets, debug output is disabled and the destination refuses writes?"
+      },
+      {
+        "id": "define-the-event-before-choosing-the-output-format",
+        "title": "Define the event before choosing the output format",
+        "body": "Imagine a catalog API. Its completion event has a stable name, a service label, a synthetic request identifier and a grouped set of operation fields. The route is a trusted template such as `/items/{id}`. It is not the incoming path. Status and elapsed milliseconds are numbers, while the outcome belongs to a small documented set.\n\n| Field | Example | Ownership rule |\n| --- | --- | --- |\n| `msg` | `request.complete` | Stable event name, never an interpolated payload |\n| `service` | `catalog` | Fixed deployment/application label |\n| `request_id` | `demo-001` | Synthetic lab ID; production policy must be explicit |\n| `request.route` | `/items/{id}` | Trusted route template, not raw URL input |\n| `request.status` | `503` | Result recorded by the response owner |\n| `request.duration_ms` | `12` | Integer milliseconds with a declared unit |\n| `request.outcome` | `deadline` | Deliberate classification, not an arbitrary error message |\n\nThis schema is a design for the example, not a mandatory industry standard. Its value comes from making field meaning inspectable. Decide whether duration includes waiting for dependencies and whether it stops before or after writing the response. Decide how an abandoned response is classified. If two services use the same field name for different intervals, a shared dashboard will not repair the ambiguity.\n\nOur [Go directions guide](/news/go-popularity-2026-google-trends-cloud-ai-directions) explains why these operating skills matter beyond framework choice. The same event discipline applies to a CLI job, a queue worker or an AI tool invocation, although each needs its own completion contract."
+      },
+      {
+        "id": "start-with-a-small-json-handler-and-explicit-attributes",
+        "title": "Start with a small JSON handler and explicit attributes",
+        "body": "The downloadable lab uses only the standard library and synthetic values. It does not add analytics or logging to GopherForge itself. Its logger construction accepts an `io.Writer`, making the output destination replaceable in tests. A deterministic option removes timestamps only for stable lab output; an actual service must deliberately choose its timestamp and retention policies.\n\n```go\nfunc RequestLogger(base *slog.Logger, requestID string) *slog.Logger {\n    return base.With(\n        slog.String(\"service\", \"catalog\"),\n        slog.String(\"request_id\", requestID),\n    ).WithGroup(\"request\")\n}\n```\n\nThe lab then emits typed attributes for route, status, elapsed milliseconds and classified outcome. A successful example produces this JSON object:\n\n```json\n{\n  \"level\": \"INFO\",\n  \"msg\": \"request.complete\",\n  \"service\": \"catalog\",\n  \"request_id\": \"demo-001\",\n  \"request\": {\n    \"route\": \"/items/{id}\",\n    \"status\": 200,\n    \"duration_ms\": 120,\n    \"outcome\": \"ok\"\n  }\n}\n```\n\nThe duration is a chosen demonstration value, not a benchmark. Tests decode JSON and assert names, grouping, values and absence of unexpected fields. They do not compare whitespace or require a particular object-key order. That makes the test sensitive to a broken event contract while allowing formatting details to change.\n\nThe [package reference](https://pkg.go.dev/log/slog) documents JSONHandler, attributes, groups, levels and value resolution. Our tests explore concrete consequences of those APIs rather than requiring a custom handler for a routine event. Start with the built-in handler; introduce another processing layer only when its behavior is necessary and testable."
+      },
+      {
+        "id": "context-propagation-and-event-fields-are-separate-decisions",
+        "title": "Context propagation and event fields are separate decisions",
+        "body": "Passing `ctx` into a contextual logging method lets a handler inspect that context. It does not mean every context value becomes a JSON field. In this lab the request ID is attached explicitly with `With`, and the route is supplied explicitly when recording completion. There is no reflective scan of context values and no hidden dependence on a framework request object.\n\nThe test cancels its context before logging a synthetic completion. The event still appears. This is useful because cancellation itself can be the event we need to explain. The context's cancellation is not a request to erase diagnostics. A logging implementation should not silently lose the last event merely because application work correctly stopped.\n\nIn a Gin service, extract the few approved values at the HTTP boundary and retain their meaning. Do not retain the full framework context in a goroutine or make the logger responsible for deciding whether a response has been sent. Work through [Gin contexts and workers](/learn/gin.context-workers) and [response ownership](/learn/gin.errors-testing) before attaching background diagnostics.\n\nA request-scoped child logger is a convenient carrier of stable fields, but it is still an application dependency. Pass it deliberately where useful. Avoid turning every package into a collection of ambient globals that a test must reconfigure. A function can often return a classified result to its owner and let that owner emit one completion event."
+      },
+      {
+        "id": "redaction-begins-with-what-never-enters-the-event",
+        "title": "Redaction begins with what never enters the event",
+        "body": "The strongest protection in our example is its small input surface. It never receives headers, bodies, raw URLs or capability links. Removing a query string is insufficient: a secret can live in the path itself. Removing a URL fragment is also insufficient when the application already copied that fragment into another field. Choose a trusted route template instead of trying to sanitize an arbitrary address after capture.\n\nOWASP's [logging guidance](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) recommends excluding sensitive material and testing logging failures. For this lab, we apply that principle through synthetic inputs, an approved schema and two deliberately limited redaction mechanisms. Neither is advertised as a universal personal-data detector.\n\n```go\ntype Secret string\n\nfunc (Secret) LogValue() slog.Value {\n    return slog.StringValue(\"[REDACTED]\")\n}\n```\n\nA typed `Secret` passed as a value resolves to a redacted representation. The test also logs `string(Secret(\"synthetic-plaintext\"))` under an ordinary field name and verifies that the plaintext remains. That is an intentional counterexample: conversion discarded the protective behavior. It uses fabricated data and demonstrates why a type cannot prevent callers from copying the original text elsewhere.\n\nThe second mechanism replaces explicitly named attributes such as `authorization`, `password` and `token`, case-insensitively, including attributes inside groups. This protects those known names in this output handler. It does not inspect every string, recursively understand arbitrary application objects or repair a message that already contains a secret. Treat it as a defense behind the schema, not permission to log whole objects."
+      },
+      {
+        "id": "error-classification-should-preserve-meaning-without-copying-everything",
+        "title": "Error classification should preserve meaning without copying everything",
+        "body": "An error can contain a database statement, an address, a remote response or an embedded credential. Blindly recording `err.Error()` therefore expands the event's input surface. Our lab classifies nil, wrapped deadline errors, wrapped cancellation errors and everything else into a small set. Its test supplies an error containing a synthetic private marker and verifies that the marker never appears in the event.\n\nThe classification is intentionally coarse. A real application may need stable codes for missing resources, invalid input, dependency failure or an uncertain result. Define those codes at the operation boundary rather than mining arbitrary message text. Keep the original error available to the caller that must decide what to do, and separately decide which diagnostic detail is approved for which destination.\n\nThe lab emits ERROR for status codes at or above 500 and INFO otherwise. That is an example policy, not a rule that every cancellation or client mistake is harmless. A shutdown cancellation, a user-aborted read and an internal budget exhaustion have different operational implications. Make the policy coherent with your alerts, and test a small representative matrix instead of assigning severity by whichever helper was easiest to call.\n\nOur [typed error guide](/news/go-typed-nil-errors-as-contracts) and [retry outcomes guide](/news/go-retries-idempotency-keys-unknown-outcomes) provide related failure models. In particular, an unknown external outcome should not be renamed “failed” merely because the caller timed out. A diagnostic field should retain that distinction."
+      },
+      {
+        "id": "disabled-debug-output-can-still-evaluate-expensive-arguments",
+        "title": "Disabled debug output can still evaluate expensive arguments",
+        "body": "A common surprise is a debug call whose output is disabled but whose argument function still runs. The language evaluates call arguments before entering the called function. The logger cannot undo work the caller already performed. This is ordinary [Go call semantics](https://go.dev/ref/spec#Calls), not a special logging scheduler.\n\n```go\nif logger.Enabled(ctx, slog.LevelDebug) {\n    logger.DebugContext(ctx, \"diagnostic.summary\",\n        \"summary\", buildSummary())\n}\n```\n\nThe lab first invokes an eager debug call, then the guarded version while INFO is the minimum level. A counter records one summary construction: the eager expression ran, the guarded one did not. After changing the shared LevelVar to DEBUG, the guarded call builds and emits its summary. This is a semantic test, not evidence of a universal speedup percentage.\n\nUse this guard for genuinely expensive preparation. Do not scatter it around every scalar attribute until readability suffers. A deferred value can be another option, but its ownership and evaluation behavior still need review. Never capture a mutable request buffer in a value that might be processed later without defining who owns that memory.\n\nThe lesson extends beyond logging: “disabled” often describes the callee's behavior, while argument evaluation belongs to the caller. The best optimization begins by locating the actual work, then measuring a representative workload after correctness is preserved."
+      },
+      {
+        "id": "a-successful-application-operation-does-not-prove-log-delivery",
+        "title": "A successful application operation does not prove log delivery",
+        "body": "Our synthetic writer returns zero bytes and a fixed error. Calling the ordinary logger invokes that writer but provides no error result to the application. Calling the handler directly returns the writer failure. The test checks both observations separately. It does not pretend that a successful `Info` call is a durable receipt for a diagnostic event.\n\nThe [handler guide](https://github.com/golang/example/tree/master/slog-handler-guide) explains handler implementation and error handling. The [Writer contract](https://pkg.go.dev/io#Writer) explains byte counts and write errors. A destination can fail independently of the work being described. If your operation requires an auditable durable record, design that record's persistence and transaction boundary explicitly; a diagnostic logger is not a substitute for the business ledger.\n\nAvoid reporting a sink failure by recursively invoking the same failed sink. A production design might count failures through a separate mechanism or expose health through another destination, but that mechanism also needs bounds. Decide what the application should do when diagnostics are degraded and test that decision with a failing writer.\n\nThe example makes no automatic retry promise. Retrying a log write can duplicate events, delay the caller or consume an unbounded amount of memory. If you add retries, specify maximum attempts, waiting time and duplicate semantics. Those decisions belong to your delivery contract, not to the JSON format."
+      },
+      {
+        "id": "blocking-queues-and-concurrent-callers-need-explicit-boundaries",
+        "title": "Blocking, queues and concurrent callers need explicit boundaries",
+        "body": "A slow synchronous destination can delay the goroutine that emits an event. An asynchronous queue can move that delay elsewhere, but it introduces a capacity, an overflow policy and a shutdown obligation. At saturation, will you block, drop, sample or reject new work? A queue with no admission bound converts a slow sink into retained memory.\n\nFor an educational experiment, replace the writer with one that signals entry and waits for an explicit release channel. Observe which caller waits, then release it and join the goroutine. Avoid timing guesses such as sleeping for a few milliseconds and declaring that a race has been reproduced. Our [controlled concurrency tests guide](/news/go-concurrency-tests-synctest-without-sleeps) develops that testing approach.\n\nThe supplied lab also shares one JSON handler across sixteen workers, waits for all workers, then decodes every event. It checks that records remain parseable and that creating a grouped child did not mutate the root logger. This verifies the chosen handler and setup; it does not certify every custom writer, asynchronous wrapper or log collector as concurrency-safe.\n\nIf you write a handler, follow the official handler guide's concurrency and record-ownership requirements. A queue that retains a record must preserve the state it needs and define who may mutate it. Review this beside our [buffer ownership guide](/news/go-bytes-buffer-sync-pool-ownership) and [backpressure guide](/news/go-backpressure-concurrency-limits-queues-deadlines)."
+      },
+      {
+        "id": "run-the-lab-and-test-useful-broken-variants",
+        "title": "Run the lab and test useful broken variants",
+        "body": "Download the [original structured-logging lab and research bundle](/downloads/go-directions-slog-lab-20261029.zip). It includes the complete standalone program, tests, the captured Trends tables, the calculation script and a README distinguishing observations from forecasts. There are no credentials, network listeners, external services or third-party Go modules in the example.\n\n```sh\ngo version\ngo test -race -count=50 ./...\ngo vet ./...\ngo run ./sloglab\n```\n\nOur recorded compiler is Go 1.27.3 on darwin/arm64. Selecting that compiler with `GOTOOLCHAIN` may download the official toolchain on first use. The example also cross-compiles for wasip1/wasm; that establishes target compilation, not successful execution in every host. The native run prints JSON events and the separate argument-count and writer-error observations.\n\nThe verification includes temporary negative controls: exposing the typed secret, removing the request group, choosing the wrong failure level and removing the expensive-work guard. Each broken variant must fail its intended test. Otherwise a green test could merely be exercising code without checking its contract. The downloadable source contains only the correct version.\n\nFor a [Playground](/playground) exercise, save your current draft before replacing it. Copy the complete `sloglab/main.go`, keeping a compatible module. Editing does not execute code. In a deliberate collaboration room, press Run on the selected compatible native device; the relay carries source and device-attributed output. See the [MCP guide](/guide/mcp) for execution and temporary-link behavior. A browser editor alone is not evidence that a Go program ran."
+      },
+      {
+        "id": "a-review-checklist-that-improves-the-next-incident-investigation",
+        "title": "A review checklist that improves the next incident investigation",
+        "body": "Ask a teammate to explain one event without reading its emitter. Can they distinguish an operation name from an incoming address, identify the duration unit and tell whether an outcome means rejected, canceled, committed or unknown? If the answer depends on tribal knowledge, improve the schema before adding more volume.\n\nNext, test omission. Verify that bodies, authorization headers, raw capability URLs and arbitrary error text never reach the event constructor. Then test the redaction mechanisms with fabricated markers, including the conversion counterexample. An absence check is stronger when the test first proves that the marker would otherwise have been observable.\n\nFinally, disconnect the destination in a controlled environment. Observe what the caller does, whether memory remains bounded and how shutdown completes. Diagnostics should help explain the system while retaining a clear separation from its business guarantees. That separation is what makes structured logging dependable rather than merely structured."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Structured logging with slog",
+        "url": "https://go.dev/blog/slog"
+      },
+      {
+        "title": "slog package reference",
+        "url": "https://pkg.go.dev/log/slog"
+      },
+      {
+        "title": "Official slog handler guide",
+        "url": "https://github.com/golang/example/tree/master/slog-handler-guide"
+      },
+      {
+        "title": "OWASP logging exclusions and failure testing",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Go function call evaluation",
+        "url": "https://go.dev/ref/spec#Calls"
+      },
+      {
+        "title": "Writer byte counts and errors",
+        "url": "https://pkg.go.dev/io#Writer"
+      }
+    ],
+    "related": [
+      "go-popularity-2026-google-trends-cloud-ai-directions",
+      "go-typed-nil-errors-as-contracts",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "wordCount": 2268,
+    "proseWordCount": 2268,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go slog structured logging tutorial",
+      "Golang slog context redaction",
+      "slog JSONHandler LogValuer",
+      "Go logging failure tests"
+    ],
+    "editionDate": "2026-10-10",
     "kind": "guide"
   }
 ]

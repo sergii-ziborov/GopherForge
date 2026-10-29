@@ -18,6 +18,10 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  godirections:
+    "Search, usage and engineering fit answer different questions. Compare the measurement methods before choosing a direction. Conceptual illustration; the saved Google Trends observations are reported in the text, not drawn by ImageGen.",
+  slogfield:
+    "Select → Structure → Redact → Test. Choose approved fields, preserve their schema, exclude secrets and check failure behavior. Conceptual workflow, not a claim of lossless delivery or universal redaction.",
   invariants:
     "Define → Protect → Publish → Test. Name the invariant, protect its complete transition, preserve ownership during publication and test a controlled competing operation. Conceptual diagram, not a synchronization benchmark.",
   retrykey:

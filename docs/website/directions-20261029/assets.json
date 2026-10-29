@@ -1,0 +1,83 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "godirections-hero",
+      "prompt": "Original premium editorial image for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper accents, soft studio lighting, polished spacious composition. No logos, watermark, vendor UI, or invented measured charts. Scientific-educational hero: a thoughtful turquoise gopher engineer at a branching workshop junction. Three equally credible paths lead to an API service gate, a portable command-line toolbox, and cloud orchestration machinery. A smaller side path connects an AI model component to a dependable service boundary. Convey deliberate engineering choices, not an upward growth chart. No text or numbers.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-2d9eb3e8-6973-42c5-9577-37ff15f283f9.png",
+      "src": "/images/news/godirections-hero.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/godirections-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 269680,
+      "sha256": "6047b50e70e1f03227c7d38a36898f96bf2aa44a70a485413db115738157c8c8",
+      "alt": "A gopher chooses among API services, command-line tools, cloud infrastructure and a smaller AI application path."
+    },
+    {
+      "id": "godirections-infographic",
+      "prompt": "Original premium editorial image for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper accents, soft studio lighting, polished spacious composition. No logos, watermark, vendor UI, or invented measured charts. Infographic diagram on warm ivory, three spacious panels with these exact headings only: SEARCH, USAGE, FIT. SEARCH shows a magnifying glass over an abstract unnumbered search signal. USAGE shows a survey clipboard and working tools. FIT shows a gopher choosing a service tool for a concrete task. Distinct separate panels without ranking, upward arrows, percentages, charts or tiny text. Explain three different kinds of evidence, not a growth claim.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-56abfb90-e736-46c8-8d07-1a28edff9fe8.png",
+      "src": "/images/news/godirections-infographic.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/godirections-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 147836,
+      "sha256": "b46ee45ab266129b3ee3df02a795da7648b3974f95c5fb40b886d336b5bf2734",
+      "alt": "Search, usage and engineering fit are separate kinds of evidence for evaluating Go."
+    },
+    {
+      "id": "godirections-detail",
+      "prompt": "Original premium editorial image for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper accents, soft studio lighting, polished spacious composition. No logos, watermark, vendor UI, or invented measured charts. Scientific-educational detail: a small AI inference core sits inside a larger practical application system. A gopher engineer builds bounded queues, a cancellation gate, a typed API boundary and observable status lights around the core. Native model accelerator represented as a different material than teal Go service components, suggesting polyglot ownership. No text, numbers or brand symbols. Strong clear architecture composition, no claim Go trains all models.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-8627394b-f769-41ca-a184-0f8d6e71f877.png",
+      "src": "/images/news/godirections-detail.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/godirections-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 179928,
+      "sha256": "1c7b006302c8f2185cdb47fa8002778f9fe7c824d58296e516ff90f113fb0319",
+      "alt": "An AI component is surrounded by bounded service queues, cancellation and explicit application boundaries."
+    },
+    {
+      "id": "slogfield-hero",
+      "prompt": "Original premium editorial image for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper accents, soft studio lighting, polished spacious composition. No logos, watermark, vendor UI, or invented measured charts. Scientific-educational hero: turquoise gopher engineer sorts a flowing stream of diagnostic event cards through a structured field sorting machine into neat grouped compartments. A separate small secret token stays behind a closed privacy gate and never enters the cards. Calm technical atmosphere, crisp event shapes, not code UI. No text or numbers.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-84f24a58-c099-4f9c-84f6-9bf3564798cb.png",
+      "src": "/images/news/slogfield-hero.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/slogfield-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 156234,
+      "sha256": "89f56b7687225b15824a5a780aeec7fd789df4f3f24a2ba685dc3ed3cec5eb58",
+      "alt": "A gopher organizes diagnostic event cards into structured groups while a secret remains outside the event stream."
+    },
+    {
+      "id": "slogfield-infographic",
+      "prompt": "Original premium editorial image for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper accents, soft studio lighting, polished spacious composition. No logos, watermark, vendor UI, or invented measured charts. Infographic diagram on warm ivory, four spacious panels with these exact headings only: SELECT, STRUCTURE, REDACT, TEST. SELECT: a few safe field tokens chosen from a larger collection; STRUCTURE: related field tokens grouped in one event card; REDACT: sensitive token blocked and replaced by neutral marker; TEST: event schema and failure path checked. No tiny body text, no percentages. Readable coherent typography.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-5e232b7f-9bf8-4279-97ab-10e784be95f3.png",
+      "src": "/images/news/slogfield-infographic.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/slogfield-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 110012,
+      "sha256": "1bdeea518bd670fc675b6b624401b3ec96a137a3d5dd1c662b93416927052880",
+      "alt": "Select, structure, redact and test: design safe diagnostic event fields and verify the resulting schema."
+    },
+    {
+      "id": "slogfield-detail",
+      "prompt": "Original premium editorial image for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper accents, soft studio lighting, polished spacious composition. No logos, watermark, vendor UI, or invented measured charts. Scientific-educational detail: two distinct paths from a service machine. One path returns a completed work receipt; another diagnostic event path meets a blocked output sink with a visible finite queue and an explicit overflow choice gate. A gopher observes both separately. Demonstrate that application completion and log delivery are different outcomes. No text or numbers, no infinite queue, no guarantee of lossless logging.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-af890c39-7f89-434f-a9b4-11029586c609.png",
+      "src": "/images/news/slogfield-detail.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/slogfield-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 129758,
+      "sha256": "048093ae95b899482b2751f8dff536bed2af78051e57ae27e3c4f1869a7d1da6",
+      "alt": "A completed application receipt and a blocked diagnostic sink follow separate paths with an explicit overflow choice."
+    }
+  ]
+}

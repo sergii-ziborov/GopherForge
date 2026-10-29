@@ -1,0 +1,22 @@
+[
+  {
+    "mutation": "typed secret leaked",
+    "test": "TestRedactionAndNarrowBoundary",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "request group omitted",
+    "test": "TestRequestSchemaAndCancellation",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "wrong server-failure level",
+    "test": "TestRequestSchemaAndCancellation",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "debug guard removed",
+    "test": "TestLevelsAndExpensiveArguments",
+    "expectedFailure": true
+  }
+]
