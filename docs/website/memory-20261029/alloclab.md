@@ -140,6 +140,16 @@ The [buffer and pool ownership guide](/news/go-bytes-buffer-sync-pool-ownership)
 
 Treat a changed ownership contract as an architectural decision. Test that a previous result remains valid after a subsequent call, and test concurrent usage if the API promises it. Allocation reduction is not a sufficient acceptance criterion when the feature depends on stable independently owned results.
 
+## Check the workload level before rolling out a local win
+
+A benchmark operation and a user request are not necessarily the same unit of work. An endpoint might format one event, a thousand events, or no events on its common path. Record that relationship before translating nanoseconds per operation into a capacity estimate. Also ask whether the formatter is on the critical path or runs after the response has already completed.
+
+Consider an illustrative calculation, not another measurement from this lab. If formatting consumes five percent of request CPU and a replacement makes that component four times faster, the total CPU reduction is only 3.75 percent under otherwise identical conditions. The remaining ninety-five percent has not changed. Waiting time, contention and request concurrency introduce additional effects that this arithmetic does not model. This helps explain why a clear microbenchmark improvement can produce a modest service-level result.
+
+Build a small fixture matrix before rollout: short and maximum-width identifiers, both boolean values, ordinary and unusually large batches, and the actual destination used by the caller. Keep the correctness suite independent from the timing suite. A rare input can be essential to correctness even when it should not dominate a representative timing fixture.
+
+Finally, compare useful completed operations under equivalent demand. A deployment that reports fewer allocated bytes because it rejected more requests has changed throughput as well as memory use. Preserve acceptance rates, error rates, payload distribution and latency beside resource measurements. Those observations let the team decide whether the local optimization improved the feature that motivated the investigation.
+
 ## Build a repeatable optimization decision
 
 An actionable performance change includes the original symptom, a representative fixture, an explicit result contract, a baseline, the modified implementation and a recheck of correctness and resources. Preserve raw outputs. Explain which dimension improved and which dimensions were unchanged or not measured. Include a rollback path if the change affects a production service.
