@@ -1,0 +1,34 @@
+{
+  "base": "https://gopherforge.app",
+  "pages": [
+    {
+      "page": 1,
+      "cardsWithoutJavaScript": 9,
+      "imageResponses": "200 and SHA256 matched",
+      "selfCanonicalAndCollectionPositions": "passed"
+    },
+    {
+      "page": 2,
+      "cardsWithoutJavaScript": 9,
+      "imageResponses": "200 and SHA256 matched",
+      "selfCanonicalAndCollectionPositions": "passed"
+    },
+    {
+      "page": 3,
+      "cardsWithoutJavaScript": 9,
+      "imageResponses": "200 and SHA256 matched",
+      "selfCanonicalAndCollectionPositions": "passed"
+    },
+    {
+      "page": 4,
+      "cardsWithoutJavaScript": 6,
+      "imageResponses": "200 and SHA256 matched",
+      "selfCanonicalAndCollectionPositions": "passed"
+    }
+  ],
+  "uniqueArticles": 33,
+  "uniqueCardImages": 33,
+  "page1RedirectAndInvalid404": "passed",
+  "sitemapURLs": 457,
+  "RSSItems": 33
+}
