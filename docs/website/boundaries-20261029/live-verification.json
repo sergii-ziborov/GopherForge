@@ -1,0 +1,24 @@
+{
+  "base": "https://gopherforge.app",
+  "articles": [
+    {
+      "edition": "2026-10-04",
+      "slug": "go-streaming-io-reader-eof-limits-json",
+      "proseWords": 2288,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    },
+    {
+      "edition": "2026-10-12",
+      "slug": "go-time-utc-dst-monotonic-deadlines",
+      "proseWords": 2455,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    }
+  ],
+  "internalLinksChecked": 16,
+  "generatedImages": 6,
+  "sitemapURLs": 447,
+  "RSSItems": 26,
+  "downloadSourceHashes": "passed",
+  "health": "passed",
+  "emptyEditions": "2026-10-05 through 2026-10-11"
+}
