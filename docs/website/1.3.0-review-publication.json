@@ -1,0 +1,101 @@
+{
+  "checkedAt": "2026-10-28T11:20:29.557406+00:00",
+  "url": "https://gopherforge.app",
+  "guide": "https://gopherforge.app/guide",
+  "sourceCommit": "d332c3e8c7970bf97e68a4ff6b34d8170ab9c73c",
+  "appStorePublic": "1.2.0 (45)",
+  "appReview": {
+    "version": "1.3.0",
+    "build": "46",
+    "state": "WAITING_FOR_REVIEW",
+    "automaticReleaseAfterApproval": true
+  },
+  "testFlight": "1.3.0 (46), Internal QA",
+  "hostwatch": {
+    "target": "gopherforge-web",
+    "jobId": "gopherforge-review46-d332c3e-20261028",
+    "state": "succeeded",
+    "imageDigest": "sha256:20acd18328ef9d4c366ee9b46c931f44e2cc6a95865dadde0ea8f16842183035",
+    "rollbackTag": "localhost/gopherforge-web:rollback-review46-d332c3e",
+    "rollbackDigest": "sha256:77e721370bd265e17a4d45cc123fd4d9d283bfb2805327144a098c3fce1d96a4",
+    "containerHealth": "healthy",
+    "user": "10001:10001",
+    "restartPolicy": "unless-stopped"
+  },
+  "webChecks": {
+    "tests": 21,
+    "failures": 0,
+    "productionBuild": "passed",
+    "typeScript": "passed",
+    "liveFeed": "connected; existing collected feed delivered after replacement",
+    "http": [
+      {
+        "path": "/",
+        "status": 200,
+        "bytes": 72016
+      },
+      {
+        "path": "/guide",
+        "status": 200,
+        "bytes": 105811
+      },
+      {
+        "path": "/updates",
+        "status": 200,
+        "bytes": 33873
+      },
+      {
+        "path": "/support",
+        "status": 200,
+        "bytes": 26970
+      },
+      {
+        "path": "/learn",
+        "status": 200,
+        "bytes": 205772
+      },
+      {
+        "path": "/interview",
+        "status": 200,
+        "bytes": 85513
+      },
+      {
+        "path": "/news/feed",
+        "status": 200,
+        "bytes": 37036
+      },
+      {
+        "path": "/api/health",
+        "status": 200,
+        "bytes": 43
+      },
+      {
+        "path": "/sitemap.xml",
+        "status": 200,
+        "bytes": 65337
+      },
+      {
+        "path": "/images/guide-debugger.png",
+        "status": 200,
+        "bytes": 287496
+      },
+      {
+        "path": "/images/guide-offline-react.png",
+        "status": 200,
+        "bytes": 220071
+      },
+      {
+        "path": "/not-a-real-page-46",
+        "status": 404,
+        "bytes": 14779
+      }
+    ]
+  },
+  "changes": [
+    "App Store 1.2.0 availability; review and TestFlight 1.3.0 explicitly separated",
+    "Detailed existing npm, React, isolated Gin-compatible API and source-debugger walkthroughs retained and status updated",
+    "Guide, home, support and update sitemap modification dates updated without redating untouched lessons",
+    "US $6.99 price retained"
+  ],
+  "bundleSHA256": "d9421f64be8efafc8d7bba8ff07a86d5ff01ff7982fc9f0002018781ee46d85d"
+}

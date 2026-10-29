@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-29T09:28:13.319394+00:00",
+  "sitemapURLs": 439,
+  "statusCounts": {
+    "200": 439
+  },
+  "issues": {
+    "dateTimeWarnings": [],
+    "http": [],
+    "canonical": [],
+    "missingTitle": [],
+    "missingDescription": [],
+    "h1": [],
+    "noindex": [],
+    "invalidJSONLD": [],
+    "missingLang": [],
+    "missingAlt": [],
+    "duplicateTitle": {},
+    "duplicateDescription": {}
+  },
+  "maxSeconds": 0.822,
+  "schemaTypes": {
+    "SoftwareApplication": 1,
+    "Course": 29,
+    "BreadcrumbList": 422,
+    "TechArticle": 7,
+    "FAQPage": 1,
+    "CollectionPage": 1,
+    "LearningResource": 374,
+    "NewsArticle": 13
+  }
+}

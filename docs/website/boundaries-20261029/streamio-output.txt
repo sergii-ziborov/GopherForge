@@ -1,0 +1,11 @@
+final read: n=4 data="tail" EOF=true
+ReadAll: "tail" error=<nil>
+limit 4, input "1234": accepted="1234" error=<nil>
+limit 4, input "12345": accepted="" error=input exceeds byte limit
+JSON {"id":"one"}: id="one" error=<nil>
+JSON {"id":"one"} {"id":"two"}: id="" error=expected one JSON document
+JSON {"id":"one","extra":1}: id="" error=json: unknown field "extra"
+JSON null: id="" error=id is required
+JSON {"id":"one","id":"two"}: id="two" error=<nil>
+default scanner: token=false error=true
+configured scanner: lines=1 error=<nil>

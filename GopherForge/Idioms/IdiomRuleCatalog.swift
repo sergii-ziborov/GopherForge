@@ -83,10 +83,10 @@ enum IdiomRuleCatalog {
         match: { line, context in
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             guard trimmed.hasPrefix("if err == nil {") else { return nil }
-            // Only suggest the inversion when the else branch is the error
-            // path; otherwise the nesting may be carrying real logic.
             guard context.nextLine.isEmpty == false else { return nil }
-            return .replace(with: "\(context.indentation)if err != nil {")
+            // Inverting a condition alone reverses behaviour. A safe rewrite
+            // needs the entire control flow, which this line analyzer lacks.
+            return .flagOnly
         }
     )
 
@@ -124,14 +124,11 @@ enum IdiomRuleCatalog {
         """,
         confidence: .certain,
         match: { line, _ in
-            guard let range = line.range(of: #"func \(\w+ \*?\w+\) Get[A-Z]\w*\("#, options: .regularExpression) else {
+            guard line.range(of: #"func \(\w+ \*?\w+\) Get[A-Z]\w*\("#, options: .regularExpression) != nil else {
                 return nil
             }
-            let replacement = line.replacingCharacters(
-                in: range,
-                with: String(line[range]).replacingOccurrences(of: ") Get", with: ") ")
-            )
-            return .replace(with: replacement)
+            // A method rename must resolve callers and interface contracts.
+            return .flagOnly
         }
     )
 

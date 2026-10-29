@@ -11,12 +11,19 @@ struct OutputStreamView: View {
     var onRetryPackages: () -> Void = {}
     var siteURL: URL?
     var siteGeneration: Int = 0
+    var offlineFiles: [String: String]?
+    var previewProject: GopherForgeProject?
+    var frontendBusy = false
+    var frontendFailure: String?
+    var onBuildPreview: () -> Void = {}
 
     var body: some View {
         if let progress {
             progressPanel(progress)
         } else if result != nil || !packageProblems.isEmpty || siteURL != nil {
             resultPanel(result)
+        } else if offlineFiles != nil {
+            resultPanel(nil)
         } else {
             EmptyDockMessage(
                 systemImage: "terminal",
@@ -47,11 +54,42 @@ struct OutputStreamView: View {
         .accessibilityLabel("Building: \(progress.summary)")
     }
 
+    private var frontendBuildPanel: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Web preview", systemImage: "globe")
+                .font(.headline)
+            Text("Build the React/TypeScript frontend to see it here. Go Run checks the routes separately. Rebuild after source changes.")
+                .font(.callout).foregroundStyle(.secondary)
+            Button(action: onBuildPreview) {
+                HStack {
+                    if frontendBusy { ProgressView() }
+                    Label(frontendBusy ? "Building preview…" : "Build & Preview", systemImage: "play.rectangle")
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(frontendBusy)
+            .accessibilityIdentifier("output.buildPreview")
+            Text("Uses the bundled offline packages and compiler. No downloads or package scripts.")
+                .font(.caption).foregroundStyle(.secondary)
+            if let frontendFailure {
+                Text(frontendFailure).font(.callout).foregroundStyle(.red)
+                    .textSelection(.enabled)
+                    .accessibilityIdentifier("output.previewFailure")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(WorkspacePane.output.tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+    }
+
     private func resultPanel(_ result: CompilationResult?) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 if !packageProblems.isEmpty {
                     PackageProblemSection(problems: packageProblems, onRetry: onRetryPackages)
+                }
+                if offlineFiles != nil, siteURL == nil {
+                    frontendBuildPanel
                 }
                 if let result {
                     ResultSummaryRow(result: result)
@@ -60,7 +98,8 @@ struct OutputStreamView: View {
                     }
                 }
                 if let siteURL {
-                    SitePreviewSection(url: siteURL, generation: siteGeneration)
+                    SitePreviewSection(url: siteURL, generation: siteGeneration, offlineFiles: offlineFiles, project: previewProject)
+                        .id(siteGeneration)
                 }
                 if let result, !result.stdout.isEmpty {
                     StreamSection(title: "stdout", text: result.stdout, tint: .primary)

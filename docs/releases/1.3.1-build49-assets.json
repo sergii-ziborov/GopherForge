@@ -1,0 +1,185 @@
+{
+  "checkedAt": "2026-10-28T18:41:58.324426+00:00",
+  "version": "1.3.1",
+  "build": "49",
+  "screenshots": 55,
+  "screenshotSets": 6,
+  "freshScreenshots": [
+    {
+      "profile": "iphone-6.5",
+      "name": "03-course",
+      "id": "3d800019-5e3c-8faf-801c-8a36bd1ba81a",
+      "setId": "8d441774-d8b6-4288-b4ec-e2c200d725c9",
+      "fileName": "iphone-6.5-03-course-build49.png",
+      "size": [
+        1284,
+        2778
+      ],
+      "md5": "086ca0c65841e3d8478ee3c40a1938d4",
+      "sha256": "0ea51917be9cad1910a92d680793a83e5320d59f5719e243efdb6291843fab8e",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.5",
+      "name": "08-interview",
+      "id": "79000019-5e3c-8faf-8028-7861f0022292",
+      "setId": "8d441774-d8b6-4288-b4ec-e2c200d725c9",
+      "fileName": "iphone-6.5-08-interview-build49.png",
+      "size": [
+        1284,
+        2778
+      ],
+      "md5": "74935845ba4170232c75f0fe8e843b65",
+      "sha256": "cdc05ec3fe0a66a7ceb171b3decc86f019e83c3f787825c0a19d4385603ee8c9",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-duo",
+      "name": "03-course",
+      "id": "d6c00019-5e3c-8faf-8017-241340d6c559",
+      "setId": "caa33d91-e41e-4f9f-b1e1-64785b39ced9",
+      "fileName": "iphone-duo-03-course-build49.png",
+      "size": [
+        1398,
+        2034
+      ],
+      "md5": "2c4555cc8b843c848e08477af60708b0",
+      "sha256": "1869cc4c1ce82ad98123c41f95d1953f2ab528df4c7076295cd0134ed24e288d",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-duo",
+      "name": "08-interview",
+      "id": "ee400019-5e3c-8faf-8004-55312aef4f5e",
+      "setId": "caa33d91-e41e-4f9f-b1e1-64785b39ced9",
+      "fileName": "iphone-duo-08-interview-build49.png",
+      "size": [
+        1398,
+        2034
+      ],
+      "md5": "d6b5bbd82098121361faf07fdaf6b52d",
+      "sha256": "984393ce139be9336fd52fc7077994a2af262847995a3e4f30bd8bdd2f8d9e76",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.1",
+      "name": "03-course",
+      "id": "70800019-5e3c-8faf-8034-fdeb899af2a4",
+      "setId": "1a27850b-b444-4b29-bf48-68d1133361af",
+      "fileName": "iphone-6.1-03-course-build49.png",
+      "size": [
+        1170,
+        2532
+      ],
+      "md5": "8be0256160298b29855dc832a2e021ee",
+      "sha256": "15b6c32f61da7e422e0b271b5a75fa8aad7f738926a2992354d39cf00fd29552",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.1",
+      "name": "08-interview",
+      "id": "61400019-5e3c-8faf-8006-ad905ee67e6d",
+      "setId": "1a27850b-b444-4b29-bf48-68d1133361af",
+      "fileName": "iphone-6.1-08-interview-build49.png",
+      "size": [
+        1170,
+        2532
+      ],
+      "md5": "7a71fe021b3252353afc68967ac1d5e5",
+      "sha256": "ed8faf83d15048f502da5af14c32d47094ae0538512168dcea8858b2c79ac0e1",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.3",
+      "name": "03-course",
+      "id": "a3800019-5e3c-8faf-803b-99de8e3bdf18",
+      "setId": "2ff9377d-d9ff-4fb7-a2e6-67bb84d028b1",
+      "fileName": "iphone-6.3-03-course-build49.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "md5": "4999214b9a648c3324597f23794bccef",
+      "sha256": "e0afde9f6629cbee95b219f3c0b5b1f6ec56f05f01f9aa17ae87fd00cb0542a7",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.3",
+      "name": "08-interview",
+      "id": "56800019-5e3c-8faf-8016-83bd734c1737",
+      "setId": "2ff9377d-d9ff-4fb7-a2e6-67bb84d028b1",
+      "fileName": "iphone-6.3-08-interview-build49.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "md5": "9c3a374fa40dd1465cd0ecde4baac8a2",
+      "sha256": "a7b0f20b3af665dd0ca924c0fc9d87f008a5dc14692bf7f6ccd3bf9dfdc7d653",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "ipad-13",
+      "name": "03-course",
+      "id": "1f400019-5e3c-8faf-803c-6c91a20dd5a9",
+      "setId": "8f303345-b491-494f-b8cf-61914e302df5",
+      "fileName": "ipad-13-03-course-build49.png",
+      "size": [
+        2064,
+        2752
+      ],
+      "md5": "47dd5014235095803f54927c539dc81f",
+      "sha256": "2af0e6430ac8de4ed34173cfddc8d7075671e350592643319a922c1e13e955c8",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "ipad-13",
+      "name": "08-interview",
+      "id": "92400019-5e3c-8faf-8025-a6d2eef79a47",
+      "setId": "8f303345-b491-494f-b8cf-61914e302df5",
+      "fileName": "ipad-13-08-interview-build49.png",
+      "size": [
+        2064,
+        2752
+      ],
+      "md5": "f8be6bb524b820da50ce02ab16e2a6d1",
+      "sha256": "397fedc99781a1fdf58a391e333a4051b05755b0e0cfeed8a83ecc5f7eb48092",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.9",
+      "name": "03-course",
+      "id": "7e800019-5e3c-8faf-8021-ea276c20fa0a",
+      "setId": "bb2d11d9-bcd0-43b1-b79a-1a2335fa5087",
+      "fileName": "iphone-6.9-03-course-build49.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "md5": "364e4e2e871094225423bf47a4081841",
+      "sha256": "02fd721ab5a3450875cca402a2a983e848552bbabb8e61b956246a2f6d7508a3",
+      "state": "COMPLETE"
+    },
+    {
+      "profile": "iphone-6.9",
+      "name": "08-interview",
+      "id": "7b000019-5e3c-8faf-801c-f3eeaeb81080",
+      "setId": "bb2d11d9-bcd0-43b1-b79a-1a2335fa5087",
+      "fileName": "iphone-6.9-08-interview-build49.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "md5": "2804cf0beec004011111493987b39824",
+      "sha256": "c53e2fe1527f171a3133bf9a5b267c2dcd69ff6d0a9a62f0c152777a4c2455e7",
+      "state": "COMPLETE"
+    }
+  ],
+  "retainedScreenshots": 43,
+  "headerAndSearchActive": true,
+  "appInfo": {
+    "name": "GopherForge: Go Compiler",
+    "subtitle": "Offline IDE & interview prep",
+    "privacyPolicyUrl": "https://gopherforge.app/privacy",
+    "EnglishLocalizationsChecked": 2
+  }
+}

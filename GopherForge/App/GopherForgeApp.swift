@@ -2,6 +2,11 @@ import SwiftUI
 
 @main
 struct GopherForgeApp: App {
+    init() {
+        #if GOPHERFORGE_AUDIT_QA
+        AuditLibraryFixtures.prepareIfRequested()
+        #endif
+    }
     /// Applied at the scene root so every sheet, popover and alert inherits it.
     /// Setting it lower down leaves presented content following the system
     /// while the app behind it does not, which looks like a bug.

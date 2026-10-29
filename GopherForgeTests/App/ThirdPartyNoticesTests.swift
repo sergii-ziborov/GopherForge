@@ -23,7 +23,7 @@ final class ThirdPartyNoticesTests: XCTestCase {
         for component in [
             "Go", "WasmKit", "swift-system", "go-cmp",
             "swift-nio", "swift-collections", "swift-atomics", "swift-log",
-            "swift-argument-parser",
+            "swift-argument-parser", "esbuild", "React", "scheduler",
         ] {
             XCTAssertTrue(
                 source.contains(component),

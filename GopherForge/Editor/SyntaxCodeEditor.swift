@@ -40,6 +40,10 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     /// Embedded lesson editors hand vertical gestures to the lesson page.
     /// Workspace and full-screen editors own their vertical scrolling.
     var scrollsVertically = true
+    var breakpointLines: Set<Int> = []
+    var executionLine: Int?
+    var onToggleBreakpoint: ((Int) -> Void)?
+    var isReadOnly = false
 
     /// End-of-file breathing room belongs to the text, not a fixed bottom
     /// panel. Embedded snippets keep their natural height inside the lesson.
@@ -54,6 +58,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         textView.delegate = context.coordinator
         textView.isScrollEnabled = scrollsVertically
         textView.alwaysBounceVertical = scrollsVertically
+        textView.isEditable = !isReadOnly
         textView.autocapitalizationType = .none
         textView.autocorrectionType = .no
         textView.spellCheckingType = .no
@@ -97,8 +102,12 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         if textView.textContainerInset != insets { textView.textContainerInset = insets }
         editor.gutter.fontSize = fontSize
         editor.gutter.markedLines = markedLines
+        editor.gutter.breakpointLines = breakpointLines
+        editor.gutter.executionLine = executionLine
+        editor.gutter.onToggleBreakpoint = onToggleBreakpoint
+        textView.isEditable = !isReadOnly
 
-        let needsTextUpdate = textView.text != text
+        let needsTextUpdate = !(textView.text ?? "").utf8.elementsEqual(text.utf8)
         if needsTextUpdate {
             let selection = textView.selectedRange
             let highlighted = context.coordinator.highlighted(text, fontSize: fontSize)

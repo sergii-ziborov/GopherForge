@@ -3,7 +3,8 @@
 import json,pathlib,subprocess,tempfile,os
 root=pathlib.Path(__file__).resolve().parents[1]
 bank=json.loads((root/'GopherForge/Resources/InterviewPrep.json').read_text())
-examples=[q['code'] for q in bank['questions'] if q['topic']=='algorithms']
+demonstrated={d['id'] for d in bank['demonstrations']}
+examples=[q['code'] for q in bank['questions'] if q['id'] in demonstrated]
 assert len(examples)==12 and all(examples)
 source='package algorithms\nimport("container/heap";"container/list";"sort")\n'+'\n'.join(examples)
 tests=r'''package algorithms

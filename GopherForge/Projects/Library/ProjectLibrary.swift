@@ -13,12 +13,14 @@ import Foundation
 /// Go source measured in kilobytes, and the thing to revisit first if that
 /// stops being true.
 actor ProjectLibrary {
-    private struct State: Codable {
-        var items: [ProjectLibraryItem]
-    }
-
+    private typealias State = ProjectLibraryDocument.State
     private var storageURL: URL
-    private var cachedState: State?
+    private let deviceStorageURL: URL
+    private var observedSources: [UUID: String] = [:]
+    private var writerRevisions: [String: UInt64] = [:]
+    private var requiresExistingDocument: Bool
+    private var heldFolderScope: URL?
+    private var restorationFailed = false
 
     /// The library the app uses.
     ///
@@ -42,25 +44,49 @@ actor ProjectLibrary {
             .appending(path: "projects.json")
     }
 
-    init(storageURL: URL? = nil) {
-        self.storageURL = storageURL ?? ProjectLibraryLocation.fileURL()
+    init(storageURL: URL? = nil, deviceStorageURL: URL? = nil) {
+        self.deviceStorageURL = deviceStorageURL ?? ProjectLibraryLocation.defaultFileURL()
+        if let storageURL { self.storageURL = storageURL }
+        else {
+            do { self.storageURL = try ProjectLibraryLocation.restoredFileURL() }
+            catch { self.storageURL = self.deviceStorageURL; restorationFailed = true }
+        }
+        let selectedURL = self.storageURL
+        self.requiresExistingDocument = (storageURL == nil && ProjectLibraryLocation.usesChosenFolder)
+            || FileManager.default.fileExists(atPath: selectedURL.path)
+            || ProjectLibraryDocument.hasRecoveryFiles(beside: selectedURL)
     }
 
-    /// Moves the library JSON into a folder the owner picked (Files or
-    /// iCloud Drive) and remembers that folder for the next launch.
+    /// Opens an existing library, or copies the current one into an empty
+    /// folder. Keeps the security scope while that document remains active.
     func adoptFolder(_ folder: URL) throws -> [ProjectLibraryItem] {
-        let current = try state()
-        try ProjectLibraryLocation.remember(folder: folder)
-        storageURL = ProjectLibraryLocation.fileURL()
-        try persist(current)
+        let access = folder.startAccessingSecurityScopedResource()
+        var retained = false
+        defer { if access && !retained { folder.stopAccessingSecurityScopedResource() } }
+        let bookmark = try ProjectLibraryLocation.bookmark(for: folder)
+        let destination = folder.appending(path: "recent-projects.json")
+        let next = try prepareDestination(destination)
+        ProjectLibraryLocation.remember(bookmark: bookmark)
+        storageURL = destination
+        restorationFailed = false
+        requiresExistingDocument = true
+        observedSources = Dictionary(uniqueKeysWithValues: next.items.map { ($0.id, ProjectLibraryDocument.sourceDigest($0.project.files)) })
+        heldFolderScope?.stopAccessingSecurityScopedResource()
+        heldFolderScope = access ? folder : nil
+        retained = access
         return try items()
     }
 
     func useOnDeviceLibrary() throws -> [ProjectLibraryItem] {
-        let current = try state()
+        let destination = deviceStorageURL
+        let next = try prepareDestination(destination)
         ProjectLibraryLocation.forgetChosenFolder()
-        storageURL = ProjectLibraryLocation.defaultFileURL()
-        try persist(current)
+        storageURL = destination
+        restorationFailed = false
+        requiresExistingDocument = true
+        observedSources = Dictionary(uniqueKeysWithValues: next.items.map { ($0.id, ProjectLibraryDocument.sourceDigest($0.project.files)) })
+        heldFolderScope?.stopAccessingSecurityScopedResource()
+        heldFolderScope = nil
         return try items()
     }
 
@@ -69,11 +95,15 @@ actor ProjectLibrary {
     }
 
     func items() throws -> [ProjectLibraryItem] {
-        try state().items.sorted { $0.lastOpenedAt > $1.lastOpenedAt }
+        let items = try state().items.sorted { $0.lastOpenedAt > $1.lastOpenedAt }
+        for item in items { observedSources[item.id] = ProjectLibraryDocument.sourceDigest(item.project.files) }
+        return items
     }
 
     func project(id: UUID) throws -> ProjectLibraryItem? {
-        try state().items.first { $0.id == id }
+        let item = try state().items.first { $0.id == id }
+        if let item { observedSources[id] = ProjectLibraryDocument.sourceDigest(item.project.files) }
+        return item
     }
 
     func downloadedPackageStorage() throws -> GoPackageStorage.Summary {
@@ -91,17 +121,19 @@ actor ProjectLibrary {
 
     /// One atomic library write; older queued autosaves cannot restore packages.
     func clearDownloadedPackages() throws -> PackageCleanup {
-        var current = try state()
-        var summary = GoPackageStorage.Summary()
-        for index in current.items.indices {
-            let cleaned = GoPackageStorage.clearingDownloadedPackages(from: current.items[index].project)
-            guard cleaned.summary.fileCount > 0 else { continue }
-            current.items[index].project = cleaned.project
-            current.items[index].sourceRevision = (current.items[index].sourceRevision ?? 0) &+ 1
-            summary.include(cleaned.summary)
+        let cleanup: PackageCleanup = try edit { current in
+            var summary = GoPackageStorage.Summary()
+            for index in current.items.indices {
+                let cleaned = GoPackageStorage.clearingDownloadedPackages(from: current.items[index].project)
+                guard cleaned.summary.fileCount > 0 else { continue }
+                current.items[index].project = cleaned.project
+                current.items[index].sourceRevision = (current.items[index].sourceRevision ?? 0) &+ 1
+                summary.include(cleaned.summary)
+            }
+            return PackageCleanup(items: current.items, summary: summary)
         }
-        if summary.fileCount > 0 { try persist(current) }
-        return PackageCleanup(items: current.items, summary: summary)
+        for item in cleanup.items { observedSources[item.id] = ProjectLibraryDocument.sourceDigest(item.project.files) }
+        return cleanup
     }
 
     @discardableResult
@@ -121,68 +153,76 @@ actor ProjectLibrary {
     /// the original entry. Folder, tags and note are copied because they are
     /// still useful context for the new branch of work.
     func duplicate(id: UUID, named name: String) throws -> ProjectLibraryItem? {
-        var current = try state()
-        guard let original = current.items.first(where: { $0.id == id }) else { return nil }
-        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        let copy = ProjectLibraryItem(
-            id: UUID(),
-            project: original.project.renamed(to: trimmed),
-            lastOpenedAt: Date(),
-            sourceRevision: 0,
-            folder: original.folder,
-            tags: original.tags,
-            isFavorite: false,
-            summary: original.summary
-        )
-        current.items.append(copy)
-        current.items.sort { $0.lastOpenedAt > $1.lastOpenedAt }
-        try persist(current)
-        return copy
+        try edit { current in
+            guard let original = current.items.first(where: { $0.id == id }) else { return nil }
+            let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            let copy = ProjectLibraryItem(
+                id: UUID(), project: original.project.renamed(to: trimmed), lastOpenedAt: Date(),
+                sourceRevision: 0, folder: original.folder, tags: original.tags,
+                isFavorite: false, summary: original.summary
+            )
+            current.items.append(copy)
+            return copy
+        }
     }
 
     /// Source writes are keyed by the library UUID, never by a mutable name.
     /// A delayed save from an older editor revision cannot replace newer code.
     @discardableResult
-    func recordSource(id: UUID, revision: UInt64, project: GopherForgeProject) throws -> ProjectLibraryItem {
-        var current = try state()
-        if let index = current.items.firstIndex(where: { $0.id == id }) {
-            guard revision > (current.items[index].sourceRevision ?? 0) else {
+    func recordSource(
+        id: UUID, revision: UInt64, project: GopherForgeProject,
+        expectedBase: [String: String]? = nil, writerID: UUID? = nil
+    ) throws -> ProjectLibraryItem {
+        let base = expectedBase.map(ProjectLibraryDocument.sourceDigest) ?? observedSources[id]
+        let incoming = ProjectLibraryDocument.sourceDigest(project.files)
+        let writerKey = writerID.map { id.uuidString + $0.uuidString }
+        let accepted = writerKey.flatMap { writerRevisions[$0] }
+        let stored: ProjectLibraryItem = try edit { current in
+            let index = current.items.firstIndex { $0.id == id }
+            if let index, let accepted, revision < accepted { return current.items[index] }
+            let existing = index.map { current.items[$0] }
+            let currentDigest = existing.map { ProjectLibraryDocument.sourceDigest($0.project.files) }
+            if let base, currentDigest != base, currentDigest != incoming {
+                let pending = ProjectLibraryItem(
+                    id: id, project: project, lastOpenedAt: Date(), sourceRevision: revision,
+                    folder: existing?.folder, tags: existing?.tags, summary: existing?.summary
+                )
+                let copy = ProjectLibraryDocument.recoveryCopy(pending, reason: "conflict copy")
+                current.items.append(copy)
+                return copy
+            }
+            if let index {
+                if writerID == nil, revision <= (current.items[index].sourceRevision ?? 0) { return current.items[index] }
+                if currentDigest == incoming,
+                   current.items[index].project.entryFile == project.entryFile,
+                   current.items[index].project.provenance == project.provenance {
+                    current.items[index].sourceRevision = max(revision, current.items[index].sourceRevision ?? 0)
+                    return current.items[index]
+                }
+                current.items[index].project = GopherForgeProject(
+                    name: current.items[index].project.name, files: project.files,
+                    entryFile: project.entryFile, provenance: project.provenance
+                )
+                current.items[index].sourceRevision = max(revision, (current.items[index].sourceRevision ?? 0) &+ 1)
+                current.items[index].lastOpenedAt = Date()
                 return current.items[index]
             }
-            // Filing may have renamed this entry while an editor snapshot was
-            // in flight. Source writes own files, not the library name.
-            current.items[index].project = GopherForgeProject(
-                name: current.items[index].project.name,
-                files: project.files,
-                entryFile: project.entryFile,
-                provenance: project.provenance
-            )
-            current.items[index].sourceRevision = revision
-            current.items[index].lastOpenedAt = Date()
-        } else {
-            current.items.append(
-                ProjectLibraryItem(
-                    id: id,
-                    project: project,
-                    lastOpenedAt: Date(),
-                    sourceRevision: revision
-                )
-            )
+            let item = ProjectLibraryItem(id: id, project: project, lastOpenedAt: Date(), sourceRevision: revision)
+            current.items.append(item)
+            return item
         }
-
-        current.items.sort { $0.lastOpenedAt > $1.lastOpenedAt }
-        try persist(current)
-        return current.items.first { $0.id == id }!
+        observedSources[stored.id] = ProjectLibraryDocument.sourceDigest(stored.project.files)
+        if let writerKey { writerRevisions[writerKey] = max(accepted ?? 0, revision) }
+        return stored
     }
 
-    /// A build describes the snapshot that ran. It must never write source.
+    /// Metadata updates reread under the same write lock; they never carry source.
     func recordBuild(id: UUID, result: ProjectBuildRecord) throws {
-        var current = try state()
-        guard let index = current.items.firstIndex(where: { $0.id == id }) else { return }
-        current.items[index].lastBuild = result
-        try persist(current)
+        try edit { current in
+            guard let index = current.items.firstIndex(where: { $0.id == id }) else { return }
+            current.items[index].lastBuild = result
+        }
     }
 
     /// Files a project: its name, folder, tags, star and one-line summary.
@@ -198,26 +238,26 @@ actor ProjectLibrary {
         isFavorite: Bool? = nil,
         summary: String? = nil
     ) throws -> [ProjectLibraryItem] {
-        var current = try state()
-        guard let index = current.items.firstIndex(where: { $0.id == id }) else {
-            return try items()
-        }
-
-        if let name {
-            let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty {
-                current.items[index].project = current.items[index].project.renamed(to: trimmed)
+        try edit { current in
+            guard let index = current.items.firstIndex(where: { $0.id == id }) else {
+                return
             }
-        }
-        if let folder { current.items[index].folder = ProjectLibraryItem.normalizedFolder(folder) }
-        if let tags { current.items[index].tags = tags.isEmpty ? nil : tags }
-        if let isFavorite { current.items[index].isFavorite = isFavorite }
-        if let summary {
-            let trimmed = summary.trimmingCharacters(in: .whitespacesAndNewlines)
-            current.items[index].summary = trimmed.isEmpty ? nil : trimmed
-        }
 
-        try persist(current)
+            if let name {
+                let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmed.isEmpty {
+                    current.items[index].project = current.items[index].project.renamed(to: trimmed)
+                }
+            }
+            if let folder { current.items[index].folder = ProjectLibraryItem.normalizedFolder(folder) }
+            if let tags { current.items[index].tags = tags.isEmpty ? nil : tags }
+            if let isFavorite { current.items[index].isFavorite = isFavorite }
+            if let summary {
+                let trimmed = summary.trimmingCharacters(in: .whitespacesAndNewlines)
+                current.items[index].summary = trimmed.isEmpty ? nil : trimmed
+            }
+
+        }
         return try items()
     }
 
@@ -242,33 +282,55 @@ actor ProjectLibrary {
 
     @discardableResult
     func remove(id: UUID) throws -> [ProjectLibraryItem] {
-        var current = try state()
-        current.items.removeAll { $0.id == id }
-        try persist(current)
-        return current.items.sorted { $0.lastOpenedAt > $1.lastOpenedAt }
+        try edit { current in current.items.removeAll { $0.id == id } }
+        return try items()
     }
 
     // MARK: - Storage
 
-    private func state() throws -> State {
-        if let cachedState { return cachedState }
-        guard FileManager.default.fileExists(atPath: storageURL.path) else {
-            let empty = State(items: [])
-            cachedState = empty
-            return empty
+    enum StorageError: LocalizedError, Equatable {
+        case unsupportedSchema
+        case verificationFailed
+        case missingDocument
+        case bookmarkUnavailable
+        var errorDescription: String? {
+            switch self {
+            case .unsupportedSchema: "This library uses an unsupported format. It has not been changed."
+            case .verificationFailed: "The new library could not be verified. The previous location is still active."
+            case .missingDocument: "The library file was moved or removed. It has not been replaced with an empty library. Restore its location or export your current work."
+            case .bookmarkUnavailable: "The selected Files or iCloud library could not be restored. Choose its folder again. The on-device library has not been substituted or changed."
+            }
         }
-        let data = try Data(contentsOf: storageURL)
-        let decoded = try JSONDecoder.gopherForge.decode(State.self, from: data)
-        cachedState = decoded
-        return decoded
     }
 
-    private func persist(_ state: State) throws {
-        try FileManager.default.createDirectory(
-            at: storageURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true
-        )
-        try JSONEncoder.gopherForge.encode(state).write(to: storageURL, options: .atomic)
-        cachedState = state
+    private func readState(at url: URL) throws -> State { try ProjectLibraryDocument.read(url) }
+
+    /// Existing libraries are opened, never replaced by the current library.
+    /// A new destination receives a verified copy; the old document is kept.
+    private func prepareDestination(_ destination: URL) throws -> State {
+        if FileManager.default.fileExists(atPath: destination.path) {
+            return try readState(at: destination)
+        }
+        let current = try state()
+        try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+        // Refuse a destination that appeared since the initial existence check.
+        let encoded = try JSONEncoder.gopherForge.encode(current)
+        try encoded.write(to: destination, options: .withoutOverwriting)
+        guard try Data(contentsOf: destination) == encoded else { throw StorageError.verificationFailed }
+        return try readState(at: destination)
+    }
+
+    private func state() throws -> State {
+        guard !restorationFailed else { throw StorageError.bookmarkUnavailable }
+        let state = try ProjectLibraryDocument.read(storageURL, requireExisting: requiresExistingDocument)
+        if FileManager.default.fileExists(atPath: storageURL.path) { requiresExistingDocument = true }
+        return state
+    }
+
+    private func edit<T>(_ update: (inout State) throws -> T) throws -> T {
+        guard !restorationFailed else { throw StorageError.bookmarkUnavailable }
+        let result = try ProjectLibraryDocument.modify(storageURL, requireExisting: requiresExistingDocument, update)
+        if FileManager.default.fileExists(atPath: storageURL.path) { requiresExistingDocument = true }
+        return result
     }
 }

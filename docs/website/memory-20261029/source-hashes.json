@@ -1,0 +1,6 @@
+{
+  "memory.go": "8e0f7cb2d1bb5a82d61ed5721a1c5d2f038a31c8e724d2df04f60d247ca7c137",
+  "memory_test.go": "c2c385cd63aad63cb96a11a1834eebf7ec75ea1fd0ab54695e5d7d2ed7a7f7cf",
+  "cmd/memlab/main.go": "018f19f7cdd32eeeae56b615f911fd43535f9cffc7eb6c5ea41271126ebb1963",
+  "go.mod": "467180885b36f2a3f2c3ddc7000e41ad88d43846a5eca1f486c33fa2fe225b41"
+}

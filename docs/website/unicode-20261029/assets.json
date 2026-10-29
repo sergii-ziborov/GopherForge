@@ -1,0 +1,71 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "unicodefield-hero",
+      "prompt": "Original premium editorial illustration for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper details, soft studio lighting, spacious coherent composition. No logos, watermark, vendor UI, invented measurements or tiny text. scientific-educational hero. A curious turquoise gopher engineer looks through three magnifying lenses at the same text object. At the first layer are small byte tiles, at the next a few complete code-point tokens, and at the last combined visual clusters held by subtle brackets. Clearly distinct layers of representation, no claim that one byte equals one visible character. No text or numerical labels; do not invent readable Unicode strings.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-4cfadd0e-3d5c-4b7a-b57f-60012f8d10f4.png",
+      "src": "/images/news/unicodefield-hero.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/unicodefield-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 186560,
+      "sha256": "979fe6dfc56add9448f8affb34d2c62aff9a033862e196b3cbd288b074ab4aab",
+      "alt": "A gopher examines storage bytes, individual code-point tokens and combined visual clusters through separate lenses."
+    },
+    {
+      "id": "unicodefield-infographic",
+      "prompt": "Original premium GopherForge educational infographic, landscape 1536x1024, opaque warm ivory background, navy and teal with restrained copper, polished tactile isometric 3D. Four spacious separate panels with exact headings only: BYTES, RUNES, CLUSTERS, POLICY. BYTES: an unlabelled storage mosaic. RUNES: abstract indivisible geometric tokens without any real written character. CLUSTERS: a larger abstract base token and a smaller accent token together inside a single soft bracket. POLICY: a turquoise gopher considers two explicit application gates. Strictly no actual letters, script glyphs, code points, numbers or labels anywhere except the four headings. Do not map a concrete letter to a count of tiles; this is a conceptual representation, not measured UTF-8 sizes. Clear readable headings, no logos or watermark.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-6caaa122-dc13-49a3-8424-fccfc7361f0c.png",
+      "src": "/images/news/unicodefield-infographic.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/unicodefield-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 114970,
+      "sha256": "84d39457abdc9cfe27bca34a426e152e63bbabd282562e168f097fec48a1aa2c",
+      "alt": "Bytes, runes, clusters and policy are different text-processing concepts; geometric tokens carry no measured encoding counts."
+    },
+    {
+      "id": "unicodefield-detail",
+      "prompt": "Original premium editorial illustration for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper details, soft studio lighting, spacious coherent composition. No logos, watermark, vendor UI, invented measurements or tiny text. scientific-educational detail. Contrast two memory-ownership scenes side by side. One tiny highlighted text tag remains tethered to a very large backing storage slab. A separate small copied tag sits in its own independent compact storage tile while the old large slab is disconnected. A turquoise gopher examines retention rather than speed. No text, arrows promising faster execution, or size numbers.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-88df697b-2765-46e5-9fd5-b8ac1e3b389c.png",
+      "src": "/images/news/unicodefield-detail.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/unicodefield-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 177852,
+      "sha256": "7c8bed0cf859f745be6d7f1d864518cf8bbb206911ba6ae5b243d0f5dcfa5bd1",
+      "alt": "A retained small substring remains connected to a large allocation, while an independent copied prefix has separate storage."
+    },
+    {
+      "id": "unicodefield-normalization",
+      "prompt": "Original premium editorial illustration for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper details, soft studio lighting, spacious coherent composition. No logos, watermark, vendor UI, invented measurements or tiny text. scientific-educational detail. Two equivalent-looking abstract text representations take separate input paths: one is a combined base-and-accent token, the other a base token plus separate accent. A canonicalization workshop places them into a matching representation. On a visibly separate side path, a similar-looking token of a different shape remains distinct and never merges. A turquoise gopher oversees the explicit policy boundary. No written words, numerical code points or claims that all lookalikes normalize identically.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-f8d2aa4a-0f4f-4d1c-ab12-d78120b7eb3a.png",
+      "src": "/images/news/unicodefield-normalization.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/unicodefield-normalization.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 212772,
+      "sha256": "901f3cd754a9b92fb7a0a7fea1aadaf47928fe4576a4bc4d0b5b53f7a5876f78",
+      "alt": "Canonical-equivalent representations meet at a normalization boundary, while a visually similar distinct token stays separate."
+    },
+    {
+      "id": "unicodefield-stream",
+      "prompt": "Original premium editorial illustration for GopherForge Go engineering guides. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal with warm ivory and restrained copper details, soft studio lighting, spacious coherent composition. No logos, watermark, vendor UI, invented measurements or tiny text. scientific-educational detail. A sequence of byte tiles carrying one abstract character is split across two separate delivery trays. A careful turquoise gopher holds an incomplete part in a small carry area until the next tray arrives, then assembles the complete token. A clearly separate end-of-input gate flags an unfinished token. Depict chunk boundaries differing from character boundaries. No text or numeric code points.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-18c97116-dd1a-4468-b564-67c4caa36470.png",
+      "src": "/images/news/unicodefield-stream.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/unicodefield-stream.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 177012,
+      "sha256": "fd578cebd3ac3743dcb25f836137d369ce678c33cc8bd8e75cbfc5071e69e2ed",
+      "alt": "An incomplete encoded token crosses two input chunks and is held until completion; end of input exposes an unfinished token."
+    }
+  ],
+  "selectionNote": "Five final illustrations. The first infographic was replaced by an abstract-token version to avoid implying incorrect byte counts for real letters. All original generations remain preserved."
+}

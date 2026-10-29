@@ -28,19 +28,34 @@ enum ProjectLibraryLocation {
         return defaultFileURL()
     }
 
+    /// The app must not silently substitute an on-device document when a
+    /// previously selected provider or its bookmark cannot be restored.
+    static func restoredFileURL() throws -> URL {
+        guard usesChosenFolder else { return defaultFileURL() }
+        guard let folder = rememberedFolder() else { throw ProjectLibrary.StorageError.bookmarkUnavailable }
+        return folder.appending(path: "recent-projects.json")
+    }
+
     static var usesChosenFolder: Bool {
         UserDefaults.standard.data(forKey: bookmarkDefaultsKey) != nil
     }
 
     /// Remembers a folder the owner picked in Files or iCloud Drive.
     static func remember(folder url: URL) throws {
+        remember(bookmark: try bookmark(for: url))
+    }
+
+    static func bookmark(for url: URL) throws -> Data {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-        let bookmark = try url.bookmarkData(
+        return try url.bookmarkData(
             options: [],
             includingResourceValuesForKeys: nil,
             relativeTo: nil
         )
+    }
+
+    static func remember(bookmark: Data) {
         UserDefaults.standard.set(bookmark, forKey: bookmarkDefaultsKey)
     }
 

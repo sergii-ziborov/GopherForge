@@ -1,0 +1,44 @@
+{
+  "articles": [
+    {
+      "slug": "go-database-sql-pool-timeouts-transactions",
+      "proseWords": 2230,
+      "sources": 6,
+      "images": 3,
+      "canonicalAndSchema": "passed"
+    },
+    {
+      "slug": "go-http-graceful-shutdown-kubernetes",
+      "proseWords": 2215,
+      "sources": 6,
+      "images": 3,
+      "canonicalAndSchema": "passed"
+    },
+    {
+      "slug": "go-concurrency-tests-synctest-without-sleeps",
+      "proseWords": 2114,
+      "sources": 8,
+      "images": 3,
+      "canonicalAndSchema": "passed"
+    }
+  ],
+  "internalLinksChecked": 35,
+  "sitemapURLs": 442,
+  "RSSArticles": 21,
+  "mobileWidths": [
+    {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390
+    }
+  ],
+  "webTests": 36,
+  "productionBuild": "passed"
+}

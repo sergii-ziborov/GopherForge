@@ -101,6 +101,89 @@ final class WorkspaceFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Open full screen"].exists)
     }
 
+    func testOfflineReactExampleBuildsFromTerminalAndOpensFullScreen() {
+        app.launchArguments = ["-GopherForgeSection", Section.projects.rawValue, "-GopherForgeEmptyLibrary"]
+        app.launch()
+        let examples = app.buttons[AccessibilityIdentifier.projectsExamples]
+        XCTAssertTrue(examples.waitForExistence(timeout: 10))
+        examples.tap()
+        let board = app.buttons["example.site.react-offline"]
+        for _ in 0..<8 where !board.isHittable { app.swipeUp() }
+        XCTAssertTrue(board.exists && board.isHittable)
+        board.tap()
+        let open = app.buttons[AccessibilityIdentifier.exampleOpen]
+        XCTAssertTrue(open.waitForExistence(timeout: 10))
+        open.tap()
+        XCTAssertTrue(app.selectWorkspacePane("terminal"))
+        let input = app.textFields["terminal.input"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        if app.frame.width >= 700 {
+            app.buttons["terminal.quick.npm install --offline"].tap()
+        } else {
+            send("npm install --offline", to: input)
+        }
+        let lock = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Offline frontend lock ready'")).firstMatch
+        XCTAssertTrue(lock.waitForExistence(timeout: 20))
+        if app.frame.width >= 700 {
+            app.buttons["terminal.quick.npm run build"].tap()
+        } else {
+            send("npm run build", to: input)
+        }
+        let ready = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Offline preview ready in Output'")).firstMatch
+        XCTAssertTrue(ready.waitForExistence(timeout: 90), app.debugDescription)
+        if app.buttons["terminal.hideKeyboard"].isHittable { app.buttons["terminal.hideKeyboard"].tap() }
+        XCTAssertTrue(app.selectWorkspacePane("output"))
+        let heading = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS 'understanding.'")).firstMatch
+        XCTAssertTrue(heading.waitForExistence(timeout: 20), app.debugDescription)
+        attachScreenshot(named: "offline-react-output")
+        app.buttons["Open full screen"].tap()
+        XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout: 20))
+        let addTask = app.webViews.buttons["Add task"].firstMatch
+        let visible = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "hittable == true"), object: addTask
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 20), .completed)
+        // Wait for the new WebKit surface to paint after its sheet transition.
+        RunLoop.current.run(until: Date().addingTimeInterval(1))
+        attachScreenshot(named: "offline-react-fullscreen")
+        app.buttons["Done"].tap()
+    }
+
+    func testGutterBreakpointRunsTheRealSourceDebugger() {
+        app.launchArguments = ["-GopherForgeSection", Section.projects.rawValue, "-GopherForgeEmptyLibrary"]
+        app.launch()
+        XCTAssertTrue(app.buttons[AccessibilityIdentifier.projectsExamples].waitForExistence(timeout: 15))
+        app.buttons[AccessibilityIdentifier.projectsExamples].tap()
+        let example = app.buttons["example.project.debugger-walkthrough"]
+        for _ in 0..<10 where !example.isHittable { app.swipeUp() }
+        XCTAssertTrue(example.isHittable)
+        example.tap()
+        app.buttons[AccessibilityIdentifier.exampleOpen].tap()
+        let point = app.buttons["breakpoint.line.12"]
+        XCTAssertTrue(point.waitForExistence(timeout: 15), app.debugDescription)
+        point.tap()
+        let run = app.buttons["phase.run"]
+        let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: run)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 30), .completed)
+        run.tap()
+        XCTAssertTrue(app.buttons["debug.stepInto"].firstMatch.waitForExistence(timeout: 150), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["debug.local.start"].firstMatch.label.contains("3"))
+        app.buttons["debug.stepInto"].firstMatch.tap()
+        let inside = app.staticTexts["debug.local.n"].firstMatch
+        let reachedInside = inside.waitForExistence(timeout: 15)
+        if !reachedInside { attachScreenshot(named: "debugger-step-into-diagnostic") }
+        XCTAssertTrue(reachedInside, app.debugDescription)
+        guard reachedInside else { return }
+        XCTAssertTrue(inside.label.contains("3"))
+        app.buttons["debug.stepOver"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["debug.local.value"].firstMatch.waitForExistence(timeout: 15))
+        app.buttons["debug.stepOut"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["debug.local.result"].firstMatch.waitForExistence(timeout: 15))
+        attachScreenshot(named: "source-debugger-paused")
+        app.buttons["debug.continue"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["debug.continue"].firstMatch.waitForNonExistence(timeout: 20))
+    }
+
     /// The Files tree on a phone is a drawer. A left-to-right swipe from the
     /// leading edge has to open it — the toolbar button is not the only way in.
     func testALeadingSwipeOpensFilesOnThePhone() throws {

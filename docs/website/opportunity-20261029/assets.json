@@ -1,0 +1,83 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "gohiring-hero",
+      "prompt": "Original premium GopherForge engineering editorial illustration. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal, warm ivory and restrained copper details, soft studio lighting and clear spacious composition. No logos, watermark, vendor interface, fake statistics, upward growth chart, money symbols or invented numerical data. scientific-educational. A thoughtful turquoise gopher engineer compares three distinct evidence stations: a set of job requirement cards, a survey clipboard and a small working code project. An application path leads through multiple clear review gates, never a guaranteed offer. Emphasize informed preparation and evidence rather than a lottery or salary hype. No text.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-25e9dfb6-aa5f-4654-992d-6279b4aca212.png",
+      "src": "/images/news/gohiring-hero.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/gohiring-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 202460,
+      "sha256": "1282d0c4767f3845c364c750385205649f4f464faa117ce1e32b7d8ceaad3dc0",
+      "alt": "A gopher compares job requirements, survey evidence and a working project before navigating application review stages."
+    },
+    {
+      "id": "gohiring-infographic",
+      "prompt": "Original premium GopherForge engineering editorial illustration. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal, warm ivory and restrained copper details, soft studio lighting and clear spacious composition. No logos, watermark, vendor interface, fake statistics, upward growth chart, money symbols or invented numerical data. infographic-diagram. Warm ivory background, four spacious stages with exact headings only: DEFINE, COMPARE, BUILD, REVIEW. DEFINE: a cohort frame around a small set of event cards. COMPARE: two separate labelled-by-shape evidence trays, never merged into one misleading chart. BUILD: a small reliable service machine with bounded queue. REVIEW: a gopher explains an inspectable work artifact. No other text or numbers.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-4f02414c-6d3a-4a75-8e09-0db8e0e72680.png",
+      "src": "/images/news/gohiring-infographic.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/gohiring-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 104826,
+      "sha256": "927e8140d929a24903caacdbbb5a0f6a95af354261a58d7b53e17482c5eaed28",
+      "alt": "Define, compare, build and review: use clear cohorts, separate evidence sources and inspectable engineering work."
+    },
+    {
+      "id": "gohiring-detail",
+      "prompt": "Original premium GopherForge engineering editorial illustration. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal, warm ivory and restrained copper details, soft studio lighting and clear spacious composition. No logos, watermark, vendor interface, fake statistics, upward growth chart, money symbols or invented numerical data. scientific-educational. A display case contains only successful application receipt cards while many ordinary pending cards remain visibly outside the case. A turquoise gopher studies both populations using two separate lenses. Explain selection bias: observing successful candidates alone cannot tell every applicant's chance. No text, percentages, ranks or rejection labels.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-c7c89b0e-eea6-4063-ae50-b4628ae7ba5f.png",
+      "src": "/images/news/gohiring-detail.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/gohiring-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 180164,
+      "sha256": "199accffe13cb61e0c731275e6033c5cf9a1559b32142b4ec78b24808b2a7ee7",
+      "alt": "Successful application receipts are displayed separately from pending candidates, illustrating selection bias."
+    },
+    {
+      "id": "ctxbudget-hero",
+      "prompt": "Original premium GopherForge engineering editorial illustration. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal, warm ivory and restrained copper details, soft studio lighting and clear spacious composition. No logos, watermark, vendor interface, fake statistics, upward growth chart, money symbols or invented numerical data. scientific-educational. A turquoise gopher follows one finite hourglass budget along a service pipeline with separate queue, HTTP gateway and database stations. A cancellation signal reaches each station, and completed workers return to their owner. The budget is shared, not magically replenished at each boundary. Clear visual story, no text or numerical clocks.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-322a9de1-e101-4124-ad81-606495d27c84.png",
+      "src": "/images/news/ctxbudget-hero.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/ctxbudget-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 116992,
+      "sha256": "c457c8794035934fae222c821abbc401cb1690ed1e6edc9b488ff718978879b0",
+      "alt": "One finite time budget passes through a queue, HTTP service and database while cancellation reaches owned workers."
+    },
+    {
+      "id": "ctxbudget-infographic",
+      "prompt": "Original premium GopherForge engineering editorial illustration. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal, warm ivory and restrained copper details, soft studio lighting and clear spacious composition. No logos, watermark, vendor interface, fake statistics, upward growth chart, money symbols or invented numerical data. infographic-diagram on warm ivory. Four spacious panels with exact headings only: LOCATE, BUDGET, CANCEL, VERIFY. LOCATE: identify which stage is waiting; BUDGET: one finite hourglass split across dependent stages; CANCEL: a signal ends owned waiting workers; VERIFY: a controlled test observes worker completion and preserved error identity. No other text, percentages or fake charts.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-61709cf5-db05-41f9-b6c8-d82660088d3a.png",
+      "src": "/images/news/ctxbudget-infographic.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/ctxbudget-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 143208,
+      "sha256": "c2682237369625a14317b455de56d77184be6da60f49b9aef516139f38630c43",
+      "alt": "Locate, budget, cancel and verify: diagnose a waiting stage, preserve the time budget and test worker completion."
+    },
+    {
+      "id": "ctxbudget-detail",
+      "prompt": "Original premium GopherForge engineering editorial illustration. Landscape 1536x1024, opaque background, tactile isometric 3D, dark navy and teal, warm ivory and restrained copper details, soft studio lighting and clear spacious composition. No logos, watermark, vendor interface, fake statistics, upward growth chart, money symbols or invented numerical data. scientific-educational. A service operation completes inside a distant machine, but its reply envelope arrives at a closed caller gate after an hourglass empties. A gopher inspects a separate status receipt through a reconciliation path instead of blindly creating a duplicate operation. The caller timeout and remote completion are visibly distinct outcomes. No text, money imagery, numbers or exactly-once claims.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-d5137d94-f337-4304-89b4-d6db41eeeca4.png",
+      "src": "/images/news/ctxbudget-detail.webp",
+      "path": "/Users/serhiirihgt/dev/gopherforge/website/public/images/news/ctxbudget-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 182030,
+      "sha256": "9d6233d775c0eb8b861b5920c822a5f7428abc2f562b4f0aa7ad2718831b05b1",
+      "alt": "A remote operation completes after the caller stops waiting, while a separate reconciliation path checks its recorded result."
+    }
+  ]
+}

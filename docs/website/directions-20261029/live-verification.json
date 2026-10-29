@@ -1,0 +1,24 @@
+{
+  "base": "https://gopherforge.app",
+  "articles": [
+    {
+      "edition": "2026-10-06",
+      "slug": "go-popularity-2026-google-trends-cloud-ai-directions",
+      "proseWords": 2355,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    },
+    {
+      "edition": "2026-10-10",
+      "slug": "go-slog-structured-logging-context-redaction",
+      "proseWords": 2268,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    }
+  ],
+  "internalLinksChecked": 20,
+  "generatedImages": 6,
+  "sitemapURLs": 451,
+  "RSSItems": 30,
+  "downloadSourceHashes": "passed",
+  "health": "passed",
+  "emptyEditions": "2026-10-07 through 2026-10-09"
+}

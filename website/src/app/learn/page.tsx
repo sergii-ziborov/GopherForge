@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { interview } from "@/lib/interview";
+import { ProgressTransfer } from "@/components/ProgressTransfer";
+import { curriculumUpdatedOn } from "@/lib/curriculum-revision";
 import { StructuredData } from "@/components/StructuredData";
 import { releases } from "@/lib/releases";
 import type { Metadata } from "next";
@@ -8,7 +11,7 @@ import { EditorialIllustration } from "@/components/EditorialIllustration";
 export const metadata: Metadata = {
   title: "Learn Go — the complete course",
   description:
-    "Learn Go with 186 teaching lessons: concurrency, JSON v2, architecture, SQL, MongoDB, Redis, coding agents and deployment. Worked code and self-checks; no account.",
+    "Learn Go with 220 teaching lessons: concurrency, Gin, system design, security, blockchain, SQL, MongoDB, Redis and coding agents. Worked code and self-checks; no account.",
   alternates: { canonical: "/learn" },
 };
 export default function Learn() {
@@ -44,18 +47,20 @@ export default function Learn() {
           </span>
         </div>
         <p className="availability">
-          The web library includes JSON v2, modern concurrency, SQL services and
-          coding-agent lessons prepared for native {releases.next.version}. App
-          Store {releases.public.version} includes Continue. See{" "}
-          <Link href="/updates">version history</Link> for release status.
-          Continue saves your lesson and section in this browser. Web and app
-          progress are stored separately.
+          The expanded web library includes Gin, blockchain infrastructure,
+          service security and production system design, prepared for native{" "}
+          {releases.curriculum.version}. App Store {releases.public.version}{" "}
+          includes the expanded course and Continue. The AI lessons now also
+          describe the development MCP Playground in 1.3.2; those additions are
+          not in build 49. See <Link href="/updates">version history</Link> for
+          release status. Continue saves your lesson and section in this
+          browser. Web and app progress are stored separately.
         </p>
       </header>
       <StructuredData
         data={{
           "@context": "https://schema.org",
-          "@type": "Course",
+          "@type": "CollectionPage",
           name: "Learn Go — the GopherForge course",
           description:
             "Go fundamentals, concurrency, architecture, design patterns, databases and production tooling.",
@@ -68,7 +73,9 @@ export default function Learn() {
           isAccessibleForFree: true,
           inLanguage: "en",
           hasPart: units.map((u) => ({
-            "@type": "Course",
+            "@type": "LearningResource",
+            learningResourceType: "Learning path",
+            description: u.summary,
             name: u.title,
             url: `https://gopherforge.app/learn/units/${u.id}`,
           })),
@@ -98,6 +105,11 @@ export default function Learn() {
           title: u.title,
           summary: u.summary,
         }))}
+      />
+      <ProgressTransfer
+        lessons={lessons.map((l) => l.id)}
+        interview={interview.questions.map((q) => q.id)}
+        revision={curriculumUpdatedOn}
       />
       <section className="unit-directory">
         <h2>Browse by subject.</h2>

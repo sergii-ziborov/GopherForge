@@ -1,0 +1,37 @@
+[
+  {
+    "Path": "gopherforge.example/unicode-normalization-lab",
+    "Main": true,
+    "Dir": "/Users/serhiirihgt/dev/gopherforge/docs/website/unicode-20261029/normlab",
+    "GoMod": "/Users/serhiirihgt/dev/gopherforge/docs/website/unicode-20261029/normlab/go.mod",
+    "GoVersion": "1.26.0"
+  },
+  {
+    "Path": "golang.org/x/mod",
+    "Version": "v0.41.0",
+    "Time": "2026-08-24T20:56:42Z",
+    "Indirect": true
+  },
+  {
+    "Path": "golang.org/x/sync",
+    "Version": "v0.24.0",
+    "Time": "2026-09-23T16:28:17Z",
+    "Indirect": true
+  },
+  {
+    "Path": "golang.org/x/text",
+    "Version": "v0.43.0",
+    "Time": "2026-10-09T15:18:32Z",
+    "Dir": "/Users/serhiirihgt/go/pkg/mod/golang.org/x/text@v0.43.0",
+    "GoMod": "/Users/serhiirihgt/go/pkg/mod/cache/download/golang.org/x/text/@v/v0.43.0.mod",
+    "GoVersion": "1.26.0",
+    "Sum": "h1:1QivrlhwAsnMOcqgOdl9my7s9OyZl8O5/UGUTJVXoWc=",
+    "GoModSum": "h1:hbSIYA/amXcRXTFSZqh8tWHEoqRvvbKPJ2uz/KU+a+s="
+  },
+  {
+    "Path": "golang.org/x/tools",
+    "Version": "v0.51.0",
+    "Time": "2026-10-02T18:49:45Z",
+    "Indirect": true
+  }
+]

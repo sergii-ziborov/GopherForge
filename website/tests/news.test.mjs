@@ -5,6 +5,50 @@ const read = async (path) =>
   JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const news = await read("../src/content/news.json");
 const images = await read("../src/content/news-images.json");
+test("1, 3 and 13 October memory guides retain truthful dates, complete experiments and distinct illustrations", async () => {
+  const editions = ["2026-10-01", "2026-10-03", "2026-10-13"];
+  const added = news.filter((n) => editions.includes(n.editionDate));
+  assert.equal(added.length, 3);
+  assert.equal(new Set(added.map((n) => n.editionDate)).size, 3);
+  const manifest = await read("../../docs/website/memory-20261029/assets.json");
+  assert.equal(manifest.assets.length, 9);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 9);
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  const questions = (await read("../src/content/interview.json")).questions;
+  for (const n of added) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(
+      body.replace(/```[\s\S]*?```/g, "").split(/\s+/).length >= 2000,
+      n.slug,
+    );
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("/downloads/go-memory-lab-20261029.zip"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|interview|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : kind === "interview"
+            ? questions.some((q) => q.id === id)
+            : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.ok(images[a.id].alt.length > 30);
+    }
+  }
+});
 // Date-only editorial fields use the publication desk's calendar, not UTC midnight.
 const editorialToday = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Jerusalem",
@@ -12,6 +56,29 @@ const editorialToday = new Intl.DateTimeFormat("en-CA", {
   month: "2-digit",
   day: "2-digit",
 }).format(new Date());
+test("the eMudhra report separates event and publication dates and contains 2000 prose words", () => {
+  const n = news.find(
+    (n) => n.slug === "go-emudhra-urgent-tls-incident-response",
+  );
+  assert.ok(n);
+  assert.equal(n.eventDate, "2026-10-26");
+  assert.equal(n.publishedAt, "2026-10-29");
+  const prose = n.sections
+    .map((s) => s.body)
+    .join(" ")
+    .replace(/```[\s\S]*?```/g, "");
+  assert.ok(prose.split(/\s+/).length >= 2000);
+  assert.ok(
+    n.sources.some((s) => new URL(s.url).hostname === "blog.mozilla.org"),
+  );
+  assert.ok(
+    n.sources.some((s) => new URL(s.url).hostname === "blog.cloudflare.com"),
+  );
+  assert.ok(n.sections.some((s) => s.body.includes("```go\n")));
+  assert.ok(
+    n.sections.some((s) => s.body.includes("/learn/security.tls-trust")),
+  );
+});
 test("substantive original articles have sources, interlinks and three generated assets each", async () => {
   assert.ok(news.length >= 10);
   assert.equal(new Set(news.map((n) => n.slug)).size, news.length);
@@ -81,12 +148,26 @@ test("sync release record separates the public version from the next native upda
   const r = await read("../src/content/releases.json"),
     c = await read("../src/content/course-version.json");
   assert.equal(c.publicAppVersion, r.public.version);
-  assert.equal(c.appVersion, r.next.version + " — " + r.next.status);
-  assert.equal(r.public.version, "1.1.6");
-  assert.equal(r.next.version, "1.2.0");
-  const receipt = await read("../../docs/releases/1.1.6-submission.json");
+  assert.equal(
+    c.appVersion,
+    r.curriculum.version + " — " + r.curriculum.status,
+  );
+  if (r.next.reviewSubmitted === true) {
+    const review = await read(
+      `../../docs/releases/${r.next.version}-build${r.next.build}-submission.json`,
+    );
+    assert.equal(r.next.version, review.version);
+    assert.equal(r.next.build, Number(review.build));
+    assert.equal(review.releaseType, "AFTER_APPROVAL");
+  } else {
+    assert.equal(r.next.reviewSubmitted, false);
+  }
+  const receipt = await read(
+    `../../docs/releases/${r.public.version}-build${r.public.build}-release.json`,
+  );
   assert.equal(r.public.version, receipt.version);
   assert.equal(r.public.build, Number(receipt.build));
+  assert.equal(receipt.state, "READY_FOR_SALE");
   assert.ok(r.next.build > r.public.build);
 });
 
@@ -140,6 +221,276 @@ test("October additions fill unused editions without inventing publication dates
           path,
         );
       }
+    }
+  }
+});
+
+test("24, 25 and 28 October editions each contain 2000 prose words and three distinct generated assets", async () => {
+  const editions = ["2026-10-24", "2026-10-25", "2026-10-28"];
+  const posts = news.filter((n) => editions.includes(n.editionDate));
+  assert.equal(posts.length, 3);
+  assert.equal(new Set(posts.map((n) => n.editionDate)).size, 3);
+  const manifest = await read(
+    "../../docs/website/archive-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 9);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 9);
+  for (const n of posts) {
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    const prose = n.sections
+      .map((s) => s.body)
+      .join(" ")
+      .replace(/```[\s\S]*?```/g, "");
+    assert.ok(prose.split(/\s+/).length >= 2000, n.slug);
+    assert.ok(n.sources.length >= 6);
+    assert.ok(n.sections.some((s) => s.body.includes("```go\n")));
+    assert.ok(n.sections.some((s) => s.body.includes("](/learn/")));
+    assert.ok(
+      n.sections.some((s) =>
+        s.body.includes("/downloads/go-engineering-examples-20261029.zip"),
+      ),
+    );
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.ok(a);
+      assert.equal(a.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, a.width);
+    }
+  }
+});
+
+test("4 and 12 October boundary guides pair deep content with reproducible Playground exercises", async () => {
+  const posts = news.filter((n) =>
+    ["2026-10-04", "2026-10-12"].includes(n.editionDate),
+  );
+  assert.equal(posts.length, 2);
+  assert.equal(new Set(posts.map((n) => n.editionDate)).size, 2);
+  const manifest = await read(
+    "../../docs/website/boundaries-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  const questions = (await read("../src/content/interview.json")).questions;
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/[|`#]/g, " ");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("](/playground)"));
+    assert.ok(body.includes("](/guide/mcp)"));
+    assert.ok(body.includes("/downloads/go-boundaries-lab-20261029.zip"));
+    assert.ok(body.includes("```go\n"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|interview|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : kind === "interview"
+            ? questions.some((q) => q.id === id)
+            : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
+      assert.ok(images[a.id].alt.length > 30);
+    }
+  }
+});
+
+test("5 and 11 October reliability guides contain deep original labs and six distinct generated images", async () => {
+  const posts = news.filter((n) =>
+    ["2026-10-05", "2026-10-11"].includes(n.editionDate),
+  );
+  assert.equal(posts.length, 2);
+  assert.equal(new Set(posts.map((n) => n.editionDate)).size, 2);
+  const manifest = await read(
+    "../../docs/website/reliability-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/[|`#]/g, " ");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("](/playground)"));
+    assert.ok(body.includes("](/guide/mcp)"));
+    assert.ok(body.includes("/downloads/go-reliability-lab-20261029.zip"));
+    assert.ok(body.includes("```go\n"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
+      assert.ok(images[a.id].alt.length > 30);
+    }
+  }
+});
+
+test("6 and 10 October guides preserve multi-source evidence and tested slog boundaries", async () => {
+  const posts = news.filter((n) =>
+    ["godirections", "slogfield"].includes(n.imagePrefix),
+  );
+  assert.equal(posts.length, 2);
+  const manifest = await read(
+    "../../docs/website/directions-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const research = await read(
+    "../../docs/website/directions-20261029/research.json",
+  );
+  assert.deepEqual(
+    research.rankings.slice(0, 3).map((r) => r.GoRank),
+    [11, 17, 12],
+  );
+  const stats = await read(
+    "../../docs/website/directions-20261029/trends-summary.json",
+  );
+  for (const s of Object.values(stats.series)) {
+    assert.equal(s.previous52.weeks, 52);
+    assert.equal(s.latest52.weeks, 52);
+    assert.deepEqual(s.excludedIncomplete, ["2026-10-25"]);
+  }
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("/downloads/go-directions-slog-lab-20261029.zip"));
+    assert.ok(body.includes("](/playground)"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
+    }
+  }
+});
+
+test("7 and 9 October guides separate hiring cohorts and provide controlled timeout experiments", async () => {
+  const posts = news.filter((n) =>
+    ["gohiring", "ctxbudget"].includes(n.imagePrefix),
+  );
+  assert.equal(posts.length, 2);
+  const manifest = await read(
+    "../../docs/website/opportunity-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const evidence = await read(
+    "../../docs/website/opportunity-20261029/research.json",
+  );
+  assert.ok(
+    evidence.observations[0].caveat.includes("not per-application odds"),
+  );
+  assert.equal(evidence.observations[0].values[2].year, "2026 Q1–Q2 only");
+  const scenario = await read(
+    "../../docs/website/opportunity-20261029/synthetic-scenarios.json",
+  );
+  assert.equal(
+    scenario.A.hiredApplicationMedian,
+    scenario.B.hiredApplicationMedian,
+  );
+  assert.notEqual(
+    scenario.A.observedSharePercent,
+    scenario.B.observedSharePercent,
+  );
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  const questions = (await read("../src/content/interview.json")).questions;
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("/downloads/go-hiring-context-lab-20261029.zip"));
+    assert.ok(body.includes("](/playground)"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|interview|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : kind === "interview"
+            ? questions.some((q) => q.id === id)
+            : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
     }
   }
 });

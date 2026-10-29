@@ -253,5 +253,302 @@
     "src": "/images/news/jsonv2-infographic.webp",
     "width": 1600,
     "height": 900
+  },
+  "emudhra-hero": {
+    "src": "/images/news/emudhra-hero.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "emudhra-detail": {
+    "src": "/images/news/emudhra-detail.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "emudhra-infographic": {
+    "src": "/images/news/emudhra-infographic.webp",
+    "width": 1672,
+    "height": 941
+  },
+  "sqlpool-hero": {
+    "src": "/images/news/sqlpool-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A finite bank of database connection lanes with an admission queue and one lane held by unfinished results."
+  },
+  "sqlpool-detail": {
+    "src": "/images/news/sqlpool-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Three operations enclosed in one transaction on a single connection, with an unrelated path kept outside."
+  },
+  "sqlpool-infographic": {
+    "src": "/images/news/sqlpool-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Budget, Bound, Release and Measure: four stages of connection-pool ownership and observation."
+  },
+  "shutdown-hero": {
+    "src": "/images/news/shutdown-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Two service replicas accept requests while a third closes admission and drains work already inside."
+  },
+  "shutdown-detail": {
+    "src": "/images/news/shutdown-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Preparation, draining and cleanup share one finite shutdown budget; overdue work reaches a stop boundary."
+  },
+  "shutdown-infographic": {
+    "src": "/images/news/shutdown-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Stop routing, Drain, Join and Close, with one finite grace period beneath the complete sequence."
+  },
+  "synctest-hero": {
+    "src": "/images/news/synctest-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A virtual clock and synchronized goroutine tracks inside a test bubble, separate from real-world I/O."
+  },
+  "synctest-detail": {
+    "src": "/images/news/synctest-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Arbitrary hourglass delays contrasted with an explicit channel handshake and an observed result."
+  },
+  "synctest-infographic": {
+    "src": "/images/news/synctest-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Signal, Advance, Settle and Assert: channel events and virtual time establish when a test may check state."
+  },
+  "gcpacer-hero": {
+    "src": "/images/news/gcpacer-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Conceptual Go memory graph: live blocks connected to roots and unreachable blocks awaiting reclamation."
+  },
+  "gcpacer-detail": {
+    "src": "/images/news/gcpacer-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Separate conceptual controls for allocation headroom and a soft runtime memory budget, with external memory outside the runtime area."
+  },
+  "gcpacer-infographic": {
+    "src": "/images/news/gcpacer-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "GC investigation workflow: measure the workload, bound memory demand, adjust one setting, verify the result."
+  },
+  "heapgraph-hero": {
+    "src": "/images/news/heapgraph-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A chain and a branching object graph illustrate logical depth; the measured lab uses equal node counts."
+  },
+  "heapgraph-detail": {
+    "src": "/images/news/heapgraph-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A small view keeps a large backing buffer reachable; an independent copy has separate storage."
+  },
+  "heapgraph-infographic": {
+    "src": "/images/news/heapgraph-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Reachability workflow showing roots, references, live objects and release after all root paths are removed."
+  },
+  "alloclab-hero": {
+    "src": "/images/news/alloclab-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Three conceptual lenses distinguish allocation traffic, retained objects and execution time."
+  },
+  "alloclab-detail": {
+    "src": "/images/news/alloclab-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Equivalent formatting results compared across a general formatter and a typed append workflow."
+  },
+  "alloclab-infographic": {
+    "src": "/images/news/alloclab-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Performance investigation workflow: reproduce, profile, change one implementation, then recheck behavior and resources."
+  },
+  "streamio-hero": {
+    "src": "/images/news/streamio-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A final data chunk and an end marker arrive together; a gopher receives the bytes before ending the read."
+  },
+  "streamio-detail": {
+    "src": "/images/news/streamio-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Separate conceptual gates enforce an input byte budget and a complete document boundary."
+  },
+  "streamio-infographic": {
+    "src": "/images/news/streamio-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Read, bound, parse and check: distinguish returned bytes, finite budgets, document framing and explicit outcomes."
+  },
+  "gotime-hero": {
+    "src": "/images/news/gotime-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "The same instant viewed through different local clocks, with a separate calendar representing civil dates."
+  },
+  "gotime-detail": {
+    "src": "/images/news/gotime-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A stopwatch and a calendar follow different tracks, illustrating elapsed duration versus a location-aware calendar day."
+  },
+  "gotime-infographic": {
+    "src": "/images/news/gotime-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Define, locate, calculate and test: choose a time contract, location rules, arithmetic and fixed transition cases."
+  },
+  "invariants-hero": {
+    "src": "/images/news/invariants-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Two separately protected updates converge into one output, illustrating a lost update between synchronized operations."
+  },
+  "invariants-detail": {
+    "src": "/images/news/invariants-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Readers retain a completed configuration while a writer assembles a separate version before atomic publication."
+  },
+  "invariants-infographic": {
+    "src": "/images/news/invariants-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Define, protect, publish and test: identify an invariant, protect its complete transition, publish owned state and test competing operations."
+  },
+  "retrykey-hero": {
+    "src": "/images/news/retrykey-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A completed operation loses its reply; a repeated ticket matches a stored record and receives the original receipt."
+  },
+  "retrykey-detail": {
+    "src": "/images/news/retrykey-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An effect and its receipt share one commit boundary while the reply channel and an independent external service remain outside it."
+  },
+  "retrykey-infographic": {
+    "src": "/images/news/retrykey-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Identify, commit, replay and reconcile: preserve operation identity, record the effect and result, replay matching requests and investigate uncertain outcomes."
+  },
+  "godirections-hero": {
+    "src": "/images/news/godirections-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher chooses among API services, command-line tools, cloud infrastructure and a smaller AI application path."
+  },
+  "godirections-infographic": {
+    "src": "/images/news/godirections-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Search, usage and engineering fit are separate kinds of evidence for evaluating Go."
+  },
+  "godirections-detail": {
+    "src": "/images/news/godirections-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An AI component is surrounded by bounded service queues, cancellation and explicit application boundaries."
+  },
+  "slogfield-hero": {
+    "src": "/images/news/slogfield-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher organizes diagnostic event cards into structured groups while a secret remains outside the event stream."
+  },
+  "slogfield-infographic": {
+    "src": "/images/news/slogfield-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Select, structure, redact and test: design safe diagnostic event fields and verify the resulting schema."
+  },
+  "slogfield-detail": {
+    "src": "/images/news/slogfield-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A completed application receipt and a blocked diagnostic sink follow separate paths with an explicit overflow choice."
+  },
+  "gohiring-hero": {
+    "src": "/images/news/gohiring-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher compares job requirements, survey evidence and a working project before navigating application review stages."
+  },
+  "gohiring-infographic": {
+    "src": "/images/news/gohiring-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Define, compare, build and review: use clear cohorts, separate evidence sources and inspectable engineering work."
+  },
+  "gohiring-detail": {
+    "src": "/images/news/gohiring-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Successful application receipts are displayed separately from pending candidates, illustrating selection bias."
+  },
+  "ctxbudget-hero": {
+    "src": "/images/news/ctxbudget-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "One finite time budget passes through a queue, HTTP service and database while cancellation reaches owned workers."
+  },
+  "ctxbudget-infographic": {
+    "src": "/images/news/ctxbudget-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Locate, budget, cancel and verify: diagnose a waiting stage, preserve the time budget and test worker completion."
+  },
+  "ctxbudget-detail": {
+    "src": "/images/news/ctxbudget-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A remote operation completes after the caller stops waiting, while a separate reconciliation path checks its recorded result."
+  },
+  "unicodefield-hero": {
+    "src": "/images/news/unicodefield-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher examines storage bytes, individual code-point tokens and combined visual clusters through separate lenses."
+  },
+  "unicodefield-infographic": {
+    "src": "/images/news/unicodefield-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Bytes, runes, clusters and policy are different text-processing concepts; geometric tokens carry no measured encoding counts."
+  },
+  "unicodefield-detail": {
+    "src": "/images/news/unicodefield-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A retained small substring remains connected to a large allocation, while an independent copied prefix has separate storage."
+  },
+  "unicodefield-normalization": {
+    "src": "/images/news/unicodefield-normalization.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Canonical-equivalent representations meet at a normalization boundary, while a visually similar distinct token stays separate."
+  },
+  "unicodefield-stream": {
+    "src": "/images/news/unicodefield-stream.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An incomplete encoded token crosses two input chunks and is held until completion; end of input exposes an unfinished token."
   }
 }

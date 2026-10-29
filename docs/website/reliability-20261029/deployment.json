@@ -1,0 +1,31 @@
+{
+  "source": "2513a69",
+  "job": {
+    "id": "gopherforge-reliability-2513a69-20261029",
+    "targetId": "gopherforge-web",
+    "destination": "localhost:5001/gopherforge/web:2.0.0",
+    "digest": "sha256:32ff9f47333ad56ae2d8b023a86deeb768d217631d0dc382e420f1c75d766fce",
+    "state": "succeeded",
+    "createdAt": "2026-10-29T12:18:15.062302874Z",
+    "finishedAt": "2026-10-29T12:18:18.469526063Z",
+    "action": "deploy_replace",
+    "expectedRevision": "sha256:c8438f42833bdee4d1890829db5ad62d6377cc9c9c2c2827842068297e851f82"
+  },
+  "previousImage": "sha256:4446b080757b3cb8eddfde4ca354b8c97a3bd03e5351aa954526c2a6fafdd71e",
+  "rollbackTag": "localhost/gopherforge-web:rollback-before-reliability-2513a69",
+  "preflight": {
+    "health": "passed",
+    "MCPInitialize": "passed",
+    "progressPublishReadHTML": "passed",
+    "persistentHostFile": "present",
+    "articleSEOAndThreeImages": "passed",
+    "sitemapURLs": 449
+  },
+  "validation": {
+    "webTests": 39,
+    "nativeGoRaceRuns": 50,
+    "vet": "passed",
+    "negativeControls": 4,
+    "crossCompilation": "wasip1/wasm, both standalone programs"
+  }
+}

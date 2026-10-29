@@ -30,4 +30,21 @@ final class BundledGoLibraryTests: XCTestCase {
         try BundledGoLibrary.prepare(archive: archive, checksum: checksum, destination: destination)
         XCTAssertEqual(try Data(contentsOf: runtime), original)
     }
+
+    func testColdLibraryPreparesTheActualCompilerCache() throws {
+        let locator = GoToolchainLocator()
+        let layout = try XCTUnwrap(locator.resolve(prepareLibrary: false))
+        let checksum = try String(contentsOf: layout.root.appendingPathComponent("goroot.sha256"), encoding: .utf8)
+        let caches = try XCTUnwrap(FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first)
+        let destination = caches.appendingPathComponent("GopherForge/BundledLibrary/" + checksum)
+        if FileManager.default.fileExists(atPath: destination.path) {
+            try FileManager.default.removeItem(at: destination)
+        }
+        try BundledGoLibrary.prepare(
+            archive: layout.root.appendingPathComponent("goroot.zip"),
+            checksum: checksum,
+            destination: destination
+        )
+        XCTAssertNotNil(locator.resolve(), "A first run must resolve the freshly restored real cache")
+    }
 }

@@ -1,3 +1,4 @@
+import { metadataDate } from "@/lib/seo-dates";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,15 +10,15 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "GopherForge Guide: Go Compiler for iPhone & iPad",
   description:
-    "A practical GopherForge guide: create Go projects, compile offline, run tests, manage packages, save learning progress and prepare for Go interviews. Includes sandbox limits.",
+    "Learn GopherForge on iPhone and iPad: offline Go, npm/React builds, local Gin-compatible APIs, breakpoints, tests, Continue and sandbox limits. Includes 1.3.1 workflows.",
   alternates: { canonical: "/guide" },
   openGraph: {
     title: "The complete GopherForge app guide",
     description:
-      "From your first Go project to tests, Continue, interview practice and package compatibility.",
+      "Offline Go projects, React builds, local Go handlers, automatic breakpoints, tests and saved learning progress.",
     type: "article",
     url: "/guide",
-    modifiedTime: guide.updated,
+    modifiedTime: metadataDate(guide.updated),
     images: [
       {
         url: "/images/app-icon.png",
@@ -43,7 +44,7 @@ export default function AppGuide() {
           "@type": "TechArticle",
           headline: "The complete GopherForge app guide",
           description: metadata.description,
-          dateModified: guide.updated,
+          dateModified: metadataDate(guide.updated),
           inLanguage: "en",
           url: "https://gopherforge.app/guide",
           image: "https://gopherforge.app/images/app-icon.png",
@@ -81,7 +82,7 @@ export default function AppGuide() {
         />
         <div>
           <p className="eyebrow">
-            THE APP, EXPLAINED · UPDATED 27 OCTOBER 2026
+            THE APP, EXPLAINED · UPDATED 29 OCTOBER 2026
           </p>
           <h1>
             Your Go workbench.
@@ -93,8 +94,10 @@ export default function AppGuide() {
             with GopherForge on iPhone, iPad and the web.
           </p>
           <p className="small-note">
-            App Store: {releases.public.version}. Expanded library:{" "}
-            {releases.next.version} · {releases.next.status}.{" "}
+            App Store: {releases.public.version}. Next native:{" "}
+            {releases.next.version} · {releases.next.status}. Beta:{" "}
+            {releases.beta.version} ({releases.beta.build}) ·{" "}
+            {releases.beta.status}.{" "}
             <Link href="/updates">Release details →</Link>
           </p>
         </div>
@@ -134,6 +137,30 @@ export default function AppGuide() {
                   </figcaption>
                 </figure>
               ) : null}
+              {s.id === "source-debugger" || s.id === "offline-react" ? (
+                <figure className="guide-screen">
+                  <img
+                    src={
+                      s.id === "source-debugger"
+                        ? "/images/guide-debugger.png"
+                        : "/images/guide-offline-react.png"
+                    }
+                    width="1320"
+                    height="2868"
+                    loading="lazy"
+                    alt={
+                      s.id === "source-debugger"
+                        ? "GopherForge beta source debugger paused at main.go line 13, showing result equals 6 and a saved breakpoint"
+                        : "Original GopherForge React study board built offline and displayed in the native full-screen preview"
+                    }
+                  />
+                  <figcaption>
+                    {s.id === "source-debugger"
+                      ? "Real native beta capture: Step Out returns to main with the computed result."
+                      : "The app's original study board. Edit the components and rebuild locally."}
+                  </figcaption>
+                </figure>
+              ) : null}
               {s.id === "course" || s.id === "environment" ? (
                 <figure className="guide-screen">
                   <img
@@ -147,7 +174,7 @@ export default function AppGuide() {
                     loading="lazy"
                     alt={
                       s.id === "course"
-                        ? "Native GopherForge 1.2.0 course showing 186 lessons and 23 units"
+                        ? "Native GopherForge 1.3.1 course showing 220 teaching lessons and 28 units"
                         : "Native coding-agent lesson with a four-step workflow and practical Go guidance"
                     }
                   />

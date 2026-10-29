@@ -36,6 +36,7 @@ enum GoExampleGinVendor {
             sockets. GopherForge serves the matching web files on localhost.
             """,
             "vendor/\(modulePath)/gin.go": source,
+            "vendor/\(modulePath)/offline.go": GoExampleGinReplay.source,
         ]
     }
 
@@ -64,6 +65,7 @@ enum GoExampleGinVendor {
     type Context struct {
     \tWriter  http.ResponseWriter
     \tRequest *http.Request
+    \tparams map[string]string
     }
 
     func Default() *Engine { return New() }
@@ -116,6 +118,7 @@ enum GoExampleGinVendor {
     // Run cannot listen: WASI has no sockets. It exercises every registered
     // route with httptest. The Swift host serves the preview files separately.
     func (engine *Engine) Run(addr ...string) error {
+    \tif handled, err := engine.runReplay(); handled { return err }
     \thost := "127.0.0.1:8080"
     \tif len(addr) > 0 && addr[0] != "" {
     \t\thost = addr[0]

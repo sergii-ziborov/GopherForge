@@ -1,0 +1,38 @@
+{
+  "checkedOn": "2026-10-29",
+  "existingOriginalNewsArticles": 30,
+  "selectionMethod": "Review article slugs, content clusters, learning/interview links and primary-source search results. No keyword volume, ranking-difficulty or traffic forecast is invented. No new visitor tracking.",
+  "selected": [
+    {
+      "slug": "go-developer-jobs-salary-djinni-dou-2026",
+      "gap": "No dedicated source-checked Go job-market and application-cohort guide. Existing popularity article covers rankings, not employment outcomes.",
+      "intent": [
+        "Go developer jobs 2026",
+        "Golang salary Djinni DOU",
+        "Go portfolio interview preparation"
+      ],
+      "distinctValue": "Actual public Go-filtered Djinni widget evidence, careful denominator and pay-unit distinctions, original selection-bias calculation and practical preparation links."
+    },
+    {
+      "slug": "go-context-deadline-exceeded-timeout-diagnosis",
+      "gap": "No dedicated exact-error troubleshooting article across context, HTTP client, SQL waiting and gRPC status. Existing pool, HTTP and backpressure articles cover narrower adjacent boundaries.",
+      "intent": [
+        "context deadline exceeded Go",
+        "HTTP Client.Timeout ctx.Err nil",
+        "gRPC DeadlineExceeded retry outcome"
+      ],
+      "distinctValue": "Network-free controlled transports, virtual-time tests, cancellation-versus-join demonstration, four negative controls and a downloadable lab."
+    }
+  ],
+  "SEOImplementation": [
+    "Descriptive titles and original 2000+ word prose",
+    "Canonical URL, description, keywords, Open Graph/Twitter and TechArticle metadata",
+    "Three distinct generated illustrations per article with descriptive alt text",
+    "Reciprocal article links and links to real course/interview IDs",
+    "News archive, RSS and image sitemap discovery"
+  ],
+  "measurementLimits": "Search eligibility and useful content are checked; index inclusion, ranking and traffic growth are not guaranteed. Evaluate aggregate Search Console data after crawl, without adding product telemetry.",
+  "remainingEmptyOctoberEditions": [
+    "2026-10-08"
+  ]
+}

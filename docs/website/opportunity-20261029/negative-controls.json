@@ -1,0 +1,22 @@
+[
+  {
+    "mutation": "parent propagation lost",
+    "test": "TestParentDeadlineCannotBeExtended",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "error wrapping discarded",
+    "test": "TestAlreadyCanceledAndSuccess",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "cancellation mislabeled as deadline",
+    "test": "TestAlreadyCanceledAndSuccess",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "cleanup join skipped",
+    "test": "TestCancelIsNotCompletion",
+    "expectedFailure": true
+  }
+]

@@ -55,6 +55,26 @@ export default function Support() {
           unresponsive.
         </p>
       </section>
+      <section className="reading-section" id="beta-tools">
+        <h2>React/npm and source debugger beta</h2>
+        <p>
+          App Store 1.3.1 and later include a fixed offline browser package
+          catalog and a documented npm command subset. Unknown packages, Node
+          APIs, arbitrary scripts, Vite plugins and Bun are unsupported. The
+          isolated frontend preview blocks external network requests; this
+          differs from legacy local HTML previews.
+        </p>
+        <p>
+          Optional Gin-compatible request replay supports small deterministic
+          teaching APIs. It does not run a general server or database. With
+          breakpoints, Run starts the beta source debugger; without them it runs
+          normally. Stop needs an instrumented project checkpoint and cannot
+          guarantee interruption inside uninstrumented dependency code.
+        </p>
+        <Link href="/guide#offline-react" className="text-link">
+          Commands, examples and detailed limits →
+        </Link>
+      </section>
       <section className="reading-section" id="package-limits">
         <p className="eyebrow">BEFORE YOU IMPORT</p>
         <h2>Module download limits</h2>
@@ -132,15 +152,17 @@ export default function Support() {
             {releases.public.version} ({releases.public.build}) is available on
             the App Store.
           </strong>{" "}
-          It includes 171 teaching lessons in 21 units, 124 readings, 22
-          prediction challenges and 88 interview guides.
+          It includes 186 teaching lessons in 23 units, 139 readings, 22
+          prediction challenges and 92 interview guides.
         </p>
         <p>
-          The web library adds fifteen readings on JSON v2, modern concurrency,
-          SQL services and coding agents: 186 teaching lessons, 139 readings and
-          22 challenges in 23 units. Interview has 92 guides and twelve
-          algorithm labs. Native {releases.next.version} ({releases.next.build})
-          is {releases.next.status.toLowerCase()}. See{" "}
+          The expanded web library has 220 teaching lessons, 173 readings and 22
+          challenges in 28 units. Interview has 132 guides across 15 topics and
+          twelve interactive algorithm labs. New blocks cover Gin, blockchain
+          infrastructure, security and production system design; they are
+          prepared for native {releases.curriculum.version}. Native{" "}
+          {releases.next.version} ({releases.next.build}) is{" "}
+          {releases.next.status.toLowerCase()}. See{" "}
           <Link href="/updates">version history</Link>
           and the <Link href="/guide">complete app guide</Link>.
         </p>

@@ -56,6 +56,9 @@ struct LearnHomeView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal, 18).padding(.vertical, 8)
             .accessibilityIdentifier("learn.area")
+            NavigationLink { LearningShareView() } label: {
+                Label("Share progress", systemImage: "square.and.arrow.up").font(.caption)
+            }.padding(.bottom, 6).accessibilityIdentifier("learn.shareProgress")
             if learningTab == 1 { InterviewPrepView() } else { course }
         }
         .toolbar(.hidden, for: .navigationBar)
@@ -91,6 +94,15 @@ struct LearnHomeView: View {
                     badgesTotal: AchievementCatalog.totalLevelCount,
                     stats: stats
                 )
+
+                NavigationLink { PracticeLibraryView() } label: {
+                    Label("Practice · code, predictions and labs", systemImage: "pencil.and.outline")
+                        .font(.callout.weight(.semibold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
+                        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 18))
+                }
+                .accessibilityIdentifier("learn.practiceLibrary")
 
                 unitPath
 

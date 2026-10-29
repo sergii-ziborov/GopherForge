@@ -19,6 +19,13 @@ struct WorkspacePaneContent: View {
     var onRevealCode: () -> Void = {}
 
     var body: some View {
+        VStack(spacing: 0) {
+            if workspace.debugger.isActive { GoDebuggerPanel() }
+            content
+        }
+    }
+
+    @ViewBuilder private var content: some View {
         @Bindable var workspace = workspace
 
         switch pane {
@@ -33,6 +40,19 @@ struct WorkspacePaneContent: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                     Spacer(minLength: 0)
+                    if workspace.fileKind == .go && !workspace.selectedFile.hasPrefix("vendor/") {
+                        Menu {
+                            Button("Toggle breakpoint at caret") { workspace.debugger.toggle(file: workspace.selectedFile, line: workspace.debugger.caretLine) }
+                            Button("Remove all breakpoints", role: .destructive) { workspace.debugger.removeAll() }
+                        } label: {
+                            Label("\(workspace.debugger.breakpointCount)", systemImage: "ladybug")
+                                .font(.caption)
+                                .frame(minWidth: 44, minHeight: 34)
+                        }
+                        .disabled(workspace.debugger.isActive)
+                        .accessibilityIdentifier("debug.breakpointsMenu")
+                        .accessibilityLabel("Breakpoints, \(workspace.debugger.breakpointCount). Tap a line number to toggle.")
+                    }
                     if workspace.hasUnsavedChanges {
                         Circle()
                             .fill(GopherForgeTheme.accent)
@@ -59,9 +79,14 @@ struct WorkspacePaneContent: View {
                     searchQuery: workspace.highlightQuery,
                     revealLine: workspace.revealLine,
                     onReveal: workspace.clearReveal,
+                    onCaretLineChange: { line, _ in workspace.debugger.caretLine = line },
                     focusRequest: focusRequest,
                     externalKeyboardAccessory: keyboardCommandsOnly,
-                    onTextViewReady: onEditorReady
+                    onTextViewReady: onEditorReady,
+                    breakpointLines: workspace.debugger.breakpoints[workspace.selectedFile] ?? [],
+                    executionLine: workspace.debugger.pause?.point.file == workspace.selectedFile ? workspace.debugger.pause?.point.line : nil,
+                    onToggleBreakpoint: workspace.fileKind == .go && !workspace.selectedFile.hasPrefix("vendor/") && !workspace.debugger.isActive ? { line in workspace.debugger.toggle(file: workspace.selectedFile, line: line) } : nil,
+                    isReadOnly: workspace.debugger.isActive
                 )
                 .background(Color(.systemBackground))
             }
@@ -73,9 +98,14 @@ struct WorkspacePaneContent: View {
                 progress: workspace.runningStep,
                 packageProblems: workspace.packageProblems,
                 onRetryPackages: { Task { await workspace.retryPackageDownloads() } },
-                siteURL: workspace.lastResult?.phase == .run && workspace.lastResult?.succeeded == true
+                siteURL: workspace.sitePreviewURL?.scheme == OfflinePreviewResources.scheme || (workspace.lastResult?.phase == .run && workspace.lastResult?.succeeded == true)
                     ? workspace.sitePreviewURL : nil,
-                siteGeneration: workspace.siteGeneration
+                siteGeneration: workspace.siteGeneration,
+                offlineFiles: workspace.project?.files[OfflineFrontendRecipe.path] != nil ? workspace.project?.files : nil,
+                previewProject: workspace.project,
+                frontendBusy: terminal.isBusy || workspace.isRunning || workspace.debugger.isActive,
+                frontendFailure: terminal.frontendFailure,
+                onBuildPreview: { Task { await terminal.buildPreview() } }
             )
         case .tests:
             TestResultListView(tests: workspace.lastResult?.tests ?? [])

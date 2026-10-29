@@ -1,0 +1,29 @@
+{
+  "source": "f2a8d0c",
+  "job": {
+    "id": "gopherforge-memory-f2a8d0c-20261029",
+    "targetId": "gopherforge-web",
+    "destination": "localhost:5001/gopherforge/web:2.0.0",
+    "digest": "sha256:615aa384bdab942b6a27e17c1aa0a63e72d06d794d9376b1a8b05ae0168140a0",
+    "state": "succeeded",
+    "createdAt": "2026-10-29T11:06:37.06642234Z",
+    "finishedAt": "2026-10-29T11:06:40.678592904Z",
+    "action": "deploy_replace",
+    "expectedRevision": "sha256:4b6f941aa2cb3aa980538a9e91504abd915ef0d5af1e4a14193d1694b143ce6a"
+  },
+  "previousImage": "sha256:a715925dc2a019706812b71a1f1662b8beeb9ac2121ea7a50be3a214f33b3fcb",
+  "rollbackTag": "localhost/gopherforge-web:rollback-before-memory-f2a8d0c",
+  "preflight": {
+    "health": "passed",
+    "MCPInitialize": "passed",
+    "progressPublishReadHTML": "passed",
+    "persistentHostFile": "present",
+    "articleSEOAndThreeImages": "passed",
+    "sitemapURLs": 445
+  },
+  "validation": {
+    "webTests": 37,
+    "nativeGoRaceRuns": 10,
+    "negativeControls": 3
+  }
+}

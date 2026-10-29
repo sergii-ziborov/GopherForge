@@ -9,11 +9,16 @@ import Observation
 @MainActor
 @Observable
 final class WorkspaceModel {
+    let debugger = GoDebuggerModel()
     private(set) var toolchain: ToolchainStatus = .missing
     private(set) var project: GopherForgeProject?
     private(set) var projectID: UUID?
     private(set) var projectGeneration = 0
     private(set) var sourceRevision: UInt64 = 0
+    private let libraryWriterID = UUID()
+    private var savedSourceFiles: [String: String]?
+    var persistenceNotice: String?
+    private var isChangingLibrary = false
     /// Bumps when the navigator should rebuild. A download does not bump it
     /// on every module, or opening a folder waits on the whole project.
     private(set) var navigatorRevision: UInt64 = 0
@@ -43,11 +48,14 @@ final class WorkspaceModel {
     /// the work remains visible and does not stop.
     private(set) var downloadProgress: ModuleDownload?
     var showsDownloadSheet = false
-    /// Files saved to disk during a download, not yet shown in the navigator.
-    private var unpublishedFiles: [String: String]?
-    /// Run and Retry write into the open project. Importing a different
-    /// repository must not overwrite it on each module.
-    private var persistDownloadsToOpenProject = false
+    private struct DependencyPreparation {
+        let operationID = UUID()
+        let owner: UUID
+        let revision: UInt64
+        let generation: Int
+        let base: [String: String]
+    }
+    private var activeDependencyOperation: UUID?
     private var moduleAttemptName: String?
     private var moduleAttemptStarted: Date?
     private var currentModuleTask: Task<GoPackageInstaller.Result, Error>?
@@ -90,6 +98,8 @@ final class WorkspaceModel {
     private let analyzer: IdiomAnalyzer
     private let library: ProjectLibrary
     private let progress: LearningProgressStore
+    private let dependencyDrafts: ProjectDependencyDraftCache
+    private let dependencyPreparationOverride: (@MainActor @Sendable (GopherForgeProject) async -> GopherForgeProject)?
     private var pendingBuildRecord: (id: UUID, record: ProjectBuildRecord)?
     private var compileAttempts = 0
     private var idiomTask: Task<Void, Never>?
@@ -98,12 +108,16 @@ final class WorkspaceModel {
         compiler: WasmGoCompiler = WasmGoCompiler(),
         analyzer: IdiomAnalyzer = IdiomAnalyzer(),
         library: ProjectLibrary = .shared,
-        progress: LearningProgressStore = .shared
+        progress: LearningProgressStore = .shared,
+        dependencyDrafts: ProjectDependencyDraftCache = .shared,
+        dependencyPreparationOverride: (@MainActor @Sendable (GopherForgeProject) async -> GopherForgeProject)? = nil
     ) {
         self.compiler = compiler
         self.analyzer = analyzer
         self.library = library
         self.progress = progress
+        self.dependencyDrafts = dependencyDrafts
+        self.dependencyPreparationOverride = dependencyPreparationOverride
     }
 
     var fileKind: SourceFileKind {
@@ -158,11 +172,13 @@ final class WorkspaceModel {
 
     @discardableResult
     func open(_ project: GopherForgeProject) -> Bool {
+        guard !isChangingLibrary else { return false }
         return open(project, id: UUID(), revision: 0, isNew: true)
     }
 
     @discardableResult
     func open(_ item: ProjectLibraryItem) -> Bool {
+        guard !isChangingLibrary else { return false }
         if projectID == item.id {
             commitEditorText()
             selectedFile = project?.entryFile ?? item.project.entryFile
@@ -182,13 +198,16 @@ final class WorkspaceModel {
         let previousSave: Task<Void, Never>?
         if let old = self.project, let oldID = projectID, hasUnsavedChanges {
             let oldRevision = sourceRevision
-            previousSave = Task { await save(old, id: oldID, revision: oldRevision) }
+            let oldBase = savedSourceFiles
+            previousSave = Task { await save(old, id: oldID, revision: oldRevision, base: oldBase) }
         } else {
             previousSave = nil
         }
         self.project = project
         projectID = id
+        debugger.openProject(id)
         sourceRevision = revision
+        savedSourceFiles = isNew ? nil : project.files
         navigatorRevision &+= 1
         savedRevision = isNew ? 0 : revision
         hasUnsavedChanges = isNew
@@ -238,7 +257,7 @@ final class WorkspaceModel {
     func commitEditorText() {
         guard var project else { return }
         var files = project.files
-        guard files[selectedFile] != editorText else { return }
+        guard files[selectedFile].map({ !$0.utf8.elementsEqual(editorText.utf8) }) ?? true else { return }
         files[selectedFile] = editorText
         project = GopherForgeProject(
             name: project.name,
@@ -275,16 +294,15 @@ final class WorkspaceModel {
     /// process going away, so backgrounding writes rather than waits.
     func flush() async {
         commitEditorText()
+        await remembering?.value
+        commitEditorText()
         guard let project, let projectID else { return }
-        let snapshot = unpublishedFiles.map { project.replacingFiles($0) } ?? project
-        let revision = unpublishedFiles == nil ? sourceRevision : sourceRevision &+ 1
-        if unpublishedFiles != nil { sourceRevision = revision }
-        await save(snapshot, id: projectID, revision: revision)
+        await save(project, id: projectID, revision: sourceRevision, base: savedSourceFiles)
     }
 
     func retrySave() async {
         if let recoveryProject, let recoveryID, let recoveryRevision {
-            await save(recoveryProject, id: recoveryID, revision: recoveryRevision)
+            await save(recoveryProject, id: recoveryID, revision: recoveryRevision, base: recoveryBaseFiles)
         }
         await flush()
         if let pendingBuildRecord {
@@ -298,21 +316,109 @@ final class WorkspaceModel {
         }
     }
 
+    enum LibraryDestination { case folder(URL), onDevice }
+
+    func changeLibrary(to destination: LibraryDestination) async throws -> [ProjectLibraryItem] {
+        guard !isChangingLibrary else { throw LibraryChangeError.busy }
+        isChangingLibrary = true
+        defer { isChangingLibrary = false }
+        commitEditorText()
+        let previous = projectID.flatMap { id in
+            project.map { ProjectLibraryItem(id: id, project: $0, lastOpenedAt: Date(), sourceRevision: sourceRevision) }
+        }
+        let file = selectedFile
+        do {
+            try await closeForLibraryChange()
+            return try await {
+                switch destination {
+                case let .folder(url): try await library.adoptFolder(url)
+                case .onDevice: try await library.useOnDeviceLibrary()
+                }
+            }()
+        } catch {
+            isChangingLibrary = false
+            if project == nil, let previous {
+                open(previous)
+                select(file: file)
+            }
+            throw error
+        }
+    }
+
+    /// Drain writes before changing the library actor's storage location.
+    /// The old project must not autosave into the newly opened library.
+    private func closeForLibraryChange() async throws {
+        guard !isRunning, !isClearingPackages else { throw LibraryChangeError.busy }
+        let id = projectID
+        let generation = projectGeneration
+        let revision = sourceRevision
+        await libraryUpdated()
+        await flush()
+        guard projectID == id, projectGeneration == generation, sourceRevision == revision,
+              !isRunning, !isClearingPackages else {
+            throw LibraryChangeError.busy
+        }
+        guard !hasUnsavedChanges, recoveryProject == nil, saveError == nil else {
+            throw LibraryChangeError.unsaved
+        }
+        autosave?.cancel()
+        idiomTask?.cancel()
+        debugger.stop()
+        project = nil
+        projectID = nil
+        editorText = ""
+        idiomFindings = []
+        resetProjectPresentation()
+        refreshSitePreview()
+    }
+
+    enum LibraryChangeError: LocalizedError {
+        case busy, unsaved
+        var errorDescription: String? {
+            switch self {
+            case .busy: "Finish the current operation before opening another library."
+            case .unsaved: "Save or export the current work before opening another library."
+            }
+        }
+    }
+
     private var recoveryID: UUID?
     private var recoveryRevision: UInt64?
+    private var recoveryBaseFiles: [String: String]?
 
-    private func save(_ snapshot: GopherForgeProject, id: UUID, revision: UInt64) async {
+    private func save(
+        _ snapshot: GopherForgeProject, id: UUID, revision: UInt64, base: [String: String]? = nil
+    ) async {
         do {
-            _ = try await library.recordSource(id: id, revision: revision, project: snapshot)
-            if projectID == id {
-                savedRevision = max(savedRevision, revision)
-                hasUnsavedChanges = sourceRevision > savedRevision
+            let stored = try await library.recordSource(
+                id: id, revision: revision, project: snapshot, expectedBase: base, writerID: libraryWriterID
+            )
+            if stored.id != id {
+                persistenceNotice = "Another version changed outside this editor. Your work was saved separately as \(stored.project.name). Both projects are available in Project library."
+            }
+            if projectID == id, revision >= savedRevision {
+                let currentRevision = sourceRevision
+                let newerEdits = currentRevision >= revision ? currentRevision - revision : 0
+                if stored.id != id {
+                    projectID = stored.id
+                    project = project?.renamed(to: stored.project.name)
+                    projectGeneration &+= 1
+                    debugger.stop()
+                    debugger.openProject(stored.id)
+                }
+                savedRevision = max(stored.sourceRevision ?? revision, revision)
+                sourceRevision = savedRevision &+ newerEdits
+                savedSourceFiles = stored.project.files
+                hasUnsavedChanges = newerEdits > 0
+                if sourceRevision != currentRevision || stored.id != id { refreshIdioms() }
+                if hasUnsavedChanges { scheduleAutosave() }
                 if recoveryProject == nil, pendingBuildRecord == nil { saveError = nil }
             }
             if recoveryID == id, recoveryRevision == revision {
                 recoveryProject = nil
                 recoveryID = nil
                 recoveryRevision = nil
+                recoveryBaseFiles = nil
                 saveError = nil
             }
         } catch {
@@ -321,6 +427,7 @@ final class WorkspaceModel {
                 recoveryProject = snapshot
                 recoveryID = id
                 recoveryRevision = revision
+                recoveryBaseFiles = base
             }
         }
     }
@@ -328,6 +435,11 @@ final class WorkspaceModel {
     func run(_ phase: CompilationResult.Phase) async {
         commitEditorText()
         guard let project, let projectID, !isRunning, !isClearingPackages else { return }
+        let preparation = DependencyPreparation(
+            owner: projectID, revision: sourceRevision, generation: projectGeneration, base: project.files
+        )
+        activeDependencyOperation = preparation.operationID
+        defer { if activeDependencyOperation == preparation.operationID { activeDependencyOperation = nil } }
 
         isRunning = true
         runningPhase = phase
@@ -349,11 +461,12 @@ final class WorkspaceModel {
                 DispatchQueue.main.async { continuation.resume() }
             }
         }
-        persistDownloadsToOpenProject = true
-        let vendored = await addingMissingModules(to: project, phase: phase, pattern: pattern)
-        persistDownloadsToOpenProject = false
-        publishDownloadedFiles()
+        let vendored = await addingMissingModules(to: project, phase: phase, pattern: pattern, preparation: preparation)
         endModuleDownload()
+        guard canPublish(preparation) else {
+            refuseStalePreparation(preparation)
+            return
+        }
         if vendored.files != project.files {
             replaceFiles(with: vendored.files)
         }
@@ -431,7 +544,13 @@ final class WorkspaceModel {
 
     /// Tries the packages Output reported, then leaves the project open either way.
     func retryPackageDownloads() async {
-        guard let project, !isRunning, !isClearingPackages else { return }
+        commitEditorText()
+        guard let project, let projectID, !isRunning, !isClearingPackages else { return }
+        let preparation = DependencyPreparation(
+            owner: projectID, revision: sourceRevision, generation: projectGeneration, base: project.files
+        )
+        activeDependencyOperation = preparation.operationID
+        defer { if activeDependencyOperation == preparation.operationID { activeDependencyOperation = nil } }
         isRunning = true
         runningPhase = .setup
         defer {
@@ -443,10 +562,11 @@ final class WorkspaceModel {
         beginModuleDownload(title: project.name, status: "Retrying packages…", files: project.files)
         let directory = GoPackageGraph.directory(of: project.entryFile)
         let pattern = directory.isEmpty ? "." : "./\(directory)"
-        persistDownloadsToOpenProject = true
-        let vendored = await addingMissingModules(to: project, phase: .build, pattern: pattern)
-        persistDownloadsToOpenProject = false
-        publishDownloadedFiles()
+        let vendored = await addingMissingModules(to: project, phase: .build, pattern: pattern, preparation: preparation)
+        guard canPublish(preparation) else {
+            refuseStalePreparation(preparation)
+            return
+        }
         if vendored.files != project.files {
             replaceFiles(with: vendored.files)
         }
@@ -467,8 +587,10 @@ final class WorkspaceModel {
     private func addingMissingModules(
         to project: GopherForgeProject,
         phase: CompilationResult.Phase,
-        pattern: String
+        pattern: String,
+        preparation: DependencyPreparation? = nil
     ) async -> GopherForgeProject {
+        if let dependencyPreparationOverride { return await dependencyPreparationOverride(project) }
         guard phase != .format, phase != .setup else { return project }
         guard GoModParser.parse(project.files["go.mod"] ?? "") != nil else { return project }
         if toolchain == .missing {
@@ -476,6 +598,10 @@ final class WorkspaceModel {
         }
 
         var project = project
+        if let preparation, let staged = await dependencyDrafts.load(owner: preparation.owner, base: preparation.base) {
+            guard canPublish(preparation) else { return project }
+            project = project.replacingFiles(staged)
+        }
         var restoredSource = false
         packageProblems = []
         while true {
@@ -526,10 +652,12 @@ final class WorkspaceModel {
                         throw error
                     }
                     if self.currentModuleTask == task { self.currentModuleTask = nil }
-                    self.persistDownloaded(result.files)
+                    if let preparation {
+                        await self.dependencyDrafts.save(owner: preparation.owner, base: preparation.base, files: result.files)
+                    }
                     return result.files
                 },
-                shouldStop: { false }
+                shouldStop: { preparation.map { !self.canPublish($0) } ?? false }
             )
             do {
                 let prepared = try await preparer.prepare(files: project.files)
@@ -571,16 +699,7 @@ final class WorkspaceModel {
     }
 
     private func githubReference(of project: GopherForgeProject) -> GitHubRepositoryReference? {
-        guard project.provenance?.source == .github,
-              let owner = project.provenance?.owner,
-              let repository = project.provenance?.repository,
-              !owner.isEmpty, !repository.isEmpty
-        else { return nil }
-        return GitHubRepositoryReference(
-            owner: owner,
-            repository: repository,
-            reference: project.provenance?.reference
-        )
+        project.provenance?.pinnedGitHubReference
     }
 
     private func beginModuleDownload(title: String, status: String, files: [String: String]) {
@@ -646,23 +765,19 @@ final class WorkspaceModel {
         }
     }
 
-    /// Writes each module as it arrives, so closing the window, locking the
-    /// phone, or leaving the app does not throw away what already downloaded.
-    /// Remembers modules as they arrive without publishing a new project.
-    ///
-    /// Publishing on every module rebuilt the file tree and the package graph
-    /// on the main thread, which is what froze scrolling, folder opening and
-    /// rotation for the whole download.
-    private func persistDownloaded(_ files: [String: String]) {
-        guard persistDownloadsToOpenProject, project != nil else { return }
-        unpublishedFiles = files
-        scheduleAutosave()
+    private func canPublish(_ preparation: DependencyPreparation) -> Bool {
+        activeDependencyOperation == preparation.operationID
+            && projectID == preparation.owner && sourceRevision == preparation.revision
+            && projectGeneration == preparation.generation && project?.files == preparation.base
     }
 
-    private func publishDownloadedFiles() {
-        guard let unpublishedFiles else { return }
-        self.unpublishedFiles = nil
-        replaceFiles(with: unpublishedFiles)
+    private func refuseStalePreparation(_ preparation: DependencyPreparation) {
+        packageProblems = []
+        guard projectID == preparation.owner, projectGeneration == preparation.generation else { return }
+        lastResult = .failure(
+            phase: .setup,
+            detail: "The project changed during dependency preparation. Your edits were kept. Run again to prepare the current snapshot."
+        )
     }
 
     private static func problem(from failure: GoDependencyPreparer.Failure) -> PackageDownloadProblem {
@@ -828,6 +943,7 @@ final class WorkspaceModel {
     /// The open file is kept if it survived the change, so vendoring a
     /// dependency does not move the user out of what they were editing.
     func replaceFiles(with files: [String: String]) {
+        if debugger.isActive { debugger.stop() }
         guard let project else { return }
         let updated = GopherForgeProject(
             name: project.name,
@@ -851,6 +967,7 @@ final class WorkspaceModel {
     /// One atomic source change for rename/delete, including the entry point
     /// and the selected buffer. Saving must see the same paths as the editor.
     func applyFileChange(_ files: [String: String], entryFile: String?, selectedFile: String) {
+        if debugger.isActive { debugger.stop() }
         guard let project, let entryFile else { return }
         self.project = GopherForgeProject(
             name: project.name, files: files, entryFile: entryFile, provenance: project.provenance
@@ -879,14 +996,22 @@ final class WorkspaceModel {
         )
     }
 
-    func applyIdiom(_ finding: IdiomFinding) {
-        guard let expected = IdiomRepair.line(at: finding, in: editorText),
-              let repaired = try? IdiomRepair.apply(finding, to: editorText, expectedLine: expected)
-        else {
-            return
-        }
-        editorText = repaired
+    @discardableResult
+    func applyIdiom(_ finding: IdiomFinding) -> Bool {
         commitEditorText()
+        guard !debugger.isActive, let projectID,
+              finding.origin == IdiomFinding.Origin(
+                projectID: projectID, revision: sourceRevision, generation: projectGeneration
+              ),
+              idiomFindings.contains(where: { $0.id == finding.id }),
+              let source = project?.files[finding.fileName],
+              let expected = IdiomRepair.line(at: finding, in: finding.analyzedSource),
+              let repaired = try? IdiomRepair.apply(finding, to: source, expectedLine: expected)
+        else {
+            return false
+        }
+        apply(formattedFiles: [finding.fileName: repaired])
+        return true
     }
 
     private func execute(
@@ -907,7 +1032,16 @@ final class WorkspaceModel {
         case .format: await compiler.format(project: snapshot, onProgress: report)
         case .vet: await compiler.vet(project: snapshot, onProgress: report)
         case .build: await compiler.build(project: snapshot, onProgress: report)
-        case .run: await compiler.run(project: snapshot, onProgress: report)
+        case .run:
+            if debugger.hasBreakpoints {
+                await debugger.run(project: snapshot, compiler: compiler, onProgress: report) { [weak self] stop in
+                    guard let self, self.projectID == projectID else { return }
+                    self.runningStep = nil
+                    self.select(file: stop.point.file, revealingLine: stop.point.line)
+                }
+            } else {
+                await compiler.run(project: snapshot, onProgress: report)
+            }
         case .test: await compiler.test(project: snapshot, onProgress: report)
         case .setup: .failure(phase: .setup, detail: "Setup is not a runnable phase.")
         }
@@ -922,7 +1056,7 @@ final class WorkspaceModel {
         guard var project, !formattedFiles.isEmpty else { return }
         var files = project.files
         var changed = false
-        for (path, contents) in formattedFiles where files[path] != contents {
+        for (path, contents) in formattedFiles where files[path].map({ !$0.utf8.elementsEqual(contents.utf8) }) ?? true {
             files[path] = contents
             changed = true
         }
@@ -944,21 +1078,23 @@ final class WorkspaceModel {
     }
 
     private func refreshIdioms() {
-        guard let project else {
+        guard let project, let id = projectID else {
             idiomFindings = []
             return
         }
-        let id = projectID
         let revision = sourceRevision
+        let generation = projectGeneration
+        let origin = IdiomFinding.Origin(projectID: id, revision: revision, generation: generation)
         let snapshot = project.snapshot()
         let analyzer = analyzer
         idiomTask?.cancel()
         idiomFindings = []
         idiomTask = Task.detached { [weak self] in
-            let findings = analyzer.analyze(snapshot)
+            let findings = analyzer.analyze(snapshot, origin: origin)
             guard !Task.isCancelled else { return }
             await MainActor.run {
-                guard let self, self.projectID == id, self.sourceRevision == revision else { return }
+                guard let self, self.projectID == id, self.sourceRevision == revision,
+                      self.projectGeneration == generation else { return }
                 self.idiomFindings = findings
             }
         }

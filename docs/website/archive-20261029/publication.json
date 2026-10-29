@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-10-29T10:26:42.017183+00:00",
+  "sourceCommit": "62d6054",
+  "imageDigest": "sha256:a715925dc2a019706812b71a1f1662b8beeb9ac2121ea7a50be3a214f33b3fcb",
+  "hostwatchJob": "gopherforge-archive-62d6054-20261029",
+  "deploymentState": "succeeded",
+  "finishedAt": "2026-10-29T10:25:17.009494128Z",
+  "articles": [
+    {
+      "editionDate": "2026-10-24",
+      "publishedAt": "2026-10-29",
+      "slug": "go-database-sql-pool-timeouts-transactions",
+      "proseWords": 2230,
+      "sources": 6,
+      "schema": "passed",
+      "canonical": "passed",
+      "images": 3
+    },
+    {
+      "editionDate": "2026-10-25",
+      "publishedAt": "2026-10-29",
+      "slug": "go-http-graceful-shutdown-kubernetes",
+      "proseWords": 2215,
+      "sources": 6,
+      "schema": "passed",
+      "canonical": "passed",
+      "images": 3
+    },
+    {
+      "editionDate": "2026-10-28",
+      "publishedAt": "2026-10-29",
+      "slug": "go-concurrency-tests-synctest-without-sleeps",
+      "proseWords": 2114,
+      "sources": 8,
+      "schema": "passed",
+      "canonical": "passed",
+      "images": 3
+    }
+  ],
+  "liveRoutes": {
+    "/api/health": 200,
+    "/downloads/go-engineering-examples-20261029.zip": 200,
+    "/images/news/shutdown-detail.webp": 200,
+    "/images/news/shutdown-hero.webp": 200,
+    "/images/news/shutdown-infographic.webp": 200,
+    "/images/news/sqlpool-detail.webp": 200,
+    "/images/news/sqlpool-hero.webp": 200,
+    "/images/news/sqlpool-infographic.webp": 200,
+    "/images/news/synctest-detail.webp": 200,
+    "/images/news/synctest-hero.webp": 200,
+    "/images/news/synctest-infographic.webp": 200,
+    "/news": 200,
+    "/news/rss.xml": 200,
+    "/sitemap.xml": 200
+  },
+  "sitemapURLs": 442,
+  "RSSArticles": 21,
+  "webTests": 36,
+  "goExamples": "-race count100 passed; three intentional defects detected",
+  "illustrations": 9,
+  "encoding": "WebP, 898758 bytes total",
+  "mobile": "390px document and viewport width on all three; no horizontal page overflow",
+  "localUserPlayground3064": "not restarted",
+  "progressPersistence": {
+    "snapshotSurvivedReplacement": true,
+    "privateHTMLAndJSONNoindex": true,
+    "syntheticShareRevoked": true,
+    "persistentMountVerified": true,
+    "restartPolicy": "unless-stopped"
+  },
+  "externalFeedDelivery": "passed",
+  "richResults": {
+    "url": "https://search.google.com/test/rich-results/result?id=ObeYjxctvHHSQahWI6JEJg",
+    "validItems": 2,
+    "types": [
+      "Articles",
+      "Breadcrumbs"
+    ],
+    "crawlShown": "29 October 2026 12:26:02 local"
+  },
+  "proof": "published.jpg",
+  "serverStorage": {
+    "cause": "Superseded reproducible build artifacts exhausted non-root disk availability",
+    "cleanupReceipt": "server-build-cleanup.json",
+    "availableAfterCleanup": "4.5 GiB",
+    "preserved": "Current site, several recent rollback images, persistent data and other services"
+  }
+}

@@ -16,7 +16,10 @@ final class LocalSiteServer: @unchecked Sendable {
     private var listenFD: Int32 = -1
     private var acceptSource: DispatchSourceRead?
     private var files: [String: String] = [:]
+    private let onRequest: (@Sendable (String) -> Void)?
     private(set) var port: UInt16 = 0
+
+    init(onRequest: (@Sendable (String) -> Void)? = nil) { self.onRequest = onRequest }
 
     var url: URL? {
         guard port > 0 else { return nil }
@@ -148,6 +151,7 @@ final class LocalSiteServer: @unchecked Sendable {
         let parts = requestLine.split(separator: " ")
         let method = parts.first.map(String.init) ?? ""
         let rawPath = parts.dropFirst().first.map(String.init) ?? "/"
+        onRequest?(rawPath)
         guard method == "GET" || method == "HEAD" else {
             return http(status: 405, type: "text/plain", body: Data("method not allowed".utf8))
         }

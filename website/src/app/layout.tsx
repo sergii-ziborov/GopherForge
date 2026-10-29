@@ -56,6 +56,7 @@ export default function RootLayout({
             <Link href="/interview">Interview</Link>
             <Link href="/news">News</Link>
             <Link href="/guide">App guide</Link>
+            <Link href="/playground">Playground</Link>
             <Link href="/updates">Updates</Link>
             <a className="nav-app" href={appStore}>
               Get the app <span aria-hidden="true">↗</span>
@@ -88,6 +89,7 @@ export default function RootLayout({
           <div>
             <h2>Help & details</h2>
             <Link href="/guide">App guide</Link>
+            <Link href="/guide/mcp">MCP & AI collaboration</Link>
             <Link href="/support">Support</Link>
             <Link href="/support#package-limits">Package limits</Link>
             <Link href="/privacy">Privacy</Link>

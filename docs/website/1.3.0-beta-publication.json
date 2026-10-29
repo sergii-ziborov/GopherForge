@@ -1,0 +1,89 @@
+{
+  "checkedAt": "2026-10-27T14:07:57.363727+00:00",
+  "origin": "https://gopherforge.app",
+  "sourceCommit": "6adb1ecfa9c66cb3bbf539b0fdfdc79a87ff5abf",
+  "betaVersion": "1.3.0 (46)",
+  "betaState": "Internal QA / IN_BETA_TESTING",
+  "changes": [
+    "guide:offline npm/React commands and fixed catalog",
+    "guide:explicit local Go API, deterministic replay and budgets",
+    "guide:automatic source debugger, steps, locals, stack and beta limits",
+    "original native React and debugger screenshots",
+    "home,updates,support,FAQ,canonical/TechArticle metadata and sitemap images"
+  ],
+  "deployment": {
+    "method": "Hostwatch on existing Hetzner target",
+    "target": "gopherforge-web",
+    "job": "gopherforge-beta46-6adb1ec-20261027",
+    "state": "succeeded",
+    "finishedAt": "2026-10-27T14:03:24.08559923Z",
+    "imageDigest": "sha256:77e721370bd265e17a4d45cc123fd4d9d283bfb2805327144a098c3fce1d96a4",
+    "rollback": "localhost/gopherforge-web:rollback-beta46-6adb1ec",
+    "health": "healthy",
+    "restartPolicy": "unless-stopped",
+    "runtimeUser": "10001:10001",
+    "newsCache": "delivery ok; Feed connected verified"
+  },
+  "verification": {
+    "websiteTests": 21,
+    "failed": 0,
+    "nextProductionBuild": "passed",
+    "typeScript": "passed",
+    "publicRoutes": {
+      "/": {
+        "status": 200,
+        "bytes": 72016
+      },
+      "/guide": {
+        "status": 200,
+        "bytes": 105831
+      },
+      "/updates": {
+        "status": 200,
+        "bytes": 33923
+      },
+      "/support": {
+        "status": 200,
+        "bytes": 26970
+      },
+      "/learn": {
+        "status": 200,
+        "bytes": 205772
+      },
+      "/interview": {
+        "status": 200,
+        "bytes": 85513
+      },
+      "/news/feed": {
+        "status": 200,
+        "bytes": 37036,
+        "liveCache": true
+      },
+      "/sitemap.xml": {
+        "status": 200,
+        "bytes": 65337
+      },
+      "/images/guide-debugger.png": {
+        "status": 200,
+        "bytes": 287496
+      },
+      "/images/guide-offline-react.png": {
+        "status": 200,
+        "bytes": 220071
+      },
+      "/api/health": {
+        "status": 200,
+        "bytes": 43
+      },
+      "/not-a-route-release46": {
+        "status": 404,
+        "bytes": 14779
+      }
+    },
+    "pricing": "USD6.99 retained",
+    "SEO": "canonical,TechArticle,FAQ,chapter targets and image sitemap verified",
+    "browser": "published guide and1.3.0updates rendered legibly in IAB",
+    "screenshot": "docs/screenshots/release46/website-guide.png"
+  },
+  "distributionBoundary": "External GitHub source remains only in ignored developer test checkout; excluded from native and web product assets. Current App Store1.1.6 and review1.2.0 availability remain distinct from private1.3.0beta."
+}

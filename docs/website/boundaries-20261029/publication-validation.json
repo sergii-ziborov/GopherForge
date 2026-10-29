@@ -1,0 +1,37 @@
+{
+  "checkedOn": "2026-10-29",
+  "source": "2169db5",
+  "webTests": 38,
+  "testsPassed": 38,
+  "productionBuild": "passed",
+  "responsiveWidths": [390, 1280],
+  "horizontalPageOverflow": false,
+  "codeAndScrollableTables": "visually checked on mobile",
+  "liveArticles": 2,
+  "liveGeneratedImages": 6,
+  "imageDimensions": [1536, 1024],
+  "downloadSourceHashes": "passed",
+  "internalLinksChecked": 16,
+  "sitemapURLs": 447,
+  "RSSItems": 26,
+  "deployment": {
+    "image": "sha256:4446b080757b3cb8eddfde4ca354b8c97a3bd03e5351aa954526c2a6fafdd71e",
+    "running": true,
+    "restartPolicy": "unless-stopped",
+    "persistentProgressMount": "preserved",
+    "disposableSnapshot": "survived replacement, read with noindex, revoked and own file removed",
+    "externalFeed": "delivered"
+  },
+  "googleRichResults": {
+    "url": "https://search.google.com/test/rich-results/result?id=ixDBgtjaFcClgLRMjOvLJQ",
+    "testedPage": "https://gopherforge.app/news/go-time-utc-dst-monotonic-deadlines",
+    "crawl": "successful on 29 October 2026",
+    "validArticleItems": 1,
+    "validBreadcrumbItems": 1,
+    "scope": "Structured-data eligibility; not an indexing or ranking guarantee."
+  },
+  "editionDates": ["2026-10-04", "2026-10-12"],
+  "actualPublishedAt": "2026-10-29",
+  "emptyEditionsRemain": "5–11 October 2026",
+  "playground": "Articles link to the existing editor and MCP guide, provide original self-contained source and mutation exercises. No auto-run, automatic room creation or replacement of a reader's draft was added."
+}

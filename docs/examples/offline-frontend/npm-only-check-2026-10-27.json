@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-27T12:25:23.019044+00:00",
+  "scope": "Next-build npm-only follow-up to d7e6710; not uploaded to TestFlight",
+  "result": "Passed",
+  "passedTests": 11,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "3BA152DC-ECD5-45BB-8447-60E8B742FAEA",
+    "deviceName": "GopherForge Release45 Phone",
+    "modelName": "iPhone 17 Pro Max",
+    "osBuildNumber": "23F77",
+    "osVersion": "26.5",
+    "platform": "iOS Simulator"
+  },
+  "supportedCommands": [
+    "npm install --offline",
+    "npm ci --offline",
+    "npm run build",
+    "npm run preview",
+    "npm --version"
+  ],
+  "removedCommandsChecked": [
+    "bun install",
+    "bun install --offline",
+    "bun install --frozen-lockfile",
+    "bun run build",
+    "bun run preview",
+    "bun --version"
+  ],
+  "coverage": [
+    "Actual TypeScript and React WASI builds, WebKit interactions and offline network policy",
+    "npm install/ci/build/preview, autosave, current buffer, stale preview invalidation and failed-build preservation",
+    "Removed Bun commands fail without changing the project or invoking Go",
+    "Native UI example -> npm install/build -> embedded and full-screen React preview"
+  ],
+  "resultBundle": "build/frontend-prototype/npm-only.xcresult",
+  "priorBroaderCheck": "docs/examples/offline-frontend/check-2026-10-27.json",
+  "sourceFilesSHA256": {
+    "GopherForge/Features/Frontend/OfflineFrontendCommand.swift": "778f5ca32907553a521814128699ffcaa784450269243017a351100c359510c8",
+    "GopherForge/Features/Frontend/OfflineFrontendBuilder.swift": "93363e1a0067b16babd596222f5c27538e912565dfcb7606117d45d499d4ae5b",
+    "GopherForge/Features/Compiler/ProjectTerminalSession.swift": "2ee1f548de4b47f877a9374e7db5034992d9999cf7146d0a907308996e0f8fee",
+    "GopherForge/Features/Compiler/TerminalCommand.swift": "3a5b364b3503b930518fbbe5ef0dab328ab4bfec21586045cbb9c0af34a8d66d",
+    "GopherForge/UI/Workspace/Dock/TerminalPaneView.swift": "70876f6a53da8c5c052079b32bc36e8d3ce6a9e57fb61f8f4bb9a8c713ad648d",
+    "GopherForge/Examples/Projects/GoExampleProjectReactStudy.swift": "f29503f76521743b8153bab44bc54ad7feb39f8251c13aea4468d529e44a5bc7",
+    "GopherForgeTests/Workspace/OfflineFrontendTests.swift": "04bab41201b23d070291292f344562e7d461ff65ffbd44c03de10281fb5aa738",
+    "GopherForgeTests/Workspace/ProjectTerminalSessionTests.swift": "1d8fb775eee29a05d3bec52e86c4d1706935d6229afd72b814984a7562b35584"
+  },
+  "runtimeWarnings": [
+    "Thread running at User-initiated quality-of-service class waiting on a lower QoS thread running at Default quality-of-service class. Investigate ways to avoid priority inversions",
+    "Thread running at User-initiated quality-of-service class waiting on a lower QoS thread running at Default quality-of-service class. Investigate ways to avoid priority inversions",
+    "Thread running at User-initiated quality-of-service class waiting on a lower QoS thread running at Default quality-of-service class. Investigate ways to avoid priority inversions",
+    "Thread running at User-initiated quality-of-service class waiting on a lower QoS thread running at Default quality-of-service class. Investigate ways to avoid priority inversions"
+  ],
+  "limits": "Educational npm command subset and bundled catalog; no full npm/Node runtime or registry; simulator testing only"
+}

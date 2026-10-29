@@ -6,6 +6,13 @@ extension WorkspaceModel {
     /// Called after open, after a run, and after an edit that might have
     /// changed a page. A project with no HTML drops the listen.
     func refreshSitePreview() {
+        if let files = project?.files, files[OfflineFrontendRecipe.path] != nil {
+            siteServer.stop()
+            sitePreviewURL = OfflineFrontendPlan.previewReady(files: files)
+                ? URL(string: "\(OfflinePreviewResources.scheme)://project-\(projectID?.uuidString.lowercased() ?? String(projectGeneration))/") : nil
+            siteGeneration += 1
+            return
+        }
         guard let files = project?.files, LocalSiteFiles.isSite(files) else {
             siteServer.stop()
             sitePreviewURL = nil
@@ -23,6 +30,11 @@ extension WorkspaceModel {
     /// Pushes the current buffers to a listen that is already up, without
     /// reloading the preview on every keystroke.
     func syncSiteFiles() {
+        if project?.files[OfflineFrontendRecipe.path] != nil {
+            sitePreviewURL = nil
+            siteGeneration += 1
+            return
+        }
         guard let files = project?.files, siteServer.isListening else { return }
         try? siteServer.publish(files)
     }

@@ -17,7 +17,9 @@ struct GoProgramRunner {
         diagnostics: [GoDiagnostic],
         started: ContinuousClock.Instant,
         clock: ContinuousClock,
-        successDetail: String
+        successDetail: String,
+        runtimeRequest: String? = nil,
+        debugControl: GoDebugControl? = nil
     ) throws -> CompilationResult {
         let runner = WasiProcessRunner()
         let invocation = WasiProcessRunner.Invocation(
@@ -25,10 +27,17 @@ struct GoProgramRunner {
             preopens: [WasmSandboxPolicy.writableGuestDirectory: job.sandbox.path],
             memoryLimitBytes: WasmSandboxPolicy.userProgramMemoryLimitBytes,
             tableElementLimit: WasmSandboxPolicy.userProgramTableElementLimit,
-            outputLimitBytes: WasmSandboxPolicy.userProgramOutputLimitBytes
+            outputLimitBytes: WasmSandboxPolicy.userProgramOutputLimitBytes,
+            debugControl: debugControl
         )
 
         do {
+            if let runtimeRequest {
+                guard runtimeRequest.utf8.count <= 2 * 1024 * 1024 else {
+                    throw OfflineFrontendError.message("Offline API request history exceeds 2 MiB.")
+                }
+                try Data(runtimeRequest.utf8).write(to: job.sandbox.appending(path: ".gopherforge-http.json"))
+            }
             let (exitCode, output) = try runner.run(module: module, invocation: invocation)
             // Before the caller removes the job: a program that drew something
             // has already written it, and the directory is about to go.
@@ -44,11 +53,20 @@ struct GoProgramRunner {
                 detail: exitCode == 0
                     ? detail(for: artifacts, otherwise: successDetail)
                     : "The program exited with code \(exitCode).",
-                artifacts: artifacts
+                artifacts: artifacts,
+                sandboxResponse: runtimeRequest == nil ? nil : readResponse()
             )
         } catch let failure as WasiProcessRunner.RunFailure {
             return result(for: failure, diagnostics: diagnostics, started: started, clock: clock)
         }
+    }
+
+    private func readResponse() -> String? {
+        let url = job.sandbox.appending(path: ".gopherforge-response.json")
+        guard let values = try? url.resourceValues(forKeys: [.fileSizeKey, .isSymbolicLinkKey]),
+              values.isSymbolicLink != true, let size = values.fileSize, size <= 512 * 1024,
+              let data = try? Data(contentsOf: url) else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 
     private func detail(for artifacts: GoProgramArtifacts, otherwise fallback: String) -> String {

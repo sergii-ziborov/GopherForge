@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "version": "1.3.2",
+  "build": 51,
+  "nativeSourceCommit": "697ee9b760adc5b9a86e41312c755e6daf1f9c40",
+  "nativeModelChecksPassed": 14,
+  "nativeUIChecksPassed": 2,
+  "websiteTestsPassed": 33,
+  "realBundledGoRunObservedWithoutExecutingOnPeer": true,
+  "draftRelaunchAndLeavePreserveSourceAndOutput": true,
+  "progressExportDoesNotMutateLocalRecords": true,
+  "officialMCPSDK": "1.32.2",
+  "MCPPublicHTTPS": "verified",
+  "automaticRunsFromRemoteRequests": 0,
+  "limitations": [
+    "Native foreground app required for live execution",
+    "Human local Run/Test button required",
+    "Browser Go execution and CRDT merging not implemented",
+    "No guaranteed native Stop for tight loops",
+    "No real mobile Claude/Codex account certification or full app/device regression"
+  ]
+}

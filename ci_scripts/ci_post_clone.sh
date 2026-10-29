@@ -15,7 +15,7 @@ set -euo pipefail
 # already had; the cloud is simply the first place it is mandatory.
 
 export HOMEBREW_NO_AUTO_UPDATE=1
-for dependency in xcodegen zstd; do
+for dependency in xcodegen zstd go; do
   if ! command -v "$dependency" >/dev/null 2>&1; then
     brew install "$dependency"
   fi
@@ -37,4 +37,5 @@ export GOPHERFORGE_EXPECTED_GO_VERSION="go1.27.1"
 export GOPHERFORGE_TOOLCHAIN_TAG="go1.27.1-wasm-1"
 ./scripts/fetch_toolchain.sh
 python3 scripts/package_toolchain.py
+python3 scripts/prepare_frontend.py
 xcodegen generate

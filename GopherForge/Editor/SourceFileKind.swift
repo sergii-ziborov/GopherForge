@@ -26,7 +26,7 @@ enum SourceFileKind: String, Sendable, CaseIterable {
         if name.hasSuffix(".go") { return .go }
         if name.hasSuffix(".md") { return .markdown }
         if name.hasSuffix(".html") || name.hasSuffix(".htm") { return .html }
-        if name.hasSuffix(".js") || name.hasSuffix(".mjs") { return .javascript }
+        if [".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx"].contains(where: name.hasSuffix) { return .javascript }
         if name.hasSuffix(".css") { return .css }
         if name.hasSuffix(".json") { return .json }
         return .plain

@@ -46,13 +46,26 @@ test("the app guide explains real capabilities, persistence and sandbox boundari
   assert.ok(guide.faq.length >= 5);
   assert.ok((await read("../src/app/sitemap.ts")).includes('"/guide"'));
 });
-test("the approved opaque icon stays identical in native, website and favicon", async () => {
+test("the approved icon is preserved and browser icons have bounded sizes", async () => {
   const native = await readFile(
     new URL(
       "../../GopherForge/Resources/Assets.xcassets/AppIcon.appiconset/GopherForgeIcon-1024.png",
       import.meta.url,
     ),
   );
-  for (const p of ["../public/images/app-icon.png", "../src/app/icon.png"])
-    assert.deepEqual(await readFile(new URL(p, import.meta.url)), native);
+  assert.deepEqual(
+    await readFile(new URL("../public/images/app-icon.png", import.meta.url)),
+    native,
+  );
+  for (const [path, size, budget] of [
+    ["../src/app/icon.png", 64, 12_000],
+    ["../src/app/apple-icon.png", 180, 60_000],
+  ]) {
+    const png = await readFile(new URL(path, import.meta.url));
+    assert.equal(png.subarray(1, 4).toString(), "PNG");
+    assert.equal(png.readUInt32BE(16), size);
+    assert.equal(png.readUInt32BE(20), size);
+    assert.ok(png.length < budget);
+    assert.equal(png[25], 2, "browser icon remains opaque RGB");
+  }
 });

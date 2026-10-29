@@ -1,0 +1,51 @@
+{
+  "checkedOn": "2026-10-28",
+  "version": "1.3.1",
+  "build": 49,
+  "course": {
+    "teachingLessons": 220,
+    "readings": 173,
+    "challenges": 22,
+    "units": 28
+  },
+  "interview": {
+    "guides": 132,
+    "topics": 15,
+    "interactiveAlgorithms": 12,
+    "traceCases": 36
+  },
+  "nativeGoToolchain": "1.27.3",
+  "executedNewExamples": 40,
+  "compiledCompleteReadingPrograms": 92,
+  "qaDependencies": [
+    {
+      "path": "github.com/gin-gonic/gin",
+      "version": "v1.12.0",
+      "goVersion": "1.25.0"
+    },
+    {
+      "path": "github.com/ethereum/go-ethereum",
+      "version": "v1.17.10",
+      "goVersion": "1.25.0"
+    },
+    {
+      "path": "google.golang.org/grpc",
+      "version": "v1.85.0",
+      "goVersion": "1.26.0"
+    }
+  ],
+  "algorithmProperties": {
+    "demonstrations": 12,
+    "randomizedRounds": 500,
+    "additionalPropertyRounds": 200,
+    "raceDetector": true
+  },
+  "websiteTestsPassed": 27,
+  "nativeChecksPassed": 43,
+  "nativeModelChecks": 39,
+  "nativeUIFlows": 4,
+  "simulatorOnly": true,
+  "publicNetworkDuringExampleExecution": false,
+  "xcodeResultBundleFinalization": "Passed",
+  "preservedPriorIDs": true
+}

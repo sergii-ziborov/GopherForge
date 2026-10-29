@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge release history: current App Store availability, the 1.2.0 curriculum expansion, coding agents, SQL, JSON v2, interactive algorithms and the new icon.",
+    "GopherForge 1.3.1 is on the App Store. Version 1.3.2 (51), with MCP collaboration and shareable progress, is in TestFlight and waiting for App Review.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -16,13 +16,115 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
-      <section className="release" id="v120">
+      <section className="release" id="v131">
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
+        <h2>
+          GopherForge 1.3.1 <small>build 49</small>
+        </h2>
+        <p>
+          Apple released 1.3.1 after review. The course includes 220 teaching
+          lessons, 173 readings and 22 prediction challenges across 28 units,
+          plus 132 interview guides. Offline React, the source debugger, direct
+          web previews, source recovery and saved Continue places are included.
+        </p>
+        <Link className="button" href="/learn">
+          Explore the course →
+        </Link>
+      </section>
+      <section className="release" id="v132">
         <span className="release-badge muted">
-          WEB AVAILABLE · {releases.next.status.toUpperCase()}
+          {releases.next.status.toUpperCase()} ·{" "}
+          {releases.beta.status.toUpperCase()}
         </span>
         <h2>
-          GopherForge {releases.next.version}{" "}
-          <small>build {releases.next.build}</small>
+          GopherForge {releases.curriculum.version}{" "}
+          <small>build {releases.curriculum.build}</small>
+        </h2>
+        <p>
+          The development preview adds a guest Playground for people and AI, a
+          Streamable HTTP MCP server for Claude/Codex, and explicit read-only
+          progress links for teachers and assistants. Run/Test is local to the
+          native device whose person presses the button; other participants
+          receive Output.
+        </p>
+        <p>
+          Explore Gin middleware and request ownership, blockchain package
+          choices and reorg-safe indexing, service security,
+          transaction/outbox/saga design, gRPC, Kafka and production clean code.
+          Architecture &amp; clean code now contains four units and 40 lessons.
+          Existing progress IDs and the twelve interactive algorithm labs are
+          retained.
+        </p>
+        <p>
+          Version {releases.next.version} ({releases.next.build}) is{" "}
+          {releases.next.status.toLowerCase()}. Room expiry, source revisions,
+          local copies and provider boundaries are explained in the MCP guide.
+        </p>
+        <Link className="button" href="/learn?direction=design">
+          Explore the expanded learning map →
+        </Link>
+      </section>
+      <section className="release" id="v130">
+        <span className="release-badge muted">
+          EARLIER TESTFLIGHT · SUPERSEDED BY 1.3.1
+        </span>
+        <h2>
+          GopherForge 1.3.0 <small>build 48</small>
+        </h2>
+        <p>
+          Build a React interface offline and trace your Go program one
+          statement at a time. These workbench features first appeared in the
+          1.3.0 beta and are included in 1.3.1 (49), which replaces that review
+          candidate. The App Store currently distributes 1.3.1.
+        </p>
+        <ul>
+          <li>
+            Build &amp; Preview directly from Output, full-screen and reload
+            controls, project archive sharing, and device-only browser/address
+            actions for static previews. Isolated React origins remain inside
+            GopherForge.
+          </li>
+          <li>
+            Restored lesson drafts and pre-solution source, assistance-aware
+            attempts, direct Practice access, and safer Files library
+            restoration. Exact GitHub commit snapshots and visible import
+            omissions; strict terminal validation preserves what a command
+            actually means.
+          </li>
+          <li>
+            Documented npm install/build/preview commands, bundled esbuild WASI
+            and a fixed React catalog. No Node server, Bun or registry
+            downloads.
+          </li>
+          <li>
+            Optional local Go API paths through the educational Gin-compatible
+            adapter. Real handlers execute with bounded request replay; no
+            sockets or cloud runtime.
+          </li>
+          <li>
+            Tap a Go line number for a breakpoint. Run executes normally without
+            breakpoints and automatically starts the source debugger when they
+            exist.
+          </li>
+          <li>
+            Continue, Into/Over/Out, Stop, an own-source call stack and
+            current-frame local values. Breakpoints persist per project; saved
+            source is unchanged.
+          </li>
+        </ul>
+        <p>
+          External React + Gin source was used only for interoperability
+          verification and is not bundled as an app example. TestFlight access
+          is private; there is no public invitation link.
+        </p>
+        <Link className="button" href="/guide#offline-react">
+          Read the beta walkthrough →
+        </Link>
+      </section>
+      <section className="release" id="v120">
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
+        <h2>
+          GopherForge 1.2.0 <small>build 45</small>
         </h2>
         <p>
           The expanded library has 186 teaching lessons, 139 worked readings and

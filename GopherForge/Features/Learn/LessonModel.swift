@@ -20,7 +20,25 @@ final class LessonModel {
     /// Whether the pass on record is one the compiler witnessed. A lesson the
     /// learner ticked is done, and is not the same claim.
     private(set) var isCompilerVerified = false
-    var editorText: String
+    var editorText: String {
+        didSet {
+            guard !isRestoringDraft, !editorText.utf8.elementsEqual(oldValue.utf8) else { return }
+            draftRevision &+= 1
+            queueDraftSave()
+        }
+    }
+    private(set) var assistanceLevel = LessonAssistance.none
+    private(set) var ownTextBeforeSolution: String?
+    private(set) var draftContentChanged = false
+    private(set) var draftSaveError: String?
+    private(set) var draftRestored = false
+    private let drafts: LessonDraftStore
+    private var draftToken: UUID?
+    private var draftRevision: UInt64 = 0
+    private var draftContentRevision: String
+    private var isRestoringDraft = false
+    private var isLoadingDraft = false
+    private var draftSaveTask: Task<Void, Never>?
 
     private let analyzer: IdiomAnalyzer
     private let store: LearningProgressStore
@@ -36,12 +54,15 @@ final class LessonModel {
         compiler: WasmGoCompiler = WasmGoCompiler(),
         analyzer: IdiomAnalyzer = IdiomAnalyzer(),
         store: LearningProgressStore = .shared,
+        drafts: LessonDraftStore? = nil,
         toolchainStatus: ToolchainStatus? = nil,
         testRunner: (@Sendable (GoSourceSnapshot) async -> CompilationResult)? = nil
     ) {
         self.lesson = lesson
         self.analyzer = analyzer
         self.store = store
+        self.drafts = drafts ?? store.drafts
+        draftContentRevision = LessonDraftStore.contentRevision(for: lesson)
         toolchain = toolchainStatus ?? compiler.probe()
         self.testRunner = testRunner ?? { project in
             await compiler.test(project: project)
@@ -63,9 +84,88 @@ final class LessonModel {
     var toolchainDetail: String { "\(toolchain.label). \(toolchain.detail)" }
 
     func loadProgress() async {
+        await loadDraft()
         isCompleted = ((try? await store.completedLessonIDs()) ?? []).contains(lesson.id)
         isCompilerVerified =
             ((try? await store.compilerVerifiedLessonIDs()) ?? []).contains(lesson.id)
+    }
+
+    private func loadDraft() async {
+        guard lesson.requiresCompiler, draftToken == nil, !isLoadingDraft else { return }
+        isLoadingDraft = true
+        defer { isLoadingDraft = false }
+        do {
+            let session = try await drafts.open(lessonID: lesson.id)
+            draftToken = session.token
+            if let draft = session.draft, draftRevision == 0 {
+                isRestoringDraft = true
+                editorText = draft.text
+                isRestoringDraft = false
+                ownTextBeforeSolution = draft.ownTextBeforeSolution
+                assistanceLevel = draft.assistance
+                draftContentChanged = draft.contentRevision != LessonDraftStore.contentRevision(for: lesson)
+                draftContentRevision = draft.contentRevision
+                draftRestored = true
+            }
+            draftSaveError = nil
+            if draftRevision > 0 { await saveDraft() }
+        } catch { draftSaveError = error.localizedDescription }
+    }
+
+    private func queueDraftSave() {
+        guard lesson.requiresCompiler else { return }
+        draftSaveTask?.cancel()
+        draftSaveTask = Task { [weak self] in
+            do { try await Task.sleep(for: .milliseconds(300)) } catch { return }
+            guard !Task.isCancelled else { return }
+            await self?.saveDraft()
+        }
+    }
+
+    /// Called on leaving/backgrounding as well as after the short typing debounce.
+    func saveDraft() async {
+        guard lesson.requiresCompiler else { return }
+        guard let token = draftToken else { await loadDraft(); return }
+        let revision = draftRevision
+        let draft = LessonDraft(
+            lessonID: lesson.id, contentRevision: draftContentRevision,
+            text: editorText, ownTextBeforeSolution: ownTextBeforeSolution,
+            assistance: assistanceLevel, updatedAt: Date()
+        )
+        do {
+            try await drafts.save(draft, token: token, revision: revision)
+            if draftRevision == revision { draftSaveError = nil }
+        } catch { draftSaveError = error.localizedDescription }
+    }
+
+    func noteHintRead() {
+        if assistanceLevel == .none { assistanceLevel = .hint; draftRevision &+= 1; queueDraftSave() }
+    }
+
+    func noteSolutionRevealed() {
+        guard assistanceLevel != .solutionInserted else { return }
+        assistanceLevel = .solutionRevealed
+        draftRevision &+= 1
+        queueDraftSave()
+    }
+
+    /// Restores the learner's source; seeing the answer remains part of this attempt.
+    func restoreOwnCode() {
+        guard let ownTextBeforeSolution else { return }
+        editorText = ownTextBeforeSolution
+        result = nil
+    }
+
+    /// Explicitly starts a new attempt. It does not reset completion history.
+    func resetDraft() {
+        draftContentRevision = LessonDraftStore.contentRevision(for: lesson)
+        draftContentChanged = false
+        ownTextBeforeSolution = nil
+        assistanceLevel = .none
+        editorText = Self.starter(for: lesson)
+        result = nil
+        draftRevision &+= 1
+        queueDraftSave()
     }
 
     /// Compiles the verified answer (or the starter) into the reused work
@@ -93,7 +193,11 @@ final class LessonModel {
     /// never claims that the newly inserted answer is the source that failed.
     func realize() {
         guard let source = LessonHintCatalog.realizeSource(for: lesson) else { return }
+        if ownTextBeforeSolution == nil { ownTextBeforeSolution = editorText }
+        assistanceLevel = .solutionInserted
+        draftRevision &+= 1
         editorText = source
+        queueDraftSave()
         result = nil
     }
 
@@ -117,7 +221,8 @@ final class LessonModel {
                 succeeded: true,
                 mistakeTags: [],
                 compileAttempts: 0,
-                compilerVerified: false
+                compilerVerified: false,
+                assistanceLevel: assistanceLevel
             )
         )
     }
@@ -138,6 +243,7 @@ final class LessonModel {
         // the result produced by Realize.
         isChecking = true
         defer { isChecking = false }
+        await loadDraft()
 
         if let task = prewarmTask {
             prewarmedResult = await task.value
@@ -146,14 +252,16 @@ final class LessonModel {
         }
 
         let source = editorText
+        let assistance = assistanceLevel
+        await saveDraft()
         guard let snapshot = lesson.checkSnapshot(source: source) else { return }
 
         let outcome: CompilationResult
-        if source == prewarmedSource, let cached = prewarmedResult {
+        if let prewarmedSource, source.utf8.elementsEqual(prewarmedSource.utf8), let cached = prewarmedResult {
             outcome = cached
             // Reuse only for the hand-off from prewarm to the first exact
             // Check. A later press should really run the tests again.
-            prewarmedSource = nil
+            self.prewarmedSource = nil
             prewarmedResult = nil
         } else {
             outcome = await testRunner(snapshot)
@@ -172,7 +280,8 @@ final class LessonModel {
                 lessonID: lesson.id,
                 result: outcome,
                 findings: findings,
-                compileAttempts: attempts
+                compileAttempts: attempts,
+                assistanceLevel: assistance
             )
         )
     }

@@ -1,0 +1,19 @@
+{
+  "checkedOn": "2026-10-29",
+  "nativeToolchain": "go1.27.3 darwin/arm64",
+  "nativeCommand": "go test -race -count=50 ./...",
+  "nativeResult": "passed",
+  "vetCommand": "go vet ./...",
+  "vetResult": "passed",
+  "negativeControls": 4,
+  "crossCompilation": {
+    "target": "wasip1/wasm",
+    "programs": [
+      "invariants",
+      "retrykey"
+    ],
+    "result": "passed",
+    "scope": "Compilation only, not runtime-host certification."
+  },
+  "scope": "Original in-memory semantic experiments, not synchronization benchmarks or durable distributed transactions."
+}

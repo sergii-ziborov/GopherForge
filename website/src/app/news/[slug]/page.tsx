@@ -1,7 +1,17 @@
+import { metadataDate } from "@/lib/seo-dates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { news, newsURL, newsImage, dateLabel, imageCaption } from "@/lib/news";
+import {
+  news,
+  newsURL,
+  newsImage,
+  dateLabel,
+  imageCaption,
+  newsExtraFigures,
+  newsImageSuffixes,
+  newsDetailSection,
+} from "@/lib/news";
 import { Prose } from "@/components/Prose";
 import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 export const dynamicParams = false;
@@ -26,8 +36,8 @@ export async function generateMetadata({
       title: n.title,
       description: n.description,
       url: newsURL(slug),
-      publishedTime: n.publishedAt,
-      modifiedTime: n.modifiedAt,
+      publishedTime: metadataDate(n.publishedAt),
+      modifiedTime: metadataDate(n.modifiedAt),
       authors: ["GopherForge editorial"],
       images: [
         {
@@ -54,13 +64,13 @@ export default async function NewsArticle({
   const n = news.find((n) => n.slug === slug);
   if (!n) notFound();
   const hero = newsImage(n.imagePrefix + "-hero");
-  const figure = (suffix: string, caption: string) => {
+  const figure = (suffix: string, caption: string, key?: string) => {
     const im = newsImage(n.imagePrefix + "-" + suffix);
     return (
-      <figure className="news-figure">
+      <figure className="news-figure" key={key}>
         <img
           {...im}
-          alt={caption}
+          alt={"alt" in im ? im.alt : caption}
           loading={suffix === "hero" ? "eager" : "lazy"}
         />
         <figcaption>
@@ -84,9 +94,9 @@ export default async function NewsArticle({
           "@type": n.kind === "guide" ? "TechArticle" : "NewsArticle",
           headline: n.title,
           description: n.description,
-          datePublished: n.publishedAt,
-          dateModified: n.modifiedAt,
-          image: ["hero", "detail", "infographic"].map(
+          datePublished: metadataDate(n.publishedAt),
+          dateModified: metadataDate(n.modifiedAt),
+          image: newsImageSuffixes(n.imagePrefix).map(
             (s) =>
               "https://gopherforge.app" +
               newsImage(n.imagePrefix + "-" + s).src,
@@ -163,12 +173,19 @@ export default async function NewsArticle({
               {i === 2
                 ? figure("infographic", imageCaption[n.imagePrefix])
                 : null}
-              {i === 5
+              {(
+                newsDetailSection[n.imagePrefix]
+                  ? s.id === newsDetailSection[n.imagePrefix]
+                  : i === 5
+              )
                 ? figure(
                     "detail",
-                    `A closer look at the workflow: ${n.sections[5].title.toLowerCase()}`,
+                    `A closer look at the workflow: ${s.title.toLowerCase()}`,
                   )
                 : null}
+              {(newsExtraFigures[n.imagePrefix] ?? [])
+                .filter((f) => f.afterSection === s.id)
+                .map((f) => figure(f.suffix, f.caption, f.suffix))}
             </section>
           ))}
           <section id="sources" className="references">

@@ -45,6 +45,11 @@ export default function Home() {
             Free web lessons. iOS app: $6.99 USD, one-time U.S. purchase.
             Regional prices vary.
           </p>
+          <p className="small-note">
+            TestFlight {releases.beta.version} ({releases.beta.build}): MCP Playground
+            and shareable learning-progress links.{" "}
+            <Link href="/guide/mcp">Setup and workflows →</Link>
+          </p>
         </div>
         <div className="hero-workbench">
           <div className="window-bar">

@@ -21,6 +21,8 @@ struct LessonAttempt: Codable, Equatable, Identifiable, Sendable {
     /// carry it, and a new non-optional field would turn every old install's
     /// history into a decode failure. Read it through `isCompilerVerified`.
     let compilerVerified: Bool?
+    /// Missing in old history means unknown, never retroactively independent.
+    let assistanceLevel: LessonAssistance?
 
     /// A pass the toolchain actually witnessed.
     ///
@@ -39,7 +41,8 @@ struct LessonAttempt: Codable, Equatable, Identifiable, Sendable {
         attemptedAt: Date = Date(),
         mistakeTags: [String] = [],
         compileAttempts: Int = 0,
-        compilerVerified: Bool? = nil
+        compilerVerified: Bool? = nil,
+        assistanceLevel: LessonAssistance? = nil
     ) {
         self.id = id
         self.lessonID = lessonID
@@ -48,6 +51,7 @@ struct LessonAttempt: Codable, Equatable, Identifiable, Sendable {
         self.mistakeTags = mistakeTags
         self.compileAttempts = compileAttempts
         self.compilerVerified = compilerVerified
+        self.assistanceLevel = assistanceLevel
     }
 }
 
@@ -58,7 +62,8 @@ extension LessonAttempt {
         lessonID: String,
         result: CompilationResult,
         findings: [IdiomFinding],
-        compileAttempts: Int
+        compileAttempts: Int,
+        assistanceLevel: LessonAssistance? = nil
     ) -> LessonAttempt {
         let compilerTags = result.diagnostics.compactMap(\.conceptTag)
         let idiomTags = findings.map(\.conceptTag)
@@ -68,7 +73,8 @@ extension LessonAttempt {
             succeeded: passed,
             mistakeTags: Array(Set(compilerTags + idiomTags)).sorted(),
             compileAttempts: compileAttempts,
-            compilerVerified: true
+            compilerVerified: true,
+            assistanceLevel: assistanceLevel
         )
     }
 }

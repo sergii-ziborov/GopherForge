@@ -7,6 +7,11 @@ import Foundation
 /// developers have agreed read badly, and every finding carries the reason so
 /// the user can disagree with it.
 struct IdiomFinding: Identifiable, Equatable, Sendable {
+    struct Origin: Equatable, Sendable {
+        let projectID: UUID
+        let revision: UInt64
+        let generation: Int
+    }
     enum Confidence: String, Sendable {
         /// The shape is unambiguous, for example a parameter list that puts
         /// `context.Context` second.
@@ -27,6 +32,9 @@ struct IdiomFinding: Identifiable, Equatable, Sendable {
     /// The replacement the repair action would apply, when the rule can
     /// produce one safely.
     let suggestedReplacement: String?
+    /// Immutable analysis input, never reconstructed from the current editor.
+    let analyzedSource: String
+    let origin: Origin?
 
     var isAutoRepairable: Bool { suggestedReplacement != nil }
 }

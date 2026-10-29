@@ -1,0 +1,12 @@
+stdlib Unicode tables: 17.0.0
+"Go": bytes=2 runes=2 valid=true
+"é": bytes=2 runes=1 valid=true
+"é": bytes=3 runes=2 valid=true
+"世界": bytes=6 runes=2 valid=true
+"👩🏽\u200d💻": bytes=15 runes=4 valid=true
+"�": bytes=3 runes=1 valid=true
+A+emoji+B: byte offsets=[0 1 5] UTF16 units=4
+valid byte prefix, not a whole cluster: "e"
+simple folds: Go/go=true sharp-s/ss=false K/Kelvin=true
+stream: {Bytes:19 Runes:6} err=<nil>
+ASCII keys: user-1=true Cyrillic-lookalike=false

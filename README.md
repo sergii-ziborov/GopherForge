@@ -17,9 +17,12 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 27 October 2026 | Changes |
+| Version | Status, checked 29 October 2026 | Changes |
 | --- | --- | --- |
-| **1.2.0 (45)** | TestFlight · Waiting for App Review | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
+| **1.3.2 (51)** | Internal QA TestFlight · Waiting for App Review | Guest MCP Playground, local device execution, shared Output, progress links and expanded agent guidance. Automatic release after approval. |
+| **1.3.1 (49)** | Available on the App Store | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
+| **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
+| **1.2.0 (45)** | Previous App Store release | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
 | **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
@@ -27,12 +30,20 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.1.6 (44)**, verified on 27 October 2026.
-**1.2.0 (45)** is available in Internal QA TestFlight and submitted to App Review.
-Automatic publication after approval is enabled. It includes the expanded
-curriculum, corrected exercise examples and the selected dark teal gopher icon.
+The store currently distributes **1.3.1 (49)**, verified in App Store Connect on 29 October 2026.
+It includes the 220-lesson course, 132 interview guides, offline React and source-debugging workbench,
+and the selected dark teal gopher icon.
 Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
+**1.3.1 (49)** passed App Review and was automatically released.
+It includes the 220-lesson course and 132 interview guides together with the direct
+web previews, restored lesson drafts, source-safety fixes, offline React mode and
+automatic source debugging from build 48. Automatic publication after approval is enabled.
+The previous 1.3.0 (48) review was superseded; no store release of 1.3.0 is claimed.
+The external GitHub project used for verification is not bundled in the app.
+[Review submission](docs/releases/1.3.1-build49-submission.json) · [Store assets](docs/releases/1.3.1-build49-assets.json) · [Build 48 QA](docs/audits/2026-10-28-web-preview.md) · [Beta receipt](docs/releases/1.3.1-build49-beta.json) · [Build 49 QA](docs/releases/1.3.1-build49-qa.json) · [Original frontend/debugger QA](docs/releases/1.3.0-beta-qa.json).
+**1.3.2 (51)** was submitted on 29 October and is **WAITING_FOR_REVIEW**, with automatic release after approval. Its 55 store screenshots include twelve new native Playground/progress captures across six sizes. Optional room content and published progress are declared as **not linked to identity**, for app functionality only, without tracking. [Submission receipt](docs/releases/1.3.2-build51-submission.json) · [New assets](docs/releases/1.3.2-build51-assets.json) · [Privacy verification](docs/releases/1.3.2-build51-privacy.json).
+
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
@@ -45,6 +56,10 @@ Release status is a dated snapshot, not a live indicator.
 The app is a one-time purchase: US $6.99, US $4.99 in Ukraine, with localized
 App Store prices elsewhere. No subscription or in-app purchase.
 
+## Current curriculum
+
+The expanded source/web library is available in **App Store 1.3.1 (49)**: 34 additional readings and 40 worked interview guides. **1.3.2 (51)** retains these IDs and counts, and expands existing agent/MCP guidance while adding optional Playground and progress-link features. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md) · [TestFlight receipt](docs/releases/1.3.2-build51-beta.json).
+
 ## What you can do
 
 - **Build real Go.** Compile, run, test, vet and format on device. Compiler
@@ -55,7 +70,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** 186 teaching lessons in 23 units, including 139 readings,
+- **Learn Go.** 220 teaching lessons in 28 units, including 173 readings,
   plus 22 prediction challenges. Worked Go programs, diagrams, matching
   reviews and three-choice mistake practice accompany the material.
 - **Continue studying.** Reopen the last course lesson or interview guide.
@@ -64,7 +79,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
   place; it does not mark the material complete.
 - **Explore concurrency.** Nine runnable Concurrency Lab scenarios show the
   events their goroutines and channels report as timelines.
-- **Prepare for interviews.** A separate area with 92 worked guides, 12 topics,
+- **Prepare for interviews.** A separate area with 132 worked guides, 15 topics,
   four difficulty levels and twelve interactive algorithm labs with 36 input
   scenarios. Course progress and interview self-assessment stay independent.
 - **Read idiomatic code.** A deterministic, rule-based Idiom Coach, 14 original unit
@@ -75,6 +90,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 ### Architecture and patterns
 
 The course includes **19 architecture lessons**, **eight clean-code lessons**,
+plus **nine production system-design lessons** and **four advanced clean-code lessons**,
 all **23 classic design patterns** and **six concurrency and resilience patterns**.
 Scenario-based architecture ratings compare suitability for tools, domain-rich
 applications and services; they are editorial guidance, not universal rankings.
@@ -113,9 +129,56 @@ the embedded-versus-full-screen lesson scrolling behavior.
 Gin-style templates use an educational compatibility layer rather than the full
 upstream Gin framework. Registered handlers are exercised through `httptest`;
 the native app serves compatible local preview files. An arbitrary Go backend
-cannot bind a listener inside the WASI guest. Node.js, npm and Bun are not bundled.
-Build a frontend in an external development environment before importing
-compatible static output; run full Gin/database services in that environment.
+cannot bind a listener inside the WASI guest. Full Node.js/npm runtimes are not bundled.
+Full Gin/database services need an external native environment.
+
+#### 1.3.0 beta: isolated offline React and source debugging
+
+The beta adds **React + Gin study board** in Examples → Offline frontend. This feature is included in the current App Store 1.3.1 (49) binary. It bundles
+esbuild 0.28.2 as WASI and a fixed browser catalog: React / React DOM 19.3.1
+and scheduler 0.28.0. The installed app needs no registry or server for this mode.
+
+```text
+frontend packages
+npm install --offline
+npm run build
+frontend preview
+```
+
+Native build 48 also offers **Output → Build & Preview**, plus
+full-screen, reload and project sharing controls. Legacy static previews can
+open in the browser or share their on-device address; isolated React previews
+keep their WebKit-only origin and share the project archive. A loopback address
+is not a public link. See [preview controls](docs/OFFLINE_FRONTEND.md#preview-controls-native-build-48).
+
+Open Output for the preview. `frontend install/build` and the supported npm
+commands invoke this app's bounded frontend builder, **not a full npm runtime**.
+The compiler transpiles JS/JSX/TS/TSX, bundles browser imports, local JSON and CSS, and handles
+SVG/text imports. TypeScript is not type-checked. Edit components, reducers,
+forms or styles, then rebuild; stale previews are invalidated.
+
+The preview reads generated assets and `web/api/*.json` through an isolated
+WebKit scheme with no TCP listener. External HTTP(S), WebSockets, workers,
+frames and popups are blocked. Preview browser data is temporary. Project
+sources and generated output are autosaved in the project library.
+
+Only bundled package versions are accepted. Package scripts must explicitly
+use `gopherforge build` / `gopherforge preview`; lifecycle hooks, arbitrary
+scripts, Node APIs, native addons, Vite plugins and remote package installation
+are not supported. An explicit `gin-replay` recipe enables local requests to
+real Go handlers through the educational Gin-compatible layer. Requests rebuild
+small deterministic in-memory state using a bounded mutation log; no socket,
+cloud runtime or general production server is added. The built-in study board
+uses static JSON fixtures. A pinned external React + Gin GitHub project was used
+only for interoperability tests; its code and example are not bundled in the app.
+See the [offline frontend guide](docs/OFFLINE_FRONTEND.md) for the recipe and limits.
+
+Tap a Go line number to set a breakpoint. **Run is unchanged with no breakpoints;
+with breakpoints it automatically starts the beta source debugger.** Continue,
+Step Into/Over/Out, Stop, an own-source call stack and bounded current-frame
+locals are available. Temporary probes never overwrite saved source. Breakpoints
+persist per project. This is a teaching source debugger, not full Delve:
+[debugger guide](docs/SOURCE_DEBUGGER.md).
 
 ### JSON v2, modern concurrency, SQL and agents
 
@@ -134,7 +197,7 @@ projects, testing, Continue, practice, package budgets and the sandbox.
 
 ### Interview preparation and coding agents
 
-Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **92 worked guides across 12 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
+Learn has a separate **Interview** area, mirrored at [gopherforge.app/interview](https://gopherforge.app/interview), free on the web without registration. It contains **132 worked guides across 15 topics**, from Junior to Staff / expert: Go values and interfaces, memory/runtime, concurrency, algorithms, architecture, HTTP/SQL, testing/performance, modules/tooling, MongoDB, Redis, Docker/Kubernetes and workflows with Claude Code, Codex and Cursor. Each guide has answer reasoning, a common trap, a worked exercise, a follow-up and primary references. Difficulty is editorial guidance, not a hiring guarantee or an exhaustive list of possible questions.
 
 Twelve algorithm laboratories cover lower-bound binary search, two sum, sliding windows, BFS, Dijkstra, top-K, merging, minimum-coin dynamic programming, topological sorting, union-find, LRU eviction and merging closed intervals. Choose among **36 scenarios** and step through computed states, including empty, duplicate, cyclic and unreachable inputs. These deterministic teaching traces include highlighted state, Go implementations and complexity. They do not execute arbitrary web input. `python3 scripts/verify_interview_algorithms.py` compiles all twelve examples, checks the original 500 randomized rounds and new 200-round property cases with Go's race detector.
 
@@ -144,8 +207,8 @@ Interview self-assessment is stored locally, independently from lesson completio
 
 Current native screens, captured from the app rather than reconstructed mockups:
 
-<img src="docs/screenshots/release45/course.png" width="300" alt="GopherForge 1.2.0 course with 186 teaching lessons in 23 units">
-<img src="docs/screenshots/release45/interview.png" width="300" alt="Interview preparation with matching progress card, Continue and topic path">
+<img src="docs/screenshots/release49/course.png" width="300" alt="GopherForge 1.3.1 course with 220 teaching lessons in 28 units">
+<img src="docs/screenshots/release49/interview.png" width="300" alt="GopherForge 1.3.1 Interview with 132 guides, Continue and topic path">
 
 ### Next.js website
 
@@ -217,6 +280,9 @@ See [package behavior and limits](docs/PACKAGES.md).
 - Vendoring does not preserve arbitrary non-Go `go:embed` assets. `go.work`
   semantics and full module-version solving are not implemented.
 - A tight infinite loop has no guaranteed Stop; close and reopen the app.
+  There is no enforced aggregate guest file-write quota. Memory and captured
+  output limits do not bound CPU time or writes to allowed guest files.
+  [Execution contract](docs/RUNTIME_LIMITS.md).
 - Compile-and-run has been demonstrated on a physical iPhone. Airplane-mode
   operation and sustained thermal/memory behavior remain unverified; simulator
   checks do not establish those results.
@@ -272,3 +338,21 @@ The two new course readings are
 [pool ownership](https://gopherforge.app/learn/runtime.pool-ownership).
 The native catalog is the source for both platforms; browser and app progress
 remain independent.
+
+## Audit roadmap — development branch
+
+The [28 October audit plan](docs/audits/2026-10-28-plan.md) tracks source-safety fixes before further learning and Playground work. The current development branch adds coordinated library writes, preserved conflict copies, scoped dependency publication, reviewed file-specific idiom repairs, strict terminal commands and a [visible import inventory](docs/IMPORT_SNAPSHOTS.md). These are not claims that every roadmap package or physical provider gate has passed. Apple release identity remains in `docs/releases/`; source implementation is not the same as a shipped build.
+
+## MCP Playground and progress links — development preview
+
+**1.3.2 (51), available in Internal QA TestFlight,** adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in public native 1.3.1 (49).
+
+Claude, Codex and compatible clients can read a selected room, publish a revision-checked file set and request a run. Only a person pressing Run/Test in the native app invokes the bundled compiler on that device; other participants receive device-attributed Output. No relay compiler, shell, auto-run on edits or browser Go runner is provided. Standard-library multi-file examples are the initial native Playground contract; save an independent project to use ordinary dependency workflows. Native Stop/runtime limits remain unchanged.
+
+Rooms are guest capabilities (Owner/Edit/View), normally one hour, and volatile across relay restarts. Secrets live in fragments and explicit API authorization, not page query strings. The relay can read shared source and Output; this preview is not end-to-end encrypted. Concurrent edits use revision rejection and preserved drafts, not CRDT merging. Save/download an independent copy before expiry.
+
+A progress link is a separately published, read-only, revocable 90-day snapshot. Its HTML and JSON can be read by Grok, Claude, Codex or a teacher. It contains lesson IDs, app-reported compiler marks, interview self-assessments and Continue places; no code, drafts, attempts, names or device identifiers. It is not automatic sync, a backup or a skills certificate. Existing local progress and project identities are preserved.
+
+[Build 51 TestFlight receipt](docs/releases/1.3.2-build51-beta.json) · [Public 1.3.1 release](docs/releases/1.3.1-build49-release.json) · [MCP verification and boundaries](docs/audits/2026-10-29-playground-mcp.md). Intermediate build 50 was expired before final delivery; use build 51.
+
+<img src="docs/screenshots/mcp51/playground-local-run.png" width="300" alt="Native GopherForge Playground running Go locally with syntax highlighting and local Output">

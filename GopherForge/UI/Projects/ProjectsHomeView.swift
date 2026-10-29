@@ -9,6 +9,7 @@ struct ProjectsHomeView: View {
     @Environment(WorkspaceModel.self) private var workspace
     @Environment(AppNavigation.self) private var navigation
     @State private var filePick: FilePick?
+    @State private var isFilePickerPresented = false
     @State private var recents: [ProjectLibraryItem] = []
     @State private var importFailure: String?
     private let library = ProjectLibrary.shared
@@ -57,6 +58,7 @@ struct ProjectsHomeView: View {
 
                 Button {
                     filePick = .openProject
+                    isFilePickerPresented = true
                 } label: {
                     Label("Open from iCloud or Files", systemImage: "icloud.and.arrow.down")
                 }
@@ -64,9 +66,10 @@ struct ProjectsHomeView: View {
 
                 Button {
                     filePick = .libraryFolder
+                    isFilePickerPresented = true
                 } label: {
                     Label(
-                        "Keep library in iCloud…",
+                        "Open library in iCloud / Files…",
                         systemImage: "externaldrive.badge.icloud"
                     )
                 }
@@ -76,18 +79,19 @@ struct ProjectsHomeView: View {
                     Button {
                         Task {
                             do {
-                                recents = try await library.useOnDeviceLibrary()
+                                recents = try await workspace.changeLibrary(to: .onDevice)
                             } catch {
                                 importFailure = error.localizedDescription
                             }
                         }
                     } label: {
-                        Label("Keep library on this device", systemImage: "internaldrive")
+                        Label("Open on-device library", systemImage: "internaldrive")
                     }
                 }
             } footer: {
                 Text("Projects stay on this device unless you pick an iCloud Drive "
-                    + "or Files folder for the library. Export a project from its "
+                    + "or Files folder for the library. Existing libraries are opened; "
+                    + "an empty folder receives a copy. The previous library is kept. Export a project from its "
                     + "file menu — in Project library, or the ⋯ menu in the editor.")
             }
 
@@ -117,6 +121,13 @@ struct ProjectsHomeView: View {
 
             Section {
                 NavigationLink {
+                    PlaygroundView()
+                } label: {
+                    Label("Playground · people & AI", systemImage: "person.2.wave.2")
+                }
+                .accessibilityIdentifier("projects.playground")
+
+                NavigationLink {
                     ExampleLibraryView()
                 } label: {
                     LabeledContent {
@@ -142,10 +153,7 @@ struct ProjectsHomeView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .fileImporter(
-            isPresented: Binding(
-                get: { filePick != nil },
-                set: { if !$0 { filePick = nil } }
-            ),
+            isPresented: $isFilePickerPresented,
             allowedContentTypes: filePick?.contentTypes ?? [.folder],
             allowsMultipleSelection: false
         ) { result in
@@ -170,17 +178,19 @@ struct ProjectsHomeView: View {
             case .libraryFolder:
                 Task {
                     do {
-                        recents = try await library.adoptFolder(url)
+                        recents = try await workspace.changeLibrary(to: .folder(url))
                     } catch {
                         importFailure = error.localizedDescription
                     }
                 }
-            case .openProject, .none:
+            case .openProject:
                 do {
                     open(try LocalProjectImporter.loadPicked(at: url))
                 } catch {
                     importFailure = error.localizedDescription
                 }
+            case .none:
+                importFailure = "The file selection expired. Open the picker again; no project or library was changed."
             }
         case let .failure(error):
             importFailure = error.localizedDescription

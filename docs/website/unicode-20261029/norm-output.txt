@@ -1,0 +1,5 @@
+normalizer Unicode tables: 17.0.0
+raw equal=false NFC equal=true
+circled digit: NFC="①" NFKC="1"
+sharp-s: simple fold=false full fold=true
+long combining sequence adds stream-safe CGJ: true

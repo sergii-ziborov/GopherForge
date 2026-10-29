@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-29T08:12:10.818082+00:00",
+  "appId": "6809702319",
+  "published": true,
+  "productPageCategory": "Data Not Linked to You",
+  "dataTypes": [
+    "Other User Content",
+    "Product Interaction"
+  ],
+  "purposes": [
+    "App Functionality"
+  ],
+  "tracking": false,
+  "accounts": false,
+  "usernames": false,
+  "senderRecipientDirectory": false,
+  "verification": "Live App Store Connect AX view: published timestamp, exactly two configured categories, Data Not Linked to You and no unfinished-category warning; user also confirmed Publish and supplied the matching privacy screenshot. Unrelated foreground-window captures were discarded.",
+  "scope": "Optional temporary room sources/Output and explicit revocable progress snapshots; no automatic ordinary-project or progress upload."
+}

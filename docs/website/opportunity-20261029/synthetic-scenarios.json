@@ -1,0 +1,15 @@
+{
+  "syntheticNotPlatformData": true,
+  "A": {
+    "hired": 10,
+    "other": 10,
+    "hiredApplicationMedian": 10.0,
+    "observedSharePercent": 50.0
+  },
+  "B": {
+    "hired": 10,
+    "other": 190,
+    "hiredApplicationMedian": 10.0,
+    "observedSharePercent": 5.0
+  }
+}

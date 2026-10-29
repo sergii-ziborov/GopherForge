@@ -174,9 +174,20 @@ struct PackageBrowserView: View {
                 await workspace.libraryUpdated()
             }
 
+            workspace.commitEditorText()
+            let owner = workspace.projectID
+            let generation = workspace.projectGeneration
+            let revision = workspace.sourceRevision
             guard let project = workspace.project,
                   let updated = await model.install(into: project.files)
             else {
+                return
+            }
+            workspace.commitEditorText()
+            guard workspace.projectID == owner, workspace.projectGeneration == generation,
+                  workspace.sourceRevision == revision, workspace.project?.files == project.files,
+                  !workspace.debugger.isActive else {
+                model.refuseStalePublication()
                 return
             }
             workspace.replaceFiles(with: updated)

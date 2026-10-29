@@ -1,13 +1,16 @@
 import type { MetadataRoute } from "next";
+import { releases } from "@/lib/releases";
+import guide from "@/content/app-guide.json";
 import { lessons, units } from "@/lib/course";
 import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
-import { news, newsURL, newsImage } from "@/lib/news";
+import { news, newsURL, newsImage, newsImageSuffixes } from "@/lib/news";
+import { newsPageCount, newsPageURL } from "@/lib/news-pagination";
 import {
   curriculumUpdatedOn,
   lessonUpdatedOn,
-  changedUnits,
-  changedInterview,
+  unitUpdatedOn,
+  interviewUpdatedOn,
 } from "@/lib/curriculum-revision";
 export default function sitemap(): MetadataRoute.Sitemap {
   const origin = "https://gopherforge.app";
@@ -25,11 +28,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/updates",
     "/guide",
+    "/guide/mcp",
+    "/playground",
     "/support",
     "/privacy",
     "/terms",
     "/news",
     "/news/feed",
+    ...Array.from({ length: newsPageCount(news.length) - 1 }, (_, i) =>
+      newsPageURL(i + 2),
+    ),
     ...interview.questions.map((q) => interviewURL(q.id)),
     ...lessons.map((l) => `/learn/${l.id}`),
     ...units.map((u) => `/learn/units/${u.id}`),
@@ -37,29 +45,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paths.map((path) => ({
       url: origin + path,
-      lastModified:
-        path === "/news"
-          ? news[0].modifiedAt
-          : [
-                "",
-                "/guide",
-                "/learn",
-                "/interview",
-                "/updates",
-                "/support",
-              ].includes(path)
-            ? curriculumUpdatedOn
-            : path.startsWith("/learn/units/")
-              ? changedUnits.has(path.split("/").pop()!)
-                ? curriculumUpdatedOn
-                : "2026-10-23"
-              : path.startsWith("/learn/")
-                ? lessonUpdatedOn(path.slice(7))
-                : path.startsWith("/interview/")
-                  ? changedInterview.has(decodeURIComponent(path.slice(11)))
+      lastModified: ["/guide/mcp", "/playground"].includes(path)
+        ? "2026-10-29"
+        : ["/learn", "/interview"].includes(path)
+          ? curriculumUpdatedOn
+          : path === "/news/feed"
+            ? "2026-10-28"
+            : path === "/news" || path.startsWith("/news/page/")
+              ? news[0].modifiedAt
+              : path === "/guide"
+                ? guide.updated
+                : ["", "/updates", "/support"].includes(path)
+                  ? releases.checkedOn
+                  : ["/learn", "/interview"].includes(path)
                     ? curriculumUpdatedOn
-                    : "2026-10-20"
-                  : "2026-10-25",
+                    : path.startsWith("/learn/units/")
+                      ? unitUpdatedOn(path.split("/").pop()!)
+                      : path.startsWith("/learn/")
+                        ? lessonUpdatedOn(path.slice(7))
+                        : path.startsWith("/interview/")
+                          ? interviewUpdatedOn(
+                              decodeURIComponent(path.slice(11)),
+                            )
+                          : "2026-10-25",
       ...(path === "/guide"
         ? {
             images: [
@@ -67,6 +75,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
               origin + "/images/workbench.png",
               origin + "/images/guide-course.png",
               origin + "/images/guide-agents.png",
+              origin + "/images/guide-debugger.png",
+              origin + "/images/guide-offline-react.png",
             ],
           }
         : illustratedPages[path]
@@ -89,7 +99,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...news.map((n) => ({
       url: origin + newsURL(n.slug),
       lastModified: n.modifiedAt,
-      images: ["hero", "detail", "infographic"].map(
+      images: newsImageSuffixes(n.imagePrefix).map(
         (s) => origin + newsImage(n.imagePrefix + "-" + s).src,
       ),
       changeFrequency: "monthly" as const,

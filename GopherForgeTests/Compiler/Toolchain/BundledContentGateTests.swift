@@ -58,6 +58,32 @@ final class BundledContentGateTests: XCTestCase {
     }
 
     @MainActor
+    func testOfflineReactTemplateGoRoutesRunWithoutNetworking() async throws {
+        let example = GoExampleProjectReactStudy.board
+        let root = FileManager.default.temporaryDirectory.appending(path: "react-gin-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let workspace = WorkspaceModel(compiler: compiler, library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
+        defer {
+            workspace.siteServer.stop()
+            try? FileManager.default.removeItem(at: root)
+        }
+        await workspace.prepare()
+        XCTAssertTrue(workspace.open(example.project()))
+        let terminal = ProjectTerminalSession(workspace: workspace)
+        for command in ["npm install --offline", "npm run build", "go run"] {
+            terminal.input = command
+            await terminal.submit()
+            if case .failure = terminal.transcript.last?.kind { return XCTFail("\(command): \(terminal.transcript.last?.text ?? "no reply")") }
+        }
+        let result = try XCTUnwrap(workspace.lastResult)
+        XCTAssertTrue(result.succeeded, report(result))
+        XCTAssertEqual(result.stdout, example.expectedOutput)
+        XCTAssertEqual(workspace.sitePreviewURL?.scheme, OfflinePreviewResources.scheme)
+        XCTAssertFalse(workspace.siteServer.isListening, "Go route checks must not start a native TCP preview in this mode")
+        XCTAssertTrue(OfflineFrontendPlan.previewReady(files: workspace.project?.files ?? [:]))
+        await workspace.flush()
+    }
+
+    @MainActor
     func testGinSitesRunThroughTerminal() async throws {
         let root = FileManager.default.temporaryDirectory
             .appending(path: "gin-terminal-\(UUID().uuidString)", directoryHint: .isDirectory)

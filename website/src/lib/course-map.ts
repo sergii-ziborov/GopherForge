@@ -28,7 +28,12 @@ export const directions = [
     title: "Architecture & clean code",
     description:
       "Choose boundaries deliberately. Keep the implementation clear.",
-    units: ["architecture", "clean-code"],
+    units: [
+      "architecture",
+      "clean-code",
+      "system-design",
+      "clean-code-production",
+    ],
   },
   {
     id: "patterns",
@@ -47,6 +52,16 @@ export const directions = [
     title: "Around Go",
     description:
       "The command line, containers, databases and coding agents. Real commands, bounded services and evidence-driven Go workflows.",
-    units: ["operations", "containers", "kubernetes", "datastores", "sql", "ai"],
+    units: [
+      "operations",
+      "containers",
+      "kubernetes",
+      "datastores",
+      "sql",
+      "gin",
+      "blockchain",
+      "security",
+      "ai",
+    ],
   },
 ] as const;

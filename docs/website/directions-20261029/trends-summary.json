@@ -1,0 +1,40 @@
+{
+  "checkedOn": "2026-10-29",
+  "method": "Separate normalized series, unweighted weekly means, 52 complete weeks against preceding 52; exclude any week not fully elapsed. Not absolute search volume, adoption or employment.",
+  "series": {
+    "go-topic": {
+      "previous52": {
+        "start": "2024-10-27",
+        "end": "2025-10-19",
+        "weeks": 52,
+        "mean": 70.37
+      },
+      "latest52": {
+        "start": "2025-10-26",
+        "end": "2026-10-18",
+        "weeks": 52,
+        "mean": 61.67
+      },
+      "excludedIncomplete": [
+        "2026-10-25"
+      ]
+    },
+    "golang": {
+      "previous52": {
+        "start": "2024-10-27",
+        "end": "2025-10-19",
+        "weeks": 52,
+        "mean": 63.94
+      },
+      "latest52": {
+        "start": "2025-10-26",
+        "end": "2026-10-18",
+        "weeks": 52,
+        "mean": 42.56
+      },
+      "excludedIncomplete": [
+        "2026-10-25"
+      ]
+    }
+  }
+}

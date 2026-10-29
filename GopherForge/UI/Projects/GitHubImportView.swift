@@ -35,8 +35,8 @@ struct GitHubImportView: View {
                         Text(message).foregroundStyle(GopherForgeTheme.warning)
                     } else {
                         Text("A public repository is downloaded as a snapshot — the code, "
-                            + "not its history. A link to a branch or a commit brings that "
-                            + "revision instead of the default one.")
+                            + "not its history. The requested branch or tag is resolved to a "
+                            + "fixed commit before downloading.")
                     }
                 }
 
@@ -67,7 +67,9 @@ struct GitHubImportView: View {
                 } footer: {
                     Text("The repository snapshot is downloaded, then the modules in "
                         + "go.mod that the program imports are added so it can build offline. "
-                        + "Binaries, `.git` and `testdata` are left behind.")
+                        + "UTF-8 testdata, vendor and frontend source are retained within limits. "
+                        + "Binary assets and other omissions are listed in Project → Import details; "
+                        + "export contains only the imported text snapshot.")
                 }
             }
             .navigationTitle("Import from GitHub")

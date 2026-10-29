@@ -83,11 +83,11 @@ export default async function Feed() {
       </div>
       <aside className="news-callout">
         <div>
-          <h2>Keep a personal reading list.</h2>
+          <h2>Read freely. Keep learning.</h2>
           <p>
-            Member reading lists and source-link access for other publishers
-            will open after registration becomes available. Accounts are coming
-            soon; no sign-up is required for these licensed articles.
+            GopherForge has no accounts or registration. Read the complete
+            articles here, follow their original sources, or continue with
+            a worked Go lesson. Course progress stays in this browser.
           </p>
           <p className="small-note">
             Go Blog originals remain linked for attribution under their
@@ -95,8 +95,8 @@ export default async function Feed() {
             permission.
           </p>
         </div>
-        <Link className="button secondary" href="/register?from=news">
-          Preview registration →
+        <Link className="button secondary" href="/learn">
+          Continue learning Go →
         </Link>
       </aside>
     </div>

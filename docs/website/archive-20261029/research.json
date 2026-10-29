@@ -1,0 +1,152 @@
+{
+  "checkedOn": "2026-10-29",
+  "editorialMethod": "Original practical guides; short API facts attributed to official references, original scenarios and test examples. No third-party article reproduced. Edition dates fill archive gaps; actual publication date remains 29 October.",
+  "articles": [
+    {
+      "key": "sqlpool",
+      "day": "24",
+      "slug": "go-database-sql-pool-timeouts-transactions",
+      "title": "Go database/sql under load: pools, timeouts and transactions",
+      "description": "Diagnose Go SQL pool waits, release Rows, budget connections across replicas, and design transactions, deadlines and retries with worked PostgreSQL examples.",
+      "category": "GUIDE · GO DATABASE ENGINEERING",
+      "keywords": [
+        "Go database/sql connection pool",
+        "Go SQL timeouts",
+        "PostgreSQL transaction ownership",
+        "Go DB.Stats WaitDuration"
+      ],
+      "related": [
+        "go-backpressure-concurrency-limits-queues-deadlines",
+        "go-http-graceful-shutdown-kubernetes",
+        "go-1-27-http-connection-reuse"
+      ],
+      "sources": [
+        {
+          "title": "Go: managing database connections",
+          "url": "https://go.dev/doc/database/manage-connections"
+        },
+        {
+          "title": "Go: cancelling database operations",
+          "url": "https://go.dev/doc/database/cancel-operations"
+        },
+        {
+          "title": "Go: executing transactions",
+          "url": "https://go.dev/doc/database/execute-transactions"
+        },
+        {
+          "title": "database/sql API",
+          "url": "https://pkg.go.dev/database/sql"
+        },
+        {
+          "title": "PostgreSQL: transaction isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        },
+        {
+          "title": "PostgreSQL: activity and wait statistics",
+          "url": "https://www.postgresql.org/docs/current/monitoring-stats.html"
+        }
+      ],
+      "proseWords": 2230
+    },
+    {
+      "key": "shutdown",
+      "day": "25",
+      "slug": "go-http-graceful-shutdown-kubernetes",
+      "title": "Go graceful shutdown: HTTP, workers and Kubernetes",
+      "description": "Build a Go HTTP shutdown lifecycle with readiness, one grace budget, worker ownership and protocol-aware draining. Includes code, Kubernetes YAML and a test plan.",
+      "category": "GUIDE · GO SERVICE LIFECYCLE",
+      "keywords": [
+        "Go graceful shutdown Kubernetes",
+        "http.Server Shutdown context",
+        "Kubernetes terminationGracePeriodSeconds",
+        "Go readiness worker cancellation"
+      ],
+      "related": [
+        "go-database-sql-pool-timeouts-transactions",
+        "go-concurrency-tests-synctest-without-sleeps",
+        "go-backpressure-concurrency-limits-queues-deadlines"
+      ],
+      "sources": [
+        {
+          "title": "Go HTTP Server.Shutdown contract",
+          "url": "https://pkg.go.dev/net/http#Server.Shutdown"
+        },
+        {
+          "title": "Go signal.NotifyContext",
+          "url": "https://pkg.go.dev/os/signal#NotifyContext"
+        },
+        {
+          "title": "Kubernetes: Pod lifecycle and termination",
+          "url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/"
+        },
+        {
+          "title": "Kubernetes: lifecycle hooks",
+          "url": "https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/"
+        },
+        {
+          "title": "Kubernetes: EndpointSlices",
+          "url": "https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/"
+        },
+        {
+          "title": "Kubernetes: readiness, liveness and startup probes",
+          "url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"
+        }
+      ],
+      "proseWords": 2215
+    },
+    {
+      "key": "synctest",
+      "day": "28",
+      "slug": "go-concurrency-tests-synctest-without-sleeps",
+      "title": "Go concurrency tests: synctest, timers and cancellation",
+      "description": "Test Go timers and cancellation with testing/synctest, explicit channel barriers, negative controls and race detection. A complete example and layered CI workflow.",
+      "category": "GUIDE · GO CONCURRENCY TESTING",
+      "keywords": [
+        "Go testing synctest guide",
+        "Go concurrent tests without sleeps",
+        "Go cancellation tests",
+        "Go race detector negative controls"
+      ],
+      "related": [
+        "go-http-graceful-shutdown-kubernetes",
+        "go-1-27-goroutine-leak-profiles",
+        "go-backpressure-concurrency-limits-queues-deadlines"
+      ],
+      "sources": [
+        {
+          "title": "testing/synctest API and bubble rules",
+          "url": "https://pkg.go.dev/testing/synctest"
+        },
+        {
+          "title": "Go: Testing Time and other asynchronicities",
+          "url": "https://go.dev/blog/testing-time"
+        },
+        {
+          "title": "Go 1.25 stable synctest API",
+          "url": "https://go.dev/doc/go1.25"
+        },
+        {
+          "title": "The Go memory model",
+          "url": "https://go.dev/ref/mem"
+        },
+        {
+          "title": "Go race detector",
+          "url": "https://go.dev/doc/articles/race_detector"
+        },
+        {
+          "title": "Go testing package",
+          "url": "https://pkg.go.dev/testing"
+        },
+        {
+          "title": "Go HTTP test helpers",
+          "url": "https://pkg.go.dev/net/http/httptest"
+        },
+        {
+          "title": "Go context cancellation",
+          "url": "https://pkg.go.dev/context"
+        }
+      ],
+      "proseWords": 2114
+    }
+  ]
+}

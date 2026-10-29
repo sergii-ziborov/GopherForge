@@ -1,0 +1,84 @@
+{
+  "checkedOn": "2026-10-27",
+  "version": "1.3.0",
+  "build": 46,
+  "environment": {
+    "Xcode": "27.1 RC",
+    "configuration": "Gate (optimized, testable)",
+    "device": "owned iPhone17ProMax simulator",
+    "iOS": "26.5"
+  },
+  "focusedRegression": {
+    "result": "Passed",
+    "passed": 31,
+    "failed": 0,
+    "bundle": "build/npm46/final4.xcresult",
+    "coverage": [
+      "ordinary Run when no breakpoints",
+      "automatic source debugger when breakpoints exist",
+      "Into/Over/Out, locals, own-source stack, goroutine breakpoint, Stop",
+      "breakpoints restored per project; source unchanged",
+      "React build and forms in isolated WebKit",
+      "Go API read/create/update/delete and shared embedded/full-screen state",
+      "external fetch and invalid local API path denial",
+      "frontend budgets, locks, unsupported npm commands and stale previews",
+      "existing local site routes and editor scroll/line layout"
+    ]
+  },
+  "postRemovalCheck": {
+    "result": "Passed",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "bundle": "build/npm46/shipping5.xcresult",
+    "coverage": [
+      "original app React template through npm terminal and native full-screen UI",
+      "external checkout interoperability test, loaded from ignored developer build folder"
+    ],
+    "externalSourceInApp": false
+  },
+  "externalProject": {
+    "repository": "https://github.com/jbenassi/react-go-gin",
+    "commit": "08418534efed1b32290ac3b1eb1db296c4bd34ae",
+    "hashes": {
+      "client/src/App.js": "570fd7f3fa7613e85244597d69ca3e5188558916ddc0f3267194de993c67cdb0",
+      "server/main.go": "c8c25d7f0cfc1da2ad335c5dbf55d8739dd19d39960e7cdb1c973af6d1cc430f",
+      "LICENSE": "52c5802648907f0d8a4ccd6226b2f04789aa314308a96e93927bf0d21cfdad75"
+    },
+    "adaptations": [
+      "build entry/package/HTML for bundled React catalog",
+      "extra responsive CSS",
+      "app educational Gin adapter instead of full Gin"
+    ],
+    "distribution": "Not bundled in app or example library. Developer checkout and licence remain under ignored build/ only."
+  },
+  "nativeScreenshots": {
+    "debugger": "docs/screenshots/release46/debugger.png",
+    "originalReactTemplate": "docs/screenshots/release46/offline-react.png"
+  },
+  "website": {
+    "tests": 21,
+    "failures": 0,
+    "build": "Next production build and TypeScript passed",
+    "sections": [
+      "npm/React offline workflow",
+      "explicit local Go API paths and replay limits",
+      "automatic source debugger and beta limits"
+    ],
+    "publicVersion": "1.1.6 (44)",
+    "reviewVersion": "1.2.0 (45); unchanged"
+  },
+  "fixesDuringVerification": [
+    "Removed overriding container accessibility identifier so debug controls remain individually accessible",
+    "Copy freshly prepared frontend tool directly into target bundle with declared output files; source/bundle manifest verified equal",
+    "Host unit-test WebKit views in a sized visible window to avoid suspension"
+  ],
+  "limitations": [
+    "Simulator checks do not establish physical-device memory, thermal or battery behaviour",
+    "Educational npm subset and fixed catalog, not Node/full npm/Bun/Vite",
+    "Deterministic bounded API mutation replay, not production socket/database server",
+    "Beta source probes only own source; no watches/conditional breakpoints/vendor stepping; timing and allocations change",
+    "Existing global500-line source gate was already failing on WorkspaceModel and ProjectNavigatorView; full suite not claimed green",
+    "Existing WASI output-drain QoS warnings and a WasmKit Memory.data deprecation warning remain"
+  ]
+}

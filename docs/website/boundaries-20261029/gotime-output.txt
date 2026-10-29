@@ -1,0 +1,11 @@
+start: 2026-03-28T12:00:00+01:00
+calendar: 2026-03-29T12:00:00+02:00; elapsed=23h0m0s
+24 hours: 2026-03-29T13:00:00+02:00
+start: 2026-10-24T12:00:00+02:00
+calendar: 2026-10-25T12:00:00+01:00; elapsed=25h0m0s
+24 hours: 2026-10-25T11:00:00+01:00
+same instant: Equal=true operator==false
+parse 2026-10-04T10:00:00Z: UTC=2026-10-04T10:00:00Z error=<nil>
+parse 2026-10-04T12:00:00+02:00: UTC=2026-10-04T10:00:00Z error=<nil>
+Round(0): Equal=true
+pre-cancelled wait completed=false

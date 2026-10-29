@@ -1,5 +1,10 @@
 import data from "@/content/news.json";
 import images from "@/content/news-images.json";
+export {
+  newsExtraFigures,
+  newsImageSuffixes,
+  newsDetailSection,
+} from "@/lib/news-image-layout";
 export type News = (typeof data)[number];
 export const news = [...data].sort(
   (a, b) => Date.parse(b.editionDate) - Date.parse(a.editionDate),
@@ -18,6 +23,38 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  unicodefield:
+    "Bytes → Runes → Clusters → Policy. Storage, decoded values, text boundaries and application rules answer different questions. Abstract tokens do not represent measured UTF-8 lengths; the accompanying table supplies exact examples.",
+  gohiring:
+    "Define → Compare → Build → Review. Identify the cohort, keep incompatible measurements separate, build inspectable evidence and review the result. Conceptual preparation workflow, not measured hiring odds or an offer guarantee.",
+  ctxbudget:
+    "Locate → Budget → Cancel → Verify. Find the waiting stage, preserve the parent budget, signal cancellation and observe completion. Conceptual diagram; cancellation does not by itself prove remote rollback or worker completion.",
+  godirections:
+    "Search, usage and engineering fit answer different questions. Compare the measurement methods before choosing a direction. Conceptual illustration; the saved Google Trends observations are reported in the text, not drawn by ImageGen.",
+  slogfield:
+    "Select → Structure → Redact → Test. Choose approved fields, preserve their schema, exclude secrets and check failure behavior. Conceptual workflow, not a claim of lossless delivery or universal redaction.",
+  invariants:
+    "Define → Protect → Publish → Test. Name the invariant, protect its complete transition, preserve ownership during publication and test a controlled competing operation. Conceptual diagram, not a synchronization benchmark.",
+  retrykey:
+    "Identify → Commit → Replay → Reconcile. Preserve logical operation identity, record its local effect and receipt together, replay matching results and investigate uncertain outcomes. A local boundary does not cover independent external effects.",
+  streamio:
+    "Read → Bound → Parse → Check. Preserve final bytes, enforce a finite envelope, validate document framing and report the actual outcome. Conceptual workflow, not a throughput benchmark.",
+  gotime:
+    "Define → Locate → Calculate → Test. Name the time contract, select location rules, distinguish elapsed and calendar arithmetic, and test fixed transition cases. Conceptual illustration, not a timezone map.",
+  gcpacer:
+    "Measure → Bound → Adjust → Verify. Establish live data and allocation demand, bound admitted work, change one runtime setting and verify useful completions. Conceptual illustration, not measured telemetry.",
+  heapgraph:
+    "Roots → References → Live data → Release. An object remains reachable while any root path survives. Removing one reference is insufficient when another owner still retains it. Conceptual ownership diagram.",
+  alloclab:
+    "Reproduce → Profile → Change → Recheck. Separate allocation traffic, retained data and execution time; preserve equivalent output before comparing resources. Conceptual workflow, not benchmark results.",
+  sqlpool:
+    "Budget → Bound → Release → Measure. Allocate database capacity across replicas, limit waiting, return owned connections and distinguish pool wait from query time.",
+  shutdown:
+    "Stop routing → Drain → Join → Close. Coordinate admission, accepted requests, worker completion and resource cleanup inside one finite grace period.",
+  synctest:
+    "Signal → Advance → Settle → Assert. Establish explicit events, move virtual time, observe settled workers and check one precise contract.",
+  emudhra:
+    "Inventory → Rebuild → Verify → Rollout. Find the actual executable, pin the fixed toolchain, inspect build evidence and check every replica. A toolchain update is not a deployment.",
   jsonv2:
     "Inventory → Compare → Stage → Verify. Record the wire contract, test behavioral differences, roll out deliberately, and verify consumer compatibility.",
   backpressure:

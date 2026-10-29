@@ -1,0 +1,18 @@
+{
+  "base": "http://127.0.0.1:3065",
+  "articles": [
+    {
+      "edition": "2026-10-08",
+      "slug": "go-strings-unicode-bytes-runes-graphemes",
+      "proseWords": 4491,
+      "SEO": "canonical + TechArticle + dates + description + five images passed"
+    }
+  ],
+  "internalLinksChecked": 12,
+  "generatedImages": 5,
+  "sitemapURLs": 454,
+  "RSSItems": 33,
+  "downloadSourceHashes": "passed",
+  "health": "passed",
+  "emptyOctoberEditions": []
+}

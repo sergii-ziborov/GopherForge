@@ -24,6 +24,7 @@ struct WasiProcessRunner: Sendable {
         /// dropped. Defaults to the toolchain's ceiling because most callers
         /// here are the toolchain; running a user's program passes its own.
         let outputLimitBytes: Int
+        let debugControl: GoDebugControl?
 
         init(
             arguments: [String],
@@ -31,7 +32,8 @@ struct WasiProcessRunner: Sendable {
             preopens: [String: String],
             memoryLimitBytes: Int = WasmSandboxPolicy.toolchainMemoryLimitBytes,
             tableElementLimit: Int = WasmSandboxPolicy.userProgramTableElementLimit,
-            outputLimitBytes: Int = WasmSandboxPolicy.toolchainOutputLimitBytes
+            outputLimitBytes: Int = WasmSandboxPolicy.toolchainOutputLimitBytes,
+            debugControl: GoDebugControl? = nil
         ) {
             self.arguments = arguments
             self.environment = environment
@@ -39,6 +41,7 @@ struct WasiProcessRunner: Sendable {
             self.memoryLimitBytes = memoryLimitBytes
             self.tableElementLimit = tableElementLimit
             self.outputLimitBytes = outputLimitBytes
+            self.debugControl = debugControl
         }
     }
 
@@ -96,6 +99,16 @@ struct WasiProcessRunner: Sendable {
             store.resourceLimiter = limiter
             var imports = Imports()
             wasi.link(to: &imports, store: store)
+            if let debug = invocation.debugControl {
+                imports.define(module: "gopherforge_debug", name: "checkpoint", Function(store: store, parameters: [.i32, .i32, .i32, .i32, .i32]) { caller, args in
+                    guard let memory = caller.instance?.exports[memory: "memory"] else { throw GoDebugControl.Stopped() }
+                    let start = Int(args[3].i32), length = Int(args[4].i32)
+                    guard length <= 65_536, start <= memory.data.count, length <= memory.data.count - start else { throw GoDebugControl.Stopped() }
+                    let data = Data(memory.data[start..<(start + length)])
+                    try debug.checkpoint(kind: args[0].i32, id: Int(args[1].i32), goroutine: args[2].i32, payload: data)
+                    return []
+                })
+            }
             let instance = try module.instantiate(store: store, imports: imports)
             return try wasi.start(instance)
         }

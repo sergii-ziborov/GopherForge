@@ -100,6 +100,7 @@ struct WorkspaceView: View {
     let dockHeightRange: ClosedRange<Double> = 120...640
     @State var isDrawerOpen = false
     @State var isShowingPackages = false
+    @State var isShowingImportDetails = false
     @State var libraryFolders: [String] = []
     @State var filingItem: ProjectLibraryItem?
 
@@ -167,11 +168,22 @@ struct WorkspaceView: View {
         // The keyboard's actual frame owns this boundary. SwiftUI can retain
         // the previous responder's accessory height when Terminal becomes Code.
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .alert("Conflicting versions kept", isPresented: Binding(
+            get: { workspace.persistenceNotice != nil },
+            set: { if !$0 { workspace.persistenceNotice = nil } }
+        )) {
+            Button("OK") { workspace.persistenceNotice = nil }
+        } message: {
+            Text(workspace.persistenceNotice ?? "")
+        }
         .ignoresSafeArea(duoHingePresent ? .container : [], edges: .top)
         .ignoresSafeArea((duoHingePresent && usesLaptopLayout || isCompactPhoneLandscape || isClosedDuoLandscape) && !softwareKeyboardVisible ? .container : [], edges: .bottom)
         .environment(\.softwareKeyboardAccessoryEnabled, keyboardAccessoryEnabled)
         .background(Color(pane == .code ? .systemBackground : .secondarySystemBackground).ignoresSafeArea(.container))
         .toolbar(usesLaptopLayout || keyboardVisible || isCompactPhoneLandscape ? .hidden : .visible, for: .tabBar)
+        .sheet(isPresented: $isShowingImportDetails) {
+            if let project = workspace.project { ProjectImportDetailsView(project: project) }
+        }
         .sheet(isPresented: $isShowingPackages) {
             NavigationStack {
                 PackageBrowserView(allowsProjectChoice: false) {
@@ -233,6 +245,12 @@ struct WorkspaceView: View {
                 selectLaptopPane(destination)
                 pane = destination
             }
+        }
+        .onChange(of: workspace.debugger.state) {
+            guard workspace.debugger.state == .paused else { return }
+            if layout.showsDock { dockPane = .code }
+            selectLaptopPane(.code)
+            pane = .code
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) {
             updateKeyboardFrame($0)
@@ -430,11 +448,16 @@ struct WorkspaceView: View {
                 }
                 .accessibilityIdentifier(AccessibilityID.projectOrganize)
                 if let project = workspace.project {
+                    if project.provenance?.source == .github || project.provenance?.source == .files {
+                        Button { isShowingImportDetails = true } label: {
+                            Label(project.provenance?.importReport?.isPartial == true ? "Partial import — details…" : "Import details…", systemImage: "list.bullet.rectangle")
+                        }
+                    }
                     ShareLink(
                         item: ProjectExport(project: project),
                         preview: SharePreview(project.name)
                     ) {
-                        Label("Export as .tar.gz", systemImage: "square.and.arrow.up")
+                        Label(project.provenance?.importReport?.isPartial == true ? "Export partial snapshot as .tar.gz" : "Export as .tar.gz", systemImage: "square.and.arrow.up")
                     }
                     .accessibilityIdentifier(AccessibilityID.exportProject)
                 }

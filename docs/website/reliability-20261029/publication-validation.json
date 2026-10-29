@@ -1,0 +1,37 @@
+{
+  "checkedOn": "2026-10-29",
+  "source": "2513a69",
+  "webTests": 39,
+  "testsPassed": 39,
+  "productionBuild": "passed",
+  "responsiveWidths": [390, 1280],
+  "horizontalPageOverflow": false,
+  "codeAndScrollableTables": "visually checked on mobile",
+  "liveArticles": 2,
+  "liveGeneratedImages": 6,
+  "imageDimensions": [1536, 1024],
+  "downloadSourceHashes": "passed",
+  "internalLinksChecked": 19,
+  "sitemapURLs": 449,
+  "RSSItems": 28,
+  "deployment": {
+    "image": "sha256:32ff9f47333ad56ae2d8b023a86deeb768d217631d0dc382e420f1c75d766fce",
+    "running": true,
+    "restartPolicy": "unless-stopped",
+    "persistentProgressMount": "preserved",
+    "disposableSnapshot": "survived replacement, read with noindex, revoked and own file removed",
+    "externalFeed": "delivered"
+  },
+  "googleRichResults": {
+    "url": "https://search.google.com/test/rich-results/result?id=-5OfhN_YnigjitPIeJ48hw",
+    "testedPage": "https://gopherforge.app/news/go-retries-idempotency-keys-unknown-outcomes",
+    "crawl": "successful on 29 October 2026",
+    "validArticleItems": 1,
+    "validBreadcrumbItems": 1,
+    "scope": "Structured-data eligibility; not an indexing or ranking guarantee."
+  },
+  "editionDates": ["2026-10-05", "2026-10-11"],
+  "actualPublishedAt": "2026-10-29",
+  "emptyEditionsRemain": "6–10 October 2026",
+  "playground": "Articles provide original standalone source and controlled mutation exercises linked to the existing editor and MCP guide. Execution stays a local native-device button action; each demonstration Run starts fresh in-memory state."
+}

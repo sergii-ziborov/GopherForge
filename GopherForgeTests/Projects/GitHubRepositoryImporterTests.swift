@@ -78,10 +78,7 @@ final class GitHubRepositoryImporterTests: XCTestCase {
 
     func testRepositoryFurnitureIsLeftBehind() {
         for path in [
-            ".github/workflows/ci.yml",
             ".git/config",
-            "internal/testdata/golden.go",
-            "vendor/github.com/x/y/z.go",
         ] {
             XCTAssertFalse(
                 GitHubRepositoryImporter.isWorthKeeping(path: path),
@@ -93,7 +90,8 @@ final class GitHubRepositoryImporterTests: XCTestCase {
     func testSourceAndItsPaperworkAreKept() {
         for path in [
             "main.go", "go.mod", "go.sum", "README.md", "LICENSE", "Makefile",
-            "web/index.html", "web/app.js", "web/styles.css",
+            "web/index.html", "web/app.js", "web/styles.css", "web/App.tsx",
+            ".github/workflows/ci.yml", "internal/testdata/golden.go", "vendor/github.com/x/y/z.go",
         ] {
             XCTAssertTrue(
                 GitHubRepositoryImporter.isWorthKeeping(path: path),

@@ -1,0 +1,114 @@
+# gopherforge.news/memorylab
+./memory.go:16:6: cannot inline BuildGraph: function too complex: cost 107 exceeds budget 80
+./memory.go:45:6: cannot inline GraphStats: function too complex: cost 94 exceeds budget 80
+./memory.go:102:6: can inline CopyPrefix with cost 17 as: func([]byte, int) []byte { return bytes.Clone(buf[:n]) }
+./memory.go:72:6: cannot inline RetainToken: marked go:noinline
+./memory.go:89:6: can inline FormatEvent with cost 67 as: func(uint64, bool) string { return fmt.Sprintf("id=%d active=%t", ... argument...) }
+./memory.go:92:6: cannot inline AppendEvent: function too complex: cost 111 exceeds budget 80
+./memory.go:102:63: inlining call to bytes.Clone
+./memory.go:83:20: inlining call to CopyPrefix
+./memory.go:83:20: inlining call to bytes.Clone
+./memory.go:95:26: inlining call to strconv.AppendUint
+./memory.go:97:26: inlining call to strconv.AppendBool
+./memory.go:97:26: inlining call to strconv.AppendBool
+./memory.go:22:17: new(Node) escapes to heap in BuildGraph:
+./memory.go:22:17:   flow: {heap} ← &{storage for new(Node)}:
+./memory.go:22:17:     from new(Node) (spill) at ./memory.go:22:17
+./memory.go:22:17:     from nodes[i] = new(Node) (assign) at ./memory.go:22:12
+./memory.go:39:9: "unknown graph shape" escapes to heap in BuildGraph:
+./memory.go:39:9:   flow: {heap} ← &{storage for "unknown graph shape"}:
+./memory.go:39:9:     from "unknown graph shape" (spill) at ./memory.go:39:9
+./memory.go:39:9:     from panic("unknown graph shape") (call parameter) at ./memory.go:39:8
+./memory.go:16:24: shape does not escape
+./memory.go:20:15: make([]*Node, n) does not escape
+./memory.go:22:17: new(Node) escapes to heap
+./memory.go:39:9: "unknown graph shape" escapes to heap
+./memory.go:45:17: parameter root leaks to {heap} for GraphStats with derefs=0:
+./memory.go:45:17:   flow: {storage for []item{...}} ← root:
+./memory.go:45:17:     from item{...} (struct literal element) at ./memory.go:53:18
+./memory.go:45:17:     from []item{...} (slice-literal-element) at ./memory.go:53:17
+./memory.go:45:17:   flow: stack ← &{storage for []item{...}}:
+./memory.go:45:17:     from []item{...} (spill) at ./memory.go:53:17
+./memory.go:45:17:     from stack := []item{...} (assign) at ./memory.go:53:8
+./memory.go:45:17:   flow: {temp} ← stack:
+./memory.go:45:17:     from append(stack, item{...}) (call parameter) at ./memory.go:62:18
+./memory.go:45:17:   flow: {heap} ← *{temp}:
+./memory.go:45:17:     from append(stack, item{...}) (appendee slice) at ./memory.go:62:18
+./memory.go:45:17: leaking param: root
+./memory.go:53:17: []item{...} does not escape
+./memory.go:62:18: append does not escape
+./memory.go:65:18: append does not escape
+./memory.go:85:9: "unknown token mode" escapes to heap in RetainToken:
+./memory.go:85:9:   flow: {heap} ← &{storage for "unknown token mode"}:
+./memory.go:85:9:     from "unknown token mode" (spill) at ./memory.go:85:9
+./memory.go:85:9:     from panic("unknown token mode") (call parameter) at ./memory.go:85:8
+./memory.go:73:17: make([]byte, 16777216) escapes to heap in RetainToken:
+./memory.go:73:17:   flow: {heap} ← &{storage for make([]byte, 16777216)}:
+./memory.go:73:17:     from make([]byte, 16777216) (too large for stack) at ./memory.go:73:17
+./memory.go:83:20: append([]byte{}, bytes.b...) escapes to heap in RetainToken:
+./memory.go:83:20:   flow: ~r0 ← &{storage for append([]byte{}, bytes.b...)}:
+./memory.go:83:20:     from append([]byte{}, bytes.b...) (spill) at ./memory.go:83:20
+./memory.go:83:20:     from ~r0 = append([]byte{}, bytes.b...) (assign-pair) at ./memory.go:83:20
+./memory.go:83:20:   flow: ~r0 ← ~r0:
+./memory.go:83:20:     from ~r0 = ~r0 (assign-pair) at ./memory.go:83:20
+./memory.go:83:20:   flow: ~r0 ← ~r0:
+./memory.go:83:20:     from return ~r0 (return) at ./memory.go:83:3
+./memory.go:83:20: []byte{} escapes to heap in RetainToken:
+./memory.go:83:20:   flow: {temp} ← &{storage for []byte{}}:
+./memory.go:83:20:     from []byte{} (spill) at ./memory.go:83:20
+./memory.go:83:20:     from append([]byte{}, bytes.b...) (call parameter) at ./memory.go:83:20
+./memory.go:83:20:   flow: ~r0 ← {temp}:
+./memory.go:83:20:     from ~r0 = append([]byte{}, bytes.b...) (assign-pair) at ./memory.go:83:20
+./memory.go:83:20:   flow: ~r0 ← ~r0:
+./memory.go:83:20:     from ~r0 = ~r0 (assign-pair) at ./memory.go:83:20
+./memory.go:83:20:   flow: ~r0 ← ~r0:
+./memory.go:83:20:     from return ~r0 (return) at ./memory.go:83:3
+./memory.go:72:18: mode does not escape
+./memory.go:73:17: make([]byte, 16777216) escapes to heap
+./memory.go:83:20: []byte{} escapes to heap
+./memory.go:83:20: append escapes to heap
+./memory.go:85:9: "unknown token mode" escapes to heap
+./memory.go:90:40: id escapes to heap in FormatEvent:
+./memory.go:90:40:   flow: {storage for ... argument} ← &{storage for id}:
+./memory.go:90:40:     from id (spill) at ./memory.go:90:40
+./memory.go:90:40:     from ... argument (slice-literal-element) at ./memory.go:90:20
+./memory.go:90:40:   flow: {heap} ← {storage for ... argument}:
+./memory.go:90:40:     from ... argument (spill) at ./memory.go:90:20
+./memory.go:90:40:     from fmt.Sprintf("id=%d active=%t", ... argument...) (call parameter) at ./memory.go:90:20
+./memory.go:90:44: active escapes to heap in FormatEvent:
+./memory.go:90:44:   flow: {storage for ... argument} ← &{storage for active}:
+./memory.go:90:44:     from active (spill) at ./memory.go:90:44
+./memory.go:90:44:     from ... argument (slice-literal-element) at ./memory.go:90:20
+./memory.go:90:44:   flow: {heap} ← {storage for ... argument}:
+./memory.go:90:44:     from ... argument (spill) at ./memory.go:90:20
+./memory.go:90:44:     from fmt.Sprintf("id=%d active=%t", ... argument...) (call parameter) at ./memory.go:90:20
+./memory.go:90:20: ... argument does not escape
+./memory.go:90:40: id escapes to heap
+./memory.go:90:44: active escapes to heap
+./memory.go:98:16: string(buf) escapes to heap in AppendEvent:
+./memory.go:98:16:   flow: ~r0 ← &{storage for string(buf)}:
+./memory.go:98:16:     from string(buf) (spill) at ./memory.go:98:16
+./memory.go:98:16:     from return string(buf) (return) at ./memory.go:98:2
+./memory.go:93:13: make([]byte, 0, 48) does not escape
+./memory.go:94:14: append does not escape
+./memory.go:96:14: append does not escape
+./memory.go:97:26: append does not escape
+./memory.go:97:26: append does not escape
+./memory.go:98:16: string(buf) escapes to heap
+./memory.go:102:63: append([]byte{}, bytes.b...) escapes to heap in CopyPrefix:
+./memory.go:102:63:   flow: ~r0 ← &{storage for append([]byte{}, bytes.b...)}:
+./memory.go:102:63:     from append([]byte{}, bytes.b...) (spill) at ./memory.go:102:63
+./memory.go:102:63:     from ~r0 = append([]byte{}, bytes.b...) (assign-pair) at ./memory.go:102:63
+./memory.go:102:63:   flow: ~r0 ← ~r0:
+./memory.go:102:63:     from return ~r0 (return) at ./memory.go:102:45
+./memory.go:102:63: []byte{} escapes to heap in CopyPrefix:
+./memory.go:102:63:   flow: {temp} ← &{storage for []byte{}}:
+./memory.go:102:63:     from []byte{} (spill) at ./memory.go:102:63
+./memory.go:102:63:     from append([]byte{}, bytes.b...) (call parameter) at ./memory.go:102:63
+./memory.go:102:63:   flow: ~r0 ← {temp}:
+./memory.go:102:63:     from ~r0 = append([]byte{}, bytes.b...) (assign-pair) at ./memory.go:102:63
+./memory.go:102:63:   flow: ~r0 ← ~r0:
+./memory.go:102:63:     from return ~r0 (return) at ./memory.go:102:45
+./memory.go:102:17: buf does not escape
+./memory.go:102:63: []byte{} escapes to heap
+./memory.go:102:63: append escapes to heap

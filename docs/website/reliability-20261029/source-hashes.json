@@ -1,0 +1,7 @@
+{
+  "invariants/main.go": "7735921646f14a3c7163a7649fa222210441db5ca28acda70189c7528fb38f65",
+  "invariants/main_test.go": "d41d79892bf666606fdfde1e9602f5e0c9edc316447fbbb21cfc42feab900a8b",
+  "retrykey/main.go": "39219bd7cd2ed6278fc24884cdf73cf899cd320a53bb198da514e3c84620fdf3",
+  "retrykey/main_test.go": "b32a082543e991adb4642a78635b3ce45e5a1314a0caa28b29f8bec347333751",
+  "go.mod": "9dd759deb5d8fb0732ed9880d7b79a48c27c41ea2fd7748cfed4bd074cf18554"
+}

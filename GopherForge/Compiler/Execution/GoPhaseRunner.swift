@@ -53,7 +53,7 @@ struct GoPhaseRunner {
 
             return switch phase {
             case .test: testResult(plan: plan, job: job, outcome: outcome, started: started)
-            case .run: runResult(plan: plan, job: job, outcome: outcome, cache: cache, key: key, started: started)
+            case .run: runResult(plan: plan, job: job, outcome: outcome, cache: cache, key: key, started: started, runtimeRequest: project.runtimeRequest, debugControl: project.debugControl)
             default: accepted(outcome: outcome, phase: phase, cache: cache, key: key, started: started)
             }
         } catch {
@@ -144,7 +144,9 @@ struct GoPhaseRunner {
         outcome: GoToolSession.Outcome,
         cache: GoArtifactCache,
         key: String,
-        started: ContinuousClock.Instant
+        started: ContinuousClock.Instant,
+        runtimeRequest: String? = nil,
+        debugControl: GoDebugControl? = nil
     ) -> CompilationResult {
         guard let product = plan.products.first,
               let url = job.hostURL(forGuestPath: product.guestPath),
@@ -165,7 +167,9 @@ struct GoPhaseRunner {
             diagnostics: outcome.diagnostics,
             started: started,
             clock: clock,
-            successDetail: "Compiled and executed locally inside the bounded WasmKit sandbox."
+            successDetail: "Compiled and executed locally inside the bounded WasmKit sandbox.",
+            runtimeRequest: runtimeRequest,
+            debugControl: debugControl
         )) ?? .failure(
             phase: .run,
             detail: "The program could not be started.",

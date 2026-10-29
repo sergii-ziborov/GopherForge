@@ -1,0 +1,34 @@
+{
+  "source": "a58392a",
+  "job": "gopherforge-archive-a58392a-20261029",
+  "state": "succeeded",
+  "finishedAt": "2026-10-29T17:12:43.633951297Z",
+  "image": "sha256:4daeb66dafb0bc14725810e2d6a1b289daf9941bdcc75a280c88015b1772c963",
+  "previousImage": "sha256:0c92a5e43284c255d6f0fd43e18d485047486993ded6174d6d989b602f11f297",
+  "rollbackTag": "localhost/gopherforge-web:rollback-before-archive-a58392a",
+  "method": "Candidate preflight; Hostwatch revision-bound replacement; terminal success confirmed",
+  "publicChecks": {
+    "cardsAcrossStaticPages": [
+      9,
+      9,
+      9,
+      6
+    ],
+    "autoScrollCounts": [
+      9,
+      18,
+      27,
+      33
+    ],
+    "uniqueCardsAfterScrolling": 33,
+    "numberedPage2": "9 cards and scroll position 0",
+    "imageResponsesAndHashes": "all 33 archive card images passed",
+    "browserConsoleWarningsAndErrors": 0,
+    "sitemapURLs": 457,
+    "RSSItems": 33
+  },
+  "persistence": "Own synthetic progress share survived replacement; revoked and own QA file removed",
+  "externalFeedDelivery": "ok",
+  "restartPolicy": "unless-stopped",
+  "nativeApp": "No native binary or App Store submission changed"
+}

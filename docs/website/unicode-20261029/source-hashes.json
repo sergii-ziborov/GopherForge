@@ -1,0 +1,18 @@
+{
+  "README.md": "b4dd684222536989c2e2acef80708fa4f669d70a17191f742b356aa9db28c009",
+  "go.mod": "21cdb8dfda9c2d4062508ecd08f9f137609ba5540d7c1ec2bd29993b55cd9209",
+  "textlab/main.go": "51776330eeed7b041591839c4666741f4217639cb3bfc704a8e684b80bb80ad7",
+  "textlab/main_test.go": "f417ba68cb54c9de51d1b485968a1bf1f1de1e0bbeff8b3229cf931501aad50b",
+  "normlab/go.mod": "bd88dc9355a0c5097ee3e7c8fb0a99e67247f77b16f1d3d98c22203cae885af1",
+  "normlab/go.sum": "223a00fa76af00dea42243bc0c388d029397572e5f613ab9022d44f25f049955",
+  "normlab/main.go": "d6042956a72e349d8d0a909bad29a90e91088b34154e110b9f260d960d461ef6",
+  "normlab/main_test.go": "3dde1909ac3d3856277a878e816b797a4400a982349f5dcb5e1eeac4109ab575",
+  "text-output.txt": "a4f83efb404b1f2bacdabf725d1b9249ff11be74eb6adbeb9159e083ff715561",
+  "norm-output.txt": "fce3c697c3161cc4d01be5ae38c68508f83ab99870b18771747905002aef344e",
+  "negative-controls.json": "adc47d98f1c75c475a0c73e3941ae7b5c1a75847375857edec966d644094bf31",
+  "research.json": "4816dc48b3d478bdbe734328df9810111458016cd05efcd12837318d2ebc67ae",
+  "text-tests.log": "8359cebeaa509df029bdd3f2ff82bb5ca57713b71a00ec564141c69d1997dd0c",
+  "norm-tests.log": "693b2e877400590ce6a91ee1e3bf90e40ce6b4d3ede6975779050632c12952b7",
+  "fuzz.log": "3b72ce48f1e13a0a59b0e5704b6db8a76bf8d03ea41fa6bfc3ec7bccc90d5b33",
+  "negative_controls.py": "04aae441d0877ebcb32a05ee6d2b42de649f64a675a64e022747f1ef21651b04"
+}

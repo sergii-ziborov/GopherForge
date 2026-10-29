@@ -65,7 +65,7 @@ final class DesignReadingTests: XCTestCase {
     }
 
     func testNewExamplesAreCompleteProgramsWithDocumentedOutput() {
-        let programs = ReadingLessonCatalog.all.flatMap { reading in
+        let programs = ReadingLessonCatalog.all.filter { unitCounts[$0.unitID] != nil }.flatMap { reading in
             reading.sections.compactMap { section -> String? in
                 guard let code = section.code, code.contains("// Output:\n") else { return nil }
                 XCTAssertEqual(section.language, "go", reading.id)

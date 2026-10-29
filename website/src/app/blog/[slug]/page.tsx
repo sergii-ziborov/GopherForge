@@ -1,3 +1,4 @@
+import { metadataDate } from "@/lib/seo-dates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -22,7 +23,7 @@ export async function generateMetadata({
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       type: "article",
-      publishedTime: p?.date,
+      publishedTime: p ? metadataDate(p.date) : undefined,
       authors: ["Serhii Ziborov"],
     },
   };

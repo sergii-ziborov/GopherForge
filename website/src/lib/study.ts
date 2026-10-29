@@ -1,3 +1,4 @@
+import { transferredSlice, taggedWrite } from "./progress-overlay.ts";
 // Small, versioned bookmarks. Existing lesson completions and interview marks
 // keep their original keys so an upgrade never resets a learner's work.
 export type StudyArea = "course" | "interview";
@@ -34,7 +35,8 @@ function bookmark(value: unknown): Bookmark | null {
 }
 export function readStudy(): Study {
   try {
-    const p = JSON.parse(localStorage.getItem(studyKey) ?? "null");
+    const raw = localStorage.getItem(studyKey) ?? null;
+    const p = transferredSlice(studyKey, raw) ?? JSON.parse(raw ?? "null");
     if (p?.version === 1)
       return {
         version: 1,
@@ -58,7 +60,7 @@ export function visitStudy(area: StudyArea, id: string, section = ""): boolean {
   try {
     localStorage.setItem(
       studyKey,
-      JSON.stringify({ ...current, area, [area]: value }),
+      JSON.stringify(taggedWrite({ ...current, area, [area]: value })),
     );
     window.dispatchEvent(new Event(studyEvent));
     return true;
@@ -72,16 +74,18 @@ export function clearStudyArea(area: StudyArea): boolean {
   try {
     localStorage.setItem(
       studyKey,
-      JSON.stringify({
-        ...current,
-        [area]: null,
-        area:
-          current.area === area
-            ? current[other]
-              ? other
-              : null
-            : current.area,
-      }),
+      JSON.stringify(
+        taggedWrite({
+          ...current,
+          [area]: null,
+          area:
+            current.area === area
+              ? current[other]
+                ? other
+                : null
+              : current.area,
+        }),
+      ),
     );
     window.dispatchEvent(new Event(studyEvent));
     return true;
@@ -94,7 +98,9 @@ export function studyURL(area: StudyArea, value: Bookmark): string {
 }
 export function readAssessments(): Record<string, Assessment> {
   try {
-    const value = JSON.parse(localStorage.getItem(assessmentKey) ?? "{}");
+    const raw = localStorage.getItem(assessmentKey) ?? null;
+    const value =
+      transferredSlice(assessmentKey, raw) ?? JSON.parse(raw ?? "{}");
     if (value && typeof value === "object" && !Array.isArray(value))
       return Object.fromEntries(
         Object.entries(value)
@@ -109,7 +115,7 @@ export function saveAssessment(id: string, value: Assessment | ""): boolean {
   if (value) marks[id] = value;
   else delete marks[id];
   try {
-    localStorage.setItem(assessmentKey, JSON.stringify(marks));
+    localStorage.setItem(assessmentKey, JSON.stringify(taggedWrite(marks)));
     window.dispatchEvent(new Event(studyEvent));
     return true;
   } catch {
