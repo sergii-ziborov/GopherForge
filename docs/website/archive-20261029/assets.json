@@ -1,0 +1,105 @@
+{
+  "generatedOn": "2026-10-29",
+  "method": "Nine distinct built-in ImageGen calls; WebP encoding only. Original compositions preserved.",
+  "assets": [
+    {
+      "id": "sqlpool-hero",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-f2636211-8d30-49fe-9b64-cfb5a2b59b9e.png",
+      "prompt": "Use case: illustration-story. Asset type: original editorial artwork for GopherForge technical articles, landscape 3:2, 1536x1024. Premium calm isometric 3D illustration with precise tactile models, deep navy, teal, ivory and small amber accents, soft studio light, strong readable shapes and generous whitespace. Opaque background. No logos, watermark, pseudo code, small labels or decorative text. Primary request: show a Go service as a clean glass workshop feeding a finite bank of six database connection lanes; a short orderly queue waits before the lanes. One lane is held by an unfinished results tray. Communicate finite database capacity and ownership, not extra speed or an infinite pool. Wide balanced composition, no characters.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/sqlpool-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 114220,
+      "sha256": "aba075167896c8760023677a870faa84d4796b2c06b22eebe37762d3a85a3d30"
+    },
+    {
+      "id": "sqlpool-detail",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-0810607e-064e-44de-b9a6-97237d54cf7b.png",
+      "prompt": "Use case: illustration-story. Asset type: original editorial artwork for GopherForge technical articles, landscape 3:2, 1536x1024. Premium calm isometric 3D illustration with precise tactile models, deep navy, teal, ivory and small amber accents, soft studio light, strong readable shapes and generous whitespace. Opaque background. No logos, watermark, pseudo code, small labels or decorative text. Primary request: a close-up cutaway of a single teal database connection carrying a sealed transaction containing three linked operations. A separate gray path outside the transaction is visibly disconnected. A finished result tray returns the lane token to its owner. Communicate atomic transaction ownership and releasing resources, no readable text.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/sqlpool-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 101642,
+      "sha256": "fa471278249886f783a263f1472612201412f0d7e6d8e625dcd4b9ebafb6f005"
+    },
+    {
+      "id": "sqlpool-infographic",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-8f478d4f-fa0f-4435-ac30-5b0b7fd8b1fd.png",
+      "prompt": "Use case: infographic-diagram. Asset type: educational infographic for a Go database/sql pool guide, landscape 3:2 1536x1024. Four large left-to-right cards joined by arrows, exact short headings only: \"BUDGET\", \"BOUND\", \"RELEASE\", \"MEASURE\". BUDGET shows several app replicas sharing a finite database; BOUND shows a short queue and timeout clock; RELEASE shows one connection token returning from a results tray; MEASURE shows distinct wait-time and query-time dials without numbers. Warm ivory background, navy typography, teal diagrams, tiny amber warning accents. Beautiful clean editorial 3D with flat readable labels. Do not imply larger pools always improve throughput. No extra text, logo or watermark.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/sqlpool-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 79896,
+      "sha256": "47acb17ab93e18532e63300c886ff6ff8fa2992e9e373d26235d590db09dd69b"
+    },
+    {
+      "id": "shutdown-hero",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-c9d1b793-0a73-4aa9-99a7-346809769df6.png",
+      "prompt": "Use case: illustration-story. Asset type: original editorial artwork for GopherForge technical articles, landscape 3:2, 1536x1024. Premium calm isometric 3D illustration with precise tactile models, deep navy, teal, ivory and small amber accents, soft studio light, strong readable shapes and generous whitespace. Opaque background. No logos, watermark, pseudo code, small labels or decorative text. Primary request: an orchestration control room showing a three-replica Go web service; two teal replicas continue receiving request paths, the third amber replica has its entrance gate closing while a few already admitted glowing requests safely finish inside. A small exit signal waits at the end. Represent graceful draining with clear visual sequence, not instantaneous traffic migration. No readable text.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/shutdown-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 120528,
+      "sha256": "f6bbad3ce910f524d1bbcc43873ced0a7cd47980a7b673bab60a9a7c8ebed7b3"
+    },
+    {
+      "id": "shutdown-detail",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-0c1b85bd-4cf9-4d94-8e1d-68f6ed5acf46.png",
+      "prompt": "Use case: illustration-story. Asset type: original editorial artwork for GopherForge technical articles, landscape 3:2, 1536x1024. Premium calm isometric 3D illustration with precise tactile models, deep navy, teal, ivory and small amber accents, soft studio light, strong readable shapes and generous whitespace. Opaque background. No logos, watermark, pseudo code, small labels or decorative text. Primary request: a precise layered physical timeline model of service shutdown, one shared horizontal grace budget as a long translucent teal rail; a short ivory preparation segment, a longer active-request drain segment and a small cleanup reserve at the end. Distinct workers finish before the rail ends, one overdue task meets a safe stop gate. A finite time budget including preparation, no numbers or text.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/shutdown-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 103770,
+      "sha256": "6916b14c341fb470733e06970df662cd1e380be09e1d61ee53587f7c6dcf453f"
+    },
+    {
+      "id": "shutdown-infographic",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-9426c5c9-cf8a-4c96-a483-17a4985b13d4.png",
+      "prompt": "Use case: infographic-diagram. Asset type: educational infographic for a Go HTTP Kubernetes graceful shutdown guide, landscape 3:2 1536x1024. Four large clearly connected panels left to right with exact headings: \"STOP ROUTING\", \"DRAIN\", \"JOIN\", \"CLOSE\". Show readiness gate closing, existing requests completing, owned workers returning completion tokens, then idle database and outbound resources closing. A single thin bracket beneath all four panels represents one shared finite grace period. Ivory background, navy typography, teal and amber geometry, crisp understated editorial rendering. Distinguish request draining from closing resources. No extra small text, Kubernetes logos, watermark or unsupported timing guarantees.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/shutdown-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 67528,
+      "sha256": "1650b7c6b281c2400b5556710a465f78a7b7f998e1b2e2bb80d8894e031618d8"
+    },
+    {
+      "id": "synctest-hero",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-c9b3dd8a-2ab3-471b-9b1b-8110563666ca.png",
+      "prompt": "Use case: illustration-story. Asset type: original editorial artwork for GopherForge technical articles, landscape 3:2, 1536x1024. Premium calm isometric 3D illustration with precise tactile models, deep navy, teal, ivory and small amber accents, soft studio light, strong readable shapes and generous whitespace. Opaque background. No logos, watermark, pseudo code, small labels or decorative text. Primary request: a transparent glass testing bubble containing a small elegant clock and three teal goroutine tracks that meet at explicit synchronization gates. Outside the bubble a distant blurred real-world clock and network remain separate. Communicate controlled virtual time and explicit synchronization without claiming every scheduler interleaving is explored. Wide precise composition, no text.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/synctest-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 110218,
+      "sha256": "b9ae6bc16c19688f980a7750a0c16fc94d9bee8d8ffee12664db7a2072074a55"
+    },
+    {
+      "id": "synctest-detail",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-0de943cc-84e3-4961-9cec-c516aa92c9bb.png",
+      "prompt": "Use case: illustration-story. Asset type: original editorial artwork for GopherForge technical articles, landscape 3:2, 1536x1024. Premium calm isometric 3D illustration with precise tactile models, deep navy, teal, ivory and small amber accents, soft studio light, strong readable shapes and generous whitespace. Opaque background. No logos, watermark, pseudo code, small labels or decorative text. Primary request: a close-up educational split model of a test. On one side an unreliable pile of arbitrary hourglass delays, on the other a precise channel handshake with one start token, one completion token and a magnifying lens checking state only after the completion gate. Strong visual contrast, no readable labels. Do not portray a sleep as mutual exclusion.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/synctest-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 115360,
+      "sha256": "c6afba4cc1431a9a763b552d7f922225eb02368c8e80d7cc5d3acf38f32462e3"
+    },
+    {
+      "id": "synctest-infographic",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-cafaa4d0-167f-403c-839d-98c000fa7073.png",
+      "prompt": "Use case: infographic-diagram. Asset type: educational Go concurrency testing infographic landscape 3:2 1536x1024. Four generous connected cards with exact headings: \"SIGNAL\", \"ADVANCE\", \"SETTLE\", \"ASSERT\". SIGNAL depicts a channel handshake; ADVANCE a virtual clock inside a glass bubble; SETTLE all contained worker tracks parked at gates; ASSERT a clean checked result card. Ivory background, deep navy large lettering, teal geometry and restrained amber accents. Show explicit synchronization and virtual time. No claims of exhaustive race freedom, no extra text, logo or watermark.",
+      "mode": "built-in image_gen",
+      "asset": "website/public/images/news/synctest-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 85596,
+      "sha256": "62e2ca135b56e14bc77d1db64b2df21bb2deac08dcfd5645841ae2850fa45376"
+    }
+  ]
+}

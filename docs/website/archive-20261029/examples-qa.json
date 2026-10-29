@@ -1,0 +1,23 @@
+{
+  "toolchain": "go version go1.27.3 darwin/arm64",
+  "greenCommand": "go test -race -count=100 -timeout=30s ./...",
+  "greenResult": "ok  \tgopherforge.news/archive\t3.270s",
+  "negativeControls": [
+    {
+      "mutation": "early notification",
+      "result": "detected",
+      "expectedFailure": "early result"
+    },
+    {
+      "mutation": "ignored cancellation",
+      "result": "detected",
+      "expectedFailure": "notification after cancellation"
+    },
+    {
+      "mutation": "duplicate notification",
+      "result": "detected",
+      "expectedFailure": "extra result"
+    }
+  ],
+  "scope": "Original snippets compiled unchanged with imports added. SQL driver is synthetic; no live PostgreSQL, Kubernetes cluster or in-app sandbox claim. HTTP tests bind loopback only."
+}

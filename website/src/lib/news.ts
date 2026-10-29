@@ -18,6 +18,12 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  sqlpool:
+    "Budget → Bound → Release → Measure. Allocate database capacity across replicas, limit waiting, return owned connections and distinguish pool wait from query time.",
+  shutdown:
+    "Stop routing → Drain → Join → Close. Coordinate admission, accepted requests, worker completion and resource cleanup inside one finite grace period.",
+  synctest:
+    "Signal → Advance → Settle → Assert. Establish explicit events, move virtual time, observe settled workers and check one precise contract.",
   emudhra:
     "Inventory → Rebuild → Verify → Rollout. Find the actual executable, pin the fixed toolchain, inspect build evidence and check every replica. A toolchain update is not a deployment.",
   jsonv2:

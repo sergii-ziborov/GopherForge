@@ -61,7 +61,7 @@ export default async function NewsArticle({
       <figure className="news-figure">
         <img
           {...im}
-          alt={caption}
+          alt={"alt" in im ? im.alt : caption}
           loading={suffix === "hero" ? "eager" : "lazy"}
         />
         <figcaption>

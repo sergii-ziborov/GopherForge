@@ -268,5 +268,59 @@
     "src": "/images/news/emudhra-infographic.webp",
     "width": 1672,
     "height": 941
+  },
+  "sqlpool-hero": {
+    "src": "/images/news/sqlpool-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A finite bank of database connection lanes with an admission queue and one lane held by unfinished results."
+  },
+  "sqlpool-detail": {
+    "src": "/images/news/sqlpool-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Three operations enclosed in one transaction on a single connection, with an unrelated path kept outside."
+  },
+  "sqlpool-infographic": {
+    "src": "/images/news/sqlpool-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Budget, Bound, Release and Measure: four stages of connection-pool ownership and observation."
+  },
+  "shutdown-hero": {
+    "src": "/images/news/shutdown-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Two service replicas accept requests while a third closes admission and drains work already inside."
+  },
+  "shutdown-detail": {
+    "src": "/images/news/shutdown-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Preparation, draining and cleanup share one finite shutdown budget; overdue work reaches a stop boundary."
+  },
+  "shutdown-infographic": {
+    "src": "/images/news/shutdown-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Stop routing, Drain, Join and Close, with one finite grace period beneath the complete sequence."
+  },
+  "synctest-hero": {
+    "src": "/images/news/synctest-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A virtual clock and synchronized goroutine tracks inside a test bubble, separate from real-world I/O."
+  },
+  "synctest-detail": {
+    "src": "/images/news/synctest-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Arbitrary hourglass delays contrasted with an explicit channel handshake and an observed result."
+  },
+  "synctest-infographic": {
+    "src": "/images/news/synctest-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Signal, Advance, Settle and Assert: channel events and virtual time establish when a test may check state."
   }
 }

@@ -180,3 +180,40 @@ test("October additions fill unused editions without inventing publication dates
     }
   }
 });
+
+test("24, 25 and 28 October editions each contain 2000 prose words and three distinct generated assets", async () => {
+  const editions = ["2026-10-24", "2026-10-25", "2026-10-28"];
+  const posts = news.filter((n) => editions.includes(n.editionDate));
+  assert.equal(posts.length, 3);
+  assert.equal(new Set(posts.map((n) => n.editionDate)).size, 3);
+  const manifest = await read(
+    "../../docs/website/archive-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 9);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 9);
+  for (const n of posts) {
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    const prose = n.sections
+      .map((s) => s.body)
+      .join(" ")
+      .replace(/```[\s\S]*?```/g, "");
+    assert.ok(prose.split(/\s+/).length >= 2000, n.slug);
+    assert.ok(n.sources.length >= 6);
+    assert.ok(n.sections.some((s) => s.body.includes("```go\n")));
+    assert.ok(n.sections.some((s) => s.body.includes("](/learn/")));
+    assert.ok(
+      n.sections.some((s) =>
+        s.body.includes("/downloads/go-engineering-examples-20261029.zip"),
+      ),
+    );
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.ok(a);
+      assert.equal(a.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, a.width);
+    }
+  }
+});

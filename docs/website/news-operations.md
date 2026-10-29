@@ -1,16 +1,16 @@
 # News and community reader
 
-Published content is English. `/news` contains five GopherForge editorial analyses of events dated 16–20 October 2026; publication is dated 20 October rather than backdated to the event. Each article contains over 1,500 prose words, primary references, related reading and three distinct ImageGen illustrations (including an infographic). `news-image-manifest.json` records the assets, prompts and original workspace copies. Runtime WebP assets total about 2 MB; original PNGs remain in `build/news-seo/originals/`.
+Published content is English. `/news` contains original GopherForge news analysis and practical guides. Edition dates organize the archive; `publishedAt` records the actual publication day and must not be backdated to the edition. The 24, 25 and 28 October archive gaps were filled on 29 October with three guides exceeding 2,000 prose words and three distinct ImageGen assets each. `archive-20261029/research.json`, `assets.json` and the publication receipt record the work. Original examples and tests have a public downloadable ZIP.
 
 ## Content and SEO
 
 - Original articles: `website/src/content/news.json`; dates, source list, section anchors, interlinks, image prefix and prose word count.
-- RSS: `/news/rss.xml`, five original editorial articles only.
+- RSS: `/news/rss.xml`, all original editorial articles, ordered by actual publication date.
 - Sitemap: original articles with all three images; crawlable `/learn/units/[id]` subject hubs; lessons and interview guides.
-- Article schema, canonical and Open Graph metadata; lesson LearningResource and breadcrumbs; subject hubs use Course schema. No invented reviews, ratings, CVEs or vendor endorsements.
+- Article schema, canonical and Open Graph metadata; lesson LearningResource and breadcrumbs; subject hubs use LearningResource schema and the library uses CollectionPage. No invented reviews, ratings, CVEs or vendor endorsements.
 - Imported articles are **noindex**, canonical to their original publisher and absent from the sitemap. They are not presented as original GopherForge reporting.
-- `/login` and `/register` are explicitly inactive design previews with disabled inputs and no backend or credential storage. They are noindex. Course and interview access remains free without an account.
-- `releases.json` is the website's release record. Sync reads it rather than restoring stale versions. Current public app: 1.1.4 (39); 1.1.5 (40) is TestFlight / waiting for App Review. Bundled Go remains 1.27.1. Native US price remains $6.99 one-time.
+- `/login` and `/register` redirect to `/learn`. The site has no accounts or registration. Course and interview access remains free without an account.
+- `releases.json` is the current website release record. Sync must preserve it. It separates the publicly released app, beta and App Review candidate; read that file instead of copying historical version numbers from this document.
 - Existing browser progress keys, Continue and course/interview data are preserved. Browser and app progress are independent.
 
 ## Full external articles
