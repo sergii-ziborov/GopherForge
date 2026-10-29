@@ -37,5 +37,29 @@
     "The 45 historic 404 examples are mostly external documentation paths on the wrong host plus an obsolete lesson placeholder. Current 439 sitemap pages have no such relative internal links. Keep genuinely missing pages as 404; do not redirect all missing paths to the homepage.",
     "Sitemap acceptance and a successful live rich-results test do not mean every URL is indexed or guarantees rankings.",
     "No analytics or identity collection added."
-  ]
+  ],
+  "richResultsAfter": {
+    "url": "https://search.google.com/test/rich-results/result?id=XEtHUits55jUK4XsDkmK5Q",
+    "validItems": 3,
+    "articleWarnings": 0,
+    "crawlShown": "2026-10-29 11:27:03 local",
+    "articleScreenshot": "rich-results-article.jpg"
+  },
+  "deployment": {
+    "sourceCommit": "6411950",
+    "imageDigest": "sha256:86b50dd2321526fd813b82b6f8c0377d8bc7901cfa6bdc0bf0277d3f1b6f4e01",
+    "job": "gopherforge-seo-6411950-20261029",
+    "state": "succeeded",
+    "finishedAt": "2026-10-29T09:26:23.781232831Z",
+    "testsPassed": 35,
+    "productionBuild": "passed",
+    "liveURLsChecked": 439,
+    "liveHTTP200": 439,
+    "metadataIssues": 0,
+    "sharedProgressSurvivedReplacement": true,
+    "syntheticShareRevoked": true,
+    "persistentMountVerified": true,
+    "restartPolicy": "unless-stopped",
+    "externalFeedDelivered": true
+  }
 }
