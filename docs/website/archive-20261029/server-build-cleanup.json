@@ -1,0 +1,194 @@
+{
+  "scope": "Only unused localhost/gopherforge-web images and reproducible superseded GopherForge build contexts; no force removal, volumes, live containers or other services touched",
+  "keptImagePrefixes": [
+    "16cb77ce2efc",
+    "6373443b145d",
+    "7c71cbb88122",
+    "86b50dd23215",
+    "92f8192a6f69",
+    "a715925dc2a0"
+  ],
+  "removedImages": [
+    {
+      "id": "25459e77100c",
+      "tags": [
+        "localhost/gopherforge-web:review51-news-5d24500"
+      ]
+    },
+    {
+      "id": "164da102c895",
+      "tags": [
+        "localhost/gopherforge-web:mcp51-ab40622"
+      ]
+    },
+    {
+      "id": "6be06da8e521",
+      "tags": [
+        "localhost/gopherforge-web:curriculum49-9813918",
+        "localhost/gopherforge-web:rollback-review49-4ffb0c0"
+      ]
+    },
+    {
+      "id": "5e5fc58d5e5b",
+      "tags": [
+        "localhost/gopherforge-web:curriculum49-18ec213",
+        "localhost/gopherforge-web:rollback-curriculum49-9813918"
+      ]
+    },
+    {
+      "id": "7f0a46373d1b",
+      "tags": [
+        "localhost/gopherforge-web:build48-4a57e4a",
+        "localhost/gopherforge-web:rollback-curriculum49-18ec213"
+      ]
+    },
+    {
+      "id": "7ea54b2dfe88",
+      "tags": [
+        "localhost/gopherforge-web:preview48-fbc0c69",
+        "localhost/gopherforge-web:rollback-build48-4a57e4a"
+      ]
+    },
+    {
+      "id": "3ae628378e70",
+      "tags": [
+        "localhost/gopherforge-web:rollback-preview48-fbc0c69"
+      ]
+    },
+    {
+      "id": "d72aa1d66b62",
+      "tags": [
+        "localhost/gopherforge-web:rollback-progress-674ebaf"
+      ]
+    },
+    {
+      "id": "20acd18328ef",
+      "tags": [
+        "localhost/gopherforge-web:rollback-audit47-8cc9dd7"
+      ]
+    },
+    {
+      "id": "77e721370bd2",
+      "tags": [
+        "localhost/gopherforge-web:rollback-review46-d332c3e"
+      ]
+    },
+    {
+      "id": "d591995b5193",
+      "tags": [
+        "localhost/gopherforge-web:fb4c07e",
+        "localhost/gopherforge-web:rollback-beta46-6adb1ec"
+      ]
+    },
+    {
+      "id": "c79ae58949e2",
+      "tags": [
+        "localhost/gopherforge-web:8adfc1a",
+        "localhost/gopherforge-web:rollback-before-review45"
+      ]
+    },
+    {
+      "id": "3d06965d9bb3",
+      "tags": [
+        "localhost/gopherforge-web:4e2d78f",
+        "localhost/gopherforge-web:rollback-before-curriculum45"
+      ]
+    },
+    {
+      "id": "c18d6861ee6c",
+      "tags": [
+        "localhost/gopherforge-web:0ac2add",
+        "localhost/gopherforge-web:rollback-jsonv2-c18d6861"
+      ]
+    },
+    {
+      "id": "c36c44a78d2e",
+      "tags": [
+        "localhost/gopherforge-web:ef0f15a",
+        "localhost/gopherforge-web:rollback-backpressure-c36c44a7"
+      ]
+    },
+    {
+      "id": "707aaa30d7a4",
+      "tags": [
+        "localhost/gopherforge-web:86dc3f5",
+        "localhost/gopherforge-web:rollback-illustrations-707aaa30"
+      ]
+    },
+    {
+      "id": "74e622f5ade7",
+      "tags": [
+        "localhost/gopherforge-web:rollback-news3-bcb2736",
+        "localhost/gopherforge-web:bcb2736"
+      ]
+    },
+    {
+      "id": "f22d16f45794",
+      "tags": [
+        "localhost/gopherforge-web:16e4e2d",
+        "localhost/gopherforge-web:rollback-news3-16e4e2d"
+      ]
+    },
+    {
+      "id": "defdd182d8ae",
+      "tags": [
+        "localhost/gopherforge-web:96e6ae4",
+        "localhost/gopherforge-web:rollback-news3-defdd18"
+      ]
+    },
+    {
+      "id": "9cfb655077a6",
+      "tags": [
+        "localhost/gopherforge-web:rollback-review43-5a9fc2e",
+        "localhost/gopherforge-web:5a9fc2e"
+      ]
+    },
+    {
+      "id": "058a52110a99",
+      "tags": [
+        "localhost/gopherforge-web:9c63539",
+        "localhost/gopherforge-web:rollback-news-second-9c63539"
+      ]
+    },
+    {
+      "id": "ff21d374f263",
+      "tags": [
+        "localhost/gopherforge-web:rollback-tree-8c5a3ea"
+      ]
+    },
+    {
+      "id": "661456b1a130",
+      "tags": [
+        "localhost/gopherforge-web:rollback-news"
+      ]
+    },
+    {
+      "id": "6bdb1f1cc5f1",
+      "tags": [
+        "localhost/gopherforge-web:rollback-d514bd8"
+      ]
+    }
+  ],
+  "skippedImages": [],
+  "removedContextSubdirectories": [
+    "curriculum49-18ec213",
+    "curriculum49-9813918",
+    "review49-4ffb0c0",
+    "mcp50-31fe801",
+    "mcp51-ab40622",
+    "review51-news-5d24500"
+  ],
+  "removedArchiveCopies": [
+    "site-mcp50-final.tar.gz",
+    "curriculum49-9813918.tar.gz",
+    "site-review51-news-00415ed.tar.gz",
+    "site-mcp50-31fe801.tar.gz",
+    "curriculum49-18ec213.tar.gz",
+    "site-mcp50.tar.gz",
+    "site-mcp50-recovery.tar.gz",
+    "site-review51-news-5d24500.tar.gz",
+    "site-mcp51-ab40622.tar.gz",
+    "review49-4ffb0c0.tar.gz"
+  ],
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1        75G   68G  4.5G  94% /\n"
+}
