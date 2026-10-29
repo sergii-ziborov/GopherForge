@@ -1,0 +1,149 @@
+{
+  "checkedOn": "2026-10-29",
+  "method": "Public primary source reports and actual Djinni widget UI, Golang only with all experience/geography/duration groups retained. No personal profiles or applications accessed. Cohorts, units and date windows remain separate; no personal offer probability or causal language-premium claim. Original synthetic selection-bias calculation and standard-library context lab; no real network calls, database or external gRPC tested. Archive editions 7 and 9 October, actual publication 29 October.",
+  "observations": [
+    {
+      "source": "Djinni 29 October widget",
+      "scope": "Golang, all other filter groups retained",
+      "values": [
+        {
+          "year": "2024",
+          "activeDisplay": "862",
+          "hiredWithin3MonthsDisplay": "8.2%"
+        },
+        {
+          "year": "2025",
+          "activeDisplay": "1.2K",
+          "hiredWithin3MonthsDisplay": "7.9%"
+        },
+        {
+          "year": "2026 Q1\u2013Q2 only",
+          "activeDisplay": "907",
+          "hiredWithin3MonthsDisplay": "3.2%"
+        }
+      ],
+      "caveat": "Rounded display, recorded hires after contacts opened, not per-application odds; partial year not annualized"
+    },
+    {
+      "source": "Djinni April hired cohort",
+      "sample": "almost 2300 already-hired candidates",
+      "applicationsMedian": 10,
+      "recruiterPropositionsMedian": 4,
+      "applicationSpanMedianDays": 49,
+      "caveat": "Six-month lookback; application span among people who applied; all categories, not Go-only; propositions are not final employment offers"
+    },
+    {
+      "source": "DOU summer 2026",
+      "unit": "USD per month after tax, survey medians",
+      "mainSample": 4541,
+      "GoOverallTextBand": "4000\u20134050",
+      "SeniorGoMedian": 6000,
+      "caveat": "No exact overall Go median inferred from grouped band; sample differs from ads and profile expectations"
+    },
+    {
+      "source": "DOU Q1 vacancy publications",
+      "GolangQ12025": 113,
+      "GolangQ12026": 169,
+      "caveat": "Platform category publications, not current worldwide open roles"
+    },
+    {
+      "source": "Golang Cafe September16 snapshot",
+      "requiredGo": 2395,
+      "mentionedGo": 6559,
+      "seniorOrStaffAmongStatedLevel": "83.2%",
+      "juniorAmongStatedLevel": "3.5%",
+      "kubernetesRequired": "45.3%",
+      "caveat": "Tracked company pages, deduplicated locations, not all global jobs"
+    }
+  ],
+  "articles": [
+    {
+      "key": "gohiring",
+      "day": "07",
+      "slug": "go-developer-jobs-salary-djinni-dou-2026",
+      "title": "Go developer jobs and salary: Djinni and DOU in 2026",
+      "description": "Read Djinni and DOU Go hiring and salary evidence with the right cohorts. Build a focused interview and portfolio plan without treating applications as odds.",
+      "category": "GUIDE \u00b7 GO CAREER AND HIRING EVIDENCE",
+      "keywords": [
+        "Go developer jobs 2026",
+        "Golang salary Djinni DOU Ukraine",
+        "Go interview preparation portfolio",
+        "Go hiring market application statistics"
+      ],
+      "sources": [
+        {
+          "title": "Djinni hiring chances: public Golang filter, all other groups retained",
+          "url": "https://blog.djinni.co/post/changes-to-get-hired"
+        },
+        {
+          "title": "Djinni applications before hiring: hired cohort, April 2026",
+          "url": "https://blog.djinni.co/post/applies-til-hire-2026"
+        },
+        {
+          "title": "Djinni Q1 2026 and profile-expectation caveat",
+          "url": "https://blog.djinni.co/post/analitika-djinni-q1-2026-aktivizaciya-kandidativ"
+        },
+        {
+          "title": "DOU developer salary survey, summer 2026",
+          "url": "https://dou.ua/lenta/articles/salary-report-devs-summer-2026/"
+        },
+        {
+          "title": "DOU Q1 2026 vacancy publications",
+          "url": "https://dou.ua/lenta/articles/it-job-market-1-quarter-2026/"
+        },
+        {
+          "title": "Go Hiring Report Q3 2026, September 16 snapshot",
+          "url": "https://golang.cafe/hiring-report-q3-2026"
+        }
+      ]
+    },
+    {
+      "key": "ctxbudget",
+      "day": "09",
+      "slug": "go-context-deadline-exceeded-timeout-diagnosis",
+      "title": "Go context deadline exceeded: diagnose and fix timeouts",
+      "description": "Find which Go timeout fired across context, HTTP, SQL and gRPC. Understand cancellation, unknown write outcomes and cleanup with a tested, network-free lab.",
+      "category": "GUIDE \u00b7 GO TIMEOUT DIAGNOSIS",
+      "keywords": [
+        "Go context deadline exceeded",
+        "Golang context canceled HTTP timeout",
+        "Go SQL QueryContext timeout",
+        "gRPC DeadlineExceeded Go cancellation"
+      ],
+      "sources": [
+        {
+          "title": "Context deadlines, causes and cancellation semantics",
+          "url": "https://pkg.go.dev/context"
+        },
+        {
+          "title": "HTTP client timeout scope",
+          "url": "https://pkg.go.dev/net/http#Client"
+        },
+        {
+          "title": "HTTP tracing observations",
+          "url": "https://go.dev/blog/http-tracing"
+        },
+        {
+          "title": "Database operation cancellation",
+          "url": "https://go.dev/doc/database/cancel-operations"
+        },
+        {
+          "title": "Database pool statistics and driver cancellation support",
+          "url": "https://pkg.go.dev/database/sql#DBStats"
+        },
+        {
+          "title": "gRPC deadlines and propagation",
+          "url": "https://grpc.io/docs/guides/deadlines/"
+        },
+        {
+          "title": "gRPC status and potentially completed operations",
+          "url": "https://grpc.io/docs/guides/status-codes/"
+        },
+        {
+          "title": "Virtual time and durable blocking in synctest",
+          "url": "https://pkg.go.dev/testing/synctest"
+        }
+      ]
+    }
+  ]
+}

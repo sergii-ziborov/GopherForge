@@ -1,0 +1,24 @@
+{
+  "base": "http://127.0.0.1:3065",
+  "articles": [
+    {
+      "edition": "2026-10-07",
+      "slug": "go-developer-jobs-salary-djinni-dou-2026",
+      "proseWords": 2366,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    },
+    {
+      "edition": "2026-10-09",
+      "slug": "go-context-deadline-exceeded-timeout-diagnosis",
+      "proseWords": 2321,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    }
+  ],
+  "internalLinksChecked": 25,
+  "generatedImages": 6,
+  "sitemapURLs": 453,
+  "RSSItems": 32,
+  "downloadSourceHashes": "passed",
+  "health": "passed",
+  "emptyEditions": "2026-10-08"
+}

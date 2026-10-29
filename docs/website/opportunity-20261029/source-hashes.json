@@ -1,0 +1,12 @@
+{
+  "README.md": "c6f3cf00f128ecef1eff74baa4b7d36fb34c2a95578c2b6308bcc8c545007d5e",
+  "go.mod": "d46b003118cc17c0f5fd9025f86ae6b2e27b4fd2edc66abcb389fd2701f8cfa3",
+  "research.json": "6a0fe698c624bfe9bed0e8d2298891d19814d2a12f4457f7522b6af925909180",
+  "editorial-gap-analysis.json": "981fa8cc12e4cf6efad3e4589b590b3ae1ad0fd4bcf265eb71c09548d5194985",
+  "djinni-golang-widget.json": "f2cbb40934dc54e7ec17dd262de41dfd808d9015f053236033e858ed0aac3204",
+  "hiring_scenarios.py": "5693da25df6fcbecd5e517e8be039eb5e057adb809f4847a741ff672ad8e5889",
+  "synthetic-scenarios.json": "d97a96a056beb44306f13d020e521daa17eeefc028b25d6dda27b731e837f6b3",
+  "negative-controls.json": "3aa2efb47d7a54c84e930c083961cef5d6181690b2ffb8e201c4397443d32542",
+  "contextlab/main.go": "b7ab55f2fdc16f81b59b9e2b5ded4ca7d74fb75a3a3cda536c7fe7d9d289d232",
+  "contextlab/main_test.go": "04281b0884c0b7e170b69d5576c87506eb8b40075d23f84211ba9b971388325c"
+}

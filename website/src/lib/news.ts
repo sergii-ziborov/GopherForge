@@ -18,6 +18,10 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  gohiring:
+    "Define → Compare → Build → Review. Identify the cohort, keep incompatible measurements separate, build inspectable evidence and review the result. Conceptual preparation workflow, not measured hiring odds or an offer guarantee.",
+  ctxbudget:
+    "Locate → Budget → Cancel → Verify. Find the waiting stage, preserve the parent budget, signal cancellation and observe completion. Conceptual diagram; cancellation does not by itself prove remote rollback or worker completion.",
   godirections:
     "Search, usage and engineering fit answer different questions. Compare the measurement methods before choosing a direction. Conceptual illustration; the saved Google Trends observations are reported in the text, not drawn by ImageGen.",
   slogfield:

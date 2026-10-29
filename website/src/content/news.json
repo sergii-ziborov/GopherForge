@@ -2090,7 +2090,8 @@
       "go-backpressure-concurrency-limits-queues-deadlines",
       "go-http-graceful-shutdown-kubernetes",
       "go-1-27-http-connection-reuse",
-      "go-retries-idempotency-keys-unknown-outcomes"
+      "go-retries-idempotency-keys-unknown-outcomes",
+      "go-context-deadline-exceeded-timeout-diagnosis"
     ],
     "wordCount": 2230,
     "proseWordCount": 2230,
@@ -2199,7 +2200,8 @@
     "related": [
       "go-database-sql-pool-timeouts-transactions",
       "go-concurrency-tests-synctest-without-sleeps",
-      "go-backpressure-concurrency-limits-queues-deadlines"
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-context-deadline-exceeded-timeout-diagnosis"
     ],
     "wordCount": 2215,
     "proseWordCount": 2215,
@@ -3048,7 +3050,8 @@
       "go-retries-idempotency-keys-unknown-outcomes",
       "go-concurrency-tests-synctest-without-sleeps",
       "go-heap-graphs-reachability-retained-memory",
-      "go-slog-structured-logging-context-redaction"
+      "go-slog-structured-logging-context-redaction",
+      "go-developer-jobs-salary-djinni-dou-2026"
     ],
     "wordCount": 2310,
     "proseWordCount": 2310,
@@ -3174,7 +3177,8 @@
     "related": [
       "go-concurrency-invariants-mutex-atomic-snapshots",
       "go-database-sql-pool-timeouts-transactions",
-      "go-backpressure-concurrency-limits-queues-deadlines"
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-context-deadline-exceeded-timeout-diagnosis"
     ],
     "wordCount": 2404,
     "proseWordCount": 2404,
@@ -3307,7 +3311,8 @@
     "related": [
       "go-slog-structured-logging-context-redaction",
       "go-developer-survey-2026-practical-feedback",
-      "go-backpressure-concurrency-limits-queues-deadlines"
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-developer-jobs-salary-djinni-dou-2026"
     ],
     "wordCount": 2355,
     "proseWordCount": 2355,
@@ -3416,7 +3421,8 @@
     "related": [
       "go-popularity-2026-google-trends-cloud-ai-directions",
       "go-typed-nil-errors-as-contracts",
-      "go-bytes-buffer-sync-pool-ownership"
+      "go-bytes-buffer-sync-pool-ownership",
+      "go-context-deadline-exceeded-timeout-diagnosis"
     ],
     "wordCount": 2268,
     "proseWordCount": 2268,
@@ -3428,6 +3434,243 @@
       "Go logging failure tests"
     ],
     "editionDate": "2026-10-10",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-developer-jobs-salary-djinni-dou-2026",
+    "title": "Go developer jobs and salary: Djinni and DOU in 2026",
+    "description": "Read Djinni and DOU Go hiring and salary evidence with the right cohorts. Build a focused interview and portfolio plan without treating applications as odds.",
+    "category": "GUIDE · GO CAREER AND HIRING EVIDENCE",
+    "eventDate": "2026-10-07",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "gohiring",
+    "sections": [
+      {
+        "id": "what-the-go-job-market-can-tell-you-and-what-it-cannot",
+        "title": "What the Go job market can tell you, and what it cannot",
+        "body": "Learning Go is an engineering investment. Before choosing a preparation plan, it helps to understand what employers ask for, how hiring platforms count activity and what salary figures actually represent. A high compensation number is not a promise of an easy first job. A large number of applications is not a direct measure of your ability. Good preparation starts by separating those claims.\n\nThis is our **7 October 2026 archive edition**, researched and first published on **29 October**. It includes a Djinni analysis published on the research date, so it is not presented as information available on 7 October. We use public aggregate reports, not private candidate profiles. The recommendations are an original preparation framework; the data does not establish that following it causes a job offer.\n\nOur [Go popularity review](/news/go-popularity-2026-google-trends-cloud-ai-directions) distinguishes searches, rankings and actual use. This article adds the employment perspective: applications, recruiter outreach, recorded hires, advertised requirements and reported pay. The sources cover different populations and periods. We keep them separate rather than manufacture one “Go market score.”"
+      },
+      {
+        "id": "the-fresh-djinni-golang-view-has-an-important-denominator",
+        "title": "The fresh Djinni Golang view has an important denominator",
+        "body": "We opened Djinni's **29 October hiring-chances analysis**, selected **Golang only** and retained all experience, country and search-duration groups. The widget measures recorded hiring within three months after contacts were opened. It explicitly labels 2026 as **Q1–Q2 only**.\n\n| Widget year | Displayed active-candidate count | Displayed hired-within-three-months share |\n| --- | ---: | ---: |\n| 2024 | 862 | 8.2% |\n| 2025 | 1.2K, rounded display | 7.9% |\n| 2026, Q1–Q2 only | 907 | 3.2% |\n\nThese are the visible values for that filtered view, checked on 29 October. They are not the chance that an arbitrary Go application succeeds. The partial 2026 cohort is not a full-year total, and rounded labels do not reveal an exact hire count. We do not annualize it or attribute the change to a particular technology. [Open Djinni's interactive report](https://blog.djinni.co/post/changes-to-get-hired).\n\nA meaningful reading starts with the unit: a candidate who opened contacts is different from a submitted application, a currently open vacancy or a completed hiring process. Before comparing your own experience, ask whether you belong to the same geography, experience group and observation window. A platform can provide useful evidence while still leaving your individual outcome uncertain."
+      },
+      {
+        "id": "ten-applications-among-hired-candidates-is-not-a-success-formula",
+        "title": "Ten applications among hired candidates is not a success formula",
+        "body": "Djinni's **22 April analysis** studied almost 2,300 people hired from the start of 2026 to mid-April, looking back at their activity over the preceding six months. It reported a median of ten applications and four recruiter propositions. For hired people who applied, the median application span was 49 days. These are statistics for a selected group of already-hired candidates, across categories; they are not Go-only results. [April report and definitions](https://blog.djinni.co/post/applies-til-hire-2026).\n\nRecruiter propositions are also not interchangeable with signed employment offers. An incoming message, a conversation, a technical interview and an accepted offer represent different stages. If a profile receives several messages about unsuitable roles, counting them as several successful job outcomes exaggerates what happened.\n\nA small invented example shows the selection problem. Suppose ten successful candidates each submitted ten applications. In one scenario there are ten additional unsuccessful candidates; in another there are 190. The successful subgroup has the same application median in both scenarios, but the observed hiring shares are different.\n\n| Synthetic scenario, not Djinni data | Hired | Other candidates | Hired subgroup's application median | Observed hiring share |\n| --- | ---: | ---: | ---: | ---: |\n| A | 10 | 10 | 10 | 50% |\n| B | 10 | 190 | 10 | 5% |\n\nNeither share predicts an individual's next application. The example simply demonstrates why a statistic conditioned on success cannot supply the missing population denominator. The [research and timeout lab bundle](/downloads/go-hiring-context-lab-20261029.zip) includes the small calculation, source register and observed widget values so readers can inspect that distinction."
+      },
+      {
+        "id": "read-salary-evidence-with-its-units-and-population-attached",
+        "title": "Read salary evidence with its units and population attached",
+        "body": "DOU's summer 2026 developer survey reports compensation in **US dollars per month after tax**, using medians. Its main analysis includes 4,541 respondents in Ukraine or planning to return, with people currently abroad examined separately. The language discussion places Go in a **$4,000–$4,050 median band** alongside several other languages, while the reported Senior Go median is **$6,000**. We preserve the band because the surrounding text does not assign one exact figure to Go alone. [DOU's summer methodology and results](https://dou.ua/lenta/articles/salary-report-devs-summer-2026/).\n\nThat is a different observation from a posted salary range or a candidate's profile expectation. Djinni's Q1 report explicitly says its hiring salary figures refer to profile expectations when the recruiter conversation began, not necessarily the final offer. It also reports about 28,000 vacancy publications during the quarter, across all categories, rather than a current Go vacancy count. [Djinni Q1 analysis](https://blog.djinni.co/post/analitika-djinni-q1-2026-aktivizaciya-kandidativ).\n\nDo not combine monthly net pay, annual base salary, contract revenue and total compensation into one column without a defensible conversion method. Taxes, paid time off, equipment costs, equity and employment protections change the comparison. For a real negotiation, establish the arrangement and currency before comparing the headline amounts. The reports help frame questions; they do not determine the correct offer for a particular person."
+      },
+      {
+        "id": "a-language-requirement-is-different-from-a-casual-mention",
+        "title": "A language requirement is different from a casual mention",
+        "body": "The **Golang Cafe Q3 report**, a snapshot from 16 September, distinguishes 2,395 jobs requiring Go from 6,559 ads mentioning it. It counts a role advertised in multiple locations once. Among roles stating a level, 83.2% sought senior or staff engineers and 3.5% sought juniors. Kubernetes was required in 45.3% of its counted Go jobs. These are findings for its tracked company-career-page population, not all worldwide vacancies. [Go Hiring Report and methodology](https://golang.cafe/hiring-report-q3-2026).\n\nThe practical lesson is to classify requirements. “Experience operating a Go service” differs from “Go, Java or Python.” “Kubernetes required” differs from an infrastructure paragraph saying the company uses a cluster. A long list of technologies may describe the organization rather than the first problem the person will own.\n\nDOU's Q1 jobs report provides a separate local signal: its Golang category increased from 113 vacancy publications in Q1 2025 to 169 in Q1 2026. That is a platform-category count, not evidence that every applicant's prospects improved or that the global market grew by the same proportion. [DOU's quarterly jobs analysis](https://dou.ua/lenta/articles/it-job-market-1-quarter-2026/).\n\nThese reports can coexist with a difficult search. More publications, more candidates, a different seniority mix and repeated hiring attempts can happen together. The useful response is to inspect the role and preparation gap, not assume that one increasing count invalidates every other observation."
+      },
+      {
+        "id": "build-a-requirement-matrix-before-building-another-demo",
+        "title": "Build a requirement matrix before building another demo",
+        "body": "Choose a manageable set of public roles you could realistically accept. Treat location, working hours, employment arrangement and required experience as eligibility questions. Then mark each technical requirement as essential, desirable or unclear. Record the source date because a vacancy can close or change while you prepare.\n\nSeparate prior experience from a skill you can demonstrate now. A personal project can show that you understand a transaction boundary; it cannot honestly become three years of commercial database ownership. If a requirement is ambiguous, formulate a concise question for the employer rather than exaggerating your history to match a keyword.\n\nGroup the remaining requirements by engineering responsibility: application behavior, data integrity, concurrency, deployment, observability and collaboration. This is more useful than a flat checklist of package names. Several different advertisements may be asking for the same ability to explain what happens when a request times out after a write.\n\nUse the matrix to choose one project improvement that addresses several real gaps. If the repeated requirement is production reliability, adding another frontend animation probably contributes less than a clear cancellation test and a documented recovery path. This is our preparation recommendation, not a measured ranking factor in any hiring platform."
+      },
+      {
+        "id": "a-portfolio-service-should-make-its-decisions-inspectable",
+        "title": "A portfolio service should make its decisions inspectable",
+        "body": "A small catalog or reservation service can demonstrate useful Go judgment without pretending to be a global production platform. Define one operation, its accepted input, its invariant and its explicit failure outcomes. Keep HTTP adaptation separate enough that the operation can be tested without constructing a framework request object.\n\nAdd realistic boundaries in a deliberate order: bounded input, cancellation, data ownership and a retry policy consistent with the effect. Show what happens when capacity is full, the client disappears or the reply is lost after work completes. Our [invariant guide](/news/go-concurrency-invariants-mutex-atomic-snapshots) and [idempotency lab](/news/go-retries-idempotency-keys-unknown-outcomes) provide focused exercises.\n\nFor Gin, practice [middleware flow](/learn/gin.routing-middleware), [binding and input limits](/learn/gin.binding-limits) and [one response owner](/learn/gin.errors-testing). Explain which rules belong to the application and which belong to the adapter. Merely placing every function in a directory named “clean architecture” does not establish that the boundaries are useful.\n\nPublish a short runbook with the tested Go version, commands, expected output and known limitations. Include a failing case someone else can reproduce. A reviewer should be able to distinguish what you actually ran from what you intend to add later. That distinction is especially valuable when an assistant helped generate the implementation."
+      },
+      {
+        "id": "show-operational-knowledge-at-the-depth-the-role-needs",
+        "title": "Show operational knowledge at the depth the role needs",
+        "body": "If Kubernetes appears in a role, determine whether the work involves deploying an application, operating a cluster or implementing controllers. Those responsibilities overlap but are not equivalent. Start with the [workload and Service model](/learn/operations.kubernetes-workloads), then explain how readiness, termination and dependency budgets affect your own service.\n\nA Docker image is not evidence that the program behaves correctly under shutdown. Demonstrate how configuration enters the process, where writable state lives and which resources must close after accepted work finishes. Our [graceful shutdown guide](/news/go-http-graceful-shutdown-kubernetes) gives a sequence to reason about rather than a magic timeout value.\n\nLikewise, a database requirement is not satisfied by one successful query. Explain connection-pool waiting, transaction ownership, row cleanup and an interrupted operation. Use the [SQL pool guide](/news/go-database-sql-pool-timeouts-transactions) and the companion [deadline troubleshooting article](/news/go-context-deadline-exceeded-timeout-diagnosis) to connect those concepts.\n\nYou do not need to claim mastery of every platform to make progress. State the level you tested, show the evidence and identify the next boundary you would investigate. That is a stronger technical conversation than confidently repeating deployment vocabulary without knowing who owns a failed operation."
+      },
+      {
+        "id": "prepare-explanations-not-only-answers",
+        "title": "Prepare explanations, not only answers",
+        "body": "Interview preparation improves when you practice explaining a concrete transition. Pick a function, state its invariant, identify the owner of mutable data and describe one failure interleaving. Then show the test that would fail if the invariant were broken. A memorized definition of a mutex does not replace that explanation.\n\nUse the [interview collection](/interview) to find gaps, then return to [Learn Go](/learn) for the relevant concepts. For context ownership, compare [WithoutCancel and background jobs](/interview/design.detached-context) with the [context contract lesson](/learn/clean-production.context-contracts). Explain why removing cancellation does not create a durable queue or an owner for detached work.\n\nFor a timed exercise, narrate your assumptions before typing. Ask what counts as success, whether input may be malformed and whether concurrent callers exist. Keep a simple correct version before optimizing. If you change an assumption, state how that changes the design rather than silently presenting a different problem's solution.\n\nAfter each rehearsal, record one concept you could not explain and one test you could not derive. That feedback produces a focused learning plan. Counting completed questions alone can hide the fact that you recognize a familiar answer but cannot apply it to a slightly different system."
+      },
+      {
+        "id": "use-coding-assistants-without-losing-evidence-of-understanding",
+        "title": "Use coding assistants without losing evidence of understanding",
+        "body": "An assistant can help generate a failing test, inspect a package or propose an implementation. It can also invent an API, miss a build constraint or produce a test that only repeats its own assumptions. The useful skill is checking the work against the actual module, runtime and operation contract.\n\nOur [agent verification lesson](/learn/ai.verify-generated-go) suggests a practical workflow: inspect the existing code, define the expected behavior, reproduce the failure, make a small change and run the relevant checks. Keep the final diff understandable. Do not present unexecuted generated output as a successful compiler run.\n\nFor a collaborative experiment, save your existing [Playground](/playground) draft before replacing it. Editing does not execute Go. Deliberately create a temporary room if needed, then press Run on the selected compatible native device; source and device-attributed output travel through the relay. The [MCP guide](/guide/mcp) describes this boundary. It is useful for showing how you test a hypothesis, not a replacement for understanding the result.\n\nA good portfolio explanation can acknowledge assistance plainly: which hypothesis you investigated, which generated changes you rejected and how you verified the final behavior. The evidence should remain useful even when the reviewer does not share your editor or assistant."
+      },
+      {
+        "id": "review-your-search-as-a-process-without-inventing-conversion-rates",
+        "title": "Review your search as a process, without inventing conversion rates",
+        "body": "Keep a private record of the stages you actually observe: a suitable role found, an application sent, a reply received, an interview completed and an outcome known. Do not interpret silence as a known rejection until the process provides that information. Do not count the same multi-location role as several independent opportunities.\n\nReview patterns in small batches. If the roles consistently require an eligibility condition you cannot meet, change the selection criteria. If technical discussions repeatedly expose the same gap, improve that skill and its evidence. If messages receive no response, inspect relevance and clarity before concluding that sending a much larger volume will solve the problem.\n\nSmall personal samples are noisy. A changed response count does not prove that a new CV layout or tutorial caused it. Market conditions, timing, role mix and chance also change. Use the record to support better decisions, not manufacture a statistically confident story from a handful of outcomes.\n\nThe reports offer context, while your next useful step should be concrete: improve one relevant artifact, rehearse one difficult explanation or clarify one role requirement. That approach remains useful even when a headline statistic changes in the next reporting period."
+      },
+      {
+        "id": "a-practical-next-step-for-an-aspiring-go-engineer",
+        "title": "A practical next step for an aspiring Go engineer",
+        "body": "Choose one role family and one system you can explain end to end. For a backend role, build a small API with explicit data and cancellation boundaries. For platform work, build an inspectable planning tool or a controlled reconciliation exercise. Preserve the same engineering discipline rather than copying the appearance of a much larger production stack.\n\nThen ask another programmer to run it, break it and question a design decision. Use their confusion to improve the README, test and explanation. A reliable small artifact can connect learning, interview preparation and a real technical discussion without claiming experience you do not have.\n\nThe public data does not promise that Go is an easy route into employment. It does show why careful distinctions matter: a platform's hiring cohort is not an application lottery, a salary survey is not an offer sheet, and a technology mention is not a responsibility. Use those distinctions to prepare honestly and make the work you can demonstrate clearer."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Djinni hiring chances: public Golang filter, all other groups retained",
+        "url": "https://blog.djinni.co/post/changes-to-get-hired"
+      },
+      {
+        "title": "Djinni applications before hiring: hired cohort, April 2026",
+        "url": "https://blog.djinni.co/post/applies-til-hire-2026"
+      },
+      {
+        "title": "Djinni Q1 2026 and profile-expectation caveat",
+        "url": "https://blog.djinni.co/post/analitika-djinni-q1-2026-aktivizaciya-kandidativ"
+      },
+      {
+        "title": "DOU developer salary survey, summer 2026",
+        "url": "https://dou.ua/lenta/articles/salary-report-devs-summer-2026/"
+      },
+      {
+        "title": "DOU Q1 2026 vacancy publications",
+        "url": "https://dou.ua/lenta/articles/it-job-market-1-quarter-2026/"
+      },
+      {
+        "title": "Go Hiring Report Q3 2026, September 16 snapshot",
+        "url": "https://golang.cafe/hiring-report-q3-2026"
+      }
+    ],
+    "related": [
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-popularity-2026-google-trends-cloud-ai-directions",
+      "go-concurrency-invariants-mutex-atomic-snapshots"
+    ],
+    "wordCount": 2366,
+    "proseWordCount": 2366,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go developer jobs 2026",
+      "Golang salary Djinni DOU Ukraine",
+      "Go interview preparation portfolio",
+      "Go hiring market application statistics"
+    ],
+    "editionDate": "2026-10-07",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-context-deadline-exceeded-timeout-diagnosis",
+    "title": "Go context deadline exceeded: diagnose and fix timeouts",
+    "description": "Find which Go timeout fired across context, HTTP, SQL and gRPC. Understand cancellation, unknown write outcomes and cleanup with a tested, network-free lab.",
+    "category": "GUIDE · GO TIMEOUT DIAGNOSIS",
+    "eventDate": "2026-10-09",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "ctxbudget",
+    "sections": [
+      {
+        "id": "what-does-context-deadline-exceeded-mean-in-go",
+        "title": "What does context deadline exceeded mean in Go?",
+        "body": "`context deadline exceeded` means that an operation's context reached its deadline before the caller observed completion. It identifies a time-budget outcome, not the underlying reason the operation was slow. A full connection pool, a waiting worker, a remote dependency and a response body that never finishes can all sit behind similar-looking messages.\n\nThis guide belongs to the **9 October archive edition** and was researched and first published on **29 October 2026**. It provides a diagnostic workflow and an original, standard-library lab. The examples use synthetic stages and transports rather than a production database or external gRPC service. The distinction matters: a reproducible local test establishes the behavior being tested, not the health of an unrelated deployment.\n\nStart with three questions: which layer stopped waiting, what was the remaining budget, and what work still exists after that observation? Answering them usually leads to a better fix than increasing every timeout. The same questions apply to Gin handlers, background workers, SQL queries and RPC clients, even though each has its own error and lifecycle contracts."
+      },
+      {
+        "id": "preserve-error-identity-before-interpreting-the-message",
+        "title": "Preserve error identity before interpreting the message",
+        "body": "For a local context error, use `errors.Is` rather than comparing the displayed string. Wrapping an error with `%w` lets the caller retain classification while adding the operation name. Our lab's `Stage` function checks an already-canceled context before starting, then waits for either an explicit event or cancellation.\n\n```go\nselect {\ncase <-gate:\n    return nil\ncase <-ctx.Done():\n    return fmt.Errorf(\"%s: %w\", name, ctx.Err())\n}\n```\n\nThe complete source also performs the initial `ctx.Err()` check. That avoids starting work when cancellation is already known. It does not give cancellation magical priority over every simultaneous event. If completion and cancellation become ready together after the check, the operation needs a contract for the possible outcomes; select-case order is not a priority mechanism.\n\n`ctx.Err()` distinguishes cancellation from deadline expiration. `context.Cause` can preserve a deliberately supplied application cause, such as a dependency-budget label. A child deadline cannot extend an earlier parent deadline, and calling a cancel function does not wait for the work to stop. These are central [context contracts](https://pkg.go.dev/context), which the lab tests separately.\n\nAn application cause is still not proof of a root cause. Naming a context “database budget” tells you which budget expired. It does not establish whether the database was executing, a connection was unavailable or the caller had already consumed most of its time elsewhere. Preserve that uncertainty in diagnostics."
+      },
+      {
+        "id": "locate-the-waiting-stage-instead-of-blaming-the-last-function",
+        "title": "Locate the waiting stage instead of blaming the last function",
+        "body": "Draw the operation as a sequence of owned stages: admission, queue wait, connection acquisition, remote execution, response consumption and cleanup. Record where each stage starts and ends. A timeout reported inside a query helper can originate from a parent request that spent most of its lifetime waiting before the helper was called.\n\n| Observation | First question | Useful evidence |\n| --- | --- | --- |\n| Expired before dependency work starts | Was the budget consumed in a queue? | Admission and stage-start timestamps |\n| HTTP call returns an error | Which request, client or transport limit fired? | Error classification and phase observations |\n| SQL call expires | Was it waiting for capacity or executing? | Pool statistics and database-side evidence |\n| RPC reports DeadlineExceeded | Did the remote side finish or stop? | RPC status and operation-specific reconciliation |\n| Workers remain after cancellation | Who owns cleanup and joining? | Explicit completion signals |\n\nUse stable operation names and approved numeric fields. Avoid dumping raw URLs, SQL parameters, authorization headers or capability links into logs. Our [structured logging guide](/news/go-slog-structured-logging-context-redaction) shows how to test a small event schema instead of treating every available object as diagnostic input.\n\nFor HTTP, the official [tracing introduction](https://go.dev/blog/http-tracing) describes hooks for events such as connection acquisition, DNS, dialing and response progress. A phase observation narrows the investigation; it does not independently prove why that phase took time. Callbacks may run concurrently, so any shared measurement state needs an ownership rule."
+      },
+      {
+        "id": "a-child-timeout-is-a-cap-inside-the-remaining-parent-budget",
+        "title": "A child timeout is a cap inside the remaining parent budget",
+        "body": "Suppose an operation has a chosen 240 ms total budget. In a synthetic serial example, admission consumes 70 ms, an HTTP dependency 80 ms, database work 40 ms and response work 20 ms. That leaves 30 ms of margin. These are teaching values, not a recommended production SLO or benchmark.\n\nCreating a 200 ms child timeout after those first stages does not restore the original 240 ms. The child remains bounded by the parent's earlier deadline. Conversely, a smaller dependency budget can stop that dependency while the parent still has time to classify the failure and produce an appropriate response.\n\n```go\nfunc Dependency(parent context.Context, budget time.Duration) (\n    context.Context, context.CancelFunc,\n) {\n    return context.WithTimeoutCause(\n        parent, budget, ErrDependencyBudget,\n    )\n}\n```\n\nThe lab checks both cases. A child requesting an hour inherits a parent's ten-millisecond deadline. A three-second local budget can expire while an hour-long parent remains active. The tests use virtual time, so those chosen durations describe semantics without making the test suite wait for real hours.\n\nAvoid treating every timeout value as a reservation that adds neatly across concurrent work. Parallel tasks overlap, queues consume time before service begins and response cleanup may have a separate owner. Write down which interval each limit covers, then verify the actual path. The objective is a coherent end-to-end contract, not a spreadsheet in which every helper appears to have plenty of time."
+      },
+      {
+        "id": "why-can-http-time-out-while-the-original-context-is-still-active",
+        "title": "Why can HTTP time out while the original context is still active?",
+        "body": "`http.Client.Timeout` covers connection establishment, redirects and reading the response body. Its timer continues after `Do` returns. A zero value means no overall client timeout; other configured limits may still apply. The [Client reference](https://pkg.go.dev/net/http#Client) defines that scope.\n\nOur test supplies a custom transport that waits for the request context to end, without making a network connection. The caller has an hour-long context, but the client has a two-second timeout. The call returns a deadline-classified error while the original caller context remains active. This demonstrates why checking only the original `ctx.Err()` can miss which layer stopped the HTTP operation.\n\nIn a real service, inspect the complete configured path: request context, client timeout, transport limits and any proxy or load-balancer budget. Do not assume that equal-looking error messages identify the same timer. A response-header limit is not the same interval as an overall client limit, and a connection limit is not an application transaction limit.\n\nAlways handle the response body according to its owner. A successful status or returned response does not mean the body was completely read. Our [HTTP connection guide](/news/go-1-27-http-connection-reuse) and [bounded I/O guide](/news/go-streaming-io-reader-eof-limits-json) explain related cleanup and framing decisions. Increasing a timeout cannot repair code that waits for an impossible framing condition."
+      },
+      {
+        "id": "sql-timeouts-can-include-waiting-before-a-query-runs",
+        "title": "SQL timeouts can include waiting before a query runs",
+        "body": "A SQL operation can wait for a usable connection before the database executes the statement. Under load, a small pool, long transactions or retained rows can consume that capacity. The error seen by the request owner may therefore describe an exhausted caller budget rather than a slow statement alone.\n\nPass the appropriate context to context-aware database methods and release the derived cancel function when its work is finished. The official [database cancellation guide](https://go.dev/doc/database/cancel-operations) demonstrates this pattern. The actual interruption behavior also depends on the driver and database; a context value cannot guarantee that an arbitrary implementation stops an external effect immediately.\n\nCompare [pool statistics](https://pkg.go.dev/database/sql#DBStats) with database-side execution evidence. Investigate retained rows and transaction duration before increasing the connection maximum. More connections can move the queue into the database, increasing contention without improving completed work. Our [SQL pool and transaction guide](/news/go-database-sql-pool-timeouts-transactions) develops that capacity boundary.\n\nFor writes, distinguish the caller's observation from the durable outcome. A lost connection or deadline during a commit path may leave uncertainty that needs operation-specific recovery. Do not state that every timed-out write rolled back unless the actual database protocol and observed result establish it. A retry policy must respect that uncertainty."
+      },
+      {
+        "id": "grpc-deadlineexceeded-is-a-protocol-outcome-not-a-string-match",
+        "title": "gRPC DeadlineExceeded is a protocol outcome, not a string match",
+        "body": "gRPC has its own status classification. Inspect a returned RPC error using the status API, for example `status.Code(err) == codes.DeadlineExceeded`, rather than assuming every remote status is a directly wrapped local context sentinel. That expression requires the gRPC Go packages; it is not part of the dependency-free lab.\n\nThe [gRPC deadline guide](https://grpc.io/docs/guides/deadlines/) explains propagation and notes that the server application must stop work it spawned. Go supports deadline propagation when the relevant incoming context is used for outgoing calls. Replacing it with a fresh background context discards the original cancellation relationship instead of repairing a slow dependency.\n\nThe [status-code definition](https://grpc.io/docs/guides/status-codes/) explicitly allows DeadlineExceeded even when a state-changing operation completed and its reply arrived too late. Therefore, a retry after this status is a business decision. Determine whether the logical operation has an identity, whether its result can be queried and whether repeating it can duplicate an effect.\n\nFor streams, define what happens after partially consumed output. Retrying from the beginning can repeat messages already delivered to the consumer. Practice the [gRPC stream interview scenario](/interview/http.grpc-stream-contract) and use the [idempotency guide](/news/go-retries-idempotency-keys-unknown-outcomes) to reason about the effect, not only the transport status."
+      },
+      {
+        "id": "cancellation-is-a-request-to-stop-joining-observes-that-it-stopped",
+        "title": "Cancellation is a request to stop; joining observes that it stopped",
+        "body": "A goroutine may need to release resources after it observes cancellation. Calling `cancel()` alone does not prove that cleanup finished, a lock was released or a dependent worker exited. The owner needs an observable completion path, such as receiving from a result channel after the work and cleanup are done.\n\nOur `Launch` helper models this deliberately. Its worker first waits for a stage result, then waits on a controlled cleanup gate, then reports completion. The test cancels the context and waits until the goroutines settle. It verifies that the completion channel is still unavailable while cleanup is held, then releases cleanup and receives the cancellation-classified result.\n\nThe cleanup gate is a test device, not a production cleanup implementation. Its purpose is to make the distinction observable without scheduler guesses. A real owner must choose how cleanup finishes and what limit applies if cleanup itself can block. A one-element result channel prevents the example worker from being stuck solely because the owner has not received the result yet; it does not replace that owner's responsibility to observe completion.\n\nThis relates to [context contracts](/learn/clean-production.context-contracts) and [graceful shutdown](/news/go-http-graceful-shutdown-kubernetes). A system that stops accepting new work but never joins accepted work has not finished shutting down merely because every cancel function was called."
+      },
+      {
+        "id": "why-withoutcancel-is-not-the-usual-timeout-fix",
+        "title": "Why WithoutCancel is not the usual timeout fix",
+        "body": "Replacing an expired request context with `context.Background()` or `context.WithoutCancel` can make the symptom disappear from a helper while leaving work alive beyond the caller that created it. That may be appropriate only when the application explicitly transfers ownership, admission limits, permissions, persistence and shutdown responsibility to another component.\n\nIf a request should create a durable background job, give that job a deliberate acceptance contract and a durable owner. Decide when the request can truthfully say the job was accepted, how progress is recovered and what happens on process failure. Detaching a context supplies none of those guarantees by itself.\n\nFor request-scoped work, preserve cancellation and fix the actual waiting or budget problem. For independently owned work, use the owner's lifecycle and a finite operation budget. Do not retain a pooled Gin request context in a background goroutine. The [Gin worker lesson](/learn/gin.context-workers) and [WithoutCancel interview guide](/interview/design.detached-context) explain these ownership boundaries.\n\nA useful review question is simple: if the original caller disappears now, which component can still explain, stop and recover the work? If the answer is “the goroutine probably finishes,” the design is missing an owner rather than a timeout constant."
+      },
+      {
+        "id": "reproduce-the-distinction-with-controlled-tests",
+        "title": "Reproduce the distinction with controlled tests",
+        "body": "Download the [original hiring research and context lab](/downloads/go-hiring-context-lab-20261029.zip). The Go module declares 1.25; our recorded compiler is **Go 1.27.3 on darwin/arm64**. The lab uses the standard library, synthetic channels and custom HTTP transports. It opens no network listener and does not contact the illustrative `.invalid` address.\n\n```sh\ngo test -race -count=50 ./...\ngo vet ./...\ngo run ./contextlab\n```\n\nThe tests cover an earlier parent deadline, local expiration with a named cause, cancellation before cleanup completion, already-canceled work, a client timeout with an active caller context and an immediate synthetic HTTP success. The native program prints separate deadline-identity, cause and joined-worker observations. It does not benchmark a database or run an external RPC.\n\n`testing/synctest` provides a virtual clock inside its bubble and advances time when the relevant goroutines are durably blocked. Real socket I/O is outside that mechanism, which is why the HTTP tests use controlled transports. Read the [synctest reference](https://pkg.go.dev/testing/synctest) and our [controlled concurrency guide](/news/go-concurrency-tests-synctest-without-sleeps) before substituting a real server into a virtual-time test.\n\nThe suite passed fifty race-detector runs and vet. Temporary broken variants must fail the intended tests, including lost parent propagation, incorrect cancellation identity, discarded error wrapping and completion before cleanup. The standalone program also cross-compiles for wasip1/wasm; successful target compilation does not certify execution in every host."
+      },
+      {
+        "id": "practice-the-investigation-in-a-small-application",
+        "title": "Practice the investigation in a small application",
+        "body": "Save your current [Playground](/playground) draft, then copy the complete `contextlab/main.go` with a compatible module. Editing does not run Go. If collaborating, deliberately create a temporary room and press Run on the selected compatible native device; the relay shares source and device-attributed output. The [MCP guide](/guide/mcp) describes the execution boundary and temporary-link behavior.\n\nChange one assumption at a time. Start with an already-expired deadline, then compare explicit cancellation. Observe the named cause separately from the standard error identity. In a native test environment, adjust the local child budget and confirm that it cannot extend the parent. Keep the assertions about meaning, not the exact wording of a message.\n\nFor an interview or portfolio review, explain the sequence before showing code: where the budget begins, who may shorten it, which layer reports expiration and who joins the remaining work. This connects the [Go job preparation guide](/news/go-developer-jobs-salary-djinni-dou-2026) to an inspectable engineering artifact. It is more useful than claiming “production-ready timeouts” without a failure test."
+      },
+      {
+        "id": "a-practical-decision-after-finding-the-timeout",
+        "title": "A practical decision after finding the timeout",
+        "body": "If waiting consumed the budget, inspect admission and capacity. If a remote dependency is genuinely slow, inspect its own evidence and decide whether the operation needs a different service contract. If an effect may have completed, reconcile before repeating it. If work outlives its owner, fix cancellation and completion ownership.\n\nA longer timeout can be an intentional product decision when the operation is allowed to take longer and the system can sustain that work. It should not be a substitute for understanding the queue or hiding a leak. Recheck completed work, retained resources and failure outcomes after changing the policy.\n\nThe useful result is not the disappearance of one error string. It is a system in which the caller's budget, dependency behavior, operation outcome and worker lifecycle agree with a contract you can explain and test."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Context deadlines, causes and cancellation semantics",
+        "url": "https://pkg.go.dev/context"
+      },
+      {
+        "title": "HTTP client timeout scope",
+        "url": "https://pkg.go.dev/net/http#Client"
+      },
+      {
+        "title": "HTTP tracing observations",
+        "url": "https://go.dev/blog/http-tracing"
+      },
+      {
+        "title": "Database operation cancellation",
+        "url": "https://go.dev/doc/database/cancel-operations"
+      },
+      {
+        "title": "Database pool statistics and driver cancellation support",
+        "url": "https://pkg.go.dev/database/sql#DBStats"
+      },
+      {
+        "title": "gRPC deadlines and propagation",
+        "url": "https://grpc.io/docs/guides/deadlines/"
+      },
+      {
+        "title": "gRPC status and potentially completed operations",
+        "url": "https://grpc.io/docs/guides/status-codes/"
+      },
+      {
+        "title": "Virtual time and durable blocking in synctest",
+        "url": "https://pkg.go.dev/testing/synctest"
+      }
+    ],
+    "related": [
+      "go-developer-jobs-salary-djinni-dou-2026",
+      "go-database-sql-pool-timeouts-transactions",
+      "go-retries-idempotency-keys-unknown-outcomes",
+      "go-slog-structured-logging-context-redaction"
+    ],
+    "wordCount": 2321,
+    "proseWordCount": 2321,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go context deadline exceeded",
+      "Golang context canceled HTTP timeout",
+      "Go SQL QueryContext timeout",
+      "gRPC DeadlineExceeded Go cancellation"
+    ],
+    "editionDate": "2026-10-09",
     "kind": "guide"
   }
 ]

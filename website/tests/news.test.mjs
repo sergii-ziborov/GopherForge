@@ -427,3 +427,70 @@ test("6 and 10 October guides preserve multi-source evidence and tested slog bou
     }
   }
 });
+
+test("7 and 9 October guides separate hiring cohorts and provide controlled timeout experiments", async () => {
+  const posts = news.filter((n) =>
+    ["gohiring", "ctxbudget"].includes(n.imagePrefix),
+  );
+  assert.equal(posts.length, 2);
+  const manifest = await read(
+    "../../docs/website/opportunity-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const evidence = await read(
+    "../../docs/website/opportunity-20261029/research.json",
+  );
+  assert.ok(
+    evidence.observations[0].caveat.includes("not per-application odds"),
+  );
+  assert.equal(evidence.observations[0].values[2].year, "2026 Q1–Q2 only");
+  const scenario = await read(
+    "../../docs/website/opportunity-20261029/synthetic-scenarios.json",
+  );
+  assert.equal(
+    scenario.A.hiredApplicationMedian,
+    scenario.B.hiredApplicationMedian,
+  );
+  assert.notEqual(
+    scenario.A.observedSharePercent,
+    scenario.B.observedSharePercent,
+  );
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  const questions = (await read("../src/content/interview.json")).questions;
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("/downloads/go-hiring-context-lab-20261029.zip"));
+    assert.ok(body.includes("](/playground)"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|interview|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : kind === "interview"
+            ? questions.some((q) => q.id === id)
+            : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
+    }
+  }
+});

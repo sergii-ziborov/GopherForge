@@ -484,5 +484,41 @@
     "width": 1536,
     "height": 1024,
     "alt": "A completed application receipt and a blocked diagnostic sink follow separate paths with an explicit overflow choice."
+  },
+  "gohiring-hero": {
+    "src": "/images/news/gohiring-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher compares job requirements, survey evidence and a working project before navigating application review stages."
+  },
+  "gohiring-infographic": {
+    "src": "/images/news/gohiring-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Define, compare, build and review: use clear cohorts, separate evidence sources and inspectable engineering work."
+  },
+  "gohiring-detail": {
+    "src": "/images/news/gohiring-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Successful application receipts are displayed separately from pending candidates, illustrating selection bias."
+  },
+  "ctxbudget-hero": {
+    "src": "/images/news/ctxbudget-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "One finite time budget passes through a queue, HTTP service and database while cancellation reaches owned workers."
+  },
+  "ctxbudget-infographic": {
+    "src": "/images/news/ctxbudget-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Locate, budget, cancel and verify: diagnose a waiting stage, preserve the time budget and test worker completion."
+  },
+  "ctxbudget-detail": {
+    "src": "/images/news/ctxbudget-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A remote operation completes after the caller stops waiting, while a separate reconciliation path checks its recorded result."
   }
 }

@@ -1,0 +1,21 @@
+{
+  "compiler": "go1.27.3",
+  "platform": "darwin/arm64",
+  "GoRaceSuite": {
+    "count": 50,
+    "result": "passed"
+  },
+  "goVet": "passed",
+  "negativeControls": 4,
+  "WASI": "standalone program compiled for wasip1/wasm, execution not asserted",
+  "HTTPTests": "synthetic RoundTrippers, no network calls",
+  "externalSQLAndGRPC": "primary documentation reviewed, integration execution not claimed",
+  "syntheticSelectionBias": "same successful median with two different overall hiring shares, passed",
+  "webTests": 41,
+  "images": 6,
+  "mode": "built-in image_gen",
+  "articleProseWords": {
+    "gohiring": 2366,
+    "ctxbudget": 2321
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "checkedOn": "2026-10-29",
+  "url": "https://blog.djinni.co/post/changes-to-get-hired",
+  "selection": {
+    "category": "Golang",
+    "experience": "all three groups",
+    "country": "Ukraine, Europe and rest of world",
+    "searchDuration": "all three groups"
+  },
+  "visibleWidgetText": "КАТЕГОРІЯ\nGolang\nДОСВІД\n0–2 роки\n3–6 років\n7+ років\nКРАЇНА\nУкраїна\nЄвропа\nРешта світу\nЯК ДОВГО ШУКАВ РОБОТУ\nдо 1 місяця\n1–3 місяці\n3+ місяці\nActive candidates\n% Hired in 3 month\n% Hired без фільтрів\n21.8%\n2020\n20.8%\n2021\n18.3%\n2022\n11.0%\n2023\n8.2%\n2024\n7.9%\n2025\n3.2%\n2026 (Q1–Q2)\n495\n630\n851\n890\n862\n1.2K\n907\n\nДані: 2020 – 2026. 2026 неповний (лише Q1–Q2), тому його стовпчик світліший.",
+  "interpretation": "Recorded hires within three months after opening contacts. 2026 covers Q1–Q2 only; counts/percentages are displayed rounded. This is not the probability that an arbitrary application succeeds."
+}
