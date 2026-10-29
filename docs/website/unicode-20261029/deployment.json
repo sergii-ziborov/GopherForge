@@ -1,0 +1,25 @@
+{
+  "source": "3d69b98",
+  "job": "gopherforge-unicode-3d69b98-20261029",
+  "state": "succeeded",
+  "finishedAt": "2026-10-29T15:20:44.63289422Z",
+  "image": "sha256:0c92a5e43284c255d6f0fd43e18d485047486993ded6174d6d989b602f11f297",
+  "previousImage": "sha256:36a7d081d740379b694a2e762169dd24bbfea4813ca277998a881566729c2e99",
+  "rollbackTag": "localhost/gopherforge-web:rollback-before-unicode-3d69b98",
+  "method": "Separate candidate preflight; Hostwatch revision-bound deployment replacement; terminal success confirmed",
+  "postChecks": {
+    "health": "passed",
+    "persistentShare": "own synthetic snapshot survived replacement; private HTML and JSON noindex; revoked and own QA file removed",
+    "restartPolicy": "unless-stopped",
+    "hostShareBind": "preserved",
+    "externalFeedDelivery": "ok",
+    "sitemapURLs": 454,
+    "RSSItems": 33,
+    "generatedImages": 5,
+    "internalLinks": 12,
+    "downloadSourceHashes": "passed",
+    "browserConsoleWarningsAndErrors": 0,
+    "publicArticleScreenshot": "live-article.jpg"
+  },
+  "nativeApp": "No native binary or App Store submission changed for this website article update."
+}
