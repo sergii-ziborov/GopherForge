@@ -832,10 +832,11 @@
     "related": [
       "go-bytes-buffer-sync-pool-ownership",
       "go-slices-backing-array-append-clip-clone",
-      "go-1-27-goroutine-leak-profiles"
+      "go-1-27-goroutine-leak-profiles",
+      "go-allocation-profiling-pprof-escape-benchmarks"
     ],
     "publishedAt": "2026-10-21",
-    "modifiedAt": "2026-10-23",
+    "modifiedAt": "2026-10-29",
     "sourceCheckedAt": "2026-10-21",
     "imagePrefix": "alloc",
     "sections": [
@@ -945,7 +946,8 @@
       "go-1-27-http-connection-reuse",
       "dapr-1-19-rc4-go-service-boundaries",
       "go-backpressure-concurrency-limits-queues-deadlines",
-      "go-concurrency-tests-synctest-without-sleeps"
+      "go-concurrency-tests-synctest-without-sleeps",
+      "go-heap-graphs-reachability-retained-memory"
     ],
     "publishedAt": "2026-10-21",
     "modifiedAt": "2026-10-29",
@@ -1151,7 +1153,8 @@
     "related": [
       "go-bytes-buffer-sync-pool-ownership",
       "gopls-0-24-error-contracts-memory",
-      "go-1-27-small-allocation-performance"
+      "go-1-27-small-allocation-performance",
+      "go-heap-graphs-reachability-retained-memory"
     ],
     "imagePrefix": "slices",
     "sections": [
@@ -1213,7 +1216,7 @@
     ],
     "wordCount": 2096,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-23",
+    "modifiedAt": "2026-10-29",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1261,7 +1264,8 @@
       "go-1-27-small-allocation-performance",
       "go-1-27-goroutine-leak-profiles",
       "go-backpressure-concurrency-limits-queues-deadlines",
-      "go-json-v2-migration-api-compatibility"
+      "go-json-v2-migration-api-compatibility",
+      "go-allocation-profiling-pprof-escape-benchmarks"
     ],
     "imagePrefix": "buffers",
     "sections": [
@@ -1323,7 +1327,7 @@
     ],
     "wordCount": 2056,
     "publishedAt": "2026-10-23",
-    "modifiedAt": "2026-10-27",
+    "modifiedAt": "2026-10-29",
     "sourceCheckedAt": "2026-10-23"
   },
   {
@@ -1597,7 +1601,8 @@
       "go-1-27-http-connection-reuse",
       "go-bytes-buffer-sync-pool-ownership",
       "go-json-v2-migration-api-compatibility",
-      "go-database-sql-pool-timeouts-transactions"
+      "go-database-sql-pool-timeouts-transactions",
+      "go-garbage-collector-gogc-gomemlimit-lab"
     ],
     "imagePrefix": "backpressure",
     "wordCount": 3708,
@@ -2313,6 +2318,366 @@
       "Go race detector negative controls"
     ],
     "editionDate": "2026-10-28",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-garbage-collector-gogc-gomemlimit-lab",
+    "title": "Go garbage collection: a practical GOGC and GOMEMLIMIT lab",
+    "description": "Understand Go garbage collection with tested GOGC and GOMEMLIMIT experiments, live-heap accounting, allocation traffic and a reproducible memory-budget workflow.",
+    "category": "GUIDE · GO GARBAGE COLLECTION",
+    "eventDate": "2026-10-01",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "gcpacer",
+    "sections": [
+      {
+        "id": "start-with-the-symptom-not-a-collector-setting",
+        "title": "Start with the symptom, not a collector setting",
+        "body": "A Go service with rising memory use does not necessarily have a garbage-collector problem. It may be retaining a larger cache, admitting more concurrent requests, buffering larger payloads, or keeping abandoned work alive. Conversely, a service with a stable live heap can spend substantial CPU repeatedly collecting short-lived allocations. Those incidents require different changes even when the same memory graph appears in both incident reports.\n\nImagine a document-processing API that reads an input, constructs several temporary representations, and keeps a small result in a cache. After traffic increases, CPU and memory both rise. Before changing GOGC, ask which quantity changed: requests per second, allocated bytes per request, retained bytes per result, concurrent operations, or the size of the cache. A collector cannot decide which cached documents the business no longer needs, and it cannot make an unbounded queue into a bounded one.\n\nThis guide combines a short model of Go GC controls with an original, deliberately small experiment. The measurements were made with native Go 1.27.3 on darwin/arm64, Apple M4, with GOMAXPROCS set to two. They are useful for understanding relationships, not choosing production defaults. The complete program, raw observations and commands are downloadable below. The [GC-budget lesson](/learn/runtime.gc-budget) provides a shorter introduction; here we focus on turning observations into a defensible engineering decision."
+      },
+      {
+        "id": "keep-four-memory-quantities-separate",
+        "title": "Keep four memory quantities separate",
+        "body": "Begin with live heap, allocation traffic, runtime-managed memory and operating-system memory. Live heap describes objects still reachable after collection. Allocation traffic describes memory requested over an interval, including objects that have already become garbage. Runtime-managed memory includes more than the live heap. A process's operating-system footprint also includes memory outside the collector's direct accounting.\n\nThese quantities answer different questions. A temporary parser can allocate hundreds of megabytes while retaining almost nothing after a batch finishes. A cache can allocate little during a quiet interval while holding a large existing object graph. A service can release Go objects without immediately showing the same reduction in an operating-system residency chart. A useful dashboard should not label all of those measurements simply as memory.\n\nThe [runtime memory-statistics reference](https://pkg.go.dev/runtime#MemStats) defines the individual fields. Keep their names in your measurements so that another engineer can reproduce the interpretation. For example, TotalAlloc is a cumulative counter, while HeapAlloc is a current heap measurement; comparing them as though both described current retained data leads to misleading conclusions.\n\nOur document API should therefore record at least the input size, concurrency, allocation traffic and retained state alongside latency. Without that workload context, a change in the memory chart may reflect a different amount of useful work rather than an improvement or regression in memory management."
+      },
+      {
+        "id": "use-the-gogc-model-to-reason-about-headroom",
+        "title": "Use the GOGC model to reason about headroom",
+        "body": "The official [Go GC guide](https://go.dev/doc/gc-guide) describes a simplified relationship between the live heap, roots and the next heap target. In that model, the target is the live heap plus additional room proportional to the live heap and roots, scaled by GOGC. The model explains a tradeoff; it is not a promise about exact RSS, a fixed allocation size or every point in a concurrent collection cycle.\n\n```text\napproximate target = live heap + (live heap + roots) × GOGC / 100\n```\n\nA larger GOGC generally permits more allocation headroom between collections. A smaller value generally asks the runtime to collect more frequently. Neither choice changes whether an application still owns a particular object. If the cache permanently retains twice as much useful or useless data, changing the collector percentage does not remove that ownership.\n\nUse the model as a hypothesis generator. If allocation traffic is high but retained state is small, investigate allocation sites. If retained state grows with cache entries, investigate the cache policy. If a workload has many pointer-rich objects, consider the shape and amount of data the collector must inspect, not only total bytes. The companion [heap-graph investigation](/news/go-heap-graphs-reachability-retained-memory) makes that distinction concrete."
+      },
+      {
+        "id": "a-memory-limit-is-not-a-hard-process-size-guarantee",
+        "title": "A memory limit is not a hard process-size guarantee",
+        "body": "GOMEMLIMIT and runtime/debug.SetMemoryLimit provide a soft limit for memory managed by the Go runtime. The [SetMemoryLimit documentation](https://pkg.go.dev/runtime/debug#SetMemoryLimit) defines its accounting in terms of Sys minus HeapReleased. It also identifies excluded sources such as memory managed outside Go. Therefore setting the runtime limit equal to a container's hard memory allowance does not establish a complete safety margin.\n\nBudget for the whole process and its environment. Depending on the program, that can include native libraries, explicit mappings, binary pages and operating-system overhead. Measure the actual deployment instead of subtracting an arbitrary percentage from a number copied out of a manifest. If the program already needs nearly all available memory for reachable objects, an aggressively low soft limit may increase collection pressure without creating the missing capacity.\n\nTreat the container allowance and runtime control as related but separate decisions. A useful configuration record states the hard environment limit, expected live data, measured non-heap overhead, transient work and operational reserve. It also states what the service does when demand exceeds that budget: reject work, reduce concurrency, evict entries, or move work elsewhere.\n\nOur fictional API might first limit concurrent document conversions and reject oversized inputs. That changes the amount of memory the application asks to own. Only after those boundaries are explicit does collector tuning become an understandable adjustment rather than an attempt to hide an unbounded workload."
+      },
+      {
+        "id": "build-an-experiment-with-a-narrow-claim",
+        "title": "Build an experiment with a narrow claim",
+        "body": "The downloadable lab holds one twelve-MiB byte buffer alive and repeatedly allocates 512 blocks of 512 KiB: 256 MiB of allocation traffic. A completed collection establishes the starting point before the allocation loop. The program records collection counts and the heap goal at the end of that loop, then collects again before measuring retained memory.\n\nEach setting runs in a fresh process three times. The runtime version, architecture, GOMAXPROCS, environment settings and raw JSON are recorded. The large buffers contain bytes rather than pointers to other heap objects. That matters: this experiment is intentionally not a model of a pointer-rich object cache, a concurrent web service, or a memory-intensive native library.\n\n```sh\ngo build -o memlab ./cmd/memlab\nGOGC=50 ./memlab -mode gc\nGOGC=100 ./memlab -mode gc\nGOGC=200 ./memlab -mode gc\nGOGC=200 GOMEMLIMIT=32MiB ./memlab -mode gc\n```\n\nBefore comparing runs, clear an inherited GOMEMLIMIT when testing the cases without a limit. The lab runner does this explicitly. An unnoticed environment setting can otherwise make two apparently different GOGC runs obey the same effective constraint. The goal is to understand what changed, not merely collect a row of numbers that looks scientific."
+      },
+      {
+        "id": "what-this-local-experiment-actually-showed",
+        "title": "What this local experiment actually showed",
+        "body": "The following table uses medians across three fresh processes. The heap-goal column is the observed target at the end of the allocation loop, not peak memory use or a guaranteed cap. Approximate MiB values are conversions of recorded byte counts.\n\n| GOGC | GOMEMLIMIT | Collections during allocation loop | End-of-loop heap goal |\n| --- | --- | ---: | ---: |\n| 50 | not set | 39 | 19.90 MiB |\n| 100 | not set | 19 | 26.60 MiB |\n| 200 | not set | 8 | 55.00 MiB |\n| 200 | 32 MiB | 21 | 25.88 MiB |\n\nThe collector ran less frequently when more headroom was allowed in this workload. Adding a soft limit constrained that relationship. After an explicit final collection, every case still retained roughly the same twelve-MiB application buffer. No setting made that reachable buffer disappear.\n\nThe loop's measured durations were only a few milliseconds. That is too short and narrow a test to establish a production performance ranking. We deliberately do not turn them into a claim that one setting makes a service faster. Background activity, allocator behavior and the synthetic workload matter. Likewise, the observed targets do not need to equal a formula evaluated from the final heap: the pacer uses collection history and the runtime is operating concurrently.\n\nThe useful result is the relationship between headroom, collection frequency and unchanged live ownership. For production, repeat the experiment with representative object lifetimes, concurrency and latency measurements before selecting a setting."
+      },
+      {
+        "id": "distinguish-collector-work-from-application-allocation-work",
+        "title": "Distinguish collector work from application allocation work",
+        "body": "A CPU increase can involve allocating and initializing objects, tracing reachable objects, reclaiming memory, synchronization, or unrelated application work. A single GC-cycle count cannot identify which part dominates. A lower number of collections is not automatically a lower end-to-end cost, just as fewer database queries do not automatically mean a faster endpoint.\n\nUse CPU profiles and runtime observations together. The [diagnostics guide](https://go.dev/doc/diagnostics) describes the available profiling tools. A useful investigation follows the allocation site back to the operation that creates demand: a temporary conversion, a per-item map, a repeated string representation or an unnecessarily retained response buffer.\n\nFor the document API, compare equivalent outputs. Removing an allocation by dropping a validation step is not an optimization of the same behavior. Reusing a mutable buffer without giving callers independent ownership can improve a microbenchmark while corrupting concurrent responses. A performance change needs a correctness test as well as a resource measurement.\n\nOur [allocation-profiling lab](/news/go-allocation-profiling-pprof-escape-benchmarks) includes a revealing counterexample: a faster formatting implementation that still performs the same number of result allocations. That is a useful improvement in one dimension, but it is not evidence that GC traffic disappeared. Separate the claim you measured from the claim you hoped to prove."
+      },
+      {
+        "id": "measure-roots-and-scannable-data-deliberately",
+        "title": "Measure roots and scannable data deliberately",
+        "body": "A large byte buffer and a collection of small pointer-rich nodes can occupy similar numbers of bytes while presenting different tracing work. Roots also matter: stacks and globals can keep object graphs reachable. Increasing the number of concurrent operations can therefore change both retained state and the set of roots the runtime must consider.\n\nThe [runtime/metrics catalog](https://pkg.go.dev/runtime/metrics) exposes measurements for scannable heap space, stack scanning and globals. Those measurements have different definitions and should not all be interpreted as the number of bytes actually visited during an arbitrary request. Preserve the metric names and read the matching toolchain's descriptions before constructing a ratio.\n\nFor example, /gc/scan/heap:bytes describes scannable heap space. It is not a direct count of pointer edges, a heap-depth limit or a duration. A large pointer-free payload can contribute heavily to live bytes without contributing the same amount of pointer-bearing content. That does not make it free: it still occupies memory and participates in allocation and object bookkeeping.\n\nA practical cache review should therefore ask what each entry retains, how entries reference each other, and how the cache is bounded. The [reachability lesson](/learn/runtime.gc-reachability) is a better starting point for that review than searching for a collector flag that promises to ignore application-owned objects."
+      },
+      {
+        "id": "avoid-making-manual-collection-part-of-every-request",
+        "title": "Avoid making manual collection part of every request",
+        "body": "The lab calls runtime.GC to establish observation boundaries. That is an experimental control, not a recommendation to force collection after each API request. A manually imposed collection can add work and change the behavior you are trying to observe. It can also distract from the actual problem: the application still retaining the wrong objects or producing avoidable allocation traffic.\n\nSimilarly, a single low heap measurement immediately after a forced collection does not describe a workload's peak usage. A service may grow again during the next burst, and the operating system may account for released and reserved memory differently from the heap statistic you sampled. Collect a time series around meaningful workload transitions.\n\nFor a batch processor, compare memory before work, during a bounded peak, after completion and after a quiet period. State whether a collection was explicitly requested at each boundary. For a long-running service, prefer a representative observation window and correlate memory with admitted work, completed work and cache size.\n\nIf forced collection is part of a justified operational procedure, document why, how frequently it runs and what outcome it is expected to change. Treat it as a measured intervention with costs, not a universal cleanup button whose successful return proves that the process is now small."
+      },
+      {
+        "id": "turn-tuning-into-a-controlled-rollout",
+        "title": "Turn tuning into a controlled rollout",
+        "body": "Change one variable at a time. First establish the workload envelope and correctness tests, then capture a baseline. Apply a collector setting to a limited deployment slice and compare useful completions, latency, runtime memory and collection pressure under equivalent demand. Keep a rollback value and a stopping condition.\n\nDo not compare a quiet weekday baseline with a busy release window and attribute the whole difference to GOGC. Note payload distribution, cache warmup, replica count and background jobs. A change that works with a cold cache may behave differently after the live object graph has grown. A setting that looks good on a native desktop may be inappropriate in a constrained container or an app sandbox.\n\nUse the service's own availability objective. If a lower memory allowance creates sustained collection pressure and harms request completion, that is not a successful memory optimization merely because a graph has a lower ceiling. Conversely, accepting more memory to reduce CPU may be reasonable only if the deployment actually has that headroom across all replicas.\n\nThe lesson from [bounded work](/learn/concurrency.bounded-work) applies directly: capacity decisions belong to the application and deployment, not only to the collector. A collector policy should support those boundaries, and the rollout should verify that the intended business work still completes."
+      },
+      {
+        "id": "keep-a-reproducible-memory-budget-beside-the-service",
+        "title": "Keep a reproducible memory budget beside the service",
+        "body": "A useful handoff includes the selected toolchain, workload shape, live-data expectations, input and concurrency limits, collector settings, raw measurements and a repeatable command. It also explains what was not measured. Our experiment records Go-managed memory and collection behavior; it does not measure production RSS, tail latency, native-library memory or every allocation pattern a real application may produce.\n\n[Download the original memory lab, tests and measurement data](/downloads/go-memory-lab-20261029.zip). The archive includes the GC workload, graph-shape and retention modes, formatting benchmarks and a README. The measurements are small local observations with their methodology attached, not a benchmark leaderboard.\n\nContinue with [GC interview preparation](/interview/runtime.gc), [stack and heap ownership](/learn/runtime.stack-and-heap), and the companion [heap-graph investigation](/news/go-heap-graphs-reachability-retained-memory). When memory behavior becomes confusing, return to the same sequence: identify the owner, bound the work, measure the relevant quantity, change one decision, and verify the outcome. That sequence remains useful even when a future Go release changes the collector's implementation details."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Go GC guide",
+        "url": "https://go.dev/doc/gc-guide"
+      },
+      {
+        "title": "Runtime memory statistics",
+        "url": "https://pkg.go.dev/runtime#MemStats"
+      },
+      {
+        "title": "Runtime soft memory limit",
+        "url": "https://pkg.go.dev/runtime/debug#SetMemoryLimit"
+      },
+      {
+        "title": "Runtime metrics catalog",
+        "url": "https://pkg.go.dev/runtime/metrics"
+      },
+      {
+        "title": "Go diagnostics",
+        "url": "https://go.dev/doc/diagnostics"
+      },
+      {
+        "title": "Runtime garbage collection boundary",
+        "url": "https://pkg.go.dev/runtime#GC"
+      },
+      {
+        "title": "Go heap profiling",
+        "url": "https://pkg.go.dev/runtime/pprof"
+      }
+    ],
+    "related": [
+      "go-heap-graphs-reachability-retained-memory",
+      "go-allocation-profiling-pprof-escape-benchmarks",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "wordCount": 2225,
+    "proseWordCount": 2225,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go garbage collector guide",
+      "GOGC GOMEMLIMIT experiment",
+      "Go memory limit live heap",
+      "Go GC performance tuning"
+    ],
+    "editionDate": "2026-10-01",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-heap-graphs-reachability-retained-memory",
+    "title": "Go heap graphs: depth, reachability and retained memory",
+    "description": "Explore Go heap depth with equal-node chain and tree experiments. Trace roots, compare scannable memory, and fix a tiny slice retaining a 16 MiB backing array.",
+    "category": "GUIDE · GO HEAP OWNERSHIP",
+    "eventDate": "2026-10-03",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "heapgraph",
+    "sections": [
+      {
+        "id": "heap-size-is-not-the-same-question-as-heap-depth",
+        "title": "Heap size is not the same question as heap depth",
+        "body": "When someone asks how deep a Go heap can become, several different questions may be hiding inside the phrase. They might mean the depth of a linked object graph, the amount of retained memory, the depth of a recursive call stack, or the amount of pointer-bearing data the collector must inspect. Those quantities are related in an application, but they are not interchangeable runtime settings.\n\nConsider a service that stores a hierarchy of documents. One representation is a long chain of nodes; another is a balanced tree. A separate bug keeps a tiny slice of a large input buffer in every cached result. The hierarchy may have a dramatically different logical depth in the two representations while the slice bug, which has almost no visible graph depth, dominates retained bytes. Optimizing the wrong quantity produces an elegant data structure without fixing the memory incident.\n\nThis guide investigates those distinctions with two original experiments: equal-sized node graphs and a small view retaining a large backing array. The lab ran with native Go 1.27.3 on darwin/arm64, Apple M4, GOMAXPROCS two. Each case used a fresh process. The data and complete sources are downloadable; the results are observations about those controlled programs, not a universal ranking of linked lists and trees."
+      },
+      {
+        "id": "trace-ownership-from-a-root-to-an-object",
+        "title": "Trace ownership from a root to an object",
+        "body": "An object remains live when the running program can still reach it through the relevant roots and references. A reference can be indirect: a global cache points to an entry, the entry points to a closure, and the closure keeps a large buffer reachable. Removing one local variable does not break that entire ownership path if another path still exists.\n\nThe official [GC guide](https://go.dev/doc/gc-guide) introduces reachability and roots. Use that model to ask a concrete question during an incident: which owner still has a reason to access this object? An object can be reachable even when the application will never use it again. The collector preserves the program's reachable state; it does not infer the business meaning of an expired cache entry.\n\nUnreachable cycles are not automatically permanent leaks. A cycle with no remaining root path is different from a cycle held in a global registry. In the first case, circular references alone do not create an application owner. In the second, the registry does. Drawing the incoming root edge often explains the incident more clearly than drawing every link inside the cycle.\n\nStart with the [reachability lesson](/learn/runtime.gc-reachability), then annotate a real ownership path: who adds an entry, who removes it, and what event establishes that removal is safe. Those answers connect lifetime semantics to code that a reviewer can inspect."
+      },
+      {
+        "id": "separate-call-stack-depth-from-object-graph-depth",
+        "title": "Separate call-stack depth from object-graph depth",
+        "body": "A deeply recursive function can create a deep call stack. A deeply linked heap structure can exist even when the program traverses it iteratively. The stack-depth problem belongs to the traversal algorithm and its execution; the graph-depth problem belongs to the stored relationships. A change from recursion to iteration does not automatically change which heap objects remain reachable.\n\nOur graph validator uses an explicit work list rather than recursively visiting a hundred thousand nodes. That makes the validation independent of a recursive call chain of the same depth. The helper is deliberately limited to the acyclic chain and tree produced by the lab; it is not a general-purpose graph walker that detects arbitrary cycles.\n\nThe [stack-and-heap lesson](/learn/runtime.stack-and-heap) explains the ownership distinction. Avoid simplistic rules such as all local variables live on the stack or returning a pointer always establishes one fixed allocation cost. Compiler decisions, object size, inlining and how a value is used affect the actual program. For allocation placement, inspect the selected compiler and measure the built workload.\n\nMost importantly, do not look for one heap-depth switch that solves all three problems: recursive stack growth, retained data and collector work. A robust investigation names the quantity it is measuring before choosing the tool or changing the representation."
+      },
+      {
+        "id": "compare-equal-node-types-before-comparing-shapes",
+        "title": "Compare equal node types before comparing shapes",
+        "body": "The graph experiment allocates one hundred thousand objects of exactly the same Node type in each case. Every node has two pointer fields and a fixed payload. Both graphs have one root and exactly one fewer non-nil edges than nodes. The chain uses one child link per node; the balanced tree distributes those same edges across two child fields.\n\n```go\ntype Node struct {\n    Left, Right *Node\n    Payload [48]byte\n}\n```\n\nConstruction temporarily uses an index slice so that the requested topology can be built easily. The lab does not return that slice. It performs a collection after construction and validation before taking the graph measurements. Otherwise the index would keep every node directly reachable and add a different ownership structure to the experiment.\n\nThis control matters more than the choice of an impressive-looking graph size. A comparison that changes the node type, object count, payload size and root count simultaneously cannot isolate the meaning of depth. Even our controlled comparison changes edge placement and locality together with logical depth, so it cannot establish that depth alone caused a timing difference.\n\n```sh\ngo build -o memlab ./cmd/memlab\nGOGC=100 ./memlab -mode chain\nGOGC=100 ./memlab -mode tree\n```\n\nThe program prints node count and logical depth alongside memory observations. That lets a reader verify what was constructed before interpreting what the runtime measured."
+      },
+      {
+        "id": "what-the-graph-experiment-showed",
+        "title": "What the graph experiment showed",
+        "body": "The table reports medians from three fresh processes for each shape. Byte deltas are measured after collection relative to a pre-construction baseline. The scannable-heap value comes from the runtime metric with that definition; it is not a stopwatch measurement or an exact count of live pointer edges.\n\n| Shape | Nodes | Logical depth | Retained heap delta | Scannable heap delta |\n| --- | ---: | ---: | ---: | ---: |\n| Chain | 100,000 | 100,000 | 6,409,896 bytes | 1,600,328 bytes |\n| Balanced tree | 100,000 | 17 | 6,409,992 bytes | 1,600,416 bytes |\n\nThe logical depths were very different while these two memory quantities were almost identical in this experiment. That is the useful structural result. It does not prove identical collection latency. The lab also timed seven complete forced collections per process: the median of those process medians was about 1.501 milliseconds for the chain and 0.624 milliseconds for the tree in this run.\n\nThose timings include more than pure pointer scanning. The experiment is small, sequential and not a randomized production benchmark; locality, work distribution and system activity can influence it. We preserve the raw rounds instead of promoting the ratio into a general rule that trees make Go GC a particular amount faster. Equal bytes do not imply identical runtime behavior, and different depths do not by themselves explain every observed difference."
+      },
+      {
+        "id": "bytes-and-pointer-bearing-content-describe-different-costs",
+        "title": "Bytes and pointer-bearing content describe different costs",
+        "body": "A payload consisting of bytes does not contain the same reference structure as a collection of pointer-rich objects. Both occupy memory, but they do not present identical tracing work. Conversely, a compact object can retain a large amount of other data through its references. The size of the owner is not the size of everything it keeps alive.\n\nThe [runtime/metrics reference](https://pkg.go.dev/runtime/metrics) defines /gc/scan/heap:bytes as scannable heap space. Keep that definition separate from live heap bytes, object count and collection duration. A metric that sounds like scanning is not automatically a measurement of work performed during the request you are investigating.\n\nFor a cache design, inspect representation as well as capacity. Can an entry store a compact identifier rather than a reference to a large request object? Does a shared index keep an entire graph alive after individual entries expire? Is a byte blob large but pointer-free, or does an object contain many relationships that must remain traversable?\n\nThese questions do not imply that pointers are bad or that every structure should be flattened. Pointer-based structures can make mutation and ownership clearer. The right comparison includes access patterns, correctness, allocation behavior and measured collector effects. Our [GC tuning guide](/news/go-garbage-collector-gogc-gomemlimit-lab) explains why changing a collector percentage cannot replace those design decisions."
+      },
+      {
+        "id": "a-thirty-two-byte-view-can-retain-sixteen-mib",
+        "title": "A thirty-two-byte view can retain sixteen MiB",
+        "body": "The second experiment allocates a sixteen-MiB backing array and returns only its first thirty-two bytes. One mode keeps the ordinary view. Another uses a full-slice expression to restrict capacity to thirty-two. The third copies the prefix into independent storage. All three modes return the same visible byte contents.\n\nThe [slice specification](https://go.dev/ref/spec#Slice_types) explains the relationship between a slice and its underlying array. Restricting capacity changes what later reslicing and appending can do through that slice; it does not create an independent backing allocation. The [slices.Clip contract](https://pkg.go.dev/slices#Clip) is useful when reviewing that distinction.\n\n| Result mode | Visible length | Visible capacity | Post-GC heap delta, median |\n| --- | ---: | ---: | ---: |\n| View | 32 | 16,777,216 | 16,786,976 bytes |\n| Capacity clipped | 32 | 32 | 16,786,960 bytes |\n| Independent copy | 32 | 32 | 9,776 bytes |\n\nThese deltas include small runtime and experiment overheads; the last row does not mean a thirty-two-byte result intrinsically needs 9,776 bytes. The large difference is the retained backing array. The example gives a concrete reason to ask which storage a small result owns, rather than assuming its length describes its retained footprint."
+      },
+      {
+        "id": "copy-at-a-lifetime-boundary-not-automatically-everywhere",
+        "title": "Copy at a lifetime boundary, not automatically everywhere",
+        "body": "An independent result can be the correct choice when a small piece of a large input must live much longer than that input's processing window. The [bytes.Clone documentation](https://pkg.go.dev/bytes#Clone) describes a standard way to establish that independence. The lab's helper keeps the ownership decision explicit.\n\n```go\nfunc CopyPrefix(buf []byte, n int) []byte {\n    return bytes.Clone(buf[:n])\n}\n```\n\nIts caller supplies a valid length. A unit test checks both mutation directions: changing the copy must not change the source, and changing the source must not change the copy. Checking only equal contents would miss an aliasing defect. The lab's measurement then answers a different question: whether the large source allocation remains live after the helper returns.\n\nCopying everything is not a universal optimization. If the source already has the correct lifetime, a copy can add allocation traffic and CPU with no useful reduction in retained data. If a result contains nested references, copying only an outer container may leave inner objects shared. Define the intended ownership depth instead of using the word copy as though it always meant recursively independent data.\n\nOur earlier [slice ownership article](/news/go-slices-backing-array-append-clip-clone) covers append and cloning behavior in detail. Here the key is lifetime: a small retained view can be expensive because of the object it keeps reachable, not because the slice descriptor itself is large."
+      },
+      {
+        "id": "look-for-hidden-owners-in-closures-queues-and-registries",
+        "title": "Look for hidden owners in closures, queues and registries",
+        "body": "A retention investigation should follow more than obvious struct fields. A closure can capture a large input. A buffered channel can retain queued messages. A blocked goroutine can keep values needed by its suspended work. A registry can preserve an object after the feature that created it has already finished.\n\nFor example, a callback that returns a small prefix may still capture the original buffer. Moving the callback into a cache extends that buffer's lifetime even if the caller drops every direct slice reference. The fix may be to capture an independent result, bound the cache or remove the callback at the correct lifecycle event. Which change is correct depends on the feature's contract.\n\nSeparate useful retained work from abandoned work. A queue containing ten deliberately admitted jobs is different from an unbounded queue accepting requests faster than workers can finish. A goroutine intentionally waiting for its owner is different from a goroutine whose owner has disappeared. Collector tuning does not provide the missing admission limit or cancellation path.\n\nUse [goroutine ownership and leak investigation](/news/go-1-27-goroutine-leak-profiles) and [bounded work](/learn/concurrency.bounded-work) together with heap profiles. The allocation site tells you where an object came from; the application ownership path explains why it is still there. Both are needed before removing or changing the object safely."
+      },
+      {
+        "id": "pools-and-weak-references-do-not-remove-lifetime-design",
+        "title": "Pools and weak references do not remove lifetime design",
+        "body": "A sync.Pool is a reuse mechanism with a specific contract, not a durable cache with an application-defined byte ceiling. The [sync.Pool documentation](https://pkg.go.dev/sync#Pool) allows stored items to be removed. Code must remain correct if a requested reusable item is unavailable. Conversely, retaining very large buffers for possible reuse can keep capacity associated with a workload after the useful request has ended.\n\nChoose a reuse policy with an explicit size boundary when the workload needs one. Rejecting oversized buffers from a reuse path may be more understandable than treating every previously allocated capacity as valuable. Test correctness without relying on a particular object being returned by the pool.\n\nWeak references can support specialized cache designs, but they change what the cache promises. The [weak package](https://pkg.go.dev/weak) is not a substitute for deterministic resource release, and a weakly held value may be unavailable when requested. The Go team's [cleanup and weak-reference article](https://go.dev/blog/cleanups-and-weak) discusses these lower-level tools and their constraints.\n\nFor files, transactions, sockets and other externally limited resources, keep explicit ownership and cleanup. A garbage collector decides memory reachability, not the business deadline for releasing a connection or closing a descriptor. Do not make an operational resource budget depend on when an unreachable object happens to be collected."
+      },
+      {
+        "id": "validate-reachability-experiments-without-measuring-compiler-accidents",
+        "title": "Validate reachability experiments without measuring compiler accidents",
+        "body": "The lab keeps the result alive through the measurement boundary with runtime.KeepAlive. This is important because a value can stop being needed by the program before the end of a source-level scope. The [runtime contract](https://pkg.go.dev/runtime#KeepAlive) explains the purpose of the call. In this experiment it helps ensure that the object whose retention we want to measure remains relevant until the observation is complete.\n\nKeepAlive is not a mutex, a general lifetime extension for unrelated objects or a way to repair unsafe concurrent access. It simply belongs to the experiment's ownership boundary. Likewise, forcing GC establishes a controlled observation point here; it does not represent normal request-level service behavior.\n\nUse fresh processes to reduce contamination from previous experiment modes. Validate the graph and result contents before interpreting the memory numbers. Record the runtime, architecture and environment, and preserve raw measurements rather than just a rounded chart. If a result changes after a toolchain update, begin by reproducing the same program and checking which assumption changed.\n\nThe test suite checks the graph construction and copy semantics separately from the memory observations. That separation makes a failure easier to interpret: an incorrect graph is not evidence about GC, and a noisy timing is not evidence that the graph's ownership contract is wrong."
+      },
+      {
+        "id": "turn-heap-evidence-into-an-ownership-change",
+        "title": "Turn heap evidence into an ownership change",
+        "body": "An actionable memory investigation ends with a specific lifetime decision. Perhaps a cache stores an independent identifier instead of a complete request, a result copies a small prefix before crossing a long-lived boundary, or a queue stops admitting work beyond a documented budget. Verify that the change preserves the feature and reduces the quantity that was actually causing trouble.\n\n[Download the memory lab, raw observations and tests](/downloads/go-memory-lab-20261029.zip). The archive includes equal-node graph construction, iterative validation, retention modes and their methodology. The published timings are local exploratory observations, not a universal collector benchmark or an in-app sandbox certification.\n\nContinue with [heap-retention interview preparation](/interview/runtime.retention), [GC reachability](/learn/runtime.gc-reachability), and [allocation profiles and escape analysis](/news/go-allocation-profiling-pprof-escape-benchmarks). A useful answer to how deep is the heap starts by naming the graph, the roots and the measurement. From there, the practical question is not merely how many links an object has. It is which owner still needs those links and what event allows the retained state to end."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Go reachability and GC model",
+        "url": "https://go.dev/doc/gc-guide"
+      },
+      {
+        "title": "Runtime metrics definitions",
+        "url": "https://pkg.go.dev/runtime/metrics"
+      },
+      {
+        "title": "Go slice specification",
+        "url": "https://go.dev/ref/spec#Slice_types"
+      },
+      {
+        "title": "slices.Clip contract",
+        "url": "https://pkg.go.dev/slices#Clip"
+      },
+      {
+        "title": "bytes.Clone ownership",
+        "url": "https://pkg.go.dev/bytes#Clone"
+      },
+      {
+        "title": "sync.Pool contract",
+        "url": "https://pkg.go.dev/sync#Pool"
+      },
+      {
+        "title": "Weak pointers",
+        "url": "https://pkg.go.dev/weak"
+      },
+      {
+        "title": "Cleanups and weak pointers",
+        "url": "https://go.dev/blog/cleanups-and-weak"
+      },
+      {
+        "title": "runtime.KeepAlive",
+        "url": "https://pkg.go.dev/runtime#KeepAlive"
+      }
+    ],
+    "related": [
+      "go-garbage-collector-gogc-gomemlimit-lab",
+      "go-allocation-profiling-pprof-escape-benchmarks",
+      "go-slices-backing-array-append-clip-clone"
+    ],
+    "wordCount": 2464,
+    "proseWordCount": 2464,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go heap depth reachability",
+      "Go retained memory backing array",
+      "Go scannable heap graph",
+      "Go slice capacity memory retention"
+    ],
+    "editionDate": "2026-10-03",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-allocation-profiling-pprof-escape-benchmarks",
+    "title": "Go allocation profiling: pprof, escape analysis and benchmarks",
+    "description": "Investigate Go allocations with alloc_space and inuse_space profiles, compiler escape analysis and equivalent formatter benchmarks. Includes tested downloadable code.",
+    "category": "GUIDE · GO PERFORMANCE INVESTIGATION",
+    "eventDate": "2026-10-13",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "alloclab",
+    "sections": [
+      {
+        "id": "start-with-a-question-that-a-profile-can-answer",
+        "title": "Start with a question that a profile can answer",
+        "body": "A Go endpoint becomes expensive after a product change. Its latency increases, allocation charts rise, and somebody proposes replacing every fmt call with a hand-written encoder. That might improve the endpoint, but it might also consume a week while the actual problem remains an unbounded result cache. Before changing code, decide whether the incident concerns allocation traffic, retained memory, CPU time, latency, or a combination of them.\n\nThese are different optimization targets. Allocating less over an interval can reduce pressure on the runtime without reducing the long-lived cache. Removing retained objects can reduce the live heap while leaving request-level allocation traffic unchanged. Faster formatting can save CPU even when every returned string still needs an allocation. A useful investigation keeps those claims separate and tests the behavior that users actually receive.\n\nThis guide walks through an original memory-profile experiment and a pair of equivalent formatting benchmarks. The lab uses native Go 1.27.3 on darwin/arm64, Apple M4, with GOMAXPROCS two. It includes source, tests, raw observations and commands. These local observations are a reproducible learning exercise, not a claim about every service or the execution characteristics of GopherForge's app sandbox."
+      },
+      {
+        "id": "understand-allocation-traffic-and-retained-memory-separately",
+        "title": "Understand allocation traffic and retained memory separately",
+        "body": "Imagine a worker that creates two thousand temporary blocks while keeping a small sample of them in a result. Almost all of its allocation traffic can disappear from the live heap after collection. A different worker might allocate very little during the same observation window while retaining a large cache created earlier. Looking only at one memory chart cannot distinguish those programs.\n\nThe [runtime/pprof documentation](https://pkg.go.dev/runtime/pprof) describes the heap profile and its relationship to completed garbage collection. The profile includes sample types that let tools examine allocation history and retained allocations. Use alloc_space to investigate sampled allocated bytes and inuse_space to investigate sampled bytes still in use at the profile's collection boundary. Neither view is a complete ownership graph.\n\nThe allocation stack answers where storage was created. It does not necessarily identify the field, queue, closure or registry that currently owns it. A parser can appear prominently in a retained-memory profile because another component stores its results indefinitely. Deleting the parser's allocation would change the feature; changing the retention policy may solve the actual incident.\n\nRead the companion [heap-graph investigation](/news/go-heap-graphs-reachability-retained-memory) when an apparently small result holds a large backing allocation. Read the [GC controls lab](/news/go-garbage-collector-gogc-gomemlimit-lab) when collection pressure is being confused with application ownership."
+      },
+      {
+        "id": "construct-a-profile-whose-expected-outcome-is-known",
+        "title": "Construct a profile whose expected outcome is known",
+        "body": "Our profile mode allocates 2,048 blocks of 64 KiB, for 128 MiB of application payload allocation. It keeps every 128th block, so sixteen blocks remain reachable: exactly one MiB of retained payload. Separate helper functions name the retained and temporary paths. The experiment clears its temporary reference and requests completed collections before writing the profile.\n\nThat design gives the profile an independently checkable expectation. Allocation traffic should be dominated by the temporary path, while retained application payload should be associated with the retained path. The program also uses runtime.KeepAlive after the observation boundary so that its retained result remains relevant throughout the measurement.\n\n```sh\ngo build -o memlab ./cmd/memlab\n./memlab -mode profile -out heap.pprof\ngo tool pprof -top -sample_index=alloc_space ./memlab heap.pprof\ngo tool pprof -top -sample_index=inuse_space ./memlab heap.pprof\n```\n\nThe experiment sets the memory-profile sampling rate to 64 KiB before creating its workload. This improves the detail available for a small demonstration, but it changes profiling overhead and does not turn a sampled profile into an exact allocation ledger. Keep the chosen rate beside the results. Do not copy the setting into a production process without considering the observation cost."
+      },
+      {
+        "id": "read-the-two-profile-views-without-inventing-precision",
+        "title": "Read the two profile views without inventing precision",
+        "body": "In the recorded run, pprof's alloc_space report printed about 127.91 MB total. The temporary churn helper accounted for 126.85 MB and the retained helper for 0.99 MB. The inuse_space report printed about 1,077.47 kB total, with 1,012.46 kB attributed to the retained helper. These are the units and sampled estimates printed by pprof, rather than exact byte counts reconstructed from the source.\n\n| Question | Profile view | Main application allocation site in this run |\n| --- | --- | --- |\n| Where did allocation traffic originate? | alloc_space | churnBlock: 126.85 MB |\n| Which allocated payload remains represented? | inuse_space | retainedBlock: 1,012.46 kB |\n| How much payload did the program intentionally retain? | Source-level invariant | 16 × 64 KiB = 1 MiB |\n\nThe [Go performance guidance](https://go.dev/wiki/Performance) explains the sampling nature of memory profiles. Small runtime allocations and statistical estimation help explain why the printed profile is not identical to the source-level invariant. The reliable conclusion is the separation of temporary traffic from retained payload, not a promise that every run prints those same decimals.\n\nAn important negative conclusion follows: a quiet temporary allocation site in inuse_space does not prove that site is cheap. It may still create substantial allocation traffic and CPU work. Likewise, a prominent retained site does not prove a leak. Retention may be intentional and correctly bounded. Follow the profile with an ownership and workload review."
+      },
+      {
+        "id": "capture-profiles-at-comparable-lifecycle-boundaries",
+        "title": "Capture profiles at comparable lifecycle boundaries",
+        "body": "An incident investigation needs to state when the profile was captured. Was the cache cold or warm? Had requests finished? Was a collection explicitly requested? Was the process still admitting work? A profile taken during startup cannot be compared casually with one taken after several hours of accumulated application state.\n\nFor a batch service, choose boundaries such as before the batch, after a representative batch, and after results have been released. For a long-running endpoint, record request volume, payload sizes, active operations and cache entries around the observation window. If the workload changes, a larger allocation total may reflect more completed useful work rather than a regression.\n\nThe [Go diagnostics guide](https://go.dev/doc/diagnostics) provides a broader map of profiling tools. Use CPU profiles for CPU attribution and memory profiles for their defined allocation views. A heap profile cannot establish tail latency, and an allocation benchmark cannot establish how an entire service behaves under concurrent load.\n\nIf you expose the [net/http/pprof handlers](https://pkg.go.dev/net/http/pprof), keep diagnostics on an appropriately restricted management surface. Profiles can contain implementation details and observations about a running service. The downloadable lab writes a local profile file instead, making the learning exercise independent of network configuration or a public diagnostics endpoint."
+      },
+      {
+        "id": "compare-implementations-that-return-the-same-result",
+        "title": "Compare implementations that return the same result",
+        "body": "The second experiment asks a narrower question: can a small formatter produce the same string with less execution time? The baseline uses fmt.Sprintf. The alternative uses strconv append operations and converts the completed buffer to a string. Both return a value that callers can retain independently.\n\n```go\nfunc FormatEvent(id uint64, active bool) string {\n    return fmt.Sprintf(\"id=%d active=%t\", id, active)\n}\n\nfunc AppendEvent(id uint64, active bool) string {\n    buf := make([]byte, 0, 48)\n    buf = append(buf, \"id=\"...)\n    buf = strconv.AppendUint(buf, id, 10)\n    buf = append(buf, \" active=\"...)\n    buf = strconv.AppendBool(buf, active)\n    return string(buf)\n}\n```\n\nThe [fmt reference](https://pkg.go.dev/fmt) defines the formatting operations used by the baseline. The [strconv reference](https://pkg.go.dev/strconv) defines the typed append operations used by the alternative. This example has a deliberately small output contract. It is not a replacement for general formatting, localization, JSON escaping or arbitrary user-controlled templates.\n\nBefore timing either function, the tests compare their results for zero, several ordinary identifiers, the maximum uint64 value, and both boolean values. A faster function that drops a space, changes a sign convention or returns mutable shared storage is not an equivalent optimization. The output contract determines what the benchmark is allowed to change."
+      },
+      {
+        "id": "use-a-benchmark-harness-that-preserves-useful-work",
+        "title": "Use a benchmark harness that preserves useful work",
+        "body": "The benchmark fixture uses the identifier 123456789 and the value true. It assigns the returned string to a package-level sink and reports allocations. Both implementations use the same fixture, result destination and loop structure. Setup stays outside the timed loop.\n\n```go\nvar result string\n\nfunc BenchmarkAppend(b *testing.B) {\n    b.ReportAllocs()\n    for b.Loop() {\n        result = AppendEvent(123456789, true)\n    }\n}\n```\n\nThe [testing.B.Loop documentation](https://pkg.go.dev/testing#B.Loop) describes its timing and compiler-preservation behavior. Use its supported loop form rather than assuming any hand-written wrapper has equivalent properties. The global sink also makes the intended observable result explicit in this example.\n\n```sh\nGOMAXPROCS=2 go test -run '^$' \\\n  -bench 'Benchmark(Format|Append)$' \\\n  -benchmem -benchtime=150ms -count=5\n```\n\nRecord the toolchain and machine with the output. The [Go testing flags](https://pkg.go.dev/cmd/go#hdr-Testing_flags) define the benchmark controls. Repeated runs help reveal variation, but five short repetitions on one machine do not establish a production performance distribution. Change the fixture deliberately when evaluating different identifier sizes, output lengths or workload mixes."
+      },
+      {
+        "id": "a-faster-formatter-can-have-the-same-allocation-count",
+        "title": "A faster formatter can have the same allocation count",
+        "body": "The five recorded baseline timings were 51.91, 46.51, 47.36, 45.76 and 45.97 ns/op. The append version produced 12.50, 12.36, 12.19, 12.09 and 12.12 ns/op. Their medians were 46.51 and 12.19 ns/op respectively. Every recorded run reported 24 B/op and one allocation per operation for both implementations.\n\n| Implementation | Median of five runs | Reported bytes per operation | Reported allocations per operation |\n| --- | ---: | ---: | ---: |\n| fmt.Sprintf | 46.51 ns/op | 24 | 1 |\n| strconv append operations | 12.19 ns/op | 24 | 1 |\n\nThis is useful evidence for a specific CPU-oriented improvement in a specific fixture. It is not evidence that the alternative removed the returned string's allocation. The benchmark records both dimensions precisely because the attractive headline, faster formatting, could otherwise be mistaken for a different claim, less allocation traffic.\n\nDo not generalize the observed timing ratio to whole requests. If formatting accounts for a small fraction of endpoint CPU, even a substantial improvement there may barely affect end-to-end latency. A service waiting on its database will not become several times faster merely because this isolated formatter does. Use a representative CPU profile to estimate whether the local improvement addresses a meaningful cost."
+      },
+      {
+        "id": "use-escape-analysis-to-explain-not-replace-measurements",
+        "title": "Use escape analysis to explain, not replace, measurements",
+        "body": "Build the package with compiler diagnostics and inspect the messages for the actual source version. The [compiler documentation](https://pkg.go.dev/cmd/compile) describes the diagnostic flag. Decisions can change with inlining, surrounding code, compiler updates and how the result is used.\n\n```sh\ngo build -gcflags=-m=2 .\n```\n\nFor the recorded Go 1.27.3 build, the compiler reported that make([]byte, 0, 48) in AppendEvent did not escape and that string(buf) escaped to the heap. Those diagnostics are consistent with the benchmark's single result allocation. The complete diagnostic output is included with the experiment, so the explanation can be checked against the selected compiler rather than remembered as a permanent language rule.\n\nDo not count every line containing escapes as one executed allocation. A diagnostic describes an analysis decision at a source location, not a runtime event counter. A path may execute conditionally, a call may be inlined differently, and surrounding optimization can change the final behavior. Use benchmark allocation counts and profiles to measure the built workload.\n\nThe [stack-and-heap lesson](/learn/runtime.stack-and-heap) and [escape-analysis interview guide](/interview/runtime.escape) cover the broader reasoning. The practical habit is simple: form a hypothesis with diagnostics, then verify its effect with equivalent behavior and actual measurements."
+      },
+      {
+        "id": "avoid-changing-ownership-to-win-a-benchmark",
+        "title": "Avoid changing ownership to win a benchmark",
+        "body": "A tempting next step is to return a view into a reusable buffer. That can reduce a local allocation count while allowing a later call to overwrite an earlier result. The benchmark may improve precisely because the implementation stopped providing independent ownership. Such a change needs a different API contract, not a celebratory allocation chart.\n\nIf callers can consume bytes synchronously before the next mutation, an append-to-caller-buffer API can be appropriate. If callers store the returned value, independent storage may be necessary. A zero-copy technique is valuable only when its lifetime and mutation restrictions fit the application. Make those restrictions visible in names, documentation and tests.\n\nThe [buffer and pool ownership guide](/news/go-bytes-buffer-sync-pool-ownership) explains why reuse requires a clear handoff. Pooling also has its own memory and concurrency tradeoffs. Reusing an oversized buffer can preserve capacity long after a small request ends, while incorrect reuse can corrupt output across operations.\n\nTreat a changed ownership contract as an architectural decision. Test that a previous result remains valid after a subsequent call, and test concurrent usage if the API promises it. Allocation reduction is not a sufficient acceptance criterion when the feature depends on stable independently owned results."
+      },
+      {
+        "id": "build-a-repeatable-optimization-decision",
+        "title": "Build a repeatable optimization decision",
+        "body": "An actionable performance change includes the original symptom, a representative fixture, an explicit result contract, a baseline, the modified implementation and a recheck of correctness and resources. Preserve raw outputs. Explain which dimension improved and which dimensions were unchanged or not measured. Include a rollback path if the change affects a production service.\n\nThe lab tests also support deliberately broken variants as negative controls. Returning an aliased prefix must fail the independence test. Removing a separator must fail the formatting equivalence test. Disconnecting a graph node must fail structural validation. These checks make sure the test suite can reject meaningful defects rather than merely run successfully against its own implementation.\n\n[Download the original memory lab, tests and raw observations](/downloads/go-memory-lab-20261029.zip). Start with the profile modes, reproduce the formatting comparison, then change one fixture at a time. Keep native desktop measurements separate from app-sandbox behavior and from production service limits.\n\nContinue with [profiles and leak investigation](/learn/runtime.profiles-and-leaks), [GC budgets](/learn/runtime.gc-budget), and the companion [heap ownership article](/news/go-heap-graphs-reachability-retained-memory). A strong optimization report does not promise that allocations are universally bad. It shows which cost mattered, why the change preserves behavior, and what the measured evidence actually supports."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Go memory profile semantics",
+        "url": "https://pkg.go.dev/runtime/pprof"
+      },
+      {
+        "title": "Go performance investigation",
+        "url": "https://go.dev/wiki/Performance"
+      },
+      {
+        "title": "Go diagnostics overview",
+        "url": "https://go.dev/doc/diagnostics"
+      },
+      {
+        "title": "HTTP profiling handlers",
+        "url": "https://pkg.go.dev/net/http/pprof"
+      },
+      {
+        "title": "fmt formatting contract",
+        "url": "https://pkg.go.dev/fmt"
+      },
+      {
+        "title": "strconv append operations",
+        "url": "https://pkg.go.dev/strconv"
+      },
+      {
+        "title": "testing.B.Loop",
+        "url": "https://pkg.go.dev/testing#B.Loop"
+      },
+      {
+        "title": "Go test and benchmark flags",
+        "url": "https://pkg.go.dev/cmd/go#hdr-Testing_flags"
+      },
+      {
+        "title": "Compiler diagnostics",
+        "url": "https://pkg.go.dev/cmd/compile"
+      }
+    ],
+    "related": [
+      "go-garbage-collector-gogc-gomemlimit-lab",
+      "go-heap-graphs-reachability-retained-memory",
+      "go-bytes-buffer-sync-pool-ownership"
+    ],
+    "wordCount": 2042,
+    "proseWordCount": 2042,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go allocation profiling pprof",
+      "alloc_space vs inuse_space",
+      "Go escape analysis benchmark",
+      "Go strconv Append benchmark"
+    ],
+    "editionDate": "2026-10-13",
     "kind": "guide"
   }
 ]

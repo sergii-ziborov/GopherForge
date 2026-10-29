@@ -1,0 +1,23 @@
+[
+  {
+    "case": "independent-copy",
+    "mutation": "return bytes.Clone(buf[:n]) \u2192 return buf[:n:n]",
+    "test": "TestIndependentPrefix",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestIndependentPrefix (0.00s)\n    memory_test.go:64: copy retained alias\nFAIL\nFAIL\tgopherforge.news/memorylab\t0.246s\nFAIL"
+  },
+  {
+    "case": "equivalent-format",
+    "mutation": "\" active=\" \u2192 \"active=\"",
+    "test": "TestFormatEquivalence",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestFormatEquivalence (0.00s)\n    memory_test.go:38: 0 false: \"id=0active=false\" != \"id=0 active=false\"\nFAIL\nFAIL\tgopherforge.news/memorylab\t0.246s\nFAIL"
+  },
+  {
+    "case": "complete-graph",
+    "mutation": "i+1 < n \u2192 i+1 < n-1",
+    "test": "TestGraphShapes",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestGraphShapes (0.00s)\n    memory_test.go:17: chain: count=9999 depth=9999\nFAIL\nFAIL\tgopherforge.news/memorylab\t0.244s\nFAIL"
+  }
+]

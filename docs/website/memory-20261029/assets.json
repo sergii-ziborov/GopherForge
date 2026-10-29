@@ -1,0 +1,113 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "gcpacer-hero",
+      "prompt": "Use case: scientific-educational. Asset type: original editorial illustration for a GopherForge Go memory engineering guide, landscape 3:2, 1536x1024. Premium tactile isometric 3D, deep navy and teal with warm ivory and restrained amber, crisp readable geometry, soft studio light, generous whitespace. Opaque background. No logos, no watermarks, no pseudo code or unnecessary text. Primary request: a carefully organized memory garden with a few bright teal root anchors connected to living glass blocks; unconnected faded blocks are being gently cleared by a precise mechanical collector. A neighboring amber allocation conveyor introduces new blocks. Clearly distinguish reachable live data from unreferenced waste. Do not imply copying, compaction or generational regions. No readable text.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-0c48df8c-09d2-4a87-8c12-24d9ce40487c.png",
+      "src": "/images/news/gcpacer-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 306192,
+      "sha256": "a4be021f52aec1bd130a1453e839ead2e1210de8bfec36b791f248b6a801ef09",
+      "alt": "Conceptual Go memory graph: live blocks connected to roots and unreachable blocks awaiting reclamation."
+    },
+    {
+      "id": "gcpacer-detail",
+      "prompt": "Use case: scientific-educational. Asset type: original editorial illustration for a GopherForge Go memory engineering guide, landscape 3:2, 1536x1024. Premium tactile isometric 3D, deep navy and teal with warm ivory and restrained amber, crisp readable geometry, soft studio light, generous whitespace. Opaque background. No logos, no watermarks, no pseudo code or unnecessary text. Primary request: physical control desk with two distinct large controls, one balancing spare heap room against collector work, the other a soft ceiling rail above Go-managed memory; beyond that rail a separate external-memory compartment remains outside the control. Communicate tradeoffs and soft limits, not a guaranteed RSS cap or fixed recommended settings. No labels, numbers or text.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-cc15b2da-f839-4693-8f1c-25d71c25e051.png",
+      "src": "/images/news/gcpacer-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 136900,
+      "sha256": "9904fa7ac5837b827072144d477b37109064f7c972f943d0a78b93efb6eb7660",
+      "alt": "Separate conceptual controls for allocation headroom and a soft runtime memory budget, with external memory outside the runtime area."
+    },
+    {
+      "id": "gcpacer-infographic",
+      "prompt": "Use case: infographic-diagram. Asset type: educational infographic for Go GC tuning, landscape 3:2 1536x1024. Four large connected cards with exactly these headings: \"MEASURE\", \"BOUND\", \"ADJUST\", \"VERIFY\". MEASURE shows separate allocation and live-data dials; BOUND shows an admission gate and finite cache; ADJUST shows two modest GC control sliders; VERIFY shows a latency chart beside a memory chart, with no numeric claims. Warm ivory background, navy typography and teal conceptual 3D icons. Clear arrows and generous spacing. No GC-compaction imagery, no universal performance ranking, no extra text, logo or watermark.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-68e2c868-c041-4ef8-8600-8a41512d3762.png",
+      "src": "/images/news/gcpacer-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 51620,
+      "sha256": "55c34e2f7410371d917b39a2131d8824c6ef96e31f09ae43e1e00706265a98ee",
+      "alt": "GC investigation workflow: measure the workload, bound memory demand, adjust one setting, verify the result."
+    },
+    {
+      "id": "heapgraph-hero",
+      "prompt": "Use case: scientific-educational. Asset type: original editorial illustration for a GopherForge Go memory engineering guide, landscape 3:2, 1536x1024. Premium tactile isometric 3D, deep navy and teal with warm ivory and restrained amber, crisp readable geometry, soft studio light, generous whitespace. Opaque background. No logos, no watermarks, no pseudo code or unnecessary text. Primary request: two equally sized sets of identical transparent memory nodes, left arranged as a long linked chain and right as a balanced binary tree. Each arrangement has one visible teal root anchor and clear thin connecting edges. Convey graph shape and reachability as different concepts from total byte size. Do not depict the chain as necessarily slower or the tree as always better. No labels or numbers.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-252e1e26-b7ac-471e-bd32-b24e23c3bff5.png",
+      "src": "/images/news/heapgraph-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 74936,
+      "sha256": "eb7a8d65f759b46462bb3c82b18de29caeb651d17b09195fd4db83b9129cb6fc",
+      "alt": "A chain and a branching object graph illustrate logical depth; the measured lab uses equal node counts."
+    },
+    {
+      "id": "heapgraph-detail",
+      "prompt": "Use case: scientific-educational. Asset type: original editorial illustration for a GopherForge Go memory engineering guide, landscape 3:2, 1536x1024. Premium tactile isometric 3D, deep navy and teal with warm ivory and restrained amber, crisp readable geometry, soft studio light, generous whitespace. Opaque background. No logos, no watermarks, no pseudo code or unnecessary text. Primary request: a tiny translucent slice-view window at the front of a very large backing storage slab, visibly connected to and retaining the whole slab. Beside it, a small independently copied result tile sits entirely detached from the large slab. Refined exact geometry, strong whitespace, convey ownership rather than capacity truncation freeing memory. No text.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-d6219771-21da-4f72-a714-61d65beaea60.png",
+      "src": "/images/news/heapgraph-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 77120,
+      "sha256": "562a3b873d53e5ec8ed152ff8e737d26977768720ae403d8e052a8dd53ead4c7",
+      "alt": "A small view keeps a large backing buffer reachable; an independent copy has separate storage."
+    },
+    {
+      "id": "heapgraph-infographic",
+      "prompt": "Use case: infographic-diagram. Asset type: educational Go heap reachability infographic, landscape 3:2 1536x1024. Four large connected cards with exactly these headings: \"ROOTS\", \"REFERENCES\", \"LIVE DATA\", \"RELEASE\". ROOTS shows a stack-like root anchor; REFERENCES shows a branching node graph; LIVE DATA shows only connected teal blocks lit; RELEASE shows an intentionally severed ownership edge and unreachable faded blocks. Warm ivory, navy text, teal geometry and tiny amber accents. No implication that dropping one reference frees a still-reachable object, no moving collector depiction, no logo or watermark.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-ff207841-3b8b-4274-a55e-39de27ff9b67.png",
+      "src": "/images/news/heapgraph-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 124816,
+      "sha256": "85145caf373254dc290763b6b547ecb3b76d6512d61d091de2c68b5816d73635",
+      "alt": "Reachability workflow showing roots, references, live objects and release after all root paths are removed."
+    },
+    {
+      "id": "alloclab-hero",
+      "prompt": "Use case: scientific-educational. Asset type: original editorial illustration for a GopherForge Go memory engineering guide, landscape 3:2, 1536x1024. Premium tactile isometric 3D, deep navy and teal with warm ivory and restrained amber, crisp readable geometry, soft studio light, generous whitespace. Opaque background. No logos, no watermarks, no pseudo code or unnecessary text. Primary request: an engineer's memory investigation bench with three distinct lenses observing a Go service model: transient allocation tickets flowing through, retained live objects remaining on a shelf, and a clock for measured work. A clean notebook and controlled sample tray emphasize reproducible experiments. Not a real dashboard screenshot. No text or fabricated benchmark numbers.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-54b89c1d-3e07-4c73-992f-98b23efc510d.png",
+      "src": "/images/news/alloclab-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 179798,
+      "sha256": "05a1526a8c0008febc0910cbf9c6d09c75f9286e136f82af10e7450488d7f32b",
+      "alt": "Three conceptual lenses distinguish allocation traffic, retained objects and execution time."
+    },
+    {
+      "id": "alloclab-detail",
+      "prompt": "Use case: scientific-educational. Asset type: original editorial illustration for a GopherForge Go memory engineering guide, landscape 3:2, 1536x1024. Premium tactile isometric 3D, deep navy and teal with warm ivory and restrained amber, crisp readable geometry, soft studio light, generous whitespace. Opaque background. No logos, no watermarks, no pseudo code or unnecessary text. Primary request: two equivalent message-construction workbenches producing identical sealed result cards. The left uses several temporary intermediate trays; the right uses a carefully owned append buffer and one final result. A correctness checkpoint compares the identical outputs before a timing lens. Convey measured hypothesis, not an automatic promise that fewer trays makes all workloads faster. No labels, no numeric claims.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-0f8ebfa7-c728-4aa2-8904-8566ca614d30.png",
+      "src": "/images/news/alloclab-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 117874,
+      "sha256": "1f9086de3fd267d3ca638671a8619da382d7134473f851ad3e3f5beb5491e40e",
+      "alt": "Equivalent formatting results compared across a general formatter and a typed append workflow."
+    },
+    {
+      "id": "alloclab-infographic",
+      "prompt": "Use case: infographic-diagram. Asset type: Go allocation profiling educational infographic, landscape 3:2 1536x1024. Four large connected cards with exact headings: \"REPRODUCE\", \"PROFILE\", \"CHANGE\", \"RECHECK\". REPRODUCE shows a pinned sample tray; PROFILE shows two separate lenses for accumulated allocations and retained heap without extra labels; CHANGE shows one small swapped component; RECHECK shows identical result cards plus a stopwatch and memory gauge. Ivory background, navy large typography, teal geometric 3D, tiny amber accents. No fabricated performance values, no universal winner, no extra text, logo or watermark.",
+      "mode": "built-in image_gen",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-385ede0d-430f-4ba3-a0fa-1365d0dfe9d3.png",
+      "src": "/images/news/alloclab-infographic.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 110890,
+      "sha256": "3c26f04042dd4ff7275cce17560143ebc41ad187ea10264e2e7f18746e8bae61",
+      "alt": "Performance investigation workflow: reproduce, profile, change one implementation, then recheck behavior and resources."
+    }
+  ]
+}

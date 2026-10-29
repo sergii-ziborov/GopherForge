@@ -5,6 +5,55 @@ const read = async (path) =>
   JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const news = await read("../src/content/news.json");
 const images = await read("../src/content/news-images.json");
+test("1, 3 and 13 October memory guides retain truthful dates, complete experiments and distinct illustrations", async () => {
+  const editions = ["2026-10-01", "2026-10-03", "2026-10-13"];
+  const added = news.filter((n) => editions.includes(n.editionDate));
+  assert.equal(added.length, 3);
+  assert.equal(new Set(added.map((n) => n.editionDate)).size, 3);
+  const manifest = await read("../../docs/website/memory-20261029/assets.json");
+  assert.equal(manifest.assets.length, 9);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 9);
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  const questions = (await read("../src/content/interview.json")).questions;
+  for (const n of added) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(
+      body.replace(/```[\s\S]*?```/g, "").split(/\s+/).length >= 2000,
+      n.slug,
+    );
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("/downloads/go-memory-lab-20261029.zip"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|interview|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : kind === "interview"
+            ? questions.some((q) => q.id === id)
+            : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.ok(images[a.id].alt.length > 30);
+    }
+  }
+  assert.ok(
+    !news.some(
+      (n) => n.editionDate >= "2026-10-04" && n.editionDate <= "2026-10-12",
+    ),
+  );
+});
 // Date-only editorial fields use the publication desk's calendar, not UTC midnight.
 const editorialToday = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Jerusalem",

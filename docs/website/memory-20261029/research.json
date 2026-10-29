@@ -1,0 +1,154 @@
+{
+  "checkedOn": "2026-10-29",
+  "method": "Original practical guides and original local native-Go experiments. Edition dates fill explicitly requested archive gaps; actual publication is 29 October. Sequential exploratory runs are not a randomized benchmark or production/sandbox certification. All API sources are primary references.",
+  "articles": [
+    {
+      "key": "gcpacer",
+      "day": "01",
+      "slug": "go-garbage-collector-gogc-gomemlimit-lab",
+      "title": "Go garbage collection: a practical GOGC and GOMEMLIMIT lab",
+      "description": "Understand Go garbage collection with tested GOGC and GOMEMLIMIT experiments, live-heap accounting, allocation traffic and a reproducible memory-budget workflow.",
+      "category": "GUIDE \u00b7 GO GARBAGE COLLECTION",
+      "keywords": [
+        "Go garbage collector guide",
+        "GOGC GOMEMLIMIT experiment",
+        "Go memory limit live heap",
+        "Go GC performance tuning"
+      ],
+      "sources": [
+        {
+          "title": "Go GC guide",
+          "url": "https://go.dev/doc/gc-guide"
+        },
+        {
+          "title": "Runtime memory statistics",
+          "url": "https://pkg.go.dev/runtime#MemStats"
+        },
+        {
+          "title": "Runtime soft memory limit",
+          "url": "https://pkg.go.dev/runtime/debug#SetMemoryLimit"
+        },
+        {
+          "title": "Runtime metrics catalog",
+          "url": "https://pkg.go.dev/runtime/metrics"
+        },
+        {
+          "title": "Go diagnostics",
+          "url": "https://go.dev/doc/diagnostics"
+        },
+        {
+          "title": "Runtime garbage collection boundary",
+          "url": "https://pkg.go.dev/runtime#GC"
+        },
+        {
+          "title": "Go heap profiling",
+          "url": "https://pkg.go.dev/runtime/pprof"
+        }
+      ]
+    },
+    {
+      "key": "heapgraph",
+      "day": "03",
+      "slug": "go-heap-graphs-reachability-retained-memory",
+      "title": "Go heap graphs: depth, reachability and retained memory",
+      "description": "Explore Go heap depth with equal-node chain and tree experiments. Trace roots, compare scannable memory, and fix a tiny slice retaining a 16 MiB backing array.",
+      "category": "GUIDE \u00b7 GO HEAP OWNERSHIP",
+      "keywords": [
+        "Go heap depth reachability",
+        "Go retained memory backing array",
+        "Go scannable heap graph",
+        "Go slice capacity memory retention"
+      ],
+      "sources": [
+        {
+          "title": "Go reachability and GC model",
+          "url": "https://go.dev/doc/gc-guide"
+        },
+        {
+          "title": "Runtime metrics definitions",
+          "url": "https://pkg.go.dev/runtime/metrics"
+        },
+        {
+          "title": "Go slice specification",
+          "url": "https://go.dev/ref/spec#Slice_types"
+        },
+        {
+          "title": "slices.Clip contract",
+          "url": "https://pkg.go.dev/slices#Clip"
+        },
+        {
+          "title": "bytes.Clone ownership",
+          "url": "https://pkg.go.dev/bytes#Clone"
+        },
+        {
+          "title": "sync.Pool contract",
+          "url": "https://pkg.go.dev/sync#Pool"
+        },
+        {
+          "title": "Weak pointers",
+          "url": "https://pkg.go.dev/weak"
+        },
+        {
+          "title": "Cleanups and weak pointers",
+          "url": "https://go.dev/blog/cleanups-and-weak"
+        },
+        {
+          "title": "runtime.KeepAlive",
+          "url": "https://pkg.go.dev/runtime#KeepAlive"
+        }
+      ]
+    },
+    {
+      "key": "alloclab",
+      "day": "13",
+      "slug": "go-allocation-profiling-pprof-escape-benchmarks",
+      "title": "Go allocation profiling: pprof, escape analysis and benchmarks",
+      "description": "Investigate Go allocations with alloc_space and inuse_space profiles, compiler escape analysis and equivalent formatter benchmarks. Includes tested downloadable code.",
+      "category": "GUIDE \u00b7 GO PERFORMANCE INVESTIGATION",
+      "keywords": [
+        "Go allocation profiling pprof",
+        "alloc_space vs inuse_space",
+        "Go escape analysis benchmark",
+        "Go strconv Append benchmark"
+      ],
+      "sources": [
+        {
+          "title": "Go memory profile semantics",
+          "url": "https://pkg.go.dev/runtime/pprof"
+        },
+        {
+          "title": "Go performance investigation",
+          "url": "https://go.dev/wiki/Performance"
+        },
+        {
+          "title": "Go diagnostics overview",
+          "url": "https://go.dev/doc/diagnostics"
+        },
+        {
+          "title": "HTTP profiling handlers",
+          "url": "https://pkg.go.dev/net/http/pprof"
+        },
+        {
+          "title": "fmt formatting contract",
+          "url": "https://pkg.go.dev/fmt"
+        },
+        {
+          "title": "strconv append operations",
+          "url": "https://pkg.go.dev/strconv"
+        },
+        {
+          "title": "testing.B.Loop",
+          "url": "https://pkg.go.dev/testing#B.Loop"
+        },
+        {
+          "title": "Go test and benchmark flags",
+          "url": "https://pkg.go.dev/cmd/go#hdr-Testing_flags"
+        },
+        {
+          "title": "Compiler diagnostics",
+          "url": "https://pkg.go.dev/cmd/compile"
+        }
+      ]
+    }
+  ]
+}

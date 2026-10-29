@@ -18,6 +18,12 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  gcpacer:
+    "Measure → Bound → Adjust → Verify. Establish live data and allocation demand, bound admitted work, change one runtime setting and verify useful completions. Conceptual illustration, not measured telemetry.",
+  heapgraph:
+    "Roots → References → Live data → Release. An object remains reachable while any root path survives. Removing one reference is insufficient when another owner still retains it. Conceptual ownership diagram.",
+  alloclab:
+    "Reproduce → Profile → Change → Recheck. Separate allocation traffic, retained data and execution time; preserve equivalent output before comparing resources. Conceptual workflow, not benchmark results.",
   sqlpool:
     "Budget → Bound → Release → Measure. Allocate database capacity across replicas, limit waiting, return owned connections and distinguish pool wait from query time.",
   shutdown:

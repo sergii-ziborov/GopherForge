@@ -1,0 +1,30 @@
+{
+  "base": "http://127.0.0.1:3065",
+  "articles": [
+    {
+      "edition": "2026-10-01",
+      "slug": "go-garbage-collector-gogc-gomemlimit-lab",
+      "proseWords": 2225,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    },
+    {
+      "edition": "2026-10-03",
+      "slug": "go-heap-graphs-reachability-retained-memory",
+      "proseWords": 2464,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    },
+    {
+      "edition": "2026-10-13",
+      "slug": "go-allocation-profiling-pprof-escape-benchmarks",
+      "proseWords": 2042,
+      "SEO": "canonical + TechArticle + dates + description + three images passed"
+    }
+  ],
+  "internalLinksChecked": 15,
+  "generatedImages": 9,
+  "sitemapURLs": 445,
+  "RSSItems": 24,
+  "downloadSourceHashes": "passed",
+  "health": "passed",
+  "emptyEditions": "2026-10-04 through 2026-10-12"
+}

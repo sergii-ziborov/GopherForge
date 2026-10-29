@@ -1,0 +1,16 @@
+goos: darwin
+goarch: arm64
+pkg: gopherforge.news/memorylab
+cpu: Apple M4
+BenchmarkFormat-2   	 3347824	        51.91 ns/op	      24 B/op	       1 allocs/op
+BenchmarkFormat-2   	 3935751	        46.51 ns/op	      24 B/op	       1 allocs/op
+BenchmarkFormat-2   	 3784327	        47.36 ns/op	      24 B/op	       1 allocs/op
+BenchmarkFormat-2   	 4039670	        45.76 ns/op	      24 B/op	       1 allocs/op
+BenchmarkFormat-2   	 3943324	        45.97 ns/op	      24 B/op	       1 allocs/op
+BenchmarkAppend-2   	14012733	        12.50 ns/op	      24 B/op	       1 allocs/op
+BenchmarkAppend-2   	14629833	        12.36 ns/op	      24 B/op	       1 allocs/op
+BenchmarkAppend-2   	14805776	        12.19 ns/op	      24 B/op	       1 allocs/op
+BenchmarkAppend-2   	14901381	        12.09 ns/op	      24 B/op	       1 allocs/op
+BenchmarkAppend-2   	14932699	        12.12 ns/op	      24 B/op	       1 allocs/op
+PASS
+ok  	gopherforge.news/memorylab	2.469s

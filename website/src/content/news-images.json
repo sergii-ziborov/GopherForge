@@ -322,5 +322,59 @@
     "width": 1536,
     "height": 1024,
     "alt": "Signal, Advance, Settle and Assert: channel events and virtual time establish when a test may check state."
+  },
+  "gcpacer-hero": {
+    "src": "/images/news/gcpacer-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Conceptual Go memory graph: live blocks connected to roots and unreachable blocks awaiting reclamation."
+  },
+  "gcpacer-detail": {
+    "src": "/images/news/gcpacer-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Separate conceptual controls for allocation headroom and a soft runtime memory budget, with external memory outside the runtime area."
+  },
+  "gcpacer-infographic": {
+    "src": "/images/news/gcpacer-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "GC investigation workflow: measure the workload, bound memory demand, adjust one setting, verify the result."
+  },
+  "heapgraph-hero": {
+    "src": "/images/news/heapgraph-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A chain and a branching object graph illustrate logical depth; the measured lab uses equal node counts."
+  },
+  "heapgraph-detail": {
+    "src": "/images/news/heapgraph-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A small view keeps a large backing buffer reachable; an independent copy has separate storage."
+  },
+  "heapgraph-infographic": {
+    "src": "/images/news/heapgraph-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Reachability workflow showing roots, references, live objects and release after all root paths are removed."
+  },
+  "alloclab-hero": {
+    "src": "/images/news/alloclab-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Three conceptual lenses distinguish allocation traffic, retained objects and execution time."
+  },
+  "alloclab-detail": {
+    "src": "/images/news/alloclab-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Equivalent formatting results compared across a general formatter and a typed append workflow."
+  },
+  "alloclab-infographic": {
+    "src": "/images/news/alloclab-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Performance investigation workflow: reproduce, profile, change one implementation, then recheck behavior and resources."
   }
 }

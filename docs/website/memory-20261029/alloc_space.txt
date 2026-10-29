@@ -1,0 +1,10 @@
+File: memlab
+Type: alloc_space
+Time: 2026-10-29 12:51:01 IST
+Showing nodes accounting for 127.84MB, 100% of 127.91MB total
+Dropped 11 nodes (cum <= 0.64MB)
+      flat  flat%   sum%        cum   cum%
+  126.85MB 99.18% 99.18%   126.85MB 99.18%  main.churnBlock
+    0.99MB  0.77%   100%     0.99MB  0.77%  main.retainedBlock
+         0     0%   100%   127.84MB   100%  main.main
+         0     0%   100%   127.84MB   100%  runtime.main

@@ -1,0 +1,16 @@
+File: memlab
+Type: inuse_space
+Time: 2026-10-29 12:51:01 IST
+Showing nodes accounting for 1077.47kB, 100% of 1077.47kB total
+Showing top 10 nodes out of 14
+      flat  flat%   sum%        cum   cum%
+ 1012.46kB 93.97% 93.97%  1012.46kB 93.97%  main.retainedBlock
+      65kB  6.03%   100%       65kB  6.03%  runtime.mallocgc
+         0     0%   100%  1012.46kB 93.97%  main.main
+         0     0%   100%       65kB  6.03%  runtime.allocm
+         0     0%   100%  1012.46kB 93.97%  runtime.main
+         0     0%   100%       65kB  6.03%  runtime.mstart
+         0     0%   100%       65kB  6.03%  runtime.mstart0
+         0     0%   100%       65kB  6.03%  runtime.mstart1
+         0     0%   100%       65kB  6.03%  runtime.newm
+         0     0%   100%       65kB  6.03%  runtime.newobject

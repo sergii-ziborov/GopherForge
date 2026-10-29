@@ -2991,6 +2991,7 @@ details p {
 .prose-table-scroll table {
   width: 100%;
   min-width: 560px;
+  overflow-wrap: normal;
   border-collapse: collapse;
   font-size: 0.88em;
   line-height: 1.5;
