@@ -60,7 +60,7 @@ export default function Learn() {
       <StructuredData
         data={{
           "@context": "https://schema.org",
-          "@type": "Course",
+          "@type": "CollectionPage",
           name: "Learn Go — the GopherForge course",
           description:
             "Go fundamentals, concurrency, architecture, design patterns, databases and production tooling.",
@@ -73,7 +73,9 @@ export default function Learn() {
           isAccessibleForFree: true,
           inLanguage: "en",
           hasPart: units.map((u) => ({
-            "@type": "Course",
+            "@type": "LearningResource",
+            learningResourceType: "Learning path",
+            description: u.summary,
             name: u.title,
             url: `https://gopherforge.app/learn/units/${u.id}`,
           })),

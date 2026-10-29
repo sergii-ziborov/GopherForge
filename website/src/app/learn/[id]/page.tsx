@@ -73,7 +73,8 @@ export default async function LessonPage({
           educationalUse: "Self-study",
           timeRequired: `PT${minutes(l)}M`,
           isPartOf: {
-            "@type": "Course",
+            "@type": "LearningResource",
+            learningResourceType: "Learning path",
             name: l.unitTitle,
             url: `https://gopherforge.app/learn/units/${l.unitID}`,
           },

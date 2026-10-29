@@ -45,7 +45,8 @@ export default async function Unit({
       <StructuredData
         data={{
           "@context": "https://schema.org",
-          "@type": "Course",
+          "@type": "LearningResource",
+          learningResourceType: "Learning path",
           name: u.title,
           description: u.summary,
           url: `https://gopherforge.app/learn/units/${id}`,
