@@ -19,7 +19,7 @@ with a bundled Go 1.27.1 toolchain.
 
 | Version | Status, checked 29 October 2026 | Changes |
 | --- | --- | --- |
-| **1.3.2 (51)** | Internal QA TestFlight · Development preview | Guest MCP Playground, local device execution, shared Output, progress links and expanded agent guidance. |
+| **1.3.2 (51)** | Internal QA TestFlight · Waiting for App Review | Guest MCP Playground, local device execution, shared Output, progress links and expanded agent guidance. Automatic release after approval. |
 | **1.3.1 (49)** | Available on the App Store | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
 | **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
 | **1.2.0 (45)** | Previous App Store release | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
@@ -42,6 +42,8 @@ automatic source debugging from build 48. Automatic publication after approval i
 The previous 1.3.0 (48) review was superseded; no store release of 1.3.0 is claimed.
 The external GitHub project used for verification is not bundled in the app.
 [Review submission](docs/releases/1.3.1-build49-submission.json) · [Store assets](docs/releases/1.3.1-build49-assets.json) · [Build 48 QA](docs/audits/2026-10-28-web-preview.md) · [Beta receipt](docs/releases/1.3.1-build49-beta.json) · [Build 49 QA](docs/releases/1.3.1-build49-qa.json) · [Original frontend/debugger QA](docs/releases/1.3.0-beta-qa.json).
+**1.3.2 (51)** was submitted on 29 October and is **WAITING_FOR_REVIEW**, with automatic release after approval. Its 55 store screenshots include twelve new native Playground/progress captures across six sizes. Optional room content and published progress are declared as **not linked to identity**, for app functionality only, without tracking. [Submission receipt](docs/releases/1.3.2-build51-submission.json) · [New assets](docs/releases/1.3.2-build51-assets.json) · [Privacy verification](docs/releases/1.3.2-build51-privacy.json).
+
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
@@ -56,7 +58,7 @@ App Store prices elsewhere. No subscription or in-app purchase.
 
 ## Current curriculum
 
-The expanded source/web library is available in **1.3.1 (49) Internal QA TestFlight**: 34 additional readings and 40 worked interview guides. Build 49 is also the current App Review submission, replacing build 48. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md) · [TestFlight receipt](docs/releases/1.3.1-build49-beta.json).
+The expanded source/web library is available in **App Store 1.3.1 (49)**: 34 additional readings and 40 worked interview guides. **1.3.2 (51)** retains these IDs and counts, and expands existing agent/MCP guidance while adding optional Playground and progress-link features. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md) · [TestFlight receipt](docs/releases/1.3.2-build51-beta.json).
 
 ## What you can do
 

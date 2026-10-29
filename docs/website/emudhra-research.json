@@ -1,0 +1,57 @@
+{
+  "checkedOn": "2026-10-29",
+  "officialIndex": "https://go.dev/blog/",
+  "latestOfficialBlogPostDate": "2026-10-26",
+  "priorArticle": "go-1-27-3-security-patch-deployment",
+  "newAngle": "26 October postmortem and an original artifact-verification / TLS negative-control workflow",
+  "publicationDate": "2026-10-29",
+  "eventDate": "2026-10-26",
+  "proseWords": 2256,
+  "sources": [
+    {
+      "title": "Go Security team: eMudhra incident response, 26 October",
+      "url": "https://go.dev/blog/emudhra-incident"
+    },
+    {
+      "title": "Mozilla: Firefox protection after the certificate compromise",
+      "url": "https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/"
+    },
+    {
+      "title": "Cloudflare engineering: product-specific mitigation and verifier boundaries",
+      "url": "https://blog.cloudflare.com/emudhra-certificate-compromise/"
+    },
+    {
+      "title": "Official Go release history",
+      "url": "https://go.dev/doc/devel/release"
+    },
+    {
+      "title": "Go security policy and the URGENT track",
+      "url": "https://go.dev/doc/security/policy"
+    },
+    {
+      "title": "Go toolchain selection",
+      "url": "https://go.dev/doc/toolchain"
+    },
+    {
+      "title": "crypto/tls verification configuration",
+      "url": "https://pkg.go.dev/crypto/tls#Config"
+    },
+    {
+      "title": "crypto/x509 verification reference",
+      "url": "https://pkg.go.dev/crypto/x509"
+    },
+    {
+      "title": "govulncheck source and binary modes",
+      "url": "https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck"
+    },
+    {
+      "title": "Local TLS test servers",
+      "url": "https://pkg.go.dev/net/http/httptest#NewTLSServer"
+    },
+    {
+      "title": "Kubernetes Deployment rollout behavior",
+      "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+    }
+  ],
+  "method": "Original analysis with attributed short factual summaries. No invented 29 October release. External sources remain linked, not paywalled."
+}

@@ -18,6 +18,8 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  emudhra:
+    "Inventory → Rebuild → Verify → Rollout. Find the actual executable, pin the fixed toolchain, inspect build evidence and check every replica. A toolchain update is not a deployment.",
   jsonv2:
     "Inventory → Compare → Stage → Verify. Record the wire contract, test behavioral differences, roll out deliberately, and verify consumer compatibility.",
   backpressure:

@@ -253,5 +253,20 @@
     "src": "/images/news/jsonv2-infographic.webp",
     "width": 1600,
     "height": 900
+  },
+  "emudhra-hero": {
+    "src": "/images/news/emudhra-hero.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "emudhra-detail": {
+    "src": "/images/news/emudhra-detail.webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "emudhra-infographic": {
+    "src": "/images/news/emudhra-infographic.webp",
+    "width": 1672,
+    "height": 941
   }
 }

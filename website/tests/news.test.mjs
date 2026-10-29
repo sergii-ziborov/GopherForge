@@ -12,6 +12,29 @@ const editorialToday = new Intl.DateTimeFormat("en-CA", {
   month: "2-digit",
   day: "2-digit",
 }).format(new Date());
+test("the eMudhra report separates event and publication dates and contains 2000 prose words", () => {
+  const n = news.find(
+    (n) => n.slug === "go-emudhra-urgent-tls-incident-response",
+  );
+  assert.ok(n);
+  assert.equal(n.eventDate, "2026-10-26");
+  assert.equal(n.publishedAt, "2026-10-29");
+  const prose = n.sections
+    .map((s) => s.body)
+    .join(" ")
+    .replace(/```[\s\S]*?```/g, "");
+  assert.ok(prose.split(/\s+/).length >= 2000);
+  assert.ok(
+    n.sources.some((s) => new URL(s.url).hostname === "blog.mozilla.org"),
+  );
+  assert.ok(
+    n.sources.some((s) => new URL(s.url).hostname === "blog.cloudflare.com"),
+  );
+  assert.ok(n.sections.some((s) => s.body.includes("```go\n")));
+  assert.ok(
+    n.sections.some((s) => s.body.includes("/learn/security.tls-trust")),
+  );
+});
 test("substantive original articles have sources, interlinks and three generated assets each", async () => {
   assert.ok(news.length >= 10);
   assert.equal(new Set(news.map((n) => n.slug)).size, news.length);

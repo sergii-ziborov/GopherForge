@@ -176,13 +176,13 @@
     "category": "Security",
     "eventDate": "2026-10-19",
     "publishedAt": "2026-10-20",
-    "modifiedAt": "2026-10-20",
+    "modifiedAt": "2026-10-29",
     "imagePrefix": "security",
     "sections": [
       {
         "title": "What the official release confirms",
         "id": "what-the-official-release-confirms",
-        "body": "The Go release history records Go 1.27.3 and Go 1.26.10 on 19 October 2026. Both include security fixes in crypto/x509. That is the confirmed scope used here. This article does not assign a CVE, severity, exploit condition or affected deployment pattern that is not stated in the cited release information. Consult the [official release history](https://go.dev/doc/devel/release) and linked milestones for the authoritative details as they develop.\n\nFor a service owner, a patch announcement opens an operational question: which running artifacts were built with the affected toolchain, and how will replacement artifacts reach users? Updating a developer laptop answers only one part of that question. Build workers, cached container layers, scheduled jobs and long-lived command-line binaries may follow different update paths.\n\nThe workflow below is our maintenance guidance, illustrated with commands and review questions. It should be adapted to your release process, exposure and required change controls. The objective is evidence connecting a patched toolchain to a specific deployed artifact, rather than a reassuring version number in an unrelated terminal."
+        "body": "The Go release history records Go 1.27.3 and Go 1.26.10 on 19 October 2026. Both include security fixes in crypto/x509. That is the confirmed scope used here. This article does not assign a CVE, severity, exploit condition or affected deployment pattern that is not stated in the cited release information. Consult the [official release history](https://go.dev/doc/devel/release) and linked milestones for the authoritative details as they develop.\n\nFor a service owner, a patch announcement opens an operational question: which running artifacts were built with the affected toolchain, and how will replacement artifacts reach users? Updating a developer laptop answers only one part of that question. Build workers, cached container layers, scheduled jobs and long-lived command-line binaries may follow different update paths.\n\nThe workflow below is our maintenance guidance, illustrated with commands and review questions. It should be adapted to your release process, exposure and required change controls. The objective is evidence connecting a patched toolchain to a specific deployed artifact, rather than a reassuring version number in an unrelated terminal.\n\nUpdate, 29 October: the Go team has since published its incident-response account. Our [new TLS trust and artifact-verification guide](/news/go-emudhra-urgent-tls-incident-response) examines that report, with a local negative-control test and a deployment worksheet. The original patch-release date remains unchanged."
       },
       {
         "title": "Begin with artifacts and owners",
@@ -257,11 +257,11 @@
       }
     ],
     "related": [
+      "go-emudhra-urgent-tls-incident-response",
       "go-reproducible-build-report-october-21-2026",
-      "gopherforge-go-learning-workbench-continue",
-      "dapr-1-19-rc4-go-service-boundaries"
+      "gopherforge-go-learning-workbench-continue"
     ],
-    "wordCount": 1723,
+    "wordCount": 1752,
     "sourceCheckedAt": "2026-10-20",
     "keywords": ["security", "Go engineering", "GopherForge news"],
     "editionDate": "2026-10-19",
@@ -1819,6 +1819,141 @@
         "title": "Questions to settle before choosing a migration strategy",
         "id": "questions-to-settle-before-choosing-a-migration-strategy",
         "body": "**Must every Go application migrate immediately?** No. The original API remains supported. Choose a migration because the new API or behavior helps your application, and give existing consumers a clear compatibility decision.\n\n**Can changing imports be enough?** It can compile for simple call sites, but compilation does not establish wire compatibility. Run zero-value, invalid-input and custom-method fixtures before making that conclusion.\n\n**Does stricter decoding mean all unknown properties are rejected?** No. Unknown-member rejection is a separate option. Decide it per boundary and test the producer behavior you intend to support.\n\n**Is deterministic encoding sufficient for signing JSON?** Not by itself. A signature protocol needs a precisely specified representation and compatible implementations across all participants. Do not substitute a convenient sorting option for that specification.\n\n**What should a team do first?** Choose one real response type, save representative fixtures, run the companion-style comparison and assign each difference an owner. Then work through [behavior tests and boundary cases](/learn/clean.table-tests) or [fuzzing parsers with useful properties](/interview/testing.fuzz). A safe migration is a sequence of explicit contract decisions that your tests and release process can explain."
+      }
+    ]
+  },
+  {
+    "slug": "go-emudhra-urgent-tls-incident-response",
+    "title": "Go’s eMudhra response: verify TLS trust in the binary you actually deploy",
+    "description": "A practical Go TLS incident-response guide after the eMudhra report: identify running binaries, rebuild fixed toolchains, test certificate verification and verify rollouts.",
+    "category": "NEWS · GO SECURITY & DEPLOYMENT",
+    "editionDate": "2026-10-29",
+    "eventDate": "2026-10-26",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "sourceCheckedAt": "2026-10-29",
+    "kind": "news",
+    "keywords": [
+      "Go eMudhra incident response",
+      "Go 1.27.3 TLS security",
+      "Go crypto/x509 certificate verification",
+      "govulncheck binary scan",
+      "Go security patch deployment",
+      "Go TLS testing"
+    ],
+    "sources": [
+      {
+        "title": "Go Security team: eMudhra incident response, 26 October",
+        "url": "https://go.dev/blog/emudhra-incident"
+      },
+      {
+        "title": "Mozilla: Firefox protection after the certificate compromise",
+        "url": "https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/"
+      },
+      {
+        "title": "Cloudflare engineering: product-specific mitigation and verifier boundaries",
+        "url": "https://blog.cloudflare.com/emudhra-certificate-compromise/"
+      },
+      {
+        "title": "Official Go release history",
+        "url": "https://go.dev/doc/devel/release"
+      },
+      {
+        "title": "Go security policy and the URGENT track",
+        "url": "https://go.dev/doc/security/policy"
+      },
+      {
+        "title": "Go toolchain selection",
+        "url": "https://go.dev/doc/toolchain"
+      },
+      {
+        "title": "crypto/tls verification configuration",
+        "url": "https://pkg.go.dev/crypto/tls#Config"
+      },
+      {
+        "title": "crypto/x509 verification reference",
+        "url": "https://pkg.go.dev/crypto/x509"
+      },
+      {
+        "title": "govulncheck source and binary modes",
+        "url": "https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck"
+      },
+      {
+        "title": "Local TLS test servers",
+        "url": "https://pkg.go.dev/net/http/httptest#NewTLSServer"
+      },
+      {
+        "title": "Kubernetes Deployment rollout behavior",
+        "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+      }
+    ],
+    "related": [
+      "go-1-27-3-security-patch-deployment",
+      "go-reproducible-build-report-october-21-2026",
+      "go-backpressure-concurrency-limits-queues-deadlines"
+    ],
+    "imagePrefix": "emudhra",
+    "wordCount": 2469,
+    "sections": [
+      {
+        "title": "The new report is about response, not a new release on 29 October",
+        "id": "the-new-report-is-about-response-not-a-new-release-on-29-october",
+        "body": "On 26 October, the Go Security team published its account of the eMudhra intermediate-certificate incident. Its response used the URGENT release track, and the relevant patched releases were Go 1.27.3 and Go 1.26.10, shipped on 19 October. Our previous [security-patch deployment guide](/news/go-1-27-3-security-patch-deployment) covered those releases; this article examines the newly published response and turns it into an engineering exercise. There was no newer official Go Blog post when we checked the index on 29 October. Today's date is our publication date, not an invented release date. [Go's incident report](https://go.dev/blog/emudhra-incident) is the source for these release facts.\n\nThe useful question for a Go team is specific: can we identify which running artifact makes a TLS decision, replace that artifact deliberately, and demonstrate that normal verification still works? The rest of this article is our proposed workflow and original examples, rather than a rewritten copy of the incident report."
+      },
+      {
+        "title": "Separate the browser's protection from your service's protection",
+        "id": "separate-the-browser-s-protection-from-your-service-s-protection",
+        "body": "Mozilla's own [20 October account](https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/) describes eight compromised intermediate certificates and a OneCRL update delivered to standard Firefox configurations on 17 October. That is evidence about Firefox's protection path. It does not establish which trust decisions a Go payment worker, an internal command-line tool, a container sidecar or a scheduled import job makes.\n\n[Cloudflare's engineering account](https://blog.cloudflare.com/emudhra-certificate-compromise/) reinforces the operational distinction: its products needed their own updates, and a successful browser or curl check does not certify another application's verifier. Treat that as a test-design lesson. Start at the outbound operation the application actually performs, then follow its HTTP transport, TLS configuration, execution environment and deployed binary. Do not substitute a convenient test from a different application.\n\nFor an example review, draw three boxes: the browser you use to inspect a dashboard, the Go service behind that dashboard, and the service's outbound dependency. Place the certificate-verification decision on each connection separately. This small drawing prevents a surprisingly common incident mistake: declaring the whole environment repaired because the most visible client received an update."
+      },
+      {
+        "title": "A certificate chain is a delegated decision, not a green decoration",
+        "id": "a-certificate-chain-is-a-delegated-decision-not-a-green-decoration",
+        "body": "A service certificate is normally evaluated as part of a path toward a trust anchor. A useful review asks who is permitted to issue the certificate, whether the requested name matches, and whether the verification policy accepts the resulting path. The [crypto/x509 reference](https://pkg.go.dev/crypto/x509) documents the verification APIs and their platform-dependent behavior. A parser successfully reading a certificate is not equivalent to successful certificate verification.\n\nFor the incident exercise, use the idea of delegation. A leaf certificate is the claimed identity presented at the door; an intermediate supplies authority for that claim. When an intermediate's private key cannot be trusted, checking the leaf's spelling or expiry alone does not repair the delegation. The decision must reject the unsafe authority as well. That explanation is more useful in a code review than an undifferentiated instruction to 'refresh SSL'.\n\nKeep the example conceptual. You do not need recovered private keys, a forged public-site certificate or a demonstration against an external target to learn the failure mode. Controlled local certificates are sufficient to test whether your own transport preserves ordinary verification. Incident-specific protection should additionally be tied to the vendor's fixed release and the artifact you deploy."
+      },
+      {
+        "title": "Inventory the executable that is actually running",
+        "id": "inventory-the-executable-that-is-actually-running",
+        "body": "Begin an incident worksheet with one row per executable, not one row per repository. Include long-running services, administrative CLIs, worker processes and jobs that run only at night. Record the owner, artifact identity, deployment location, outbound dependencies and evidence location. Leave unknown cells visibly unknown. A tidy spreadsheet full of assumed versions is less useful than an incomplete inventory with named owners.\n\nOn a native development or operations machine, inspect an available Go executable using the tool's build-information view:\n\n```bash\ngo version\ngo version -m ./bin/service\n```\n\nThe first command describes the tool you are invoking. The second inspects the named file. They answer different questions. Record both outputs, together with the artifact digest from your existing release system. If the production image is minimal and has no Go command, inspect an exported copy of its executable in the build or incident environment; do not install debugging tools into every running container just to make the worksheet look complete.\n\nAlso inspect the startup configuration. A new executable stored beside an old one is not proof that the process manager selected it. Check the path, container image digest or release identifier used by the workload. Give every row a closure condition: for example, 'new digest observed on all active replicas and scheduled-job template updated'."
+      },
+      {
+        "title": "Pin the rebuild inputs and keep the change reviewable",
+        "id": "pin-the-rebuild-inputs-and-keep-the-change-reviewable",
+        "body": "For this incident, the official release history records the fixed patch versions. Check the [current supported release history](https://go.dev/doc/devel/release) before doing operational work; a historical article should never become a permanent instruction to stay on an old patch. Use an exact approved toolchain in the incident build and record what your build system actually selected.\n\nA small native-machine workflow can make that selection explicit:\n\n```bash\nGOTOOLCHAIN=go1.27.3 go version\nGOTOOLCHAIN=go1.27.3 go test ./...\nGOTOOLCHAIN=go1.27.3 go build -trimpath -o ./bin/service ./cmd/service\ngo version -m ./bin/service\n```\n\nThese commands illustrate the incident's patched version; substitute a later supported fixed version when appropriate. An exact toolchain may need to be downloaded before an isolated build environment can use it. That is a build-input preparation step, not a promise that a bare offline machine can fetch missing tools.\n\nKeep source changes minimal unless testing reveals a separate defect. Avoid combining a trust repair with a serializer migration, a database-driver upgrade and a wholesale module reorganization. The narrower change is easier to validate and, if an unrelated regression appears, easier to reason about. Our [reproducible-build guide](/news/go-reproducible-build-report-october-21-2026) explains a complementary evidence trail; reproducibility alone is not a vulnerability verdict."
+      },
+      {
+        "title": "Preserve verification while diagnosing TLS failures",
+        "id": "preserve-verification-while-diagnosing-tls-failures",
+        "body": "A failing connection can create pressure to disable checks 'just temporarily'. That changes the security property you are trying to restore. The [crypto/tls documentation](https://pkg.go.dev/crypto/tls#Config) explains that `InsecureSkipVerify` disables ordinary certificate-chain and hostname verification unless appropriate custom verification replaces it. A successful request made after that change is not evidence that the trust problem was fixed.\n\nReview production transports for verification overrides, custom root pools and callbacks. Treat each as a configuration contract with an owner and tests. A private development CA can be legitimate; a broad bypass added during troubleshooting should not quietly become a production default. Verify proxy and service-mesh boundaries too: decide which component terminates TLS and which component initiates the next protected connection.\n\nSeparate error classes in operational notes. An expired certificate, unknown authority, hostname mismatch, refused TCP connection and request deadline are different observations. Recording only 'HTTPS failed' makes teams repeat experiments and encourages inappropriate workarounds. Conversely, avoid writing credentials, private keys or full sensitive URLs into incident logs. The evidence should help another engineer reproduce the configuration decision without disclosing the traffic being protected."
+      },
+      {
+        "title": "Write a local negative-control test before touching production",
+        "id": "write-a-local-negative-control-test-before-touching-production",
+        "body": "The following original test runs against a local TLS test server. It checks a trusted connection, a deliberately untrusted root pool and a wrong expected hostname. It does not reproduce the eMudhra compromise or prove that a binary includes the incident patch. Its purpose is narrower: catch a transport configuration that starts accepting everything during troubleshooting.\n\n```go\npackage trustcheck\n\nimport (\n\t\"crypto/x509\"\n\t\"errors\"\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestTLSVerificationControls(t *testing.T) {\n\tserver := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"ready\")\n\t}))\n\tdefer server.Close()\n\n\tcases := []struct {\n\t\tname      string\n\t\tchange    func(*http.Transport)\n\t\twantError bool\n\t\terrorKind string\n\t}{\n\t\t{name: \"trusted test certificate\"},\n\t\t{\n\t\t\tname: \"unknown authority\",\n\t\t\tchange: func(tr *http.Transport) {\n\t\t\t\ttr.TLSClientConfig.RootCAs = x509.NewCertPool()\n\t\t\t},\n\t\t\twantError: true,\n\t\t\terrorKind: \"authority\",\n\t\t},\n\t\t{\n\t\t\tname: \"wrong hostname\",\n\t\t\tchange: func(tr *http.Transport) {\n\t\t\t\ttr.TLSClientConfig.ServerName = \"wrong.invalid\"\n\t\t\t},\n\t\t\twantError: true,\n\t\t\terrorKind: \"hostname\",\n\t\t},\n\t}\n\tfor _, tc := range cases {\n\t\tt.Run(tc.name, func(t *testing.T) {\n\t\t\ttr := server.Client().Transport.(*http.Transport).Clone()\n\t\t\ttr.TLSClientConfig = tr.TLSClientConfig.Clone()\n\t\t\tif tc.change != nil {\n\t\t\t\ttc.change(tr)\n\t\t\t}\n\t\t\tdefer tr.CloseIdleConnections()\n\t\t\tclient := &http.Client{Transport: tr, Timeout: 3 * time.Second}\n\t\t\tresponse, err := client.Get(server.URL)\n\t\t\tif response != nil {\n\t\t\t\tdefer response.Body.Close()\n\t\t\t}\n\t\t\tif (err != nil) != tc.wantError {\n\t\t\t\tt.Fatalf(\"error = %v; wantError = %v\", err, tc.wantError)\n\t\t\t}\n\t\t\tif tc.errorKind == \"authority\" {\n\t\t\t\tvar target x509.UnknownAuthorityError\n\t\t\t\tif !errors.As(err, &target) {\n\t\t\t\t\tt.Fatalf(\"want unknown authority, got %v\", err)\n\t\t\t\t}\n\t\t\t}\n\t\t\tif tc.errorKind == \"hostname\" {\n\t\t\t\tvar target x509.HostnameError\n\t\t\t\tif !errors.As(err, &target) {\n\t\t\t\t\tt.Fatalf(\"want hostname mismatch, got %v\", err)\n\t\t\t\t}\n\t\t\t}\n\t\t})\n\t}\n}\n```\n\nRun it with `go test ./...` in a small native Go module. For an application, adapt the same assertions to its real client constructor instead of testing only a newly invented transport. Keep the test local and deterministic. Do not turn an external incident test site into a required dependency of every unit-test run. The standard [httptest reference](https://pkg.go.dev/net/http/httptest#NewTLSServer) describes the local server and its trusted client."
+      },
+      {
+        "title": "Scan the source and the resulting binary as separate evidence",
+        "id": "scan-the-source-and-the-resulting-binary-as-separate-evidence",
+        "body": "Run your existing vulnerability checks on the source tree and on the artifact you intend to deploy. The official [govulncheck command documentation](https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck) supports source analysis and binary mode, with different visibility and limitations. Keep those reports distinct rather than treating one as a substitute for the other.\n\n```bash\ngovulncheck ./...\ngovulncheck -mode=binary ./bin/service\n```\n\nInstall a reviewed scanner version in the build environment and record its version, database check time and command. These scans may require network access to obtain vulnerability information; they are not an offline guarantee. Source analysis can provide call-path information that binary analysis cannot reconstruct. A binary report can also include code whose actual runtime reachability needs further investigation.\n\nOur recommended evidence bundle contains the inspected artifact's build information, digest, test result and scanner report. It should name what was checked and what remains uncertain. A clean report does not prove correct authorization, safe retry behavior or the absence of every application vulnerability. A finding is a reason to investigate and repair, not a license to claim exploitation occurred. That distinction keeps incident communication useful to developers and understandable to the people operating the service."
+      },
+      {
+        "title": "Roll out by artifact identity and verify every execution path",
+        "id": "roll-out-by-artifact-identity-and-verify-every-execution-path",
+        "body": "Choose a rollout unit that matches the service's failure domain. A canary might be a small replica subset, a staging worker queue or one representative internal job. Before increasing traffic, exercise the outbound dependencies that matter and inspect certificate errors, request success, timeouts and ordinary application health. Compare against a recorded baseline rather than relying on a screenshot of one green endpoint.\n\nUse the deployment system you already operate. For a Kubernetes deployment, for example, the inspected replacement image should be identified by its digest in the reviewed manifest. Track rollout completion and inspect the image identifiers reported by active Pods. [Kubernetes' Deployment documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) describes rollout behavior; it does not make an application's readiness probe certify every outbound TLS path.\n\nDo not forget execution paths outside the main Deployment. CronJobs, migration tools, init containers and administrative binaries can retain older artifacts. A release should not be marked complete merely because the busiest web replicas moved first. Make a separate decision about old job histories and retained images according to your recovery policy; preserving evidence and preventing accidental reuse are related but different responsibilities."
+      },
+      {
+        "title": "Design rollback without silently restoring the vulnerable artifact",
+        "id": "design-rollback-without-silently-restoring-the-vulnerable-artifact",
+        "body": "A rollback button is valuable, but its meaning deserves a review during a security incident. Rolling back unrelated source behavior may be necessary. Rolling back to an earlier executable can also restore the trust decision you were trying to remove. Prepare a recovery artifact that uses the fixed toolchain while retaining the previous application behavior, then validate it through the same basic tests.\n\nIn the release note, name the recovery artifact and its scope. Explain whether it changes application code, configuration or only the compiler/runtime inputs. This is our recommended operational policy, not a guarantee supplied by a Go version number. Teams differ in deployment constraints, and emergency changes still need an accountable owner.\n\nKeep retries bounded while investigating connection failures. An unhealthy certificate path should not trigger an unlimited retry storm or a growing backlog of work. Define a deadline, a finite queue and an explicit failure state. Our [backpressure article](/news/go-backpressure-concurrency-limits-queues-deadlines) provides worked examples of admission and cancellation. Authentication and transport repair do not remove the need for those capacity controls; both properties matter when an incident changes failure rates across many clients at once."
+      },
+      {
+        "title": "Prepare a response drill, not a collection of emergency commands",
+        "id": "prepare-a-response-drill-not-a-collection-of-emergency-commands",
+        "body": "The Go [security policy](https://go.dev/doc/security/policy) distinguishes PUBLIC, PRIVATE and URGENT tracks. URGENT issues can lead to an immediate dedicated release without the usual preparation window. For application teams, the practical consequence is a need for a rehearsed short path from a trusted advisory to a reviewed replacement artifact.\n\nA useful drill assigns four roles: someone confirms the advisory and affected components; someone builds the replacement; someone checks the evidence; and someone verifies rollout completion. A small team can combine roles, but should still preserve the separate questions. Ask the reviewer to locate the running binary from the worksheet without asking the build author which directory to inspect. Ask the operator to demonstrate that scheduled workloads use the same approved artifact policy as web replicas.\n\nRecord the slowest handoff. It may be an abandoned service without an owner, an unavailable builder, missing artifact provenance or a job template that nobody includes in release checks. Improving that bottleneck is often more valuable than writing a longer incident checklist. Retrospectives should produce a concrete change in the normal release process, with a small testable outcome and a named maintainer."
+      },
+      {
+        "title": "Connect the exercise to Go learning and interview preparation",
+        "id": "connect-the-exercise-to-go-learning-and-interview-preparation",
+        "body": "For interviews, explain the boundaries rather than memorizing the incident's dates. Be ready to distinguish parsing from verification, a trust anchor from an intermediate, a browser update from a service rebuild, and a scanner finding from proven exploitability. Then show how a local negative-control test and an artifact inventory answer different questions. That is a stronger demonstration of Go engineering judgment than reciting TLS field names.\n\nStart with [TLS trust](/learn/security.tls-trust), [pinned toolchains](/learn/modules.tools-toolchain), [vulnerability checks](/learn/modules.fuzz-vulnerability) and [Kubernetes rollouts](/learn/operations.kubernetes-rollout). Use the [Go course](/learn?direction=tooling) for the surrounding service-security and deployment concepts, and the [interview library](/interview) to practice explaining the decisions aloud. Read the [app guide](/guide) before choosing an execution environment: GopherForge's bundled Go/WASI sandbox has no guest networking. The TLS server example and deployment commands in this article belong in a native Go environment; a Playground's shared Output does not establish that another participant ran a production test.\n\nThe final worksheet should tell a short, checkable story: this was the artifact, this was the verification path, these inputs produced its replacement, these tests ran, and these workloads now use it. Publish conclusions at the strength of that evidence. Keep the rest as an explicit follow-up, so the next urgent update starts with a maintained system instead of a fresh search through forgotten binaries."
       }
     ]
   }

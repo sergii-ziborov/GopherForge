@@ -38,3 +38,11 @@ Apple also released 1.3.1 (49) automatically: live App Store Connect now reports
 ## Confirmed final beta
 
 **1.3.2 (51)** is VALID / IN_BETA_TESTING in Internal QA, native source `697ee9b`. The final lifecycle model/content gate passed 14 checks and the final Release UI gate passed two checks; the UI test now requires a new run to finish rather than accepting a restored previous result. Public 1.3.1 (49) remains separate. Native and web source stay aligned; the web editor also retains clean incoming revisions in its local backup. See [beta receipt](../releases/1.3.2-build51-beta.json).
+
+## Confirmed App Review submission
+
+At 08:11 UTC on 29 October, Apple accepted **1.3.2 (51)** into **WAITING_FOR_REVIEW**, with **AFTER_APPROVAL** release. The uploaded native binary remains source `697ee9b`, SHA-256 `9bff544edbd9c3846c86fed0de277533d58ba043e70338fdd6afc5c6957c51b0`; later changes are test, documentation and web publication only. See the [submission receipt](../releases/1.3.2-build51-submission.json).
+
+All six size galleries were exercised in native Release: twelve captures show a disposable shared room's real local Go result and progress preview without publication. Disposable rooms were closed. A capture initially failed after disk exhaustion; its evidence is retained, generated deployment bundles were removed and the affected capture passed on retry. The test includes a bounded retry for a tap during layout animation. These captures supplement the existing fourteen native model/content and two final UI checks; they are not a full app regression.
+
+The 55-image submission retains 43 accurate existing images and adds twelve Playground/progress images. Apple accepted the review while two images still reported UPLOAD_COMPLETE; final delivery verification is recorded separately and no processing failure was ignored. Header and Search Results remained ACTIVE. App Privacy's live published view contains exactly Other User Content and Product Interaction, both for App Functionality under Data Not Linked to You, without tracking. No app account, username or sender/recipient directory was introduced.

@@ -1,0 +1,41 @@
+{
+  "method": "Built-in image_gen; three original distinct prompts. WebP encoding only, original composition preserved.",
+  "assets": [
+    {
+      "id": "emudhra-hero",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-3a0fce5f-dede-4db1-8cfe-ceb00d736642.png",
+      "asset": "website/public/images/news/emudhra-hero.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 149148,
+      "sha256": "e987f8a98f81682a64bec8c5b2be9c41890468c8636a0f764822baa4196ccd5b",
+      "prompt": "Use case: illustration-story. Asset type: original editorial hero for a technical Go engineering article about certificate trust and incident response, wide landscape 3:2. A refined physical model of a secure network: translucent teal glass certificate panels linked across a dark navy architectural landscape, one damaged intermediate link rendered amber, a clean alternate checked trust path in cyan. Visually communicates that an apparently valid chain can contain a compromised intermediate and must be rejected. Premium understated 3D editorial artwork, soft directional light, detailed tactile glass and brushed metal, clear central composition with room at edges, legible at thumbnail size. Not a real certificate, no real keys or domains, no attacker depiction, no text, no logos, no watermark. Technical editorial image, not a UI screenshot. Opaque background.",
+      "promptRecord": "exact",
+      "mode": "built-in image_gen"
+    },
+    {
+      "id": "emudhra-detail",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-0ffcec81-81d2-43b8-9ce3-b062d9ab5d6d.png",
+      "asset": "website/public/images/news/emudhra-detail.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 144334,
+      "sha256": "12306bb590f472e1b5766be91d3b6c762fc2affbbb7ab5a58cc8fd3fca486279",
+      "prompt": "Use case: illustration-story. Asset type: original editorial technical detail illustration for a Go security deployment article, wide landscape 3:2. Isometric cutaway of a release workshop with a blue source-code tile entering a compact compiler machine, emerging as a sealed teal executable block, then three matching container service blocks in a cluster; a magnifying lens examines a small build-evidence plaque and matching artifact seals. One older gray executable is separated from the new rollout. Express that upgrading tools alone does not replace running binaries; rebuild and deploy actual artifacts. Sophisticated calm editorial 3D, navy and teal with warm ivory surfaces, exact clean geometry, crisp contrast and soft shadows. No readable text or letters, no claims or numbers, no logos or watermark. Opaque background.",
+      "promptRecord": "exact",
+      "mode": "built-in image_gen"
+    },
+    {
+      "id": "emudhra-infographic",
+      "original": "/Users/serhiirihgt/.codex/generated_images/01a0d9b8-42d2-75b3-8a40-ac905c0c9d34/exec-87a311a5-e1f5-4e23-b511-a0dd211f24b6.png",
+      "asset": "website/public/images/news/emudhra-infographic.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 100856,
+      "sha256": "3d8551b762ad32a5ba812e7891f7918217db20ae16f73f93ed10c41d49803fd7",
+      "prompt": "Use case: infographic-diagram. Asset type: polished original landscape infographic for a Go incident-response article. Wide 16:9, warm off-white background, deep navy typography and teal connectors, restrained amber highlights. Four evenly spaced numbered panels left to right, large clear icons and concise exact English labels: '1 INVENTORY', '2 REBUILD', '3 VERIFY', '4 ROLLOUT'. Under each, a short exact line respectively: 'Find the running binary', 'Pin the fixed toolchain', 'Inspect build evidence', 'Check every replica'. Icons respectively magnifying glass over executable, compact compiler with source sheets, shield and artifact hash plate, three healthy service containers. A separate slim bottom annotation states exactly 'A toolchain update is not a deployment'. Design must be easy to read on mobile, large text, generous spacing, consistent geometric editorial art. No invented statistics, no actual secret or certificate data, no vendor logos, no watermark. Opaque background.",
+      "promptRecord": "exact",
+      "mode": "built-in image_gen"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "checkedOn": "2026-10-29",
+  "slug": "go-emudhra-urgent-tls-incident-response",
+  "proseWords": 2256,
+  "illustrations": 3,
+  "primarySources": 11,
+  "webTestsPassed": 34,
+  "productionBuild": "passed",
+  "nativeExample": {
+    "command": "GOTOOLCHAIN=local go test -race ./...",
+    "goVersion": "go1.24.2 darwin/arm64",
+    "status": "passed",
+    "cases": [
+      "trusted test certificate",
+      "unknown authority",
+      "wrong hostname"
+    ],
+    "scope": "local TLS configuration controls; not incident-specific patch verification"
+  },
+  "publication": "pending production verification"
+}

@@ -110,3 +110,9 @@ The main version and Learn Go custom page are Waiting for Review with automatic
 release after approval. Both have seven complete screenshot groups, code first;
 two learning frames per group are newly captured from build 36. Header and Search
 Results are active. See [the build 36 receipt](../releases/1.1.2-build36.json).
+
+## 29 October 2026 — 1.3.2 (51)
+
+Submitted and confirmed **WAITING_FOR_REVIEW**, automatically released after approval. The public version remains 1.3.1 (49). Metadata describes temporary capability-based Playground rooms, local-device execution, compatible Claude/Codex MCP clients and explicit revocable learning-progress snapshots. It distinguishes a pending AI request from a local Run, and the offline educational npm subset from a full Node runtime.
+
+The six screenshot galleries contain 55 images, including twelve fresh native Playground/progress captures. Header and Search Results are ACTIVE. Privacy is published as Other User Content and Product Interaction, App Functionality, Data Not Linked to You; no tracking/account/username. [Submission](../releases/1.3.2-build51-submission.json) · [Assets](../releases/1.3.2-build51-assets.json) · [Metadata](metadata/1.3.2.en-US.json).

@@ -43,15 +43,14 @@ export default function MCPGuide() {
         required.
       </p>
       <aside>
-        <strong>
-          Development preview, separate from the current store build.
-        </strong>
+        <strong>TestFlight preview, submitted for App Review.</strong>
         <p>
           The web editor and MCP are available with this website update. Native
-          Playground and app progress publishing require development build 1.3.2
-          (51). App Store 1.3.1 (49) does not contain these additions. Browser
-          Go execution is not included: open the room in a compatible native
-          build to run on that device.
+          Playground and app progress publishing require TestFlight 1.3.2 (51),
+          now waiting for App Review with automatic release after approval. App
+          Store 1.3.1 (49) does not contain these additions. Browser Go
+          execution is not included: open the room in a compatible native build
+          to run on that device.
         </p>
       </aside>
       <h2>What happens when someone presses Run?</h2>

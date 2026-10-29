@@ -1,6 +1,6 @@
 {
-  "version": "1.3.1",
-  "build": 49,
+  "version": "1.3.2",
+  "build": 51,
   "default": [
     "00-code.png",
     "10-debugger.png",
@@ -10,19 +10,19 @@
     "09-around-go.png",
     "04-lesson.png",
     "02-tests.png",
-    "01-compiler.png",
-    "05-lab.png"
+    "12-playground.png",
+    "13-progress-share.png"
   ],
   "overrides": {
     "iphone-duo": [
       "docs/app-store/screenshots/iphone-duo/00-code.png",
       "docs/app-store/screenshots/iphone-duo/03-course.png",
       "docs/app-store/screenshots/iphone-duo/08-interview.png",
-      "docs/app-store/screenshots/iphone-duo/09-around-go.png",
-      "docs/app-store/screenshots/iphone-duo/04-lesson.png"
+      "docs/app-store/screenshots/iphone-duo/12-playground.png",
+      "docs/app-store/screenshots/iphone-duo/13-progress-share.png"
     ]
   },
-  "notes": "Course and Interview were recaptured from the native 1.3.1 (49) Release application for all six submitted sizes, showing 220 teaching lessons / 28 units and 132 interview guides / 15 topics. Other images show retained editor, debugger, React, lesson and project features. The Duo Course and Interview frames use the actual Closed display. All replacements are native-size opaque RGB images with recorded hashes. iPad 11 inherits iPad 13 through Apple automatic scaling.",
+  "notes": "55 screenshots across six size sets. New 1.3.2 (51) native Release captures show a real local Playground run in a temporary room and the explicit progress-share preview for each size. Twelve images replace two lower-priority slots per gallery; 43 accurate existing editor/debugger/React/course/interview images are retained. Duo captures use its actual Closed display. Capture tests also close their disposable room and confirm opening a progress preview does not publish it. Native pixels converted to opaque RGB only; hashes recorded in the release asset receipt.",
   "inheritedProfiles": {
     "ipad-11": {
       "source": "ipad-13",

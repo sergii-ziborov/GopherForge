@@ -15,7 +15,7 @@ export default function Privacy() {
         <em>Your choice.</em>
       </h1>
       <p>
-        Updated 20 October 2026. Contact:{" "}
+        Updated 29 October 2026. Contact:{" "}
         <a href="mailto:sergii.ziborov@gmail.com">sergii.ziborov@gmail.com</a>.
       </p>
       <h2>The native app</h2>
@@ -50,24 +50,28 @@ export default function Privacy() {
       <h2>Optional Playground and published progress</h2>
       <p>
         Creating or joining a Playground room is an explicit online action. The
-        relay receives the shared text files, participant label and device-reported
-        Output. Room state stays in one server process’s memory until its displayed
-        expiry or an earlier restart/owner closure. It is not end-to-end encrypted
-        or a project backup. Anyone holding an Edit/View capability has that role.
-        Capabilities are in link fragments and explicit API authorization, not
-        ordinary page query parameters. Connected AI clients can send the shared
-        content to their provider under that provider’s policies. Ordinary local
-        projects are not automatically uploaded.
+        relay receives the shared text files, participant label and
+        device-reported Output. Room state stays in one server process’s memory
+        until its displayed expiry or an earlier restart/owner closure. It is
+        not end-to-end encrypted or a project backup. Anyone holding an
+        Edit/View capability has that role. Capabilities are in link fragments
+        and explicit API authorization, not ordinary page query parameters.
+        There are no GopherForge accounts, usernames or sender/recipient
+        directory. Room-scoped role credentials are not a personal profile.
+        Connected AI clients can send the shared content to their provider under
+        that provider’s policies. Ordinary local projects are not automatically
+        uploaded.
       </p>
       <p>
         Publishing a progress link separately uploads a read-only snapshot of
-        lesson IDs, reported compiler marks, interview self-assessments and saved
-        places. It excludes source, drafts, attempts, names and device identifiers.
-        Anyone holding the unlisted link can read it, including an AI tool. Access
-        expires after 90 days or earlier revocation. It does not update automatically
-        or alter another reader’s progress. Keep the revocation key on the
-        publishing device. Private snapshot URLs are excluded from the sitemap and
-        marked noindex; that does not prevent recipients copying their contents.
+        lesson IDs, reported compiler marks, interview self-assessments and
+        saved places. It excludes source, drafts, attempts, names and device
+        identifiers. Anyone holding the unlisted link can read it, including an
+        AI tool. Access expires after 90 days or earlier revocation. It does not
+        update automatically or alter another reader’s progress. Keep the
+        revocation key on the publishing device. Private snapshot URLs are
+        excluded from the sitemap and marked noindex; that does not prevent
+        recipients copying their contents.
       </p>
       <h2>Hosting and traffic analytics</h2>
       <p>
