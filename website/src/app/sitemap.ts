@@ -4,7 +4,7 @@ import guide from "@/content/app-guide.json";
 import { lessons, units } from "@/lib/course";
 import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
-import { news, newsURL, newsImage } from "@/lib/news";
+import { news, newsURL, newsImage, newsImageSuffixes } from "@/lib/news";
 import {
   curriculumUpdatedOn,
   lessonUpdatedOn,
@@ -43,24 +43,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: origin + path,
       lastModified: ["/guide/mcp", "/playground"].includes(path)
         ? "2026-10-29"
-          : ["/learn", "/interview"].includes(path)
-            ? curriculumUpdatedOn
-            : path === "/news/feed" ? "2026-10-28"
-          : path === "/news"
-            ? news[0].modifiedAt
-            : path === "/guide"
-              ? guide.updated
-              : ["", "/updates", "/support"].includes(path)
-                ? releases.checkedOn
-                : ["/learn", "/interview"].includes(path)
-                  ? curriculumUpdatedOn
-                  : path.startsWith("/learn/units/")
-                    ? unitUpdatedOn(path.split("/").pop()!)
-                    : path.startsWith("/learn/")
-                      ? lessonUpdatedOn(path.slice(7))
-                      : path.startsWith("/interview/")
-                        ? interviewUpdatedOn(decodeURIComponent(path.slice(11)))
-                        : "2026-10-25",
+        : ["/learn", "/interview"].includes(path)
+          ? curriculumUpdatedOn
+          : path === "/news/feed"
+            ? "2026-10-28"
+            : path === "/news"
+              ? news[0].modifiedAt
+              : path === "/guide"
+                ? guide.updated
+                : ["", "/updates", "/support"].includes(path)
+                  ? releases.checkedOn
+                  : ["/learn", "/interview"].includes(path)
+                    ? curriculumUpdatedOn
+                    : path.startsWith("/learn/units/")
+                      ? unitUpdatedOn(path.split("/").pop()!)
+                      : path.startsWith("/learn/")
+                        ? lessonUpdatedOn(path.slice(7))
+                        : path.startsWith("/interview/")
+                          ? interviewUpdatedOn(
+                              decodeURIComponent(path.slice(11)),
+                            )
+                          : "2026-10-25",
       ...(path === "/guide"
         ? {
             images: [
@@ -92,7 +95,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...news.map((n) => ({
       url: origin + newsURL(n.slug),
       lastModified: n.modifiedAt,
-      images: ["hero", "detail", "infographic"].map(
+      images: newsImageSuffixes(n.imagePrefix).map(
         (s) => origin + newsImage(n.imagePrefix + "-" + s).src,
       ),
       changeFrequency: "monthly" as const,

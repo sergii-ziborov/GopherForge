@@ -1,0 +1,71 @@
+{
+  "checkedOn": "2026-10-29",
+  "editionDate": "2026-10-08",
+  "proseWords": 4491,
+  "scope": "Original tested engineering guide; no claim of full grapheme segmentation or Unicode 18 conformance",
+  "toolchain": "go1.27.3 darwin/arm64",
+  "optionalModule": {
+    "path": "golang.org/x/text",
+    "version": "v0.43.0",
+    "goDirective": "1.26.0",
+    "modulePublishedAt": "2026-10-09T15:18:32Z"
+  },
+  "observedUnicodeTables": {
+    "unicode.Version": "17.0.0",
+    "norm.Version": "17.0.0",
+    "compilerSelection": "normalization tables17.0.0.go uses go1.27 build tag"
+  },
+  "currentUnicodeReferences": "18.0.0; distinct from tested implementation data",
+  "fuzzExecutions": 64481,
+  "raceRepetitionsPerModule": 50,
+  "sources": [
+    {
+      "title": "Go language specification: string types",
+      "url": "https://go.dev/ref/spec#String_types"
+    },
+    {
+      "title": "Go strings, bytes, runes and characters",
+      "url": "https://go.dev/blog/strings"
+    },
+    {
+      "title": "UTF-8 decoding and validation",
+      "url": "https://pkg.go.dev/unicode/utf8"
+    },
+    {
+      "title": "String cloning and comparison contracts",
+      "url": "https://pkg.go.dev/strings#Clone"
+    },
+    {
+      "title": "Buffered streaming rune decoding",
+      "url": "https://pkg.go.dev/bufio#Reader.ReadRune"
+    },
+    {
+      "title": "Unicode text segmentation, revision 49",
+      "url": "https://www.unicode.org/reports/tr29/tr29-49.html"
+    },
+    {
+      "title": "Unicode normalization forms, revision 58",
+      "url": "https://www.unicode.org/reports/tr15/tr15-58.html"
+    },
+    {
+      "title": "Unicode security mechanisms, revision 34",
+      "url": "https://www.unicode.org/reports/tr39/tr39-34.html"
+    },
+    {
+      "title": "Go normalization and stream-safe handling",
+      "url": "https://go.dev/blog/normalization"
+    },
+    {
+      "title": "Go text normalization API",
+      "url": "https://pkg.go.dev/golang.org/x/text/unicode/norm"
+    },
+    {
+      "title": "Full Unicode case folding",
+      "url": "https://pkg.go.dev/golang.org/x/text/cases#Fold"
+    },
+    {
+      "title": "UTF-16 representation and conversion",
+      "url": "https://pkg.go.dev/unicode/utf16"
+    }
+  ]
+}

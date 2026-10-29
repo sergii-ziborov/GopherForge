@@ -1,5 +1,10 @@
 import data from "@/content/news.json";
 import images from "@/content/news-images.json";
+export {
+  newsExtraFigures,
+  newsImageSuffixes,
+  newsDetailSection,
+} from "@/lib/news-image-layout";
 export type News = (typeof data)[number];
 export const news = [...data].sort(
   (a, b) => Date.parse(b.editionDate) - Date.parse(a.editionDate),
@@ -18,6 +23,8 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  unicodefield:
+    "Bytes → Runes → Clusters → Policy. Storage, decoded values, text boundaries and application rules answer different questions. Abstract tokens do not represent measured UTF-8 lengths; the accompanying table supplies exact examples.",
   gohiring:
     "Define → Compare → Build → Review. Identify the cohort, keep incompatible measurements separate, build inspectable evidence and review the result. Conceptual preparation workflow, not measured hiring odds or an offer guarantee.",
   ctxbudget:

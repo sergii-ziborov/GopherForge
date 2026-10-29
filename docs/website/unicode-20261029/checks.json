@@ -1,0 +1,27 @@
+{
+  "checkedOn": "2026-10-29",
+  "webTests": 43,
+  "productionBuild": "passed",
+  "nativeGo": {
+    "compiler": "go1.27.3",
+    "modules": 2,
+    "raceRepetitionsPerModule": 50,
+    "vet": "passed",
+    "offlineCachedCompilerAndDependencies": "passed",
+    "wasip1Builds": 2,
+    "wasip1Execution": "not claimed"
+  },
+  "fuzz": {
+    "executions": 64481,
+    "failure": false
+  },
+  "negativeControls": 6,
+  "responsive": {
+    "width": 390,
+    "horizontalDocumentOverflow": false,
+    "codeWrappers": "overflow-x:auto",
+    "figures": 5
+  },
+  "localSEO": "canonical, TechArticle with five images, OpenGraph, truthful dates, sitemap and RSS checked",
+  "nativeApp": "No native binary changes for this website update"
+}

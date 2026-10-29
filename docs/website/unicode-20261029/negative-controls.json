@@ -1,0 +1,32 @@
+[
+  {
+    "mutation": "byte boundary correction removed",
+    "test": "TestBytePrefixAtEveryBoundary",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "valid replacement character rejected",
+    "test": "TestInvalidVersusReplacement",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "rune prefix off by one",
+    "test": "TestPrefixRunes",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "non-ASCII bytes allowed in wire key",
+    "test": "TestWireKeyAndSimpleFolding",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "compatibility normalization substituted",
+    "test": "TestCanonicalNotCompatibility",
+    "expectedFailure": true
+  },
+  {
+    "mutation": "invalid UTF-8 rejection removed",
+    "test": "TestInvalidAndConfusable",
+    "expectedFailure": true
+  }
+]

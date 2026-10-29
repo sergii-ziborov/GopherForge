@@ -520,5 +520,35 @@
     "width": 1536,
     "height": 1024,
     "alt": "A remote operation completes after the caller stops waiting, while a separate reconciliation path checks its recorded result."
+  },
+  "unicodefield-hero": {
+    "src": "/images/news/unicodefield-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A gopher examines storage bytes, individual code-point tokens and combined visual clusters through separate lenses."
+  },
+  "unicodefield-infographic": {
+    "src": "/images/news/unicodefield-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Bytes, runes, clusters and policy are different text-processing concepts; geometric tokens carry no measured encoding counts."
+  },
+  "unicodefield-detail": {
+    "src": "/images/news/unicodefield-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A retained small substring remains connected to a large allocation, while an independent copied prefix has separate storage."
+  },
+  "unicodefield-normalization": {
+    "src": "/images/news/unicodefield-normalization.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Canonical-equivalent representations meet at a normalization boundary, while a visually similar distinct token stays separate."
+  },
+  "unicodefield-stream": {
+    "src": "/images/news/unicodefield-stream.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An incomplete encoded token crosses two input chunks and is held until completion; end of input exposes an unfinished token."
   }
 }
