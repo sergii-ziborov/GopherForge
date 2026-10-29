@@ -1,0 +1,41 @@
+{
+  "checkedOn": "2026-10-29",
+  "property": "sc-domain:gopherforge.app",
+  "sitemap": {
+    "url": "https://gopherforge.app/sitemap.xml",
+    "submittedOn": "2026-10-29",
+    "lastRead": "2026-10-29",
+    "status": "Success",
+    "discoveredURLs": 439
+  },
+  "indexCoverage": {
+    "reportLastUpdated": "2026-10-23",
+    "indexed": 201,
+    "excluded": 64,
+    "reasons": {
+      "notFound": 45,
+      "alternateWithProperCanonical": 10,
+      "redirect": 3,
+      "crawledCurrentlyNotIndexed": 6
+    }
+  },
+  "manualActions": "No issues",
+  "securityIssues": "No issues",
+  "coreWebVitals": "Insufficient field data; no passing score claimed",
+  "newArticle": {
+    "url": "https://gopherforge.app/news/go-emudhra-urgent-tls-incident-response",
+    "initialStatus": "Discovered, currently not indexed",
+    "indexingRequest": "Submitted; confirmed by Google text Отправлен запрос на индексирование"
+  },
+  "richResultsBefore": {
+    "url": "https://search.google.com/test/rich-results/result?id=uv3o1BVjtCPME4tjKsN7OA",
+    "validItems": 3,
+    "articleWarnings": 4,
+    "warnings": "datePublished/dateModified date-only values need time and timezone"
+  },
+  "coverageNotes": [
+    "The 45 historic 404 examples are mostly external documentation paths on the wrong host plus an obsolete lesson placeholder. Current 439 sitemap pages have no such relative internal links. Keep genuinely missing pages as 404; do not redirect all missing paths to the homepage.",
+    "Sitemap acceptance and a successful live rich-results test do not mean every URL is indexed or guarantees rankings.",
+    "No analytics or identity collection added."
+  ]
+}

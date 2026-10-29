@@ -1,3 +1,4 @@
+import { metadataDate } from "@/lib/seo-dates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -26,8 +27,8 @@ export async function generateMetadata({
       title: n.title,
       description: n.description,
       url: newsURL(slug),
-      publishedTime: n.publishedAt,
-      modifiedTime: n.modifiedAt,
+      publishedTime: metadataDate(n.publishedAt),
+      modifiedTime: metadataDate(n.modifiedAt),
       authors: ["GopherForge editorial"],
       images: [
         {
@@ -84,8 +85,8 @@ export default async function NewsArticle({
           "@type": n.kind === "guide" ? "TechArticle" : "NewsArticle",
           headline: n.title,
           description: n.description,
-          datePublished: n.publishedAt,
-          dateModified: n.modifiedAt,
+          datePublished: metadataDate(n.publishedAt),
+          dateModified: metadataDate(n.modifiedAt),
           image: ["hero", "detail", "infographic"].map(
             (s) =>
               "https://gopherforge.app" +

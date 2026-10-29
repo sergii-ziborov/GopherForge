@@ -1,3 +1,4 @@
+import { metadataDate } from "@/lib/seo-dates";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
       "Offline Go projects, React builds, local Go handlers, automatic breakpoints, tests and saved learning progress.",
     type: "article",
     url: "/guide",
-    modifiedTime: guide.updated,
+    modifiedTime: metadataDate(guide.updated),
     images: [
       {
         url: "/images/app-icon.png",
@@ -43,7 +44,7 @@ export default function AppGuide() {
           "@type": "TechArticle",
           headline: "The complete GopherForge app guide",
           description: metadata.description,
-          dateModified: guide.updated,
+          dateModified: metadataDate(guide.updated),
           inLanguage: "en",
           url: "https://gopherforge.app/guide",
           image: "https://gopherforge.app/images/app-icon.png",

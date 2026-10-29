@@ -1,3 +1,4 @@
+import { metadataDate } from "@/lib/seo-dates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
@@ -22,7 +23,7 @@ export default function MCPGuide() {
           "@context": "https://schema.org",
           "@type": "TechArticle",
           headline: "GopherForge MCP: shared Go source, local execution",
-          dateModified: "2026-10-29",
+          dateModified: metadataDate("2026-10-29"),
           author: { "@type": "Organization", name: "GopherForge" },
           url: "https://gopherforge.app/guide/mcp",
         }}

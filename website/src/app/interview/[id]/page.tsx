@@ -1,3 +1,4 @@
+import { metadataDate } from "@/lib/seo-dates";
 import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 import { StudyBookmark } from "@/components/StudyBookmark";
 import type { Metadata } from "next";
@@ -28,7 +29,7 @@ export async function generateMetadata({
       description: q?.prompt,
       url: interviewURL(id),
       type: "article",
-      modifiedTime: interviewUpdatedOn(id),
+      modifiedTime: metadataDate(interviewUpdatedOn(id)),
     },
   };
 }
@@ -63,7 +64,7 @@ export default async function InterviewDetail({
           isAccessibleForFree: true,
           inLanguage: "en",
           learningResourceType: "Interview preparation",
-          dateModified: interviewUpdatedOn(id),
+          dateModified: metadataDate(interviewUpdatedOn(id)),
           educationalLevel: interview.levels[q.level - 1],
           isPartOf: {
             "@type": "CollectionPage",
