@@ -1605,7 +1605,8 @@
       "go-json-v2-migration-api-compatibility",
       "go-database-sql-pool-timeouts-transactions",
       "go-garbage-collector-gogc-gomemlimit-lab",
-      "go-time-utc-dst-monotonic-deadlines"
+      "go-time-utc-dst-monotonic-deadlines",
+      "go-retries-idempotency-keys-unknown-outcomes"
     ],
     "imagePrefix": "backpressure",
     "wordCount": 3708,
@@ -2084,7 +2085,8 @@
     "related": [
       "go-backpressure-concurrency-limits-queues-deadlines",
       "go-http-graceful-shutdown-kubernetes",
-      "go-1-27-http-connection-reuse"
+      "go-1-27-http-connection-reuse",
+      "go-retries-idempotency-keys-unknown-outcomes"
     ],
     "wordCount": 2230,
     "proseWordCount": 2230,
@@ -2311,7 +2313,8 @@
       "go-http-graceful-shutdown-kubernetes",
       "go-1-27-goroutine-leak-profiles",
       "go-backpressure-concurrency-limits-queues-deadlines",
-      "go-time-utc-dst-monotonic-deadlines"
+      "go-time-utc-dst-monotonic-deadlines",
+      "go-concurrency-invariants-mutex-atomic-snapshots"
     ],
     "wordCount": 2114,
     "proseWordCount": 2114,
@@ -2550,7 +2553,8 @@
     "related": [
       "go-garbage-collector-gogc-gomemlimit-lab",
       "go-allocation-profiling-pprof-escape-benchmarks",
-      "go-slices-backing-array-append-clip-clone"
+      "go-slices-backing-array-append-clip-clone",
+      "go-concurrency-invariants-mutex-atomic-snapshots"
     ],
     "wordCount": 2464,
     "proseWordCount": 2464,
@@ -2920,7 +2924,8 @@
     "related": [
       "go-streaming-io-reader-eof-limits-json",
       "go-concurrency-tests-synctest-without-sleeps",
-      "go-backpressure-concurrency-limits-queues-deadlines"
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-retries-idempotency-keys-unknown-outcomes"
     ],
     "wordCount": 2455,
     "proseWordCount": 2455,
@@ -2932,6 +2937,250 @@
       "Go timer cancellation tests"
     ],
     "editionDate": "2026-10-12",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-concurrency-invariants-mutex-atomic-snapshots",
+    "title": "Go concurrency: mutexes, invariants and atomic snapshots",
+    "description": "Understand lost updates despite synchronized access, protect complete transitions and publish immutable snapshots. Tested Go code and hands-on Playground exercises.",
+    "category": "GUIDE · GO CONCURRENCY CORRECTNESS",
+    "eventDate": "2026-10-05",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "invariants",
+    "sections": [
+      {
+        "id": "start-with-the-rule-the-state-must-preserve",
+        "title": "Start with the rule the state must preserve",
+        "body": "A service passes its race-detector tests, yet occasionally loses an increment, oversells a limited work slot, or publishes mismatched configuration fields. The first instinct is often to add another lock or replace a map with sync.Map. Before choosing a primitive, write down the invariant: the relationship that must remain true after every accepted operation.\n\nFor a counter, two accepted increments should produce an increase of two. For a reservation, accepted units must not exceed available units. For a configuration snapshot, a version and its associated limits should belong to the same publication. These are application rules. A synchronization primitive helps implement them, but it cannot infer which separate method calls the application intended to treat as one operation.\n\nThis guide uses an original standard-library lab to separate memory safety, operation atomicity and ownership. Its controlled lost-update example deliberately uses synchronized accesses throughout. We checked the correct implementation and its demonstrations with native Go 1.27.3, repeated tests and the race detector. There are no timing-based benchmark claims: the point is a reproducible semantic failure and a testable repair."
+      },
+      {
+        "id": "a-race-free-read-and-write-can-still-lose-an-update",
+        "title": "A race-free read and write can still lose an update",
+        "body": "The lab's Counter has Load and Store methods, each protected by the same mutex. Two goroutines call Load, calculate the next value, then call Store. A channel barrier guarantees that both loads observe zero before either store begins. Both goroutines therefore store one, and the final count is one.\n\n| Controlled step | Goroutine A | Goroutine B | Stored value |\n| --- | --- | --- | ---: |\n| Initial state | Waiting | Waiting | 0 |\n| Read separately | Reads 0 | Reads 0 | 0 |\n| Calculate locally | Computes 1 | Computes 1 | 0 |\n| Store separately | Stores 1 | Stores 1 | 1 |\n\nEvery access to the shared integer is locked. The failure is the gap between the protected operations, not a broken mutex. The [Go memory model](https://go.dev/ref/mem) describes synchronization relationships; our application still needs to choose the operation those relationships protect.\n\nThe fixture is deterministic because it coordinates the reads explicitly. It does not increase loop counts until a failure happens or insert sleeps in the hope of making the scheduler cooperate. A single run explains the result. That makes the example useful in code review: a reviewer can point to the exact interval in which another operation invalidates the caller's assumption."
+      },
+      {
+        "id": "protect-the-complete-transition",
+        "title": "Protect the complete transition",
+        "body": "The correct increment holds one lock across reading and updating the value. The caller asks for an increment rather than assembling that operation from independently synchronized getters and setters. The API now expresses the intended transition.\n\n```go\nfunc (c *Counter) Add(n int) {\n    c.mu.Lock()\n    defer c.mu.Unlock()\n    c.value += n\n}\n```\n\nThe distinction becomes more important for a reservation. A check that there is enough capacity and the subtraction of that capacity must share a boundary. If those are separate calls, several callers may all receive a positive availability answer before any of them reserves their units.\n\n```go\nfunc (c *Counter) TryReserve(n int) bool {\n    if n <= 0 {\n        return false\n    }\n    c.mu.Lock()\n    defer c.mu.Unlock()\n    if n > c.value {\n        return false\n    }\n    c.value -= n\n    return true\n}\n```\n\nThe tests check zero and negative requests, excessive requests, exactly the remaining capacity and competing reservations. A mutex alone does not establish those boundary rules; the checks and state change inside the operation do. For a real capacity service, also define who releases a reservation and how abandoned or expired work is reconciled. The small lab addresses the local transition, not a distributed inventory system."
+      },
+      {
+        "id": "use-the-race-detector-for-the-question-it-can-answer",
+        "title": "Use the race detector for the question it can answer",
+        "body": "The [race-detector guide](https://go.dev/doc/articles/race_detector) explains that detection depends on executed code paths. A clean run is useful evidence about those paths. It is not proof that every possible workload is race-free, and it is not a proof of business correctness.\n\nOur lost-update fixture should continue to return one while remaining free of unsynchronized memory accesses. Treating that fixture's successful execution as an application success would miss its purpose. The test names distinguish the deliberately incorrect composition from the complete Add operation that must preserve all increments.\n\nUse different assertions for different questions. Race detection checks memory-access behavior. A reservation test checks accepted capacity. A snapshot test checks whether fields come from one version. An ownership test changes a returned map and checks that internal state did not change. A lifecycle test checks that workers have finished when their owner returns.\n\nRun those checks together, but keep their claims separate in the review. A team that says only all tests passed may accidentally omit the invariant that motivated the change. A stronger report names the accepted transition, the competing callers and the outcome that would demonstrate a defect. The [concurrency-testing guide](/news/go-concurrency-tests-synctest-without-sleeps) shows how explicit coordination helps make those assertions reliable."
+      },
+      {
+        "id": "decide-which-state-belongs-under-one-owner",
+        "title": "Decide which state belongs under one owner",
+        "body": "A cache entry may contain a value, an expiry and an accounting charge. A registry may contain a membership map and a count. Protecting the map while updating the related count under an unrelated lock can expose states that the feature never intended to publish. Start with the relationship, then choose the ownership boundary.\n\nThe older [Go maps article](https://go.dev/blog/maps) explains why ordinary maps need appropriate coordination for concurrent access. A lock around the map addresses that access requirement. It does not automatically protect a separate counter, a pointer stored inside a value, or a larger operation that spans several lookups.\n\nDraw the state as a small ownership graph. Which fields change together? Which values can callers retain? Which operation may create or remove an entry? What result should a concurrent reader observe if it arrives between two modifications? Those questions often reveal that a convenient generic Store method is exposing too much of the implementation.\n\nPrefer methods named after useful operations when they clarify the invariant: Reserve, ReplaceConfiguration, CompleteJob or RemoveAndReturn. Avoid promising atomicity for a workflow merely because each helper is individually synchronized. The companion [retry and idempotency guide](/news/go-retries-idempotency-keys-unknown-outcomes) applies the same reasoning to a recorded effect and the receipt used to recognize its retry."
+      },
+      {
+        "id": "choose-mutex-rwmutex-and-sync-map-from-the-workload",
+        "title": "Choose mutex, RWMutex and sync.Map from the workload",
+        "body": "A plain mutex is often the simplest way to keep a compound transition understandable. An RWMutex may help a suitable read-heavy workload, but it changes the locking discipline and should be justified with representative measurements. Counting reader methods is not enough to establish that read-lock coordination will improve an actual service.\n\nThe [sync package reference](https://pkg.go.dev/sync) describes sync.Map as a specialized type and identifies its intended workloads. A concurrent map is not a general transaction across multiple entries and external state. A Load followed by a Store still expresses two operations unless the chosen API provides the complete conditional transition you need.\n\nSimilarly, LoadOrStore does not automatically make an expensive preparation step outside the call execute once. Several callers can prepare candidate values before one candidate becomes the stored value. If preparation acquires resources or triggers effects, give that work its own ownership and duplicate-suppression policy. Storing one winning value does not undo the losing preparations.\n\nChoose the simplest primitive that enforces the required transition, then measure contention if it matters. This lab does not rank synchronization types by speed. Its evidence concerns values, ownership and controlled interleavings. The [lock-ownership lesson](/learn/concurrency.lock-ownership) connects those decisions to copy rules and pointer receivers."
+      },
+      {
+        "id": "atomic-publication-does-not-freeze-the-published-object",
+        "title": "Atomic publication does not freeze the published object",
+        "body": "An atomic pointer can publish a completed configuration so readers observe one selected pointer value. The [atomic package](https://pkg.go.dev/sync/atomic) defines its synchronization semantics. Those semantics do not make later ordinary mutations of the pointed-to map safe, and they do not turn several unrelated loads into one application snapshot.\n\nOur ConfigStore constructs a fresh configuration and never modifies that published version afterward. Writers serialize the read-copy-patch-publish sequence with a mutex, preventing two writers from silently replacing each other's patches. Publication uses an atomic pointer; writer coordination remains explicit.\n\n```go\ns.writers.Lock()\ndefer s.writers.Unlock()\nnext := clone(old.rates)\nfor key, value := range patch {\n    next[key] = value\n}\ns.active.Store(&config{rates: next})\n```\n\nThis is an excerpt; the downloadable implementation also handles the initial empty state. The patch map must remain unchanged by its caller during the call. After the operation returns, callers may change their own inputs without mutating the published configuration because the store owns separate map storage.\n\nThe design is not presented as a universal lock-free optimization. It still copies data and allocates, and the runtime has its own costs. Readers do not acquire the writer mutex in this implementation, but a performance claim would require measuring the actual read and update workload."
+      },
+      {
+        "id": "a-snapshot-must-preserve-one-version-and-its-ownership",
+        "title": "A snapshot must preserve one version and its ownership",
+        "body": "Reading the version with one load and the limit with another can observe two different publications. If a reader needs a coherent pair, acquire one snapshot for the operation and read both values from it. The lab's Snapshot method loads one configuration pointer and returns an independent copy of that version's map.\n\n```go\nfunc (s *ConfigStore) Snapshot() map[string]int {\n    v := s.active.Load()\n    if v == nil {\n        return map[string]int{}\n    }\n    return clone(v.rates)\n}\n```\n\nThe tests update version and limit together while readers verify that limit equals ten times version. Another test mutates the constructor's input and a returned snapshot, then verifies that the store's state is unchanged. The second test catches a different class of defect from a mixed-version read: a caller receiving mutable ownership of internal state.\n\nThe [maps.Clone documentation](https://pkg.go.dev/maps#Clone) is a useful reminder that an outer map copy is shallow. Our map values are integers, so copying those values establishes the independence this example needs. If a configuration contains slices, pointers or nested maps, define the ownership of those inner objects separately. Copying one container does not recursively make the entire graph immutable.\n\nFor the lifetime consequences of shared references, continue with the [heap-graph guide](/news/go-heap-graphs-reachability-retained-memory) and [atomic snapshot lesson](/learn/concurrency.atomic-snapshots)."
+      },
+      {
+        "id": "keep-blocking-work-outside-a-local-state-transition-deliberately",
+        "title": "Keep blocking work outside a local state transition deliberately",
+        "body": "Holding a mutex while waiting for a slow dependency can extend contention and make cancellation or shutdown harder to reason about. Simply unlocking before the dependency call, however, may reopen the exact invariant gap the mutex was intended to close. The solution is to model the intermediate state rather than pretend the whole workflow disappeared.\n\nA job manager might reserve a slot under the lock, release the lock while doing external work, then finalize that specific reservation under the lock. It needs an operation identifier, a cancellation path and a rule for releasing abandoned capacity. Another caller must not mistake reserved-but-unfinished work for available capacity or a completed result.\n\nIf the process can restart, local mutex ownership is not enough to recover that intermediate state. Persisted workflows and external effects require additional records and reconciliation. The local critical section and the distributed operation are different boundaries, even when the function that coordinates them has one convenient name.\n\nThe [bounded-work article](/news/go-backpressure-concurrency-limits-queues-deadlines) covers admission and waiting budgets. Combine those limits with a clear state machine: admitted, reserved, completed, rejected or uncertain. This makes it possible to decide what a timeout changes and what another participant is allowed to retry."
+      },
+      {
+        "id": "channels-can-express-ownership-but-they-do-not-copy-it-for-you",
+        "title": "Channels can express ownership, but they do not copy it for you",
+        "body": "A single goroutine processing commands can own a map and its related counters. That can make a complex transition easier to serialize. Send the complete intended command, not a read request followed later by a separate write that assumes the answer is still current. The operation boundary still matters even when there is no shared-map lock in the caller.\n\nSending a slice or map through a channel also does not automatically create independent backing storage. Decide whether the sender transfers ownership, shares immutable data, or retains a mutable copy. A channel provides communication; the API must provide the lifetime and mutation contract.\n\nBound the command queue and define what happens when the owner stops. A caller waiting forever for a reply is not a successful ownership design merely because all map accesses occur in one goroutine. Cancellation, rejection and joining need explicit paths.\n\nUse the [mutex-or-handoff lesson](/learn/concurrency.mutex) and [cancel-and-join lesson](/learn/concurrency.cancel-and-join) together. They help distinguish state protection from lifecycle completion. A worker that has received a cancellation signal may still be using its state, so cleanup should follow evidence of completion rather than the existence of a signal alone."
+      },
+      {
+        "id": "preserve-the-synchronization-object-s-identity",
+        "title": "Preserve the synchronization object's identity",
+        "body": "Types containing active mutexes or atomic state should not be casually copied after use. Pointer receivers and constructors returning pointers help make the intended identity visible, but callers and helper functions still need to respect it. A value copy can separate the lock from the state relationships the original object was supposed to protect.\n\nRun go vet as part of the review and inspect copy-lock diagnostics when they appear. The [vet command reference](https://pkg.go.dev/cmd/vet) describes its role as a checker for suspicious constructs. Static checks complement tests; they do not replace a review of the actual ownership contract.\n\nAvoid returning internal map storage just to make a getter cheap. If copying snapshots is too expensive for a measured workload, choose another explicit interface, such as a read-only operation over one internally retained version. Consider how that interface prevents references from escaping and whether callbacks can block or reenter the owner.\n\nA useful optimization preserves the invariant while changing its cost. Removing ownership boundaries to improve a microbenchmark changes the API's behavior, not just its implementation. The [allocation-profiling guide](/news/go-allocation-profiling-pprof-escape-benchmarks) shows how to separate measured resource improvements from changes to the output contract."
+      },
+      {
+        "id": "explore-the-interleaving-in-playground",
+        "title": "Explore the interleaving in Playground",
+        "body": "[Download the synchronization and retry lab](/downloads/go-reliability-lab-20261029.zip). The invariants/main.go program is self-contained and uses standard-library packages. Before replacing an existing [Playground](/playground) draft, download your source copy. Paste the program into main.go and keep a compatible go.mod. The browser editor does not execute Go or automatically create a room.\n\nPredict the controlled lost-update result before running. Replace the composed Load and Store calls with one complete Add and compare the result. Change the reservation request to exactly the remaining capacity, then one unit above it. Mutate the returned snapshot and check whether a later snapshot changes. Each mutation should test one named contract.\n\nIf you choose to collaborate, create a temporary room, open it in a compatible GopherForge native app and press Run on the device where the code should execute. Other participants receive output attributed to that device and source revision. The [MCP guide](/guide/mcp) explains link roles, expiry and how Claude or Codex can help edit. AI edits do not automatically run the program.\n\nThe complete suite adds repeated concurrent callers, coherent snapshot checks and deliberately broken negative variants. Run go test -race -count=50 ./... and go vet ./... from the downloaded module. The standalone programs also cross-compile for wasip1/wasm; that build check is separate from certifying every host's runtime behavior. The goal is a clear invariant, a controlled competing operation and evidence that the implementation preserves the rule the feature actually needs."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Go memory model",
+        "url": "https://go.dev/ref/mem"
+      },
+      {
+        "title": "Mutex, RWMutex and sync.Map",
+        "url": "https://pkg.go.dev/sync"
+      },
+      {
+        "title": "Atomic publication semantics",
+        "url": "https://pkg.go.dev/sync/atomic"
+      },
+      {
+        "title": "Race detector scope",
+        "url": "https://go.dev/doc/articles/race_detector"
+      },
+      {
+        "title": "Go maps and concurrency",
+        "url": "https://go.dev/blog/maps"
+      },
+      {
+        "title": "Shallow map copying",
+        "url": "https://pkg.go.dev/maps#Clone"
+      },
+      {
+        "title": "Static checks with go vet",
+        "url": "https://pkg.go.dev/cmd/vet"
+      }
+    ],
+    "related": [
+      "go-retries-idempotency-keys-unknown-outcomes",
+      "go-concurrency-tests-synctest-without-sleeps",
+      "go-heap-graphs-reachability-retained-memory"
+    ],
+    "wordCount": 2310,
+    "proseWordCount": 2310,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go concurrency lost update",
+      "Go mutex invariant",
+      "Go atomic immutable snapshot",
+      "Go race detector correctness"
+    ],
+    "editionDate": "2026-10-05",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-retries-idempotency-keys-unknown-outcomes",
+    "title": "Go retries: idempotency keys and unknown outcomes",
+    "description": "Design retry-safe Go operations with stable keys, matching inputs, recorded receipts and explicit unknown outcomes. Includes a tested lab and Playground exercises.",
+    "category": "GUIDE · GO SERVICE RELIABILITY",
+    "eventDate": "2026-10-11",
+    "publishedAt": "2026-10-29",
+    "modifiedAt": "2026-10-29",
+    "imagePrefix": "retrykey",
+    "sections": [
+      {
+        "id": "a-timeout-describes-the-caller-s-observation",
+        "title": "A timeout describes the caller's observation",
+        "body": "A document-conversion request reaches a service, reserves seven processing units and commits a result. The response disappears before the client receives it. The client sees a timeout or connection error. Did the work fail? From that observation alone, the client may not know. Repeating the operation with a fresh identity can apply the effect again even though the first attempt completed successfully.\n\nThis guide separates retry policy from duplicate-effect prevention. A retry decides whether and when to make another attempt. An idempotency contract decides which attempts represent the same logical operation and how the service recognizes their outcome. Backoff can reduce pressure, but it cannot recognize an already committed operation by itself.\n\nThe downloadable Go lab makes the lost-response window explicit without a real network. One function commits an in-memory effect and receipt, then deliberately drops the returned reply. The next call uses the same key. The example is original, bounded and reproducible; it is not a durable database, a payment integration or a universal exactly-once execution mechanism."
+      },
+      {
+        "id": "distinguish-failure-before-work-from-an-unknown-outcome",
+        "title": "Distinguish failure before work from an unknown outcome",
+        "body": "Different failure points require different decisions. A rejected input may never enter the business operation. A client may abandon a call while the service continues. A database commit may succeed while the reply is lost. A remote dependency may perform its effect before the local service manages to record that fact.\n\n| Evidence available | What can be concluded | Useful next action |\n| --- | --- | --- |\n| Definitive validation rejection before admission | This operation was not accepted | Correct the input |\n| Caller deadline elapsed | Caller stopped waiting | Preserve identity; inspect the operation contract |\n| Stored committed receipt for the same key | The recorded operation completed | Return or reconcile that result |\n| External effect with missing local record | Local evidence is incomplete | Reconcile with the external owner |\n\nThe [HTTP semantics specification](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2) defines method idempotency, but an application still needs to understand its actual operation. A response status or a transport exception is not a complete transaction log. Do not infer that no business effect occurred merely because the client did not receive a successful response.\n\nIn particular, unknown is often the caller's knowledge state, not a special row that every service stores. The lab's service knows it committed; its simulated caller has lost the response. Keeping those viewpoints separate makes reconciliation much easier to explain."
+      },
+      {
+        "id": "give-the-logical-operation-a-stable-identity",
+        "title": "Give the logical operation a stable identity",
+        "body": "The client should preserve the same operation key across attempts that are intended to represent one action. Generating a new key after every timeout declares a different operation to a service whose contract uses that key for deduplication. The second request may then be entirely valid and still produce the duplicate effect the client wanted to avoid.\n\nOur toy request contains a job name and a positive unit count. The store compares those typed fields when a key already exists. A matching request receives the original receipt identifier and committed total, with separate replay metadata. A valid but different job name or unit count produces a conflict and does not change state.\n\n```go\nif old, ok := s.records[key]; ok {\n    if old.request != req {\n        return Receipt{}, ErrConflict\n    }\n    replay := old.receipt\n    replay.Replayed = true\n    return replay, nil\n}\n```\n\nChoose the identity scope deliberately in a real API. An operation name, API version and authorized caller scope may be part of the contract. An idempotency key is not authentication or permission to retrieve somebody else's result. Avoid putting secrets or personal information into keys just to make them recognizable in logs.\n\nThe [Stripe idempotency documentation](https://docs.stripe.com/api/idempotent_requests) is a concrete provider example and distinguishes API-version behavior. Read the selected provider's actual replay, conflict and retention rules instead of assuming that every API implements this lab's contract."
+      },
+      {
+        "id": "record-the-effect-and-receipt-under-one-boundary",
+        "title": "Record the effect and receipt under one boundary",
+        "body": "If the business effect can commit without the deduplication record, a retry may see no record and apply the effect again. If a completed-looking receipt can be stored before the effect is actually committed, a retry may incorrectly report success. The relationship between those two records is the core invariant.\n\nIn the lab, one mutex protects the total, lookup and receipt insertion. Both the effect and its receipt exist in the same process memory and are changed within one local critical section. This makes the example's concurrency behavior easy to test, while leaving durability explicitly outside its claim.\n\n```go\ns.total += req.Units\nres := Receipt{ID: len(s.records) + 1, Total: s.total}\ns.records[key] = record{request: req, receipt: res}\nreturn res, nil\n```\n\nFor a database-backed service, put the relevant local business change and idempotency result inside an appropriate database transaction. The [Go transaction guide](https://go.dev/doc/database/execute-transactions) explains using a transaction object for the operations that belong to it. Mixing unrelated pool calls into the workflow can accidentally move work outside the intended transaction.\n\nThe companion [synchronization guide](/news/go-concurrency-invariants-mutex-atomic-snapshots) illustrates the same mistake at a smaller scale: individually safe reads and writes do not automatically make their composition one atomic operation. Here the missing boundary can survive a client timeout and become a duplicate business effect."
+      },
+      {
+        "id": "use-durable-uniqueness-and-test-the-chosen-isolation-behavior",
+        "title": "Use durable uniqueness and test the chosen isolation behavior",
+        "body": "A local mutex coordinates goroutines in one process. Two service instances do not share it. A deployment with several replicas needs a shared authority for operation identity if requests can reach different instances. A check in application memory followed by an insert is not a substitute for a durable uniqueness rule.\n\nThe [PostgreSQL constraint reference](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS) describes uniqueness constraints. The exact key should reflect the API's identity scope. The [transaction-isolation reference](https://www.postgresql.org/docs/current/transaction-iso.html) explains why concurrent transaction behavior depends on the selected isolation level and operations. A production implementation must handle conflicts, waiting and serialization failures under that actual model.\n\nDo not copy a fragment of SQL and assume it resolves every concurrent conflict. Test two real connections presenting the same key, the same key with changed input, a rollback before commit, and a connection failure around commit. Verify both the stored effect and the response returned by the retry.\n\nThe in-memory lab does not perform those database tests or certify a particular driver. It teaches the invariant that the durable implementation must preserve. The earlier [database/sql guide](/news/go-database-sql-pool-timeouts-transactions) covers transaction ownership, pool limits and deadlines that remain relevant while duplicate requests wait for an outcome."
+      },
+      {
+        "id": "replay-a-historical-receipt-without-pretending-it-is-current-state",
+        "title": "Replay a historical receipt without pretending it is current state",
+        "body": "An idempotency result can describe what happened when the original operation committed. It need not be a fresh query of all current application state. The lab makes that distinction visible: operation one records a total of seven; another separately identified operation later raises the current total to fourteen. Replaying operation one still returns its original total of seven.\n\nThat result is consistent with the declared receipt contract. Treating it as the current total would be a client modeling error. Name fields and endpoints so callers can distinguish a historical operation result from a live resource read. If the API instead promises an updated representation on replay, document and test that different behavior.\n\nLikewise, decide which delivery metadata is separate from the business result. Our Replayed flag changes to describe how the reply was obtained; its operation identifier and committed total remain the recorded values. We do not claim byte-for-byte identical response bodies for this toy API.\n\nPersist enough information to honor the response contract through a deployment. A code update that can no longer decode older result records may break retries for operations that are still within their supported replay window. Include result schema evolution in the design rather than treating stored responses as an incidental cache that can be discarded without changing behavior."
+      },
+      {
+        "id": "define-what-concurrent-duplicates-should-observe",
+        "title": "Define what concurrent duplicates should observe",
+        "body": "When many callers present the same key simultaneously, a service needs a policy for the in-progress operation. It may wait within a deadline, return a pending response with a lookup path, or reject an overlapping attempt according to its API contract. What matters is that duplicate callers do not independently perform the same unprotected effect.\n\nThe lab serializes calls inside the local mutex. Its concurrent test starts sixty-four callers with one key and verifies one effect, one original receipt and consistent replayed business results. That is a local result for the included implementation, not evidence that an external service or a multi-replica deployment has the same behavior.\n\nThe [singleflight package](https://pkg.go.dev/golang.org/x/sync/singleflight) addresses duplicate in-flight function calls in one process. It solves a different problem from durable idempotency. Suppressing overlapping work does not by itself preserve a result after restart or prevent a later repeated request from applying an effect again.\n\nIf the durable design stores a pending state, define who owns it and how another worker decides whether it may take over. An expired lease does not prove the previous worker has stopped or that its external effect did not happen. The [coordination lesson](/learn/datastores.redis-coordination) helps connect ownership, conditional transitions and the limits of a simple expiry timestamp."
+      },
+      {
+        "id": "a-local-transaction-does-not-cover-a-separate-external-effect",
+        "title": "A local transaction does not cover a separate external effect",
+        "body": "A service may commit local state and then publish a message, invoke another API or write to another independent system. There is a failure window between those operations unless the architecture supplies a protocol that covers it. A local idempotency row cannot magically make all remote work part of its transaction.\n\nThe [transactional outbox guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html) describes recording outgoing work with a local database change so a separate delivery process can retry it. The receiving side still needs an appropriate duplicate-handling contract. Delivery retries and consumer effects belong to related but separate boundaries.\n\nFor the document service, a local accepted job and its outgoing event might be recorded together. A dispatcher can resend the event after a failure. The consumer identifies the intended operation and avoids creating another conversion for the same event identity. The design should explain when work is acknowledged and how an operator can reconcile a persistent uncertain outcome.\n\nThese are architectural recommendations, not capabilities secretly implemented by the small Store example. It has no database, queue, remote API or durable recovery. Follow the [event-driven architecture lesson](/learn/architecture.event-driven) and [SQL retry lesson](/learn/sql.retry-and-idempotency) when translating the local invariant into a real workflow with more than one failure domain."
+      },
+      {
+        "id": "keep-retry-policy-bounded-and-owned-by-one-layer",
+        "title": "Keep retry policy bounded and owned by one layer",
+        "body": "Even a correctly idempotent effect can be expensive to look up, validate or wait for. Retrying indefinitely can increase load precisely when a dependency is least able to recover. The [AWS retry guidance](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/) explains the role of timeouts, backoff and jitter in controlling that pressure.\n\nChoose an overall operation budget, a finite attempt policy and a definition of retryable failures. Keep the same logical identity throughout those attempts. If several nested layers each retry independently, the number of downstream calls can grow far beyond the caller's intended allowance. Decide which layer owns retries and expose enough information for the other layers to avoid repeating the policy accidentally.\n\nThe [context package](https://pkg.go.dev/context) provides deadline and cancellation propagation within Go calls. A child attempt should respect the remaining parent allowance. Waiting before the next attempt must also be cancellable. A caller's expired budget should not silently reset to a full new budget at every helper boundary.\n\nUse [bounded work](/news/go-backpressure-concurrency-limits-queues-deadlines), the [retry-pattern lesson](/learn/patterns.retry) and [time budgets](/news/go-time-utc-dst-monotonic-deadlines) together. Backoff chooses when to try; idempotency preserves operation identity; admission control decides whether the system can accept more work. None of those responsibilities disappears because the others are present."
+      },
+      {
+        "id": "make-retention-and-capacity-part-of-the-contract",
+        "title": "Make retention and capacity part of the contract",
+        "body": "A deduplication record cannot recognize a retry after it has been forgotten. Expiring records therefore changes the period during which the API can honor a particular replay promise. Choose that period from the operation's retry and delivery horizon, including delayed clients or redeliveries that the system is expected to support.\n\nOur lab deliberately caps its ledger at sixty-four records and its total units at one million. These are demonstration boundaries, not recommended production settings. A new operation beyond capacity is rejected; an already stored matching request can still replay. The test checks lookup before the new-operation capacity check so saturation does not unnecessarily block an existing receipt.\n\nA production service needs a storage, cleanup and rejection policy that preserves its documented semantics. Deleting the oldest record whenever memory becomes inconvenient can make a delayed duplicate look like a new operation. Keeping everything indefinitely can create an unbounded resource problem. The tradeoff must be explicit and observable.\n\nRecord decisions about key reuse, operation duration and result availability. If clients are allowed to retry after process restart, the client must preserve its operation identity and the server must retain the relevant durable evidence. A temporary local variable or a one-hour collaboration room is not a durable business-operation ledger."
+      },
+      {
+        "id": "reproduce-the-lost-reply-in-playground",
+        "title": "Reproduce the lost reply in Playground",
+        "body": "[Download the synchronization and retry lab](/downloads/go-reliability-lab-20261029.zip) and inspect retrykey/main.go. Before replacing an existing [Playground](/playground) draft, download your source copy. Paste the self-contained program into main.go and keep a compatible go.mod. The example uses standard-library packages and in-memory state, with no remote requests or credentials.\n\nAll attempts in this demonstration occur inside one invocation of main. Each new Run constructs a fresh Store; it does not recover a ledger from an earlier run. This is important when interpreting the result. The example demonstrates a lost response after a local commit and replay within that store's lifetime, not durable recovery across app launches.\n\nPredict the result, run once, then change one input. Reuse the same key and request: the effect remains seven. Change the valid unit count under the same key: the request conflicts. Change to a new key: it declares another operation and the current total becomes fourteen. Compare the historical receipt with the current total after that second operation.\n\nTo collaborate, create a temporary room deliberately, open it in a compatible GopherForge app and press Run on the device that should execute. Other participants receive device-labelled output for that source revision. Claude or Codex can suggest a mutation through MCP, but editing does not start execution. The [MCP guide](/guide/mcp) explains the link capabilities and expiry; reading this article does not create or publish a room."
+      },
+      {
+        "id": "test-the-failure-window-not-only-the-success-response",
+        "title": "Test the failure window, not only the success response",
+        "body": "The suite verifies the effect and receipt immediately after the simulated reply disappears, then retries using the stable key. It also covers changed input, concurrent duplicates, historical receipts, invalid requests, capacity rejection and replay at capacity. The critical assertions concern stored state and operation identity, not just whether an error message appeared.\n\n```sh\ngo test -race -count=50 ./...\ngo vet ./...\ngo run ./retrykey\n```\n\nNegative variants remove the changed-input check or omit receipt insertion. Their tests must fail: a mismatched request cannot silently receive another operation's result, and an unrecorded committed effect cannot be replayed safely. The complete native suite was checked with Go 1.27.3; the standalone programs also cross-compile for wasip1/wasm. That target build is separate from certifying every runtime host or a production distributed system.\n\nFor the real service, extend the matrix across process termination, database commit, message delivery and external effects. Decide which evidence survives each failure and which owner can reconcile it. A useful retry design does not promise that nothing can ever happen twice. It specifies one logical identity, the boundary protecting its effect and receipt, the period those records remain authoritative, and the action a caller should take when its observation is incomplete."
+      }
+    ],
+    "sources": [
+      {
+        "title": "HTTP method idempotency",
+        "url": "https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2"
+      },
+      {
+        "title": "Timeouts, retries, backoff and jitter",
+        "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+      },
+      {
+        "title": "Provider-specific idempotency contracts",
+        "url": "https://docs.stripe.com/api/idempotent_requests"
+      },
+      {
+        "title": "Go database transactions",
+        "url": "https://go.dev/doc/database/execute-transactions"
+      },
+      {
+        "title": "Durable uniqueness constraints",
+        "url": "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS"
+      },
+      {
+        "title": "Transaction isolation",
+        "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+      },
+      {
+        "title": "In-flight duplicate suppression",
+        "url": "https://pkg.go.dev/golang.org/x/sync/singleflight"
+      },
+      {
+        "title": "Transactional outbox boundaries",
+        "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html"
+      },
+      {
+        "title": "Go context deadlines",
+        "url": "https://pkg.go.dev/context"
+      }
+    ],
+    "related": [
+      "go-concurrency-invariants-mutex-atomic-snapshots",
+      "go-database-sql-pool-timeouts-transactions",
+      "go-backpressure-concurrency-limits-queues-deadlines"
+    ],
+    "wordCount": 2404,
+    "proseWordCount": 2404,
+    "sourceCheckedAt": "2026-10-29",
+    "keywords": [
+      "Go idempotency key implementation",
+      "Go retries unknown outcome",
+      "Go duplicate request prevention",
+      "Go transactional outbox retry"
+    ],
+    "editionDate": "2026-10-11",
     "kind": "guide"
   }
 ]

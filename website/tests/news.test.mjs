@@ -48,11 +48,6 @@ test("1, 3 and 13 October memory guides retain truthful dates, complete experime
       assert.ok(images[a.id].alt.length > 30);
     }
   }
-  assert.ok(
-    !news.some(
-      (n) => n.editionDate >= "2026-10-05" && n.editionDate <= "2026-10-11",
-    ),
-  );
 });
 // Date-only editorial fields use the publication desk's calendar, not UTC midnight.
 const editorialToday = new Intl.DateTimeFormat("en-CA", {
@@ -306,6 +301,57 @@ test("4 and 12 October boundary guides pair deep content with reproducible Playg
           : kind === "interview"
             ? questions.some((q) => q.id === id)
             : news.some((a) => a.slug === id),
+        m[1],
+      );
+    }
+    for (const suffix of ["hero", "detail", "infographic"]) {
+      const a = manifest.assets.find(
+        (a) => a.id === `${n.imagePrefix}-${suffix}`,
+      );
+      assert.equal(a?.mode, "built-in image_gen");
+      assert.equal(images[a.id].width, 1536);
+      assert.equal(images[a.id].height, 1024);
+      assert.ok(images[a.id].alt.length > 30);
+    }
+  }
+});
+
+test("5 and 11 October reliability guides contain deep original labs and six distinct generated images", async () => {
+  const posts = news.filter((n) =>
+    ["2026-10-05", "2026-10-11"].includes(n.editionDate),
+  );
+  assert.equal(posts.length, 2);
+  assert.equal(new Set(posts.map((n) => n.editionDate)).size, 2);
+  const manifest = await read(
+    "../../docs/website/reliability-20261029/assets.json",
+  );
+  assert.equal(manifest.assets.length, 6);
+  assert.equal(new Set(manifest.assets.map((a) => a.sha256)).size, 6);
+  const lessons = (await read("../src/content/course.json")).flatMap(
+    (u) => u.lessons,
+  );
+  for (const n of posts) {
+    const body = n.sections.map((s) => s.body).join("\n");
+    const prose = body
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/[|`#]/g, " ");
+    assert.ok(prose.split(/\s+/).filter(Boolean).length >= 2000, n.slug);
+    assert.equal(n.kind, "guide");
+    assert.equal(n.publishedAt, "2026-10-29");
+    assert.ok(n.sources.length >= 6);
+    assert.ok(body.includes("](/playground)"));
+    assert.ok(body.includes("](/guide/mcp)"));
+    assert.ok(body.includes("/downloads/go-reliability-lab-20261029.zip"));
+    assert.ok(body.includes("```go\n"));
+    for (const m of body.matchAll(
+      /\]\((\/(?:learn|news)\/[^)#]+)(?:#[^)]*)?\)/g,
+    )) {
+      const [kind, id] = m[1].slice(1).split("/");
+      assert.ok(
+        kind === "learn"
+          ? lessons.some((l) => l.id === id)
+          : news.some((a) => a.slug === id),
         m[1],
       );
     }

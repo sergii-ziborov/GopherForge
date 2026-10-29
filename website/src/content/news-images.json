@@ -412,5 +412,41 @@
     "width": 1536,
     "height": 1024,
     "alt": "Define, locate, calculate and test: choose a time contract, location rules, arithmetic and fixed transition cases."
+  },
+  "invariants-hero": {
+    "src": "/images/news/invariants-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Two separately protected updates converge into one output, illustrating a lost update between synchronized operations."
+  },
+  "invariants-detail": {
+    "src": "/images/news/invariants-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Readers retain a completed configuration while a writer assembles a separate version before atomic publication."
+  },
+  "invariants-infographic": {
+    "src": "/images/news/invariants-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Define, protect, publish and test: identify an invariant, protect its complete transition, publish owned state and test competing operations."
+  },
+  "retrykey-hero": {
+    "src": "/images/news/retrykey-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A completed operation loses its reply; a repeated ticket matches a stored record and receives the original receipt."
+  },
+  "retrykey-detail": {
+    "src": "/images/news/retrykey-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An effect and its receipt share one commit boundary while the reply channel and an independent external service remain outside it."
+  },
+  "retrykey-infographic": {
+    "src": "/images/news/retrykey-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Identify, commit, replay and reconcile: preserve operation identity, record the effect and result, replay matching requests and investigate uncertain outcomes."
   }
 }

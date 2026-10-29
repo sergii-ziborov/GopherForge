@@ -1,0 +1,26 @@
+[
+  {
+    "case": "exact-reservation",
+    "test": "TestReserveBoundary",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestReserveBoundary (0.00s)\n    main_test.go:37: exact stock must be reservable\nFAIL\nFAIL\tgopherforge.news/reliabilitylab/invariants\t0.252s\nFAIL"
+  },
+  {
+    "case": "snapshot-ownership",
+    "test": "TestSnapshotOwnership",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestSnapshotOwnership (0.00s)\n    main_test.go:73: snapshot leaked mutable ownership\nFAIL\nFAIL\tgopherforge.news/reliabilitylab/invariants\t0.240s\nFAIL"
+  },
+  {
+    "case": "payload-identity",
+    "test": "TestChangedInputConflict",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestChangedInputConflict (0.00s)\n    main_test.go:30: changed input did not conflict\nFAIL\nFAIL\tgopherforge.news/reliabilitylab/retrykey\t0.342s\nFAIL"
+  },
+  {
+    "case": "effect-receipt-boundary",
+    "test": "TestLostReplyReconciliation",
+    "expectedFailureObserved": true,
+    "output": "--- FAIL: TestLostReplyReconciliation (0.00s)\n    main_test.go:18: effect and receipt missing after lost reply\nFAIL\nFAIL\tgopherforge.news/reliabilitylab/retrykey\t0.346s\nFAIL"
+  }
+]

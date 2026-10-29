@@ -1,0 +1,5 @@
+two synchronized read-then-write increments: 1
+two complete Add operations: 2
+reserve exact stock: true; remaining=0
+after caller mutations: limit=10
+published pair: version=2 limit=20

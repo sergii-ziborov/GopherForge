@@ -1,0 +1,6 @@
+naive effect after lost reply and retry: 14
+first response: reply lost: caller has an unknown outcome; actual stored total=7
+same key: id=1 receipt-total=7 replayed=true error=<nil>
+changed input: conflict=true total=7
+new key declares another operation: id=2 total=14 error=<nil>
+original receipt after later work: found=true total-at-original-commit=7

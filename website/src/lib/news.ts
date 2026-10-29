@@ -18,6 +18,10 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  invariants:
+    "Define → Protect → Publish → Test. Name the invariant, protect its complete transition, preserve ownership during publication and test a controlled competing operation. Conceptual diagram, not a synchronization benchmark.",
+  retrykey:
+    "Identify → Commit → Replay → Reconcile. Preserve logical operation identity, record its local effect and receipt together, replay matching results and investigate uncertain outcomes. A local boundary does not cover independent external effects.",
   streamio:
     "Read → Bound → Parse → Check. Preserve final bytes, enforce a finite envelope, validate document framing and report the actual outcome. Conceptual workflow, not a throughput benchmark.",
   gotime:

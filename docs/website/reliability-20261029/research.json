@@ -1,0 +1,102 @@
+{
+  "checkedOn": "2026-10-29",
+  "method": "Original practical guides, original in-memory Go labs with controlled interleavings and lost-reply simulation. No third-party application reproduced. No performance benchmark or durable distributed-system guarantee. Requested archive editions remain separate from actual publication on 29 October.",
+  "articles": [
+    {
+      "key": "invariants",
+      "day": "05",
+      "slug": "go-concurrency-invariants-mutex-atomic-snapshots",
+      "title": "Go concurrency: mutexes, invariants and atomic snapshots",
+      "description": "Understand lost updates despite synchronized access, protect complete transitions and publish immutable snapshots. Tested Go code and hands-on Playground exercises.",
+      "category": "GUIDE \u00b7 GO CONCURRENCY CORRECTNESS",
+      "keywords": [
+        "Go concurrency lost update",
+        "Go mutex invariant",
+        "Go atomic immutable snapshot",
+        "Go race detector correctness"
+      ],
+      "sources": [
+        {
+          "title": "Go memory model",
+          "url": "https://go.dev/ref/mem"
+        },
+        {
+          "title": "Mutex, RWMutex and sync.Map",
+          "url": "https://pkg.go.dev/sync"
+        },
+        {
+          "title": "Atomic publication semantics",
+          "url": "https://pkg.go.dev/sync/atomic"
+        },
+        {
+          "title": "Race detector scope",
+          "url": "https://go.dev/doc/articles/race_detector"
+        },
+        {
+          "title": "Go maps and concurrency",
+          "url": "https://go.dev/blog/maps"
+        },
+        {
+          "title": "Shallow map copying",
+          "url": "https://pkg.go.dev/maps#Clone"
+        },
+        {
+          "title": "Static checks with go vet",
+          "url": "https://pkg.go.dev/cmd/vet"
+        }
+      ]
+    },
+    {
+      "key": "retrykey",
+      "day": "11",
+      "slug": "go-retries-idempotency-keys-unknown-outcomes",
+      "title": "Go retries: idempotency keys and unknown outcomes",
+      "description": "Design retry-safe Go operations with stable keys, matching inputs, recorded receipts and explicit unknown outcomes. Includes a tested lab and Playground exercises.",
+      "category": "GUIDE \u00b7 GO SERVICE RELIABILITY",
+      "keywords": [
+        "Go idempotency key implementation",
+        "Go retries unknown outcome",
+        "Go duplicate request prevention",
+        "Go transactional outbox retry"
+      ],
+      "sources": [
+        {
+          "title": "HTTP method idempotency",
+          "url": "https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2"
+        },
+        {
+          "title": "Timeouts, retries, backoff and jitter",
+          "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+        },
+        {
+          "title": "Provider-specific idempotency contracts",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
+        },
+        {
+          "title": "Go database transactions",
+          "url": "https://go.dev/doc/database/execute-transactions"
+        },
+        {
+          "title": "Durable uniqueness constraints",
+          "url": "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS"
+        },
+        {
+          "title": "Transaction isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        },
+        {
+          "title": "In-flight duplicate suppression",
+          "url": "https://pkg.go.dev/golang.org/x/sync/singleflight"
+        },
+        {
+          "title": "Transactional outbox boundaries",
+          "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html"
+        },
+        {
+          "title": "Go context deadlines",
+          "url": "https://pkg.go.dev/context"
+        }
+      ]
+    }
+  ]
+}
