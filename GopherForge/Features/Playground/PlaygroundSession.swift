@@ -63,6 +63,7 @@ final class PlaygroundSession {
     private struct Saved: Codable {
         let files: [String: String]; let seat: String?; let owner: String?; let edit: String?; let view: String?
         let room: PlaygroundRoom?; let dirty: Bool; let pending: PendingResult?
+        let lastLocalOutput: String?
     }
     static let starter = ["go.mod": "module playground\n\ngo 1.27.1\n", "main.go": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello from my device\")\n}\n"]
     var files = starter
@@ -101,6 +102,7 @@ final class PlaygroundSession {
         if let data = try? Data(contentsOf: self.storageURL), let saved = try? JSONDecoder().decode(Saved.self, from: data) {
             files = saved.files; seat = saved.seat; owner = saved.owner; edit = saved.edit; view = saved.view
             room = saved.room; dirty = saved.dirty; pending = saved.pending
+            localOutput = saved.lastLocalOutput ?? ""
             status = "Local draft restored. Reconnecting never starts a run."
         }
     }
@@ -116,7 +118,7 @@ final class PlaygroundSession {
     private func save() {
         do {
             try FileManager.default.createDirectory(at: storageURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-            let value = Saved(files: files, seat: seat, owner: owner, edit: edit, view: view, room: room, dirty: dirty, pending: pending)
+            let value = Saved(files: files, seat: seat, owner: owner, edit: edit, view: view, room: room, dirty: dirty, pending: pending, lastLocalOutput: localOutput)
             try JSONEncoder().encode(value).write(to: storageURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         } catch { status = "Draft could not be saved: \(error.localizedDescription). Save a separate project copy before leaving." }
     }
@@ -127,6 +129,7 @@ final class PlaygroundSession {
             guard let caps = created.capabilities else { return }
             let joined: PlaygroundRoom = try await transport.call(["op": "join", "kind": "native", "name": name], token: caps.owner)
             owner = caps.owner; edit = caps.edit; view = caps.view; seat = joined.participantCapability
+            pending = nil; localOutput = ""
             dirty = false; conflict = false; room = joined; connected = true
             status = "Room created for one hour. Share Edit/View deliberately; keep your own copy."; save()
         } catch { status = error.localizedDescription }
@@ -139,6 +142,7 @@ final class PlaygroundSession {
         do {
             let joined: PlaygroundRoom = try await transport.call(["op": "join", "kind": "native", "name": name], token: cap)
             room = joined; files = joined.files; seat = joined.participantCapability
+            pending = nil; localOutput = ""
             owner = nil; edit = joined.role == "view" ? nil : cap; view = joined.role == "view" ? cap : nil
             dirty = false; conflict = false; connected = true; selectedFile = "main.go"
             status = "Joined. Nothing runs until you press Run/Test on this device."; save()
@@ -160,7 +164,8 @@ final class PlaygroundSession {
         do {
             if let pending {
                 let _: PlaygroundRoom = try await transport.call(["op": "finish_run", "runID": pending.runID, "stdout": pending.stdout, "stderr": pending.stderr, "succeeded": pending.succeeded], token: seat)
-                self.pending = nil
+                guard self.seat == seat else { return }
+                if self.pending?.runID == pending.runID { self.pending = nil }
             }
             let next: PlaygroundRoom = try await transport.call(["op": "read"], token: seat)
             guard self.seat == seat, !isBusy, next.id == room?.id, next.revision >= (room?.revision ?? 0) else { return }
@@ -196,6 +201,7 @@ final class PlaygroundSession {
         else { result = test ? await compiler.test(project: snapshot) : await compiler.run(project: snapshot) }
         let stdout = bounded(result.stdout), stderr = bounded(result.stderr + (result.succeeded ? "" : "\n" + result.detail))
         localOutput = stdout + "\n" + stderr
+        save()
         if let runID { pending = PendingResult(runID: runID, stdout: stdout, stderr: stderr, succeeded: result.succeeded); save(); await poll() }
         if !result.succeeded { status = "Local run failed. Read the diagnostic below." }
         else if runID == nil { status = "Local run finished. This draft was not uploaded." }
@@ -210,6 +216,14 @@ final class PlaygroundSession {
             room = nil; seat = nil; self.owner = nil; edit = nil; view = nil; connected = false; save()
             status = "Room closed. Your local copy is kept."
         } catch { status = error.localizedDescription }
+    }
+    /// Leaving is local and works even after expiry or a relay restart.
+    func leave() {
+        guard !isRunning, !isBusy else { return }
+        room = nil; seat = nil; owner = nil; edit = nil; view = nil; pending = nil
+        connected = false; conflict = false; dirty = false
+        status = "Room left. Source and last local Output are kept here. You can run locally or create another room."
+        save()
     }
     func independentProject() -> GopherForgeProject {
         GopherForgeProject(name: "Playground copy", files: files, entryFile: "main.go", provenance: .files())

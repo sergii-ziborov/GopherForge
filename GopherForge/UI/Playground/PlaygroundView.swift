@@ -58,7 +58,7 @@ struct PlaygroundView: View {
                 }
                 if !session.localOutput.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        Label("This device · Output", systemImage: "terminal").font(.subheadline.bold())
+                        Label("Last local Output", systemImage: "terminal").font(.subheadline.bold())
                         Text(session.localOutput).font(.system(.caption, design: .monospaced)).textSelection(.enabled).accessibilityIdentifier("playground.localOutput")
                     }.padding().frame(maxWidth: .infinity, alignment: .leading).background(.background.secondary, in: RoundedRectangle(cornerRadius: 14))
                 }
@@ -112,6 +112,7 @@ struct PlaygroundView: View {
                 if let url = session.viewURL { ShareLink("View-only link", item: url) }
                 Button("Publish edits") { Task { await session.publish() } }.disabled(!session.dirty || session.isBusy || session.conflict)
                 if session.canClose { Button("Close room", role: .destructive) { Task { await session.close() } }.disabled(session.isRunning) }
+                Button("Leave room, keep local draft") { session.leave() }.disabled(session.isRunning || session.isBusy)
             } else {
                 Text("Creating a room uploads this draft for collaborative editing. No account. No code runs on the relay.").font(.footnote).foregroundStyle(.secondary)
                 Button("Create a one-hour room") { Task { await session.create(name: UIDevice.current.model) } }

@@ -1,7 +1,7 @@
 {
   "source": "Native GoCourseCatalog + ReadingLessons.json",
-  "appVersion": "1.3.1 \u2014 Build 49 content plus development MCP learning notes",
-  "publicAppVersion": "1.2.0",
+  "appVersion": "1.3.2 \u2014 Build 49 course with development MCP learning additions",
+  "publicAppVersion": "1.3.1",
   "catalogSHA256": "ebb77d8cbee4f6ff48b9d8fc99e60ea299ceaf8180285fabbe8ba8894798560d",
   "units": 28,
   "lessons": 242,

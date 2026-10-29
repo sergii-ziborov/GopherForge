@@ -75,6 +75,13 @@ import XCTest
         await b.run(test: false); await a.poll()
         observed = await counts.values(); XCTAssertEqual(observed, ["a": 1, "b": 1])
         XCTAssertEqual(a.room?.runs.last?.device, "Test device B")
+        let ownSource = b.files
+        b.leave()
+        XCTAssertNil(b.room); XCTAssertEqual(b.files, ownSource)
+        XCTAssertTrue(b.localOutput.contains("output from B"))
+        let left = PlaygroundSession(transport: transport, storageURL: directory.appending(path: "b.json"))
+        XCTAssertNil(left.room); XCTAssertEqual(left.files, ownSource)
+        XCTAssertTrue(left.localOutput.contains("output from B"))
         let restored = PlaygroundSession(transport: transport, storageURL: directory.appending(path: "a.json"))
         XCTAssertEqual(restored.files, a.files); XCTAssertFalse(restored.isRunning)
         await a.close()

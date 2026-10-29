@@ -50,8 +50,10 @@ export default function Learn() {
           The expanded web library includes Gin, blockchain infrastructure,
           service security and production system design, prepared for native{" "}
           {releases.curriculum.version}. App Store {releases.public.version}{" "}
-          includes Continue. The AI lessons now also describe the next-development MCP Playground; those additions are not in build 49. See <Link href="/updates">version history</Link>{" "}
-          for release status. Continue saves your lesson and section in this
+          includes the expanded course and Continue. The AI lessons now also
+          describe the development MCP Playground in 1.3.2; those additions are
+          not in build 49. See <Link href="/updates">version history</Link> for
+          release status. Continue saves your lesson and section in this
           browser. Web and app progress are stored separately.
         </p>
       </header>

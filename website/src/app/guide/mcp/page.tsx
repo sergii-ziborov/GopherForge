@@ -48,10 +48,10 @@ export default function MCPGuide() {
         </strong>
         <p>
           The web editor and MCP are available with this website update. Native
-          Playground and app progress publishing require the next development
-          build. App Store 1.2.0 and the submitted 1.3.1 (49) do not contain
-          these additions. Browser Go execution is not included: open the room
-          in a compatible native build to run on that device.
+          Playground and app progress publishing require development build 1.3.2
+          (51). App Store 1.3.1 (49) does not contain these additions. Browser
+          Go execution is not included: open the room in a compatible native
+          build to run on that device.
         </p>
       </aside>
       <h2>What happens when someone presses Run?</h2>

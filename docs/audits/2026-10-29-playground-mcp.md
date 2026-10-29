@@ -28,3 +28,9 @@ The owner requested interactive Claude/Codex access, execution only on the devic
 - https://learn.chatgpt.com/docs/extend/mcp
 - https://code.claude.com/docs/en/mcp
 - https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp
+
+## Final lifecycle follow-up
+
+The first internal upload (50) was expired before final delivery after the expiry/reconnect walkthrough identified a missing local Leave action. Final candidate 51 adds **Leave room, keep local draft**, including after an expiry/restart, preserves last local Output on disk and prevents an older pending-result acknowledgement from clearing a new room’s result. Existing local files and learning records are unchanged. Browser reconnection was exercised with an unpublished edit followed immediately by reload: the exact draft stayed visible, publication was blocked for review, and the owner’s Close action survived reload.
+
+Apple also released 1.3.1 (49) automatically: live App Store Connect now reports READY_FOR_SALE. The site and README status are updated separately from the new MCP beta; the release receipt is `docs/releases/1.3.1-build49-release.json`.

@@ -1,14 +1,15 @@
 {
-  "checkedOn": "2026-10-28",
+  "checkedOn": "2026-10-29",
   "public": {
-    "version": "1.2.0",
-    "build": 45,
+    "version": "1.3.1",
+    "build": 49,
     "status": "Available on the App Store"
   },
   "next": {
-    "version": "1.3.1",
-    "build": 49,
-    "status": "Waiting for App Review"
+    "version": "1.3.2",
+    "build": 51,
+    "status": "Development preview; not submitted for App Review",
+    "reviewSubmitted": false
   },
   "toolchain": "Go 1.27.1",
   "priceUSD": "6.99",
@@ -18,9 +19,9 @@
     "status": "Internal QA TestFlight"
   },
   "curriculum": {
-    "version": "1.3.1",
-    "build": 49,
-    "status": "Build 49 content plus development MCP learning notes"
+    "version": "1.3.2",
+    "build": 51,
+    "status": "Build 49 course with development MCP learning additions"
   },
   "previousCandidate": {
     "version": "1.3.0",

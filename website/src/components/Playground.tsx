@@ -57,6 +57,7 @@ export function Playground() {
       },
       body: JSON.stringify(body),
       cache: "no-store",
+      signal: AbortSignal.timeout(15000),
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error ?? "Relay unavailable.");
@@ -78,7 +79,11 @@ export function Playground() {
     try {
       localStorage.setItem(
         "gopherforge.playground.draft.v1",
-        JSON.stringify({ files: value, roomID: roomID ?? null, revision: draftRevision.current }),
+        JSON.stringify({
+          files: value,
+          roomID: roomID ?? null,
+          revision: draftRevision.current,
+        }),
       );
     } catch {
       setMessage(
@@ -87,7 +92,14 @@ export function Playground() {
     }
   }
   async function join(raw: string, recovering = false) {
-    if (!recovering && dirty.current && !window.confirm("Joining replaces the editor with this room. Download your current draft first if you need it. Join now?")) return;
+    if (
+      !recovering &&
+      dirty.current &&
+      !window.confirm(
+        "Joining replaces the editor with this room. Download your current draft first if you need it. Join now?",
+      )
+    )
+      return;
     setBusy(true);
     setMessage("");
     try {
@@ -104,21 +116,31 @@ export function Playground() {
         cap,
       );
       seat.current = result.participantCapability!;
-      const keepDraft = recovering && JSON.stringify(Object.entries(draft.current).sort()) !== JSON.stringify(Object.entries(result.files).sort());
+      const keepDraft =
+        recovering &&
+        JSON.stringify(Object.entries(draft.current).sort()) !==
+          JSON.stringify(Object.entries(result.files).sort());
       dirty.current = keepDraft;
       accept(result, !keepDraft);
       if (keepDraft) {
         setConflict(true);
-        setMessage("Your saved local draft differs from the room. It was kept. Download your copy before loading the latest shared source.");
+        setMessage(
+          "Your saved local draft differs from the room. It was kept. Download your copy before loading the latest shared source.",
+        );
       }
       setLinks({
         edit: result.role !== "view" ? cap : undefined,
         view: result.role === "view" ? cap : undefined,
       });
       try {
-        const saved = JSON.parse(sessionStorage.getItem("gopherforge.playground.owner." + result.id) ?? "null");
+        const saved = JSON.parse(
+          sessionStorage.getItem("gopherforge.playground.owner." + result.id) ??
+            "null",
+        );
         if (saved?.owner) setLinks(saved);
-      } catch { /* sharing still works without persistent tab credentials */ }
+      } catch {
+        /* sharing still works without persistent tab credentials */
+      }
       history.replaceState(null, "", "/playground#cap=" + cap);
       if (!keepDraft) backup(result.files, result.id);
     } catch (e) {
@@ -128,19 +150,35 @@ export function Playground() {
     }
   }
   useEffect(() => {
-    let saved: { files?: Record<string, string>; roomID?: string; revision?: number } | null = null;
+    let saved: {
+      files?: Record<string, string>;
+      roomID?: string;
+      revision?: number;
+    } | null = null;
     try {
-      saved = JSON.parse(localStorage.getItem("gopherforge.playground.draft.v1") ?? "null");
+      saved = JSON.parse(
+        localStorage.getItem("gopherforge.playground.draft.v1") ?? "null",
+      );
       if (saved?.files && typeof saved.files["main.go"] === "string") {
-        draft.current = saved.files; setFiles(saved.files); dirty.current = true;
-        draftRevision.current = Number.isSafeInteger(saved.revision) ? saved.revision! : 0;
+        draft.current = saved.files;
+        setFiles(saved.files);
+        dirty.current = true;
+        draftRevision.current = Number.isSafeInteger(saved.revision)
+          ? saved.revision!
+          : 0;
       }
-    } catch { /* keep starter */ }
+    } catch {
+      /* keep starter */
+    }
     if (location.hash) {
       setLink(location.href);
       const cap = new URLSearchParams(location.hash.slice(1)).get("cap");
-      if (!saved?.files || saved.roomID === cap?.split(".")[0]) void join(location.href, true);
-      else setMessage("An earlier local draft was kept. Download it before joining this different room; Join asks before replacing it.");
+      if (!saved?.files || saved.roomID === cap?.split(".")[0])
+        void join(location.href, true);
+      else
+        setMessage(
+          "An earlier local draft was kept. Download it before joining this different room; Join asks before replacing it.",
+        );
     }
     // Joining is an explicit link-open action, never a Run action.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -198,7 +236,14 @@ export function Playground() {
       );
       const caps = result.capabilities!;
       setLinks(caps);
-      try { sessionStorage.setItem("gopherforge.playground.owner." + result.id, JSON.stringify(caps)); } catch { /* owner button remains available for this tab lifetime */ }
+      try {
+        sessionStorage.setItem(
+          "gopherforge.playground.owner." + result.id,
+          JSON.stringify(caps),
+        );
+      } catch {
+        /* owner button remains available for this tab lifetime */
+      }
       const joined = await api(
         { op: "join", name: "Browser owner", kind: "web" },
         caps.owner,
@@ -270,6 +315,27 @@ export function Playground() {
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Could not close.");
     }
+  }
+  function leave() {
+    if (publishing.current) {
+      setMessage(
+        "Wait for the pending publication, or download your draft while it finishes.",
+      );
+      return;
+    }
+    seat.current = "";
+    current.current = null;
+    draftRevision.current = 0;
+    dirty.current = false;
+    setRoom(null);
+    setLinks({});
+    setConnected(false);
+    setConflict(false);
+    history.replaceState(null, "", "/playground");
+    backup(draft.current);
+    setMessage(
+      "Room left. Your local draft is kept; create another room whenever you are ready.",
+    );
   }
   const appCap = links.edit ?? links.view;
   return (
@@ -353,14 +419,15 @@ export function Playground() {
                 ),
             )}
             <p>
-              Native app support is in the next development build; App Store
-              1.2.0 and candidate 1.3.1 (49) do not contain this Playground.
+              Native app support is in development build 1.3.2 (51). App Store
+              1.3.1 (49) does not contain this Playground.
             </p>
           </details>
         )}
         {links.owner && room && (
           <button onClick={() => void close()}>Close this room</button>
         )}
+        {room && <button onClick={leave}>Leave room, keep local draft</button>}
         <p role="status">{message}</p>
         {conflict && (
           <aside>

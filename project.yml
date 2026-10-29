@@ -178,7 +178,7 @@ targets:
         APP_DISPLAY_NAME: GopherForge
         APP_URL_SCHEME: gopherforge
         MARKETING_VERSION: "1.3.2"
-        CURRENT_PROJECT_VERSION: 50
+        CURRENT_PROJECT_VERSION: 51
         CODE_SIGN_ENTITLEMENTS: GopherForge/GopherForge.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
@@ -226,7 +226,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge.Share
         PRODUCT_NAME: GopherForgeShare
         MARKETING_VERSION: "1.3.2"
-        CURRENT_PROJECT_VERSION: 50
+        CURRENT_PROJECT_VERSION: 51
         CODE_SIGN_ENTITLEMENTS: GopherForgeShare/GopherForgeShare.entitlements
         CODE_SIGN_STYLE: Automatic
         APPLICATION_EXTENSION_API_ONLY: YES

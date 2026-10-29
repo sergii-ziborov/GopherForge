@@ -85,16 +85,22 @@ test("sync release record separates the public version from the next native upda
     c.appVersion,
     r.curriculum.version + " — " + r.curriculum.status,
   );
-  assert.equal(r.public.version, "1.2.0");
-  const review = await read(
-    `../../docs/releases/${r.next.version}-build${r.next.build}-submission.json`,
+  if (r.next.reviewSubmitted === true) {
+    const review = await read(
+      `../../docs/releases/${r.next.version}-build${r.next.build}-submission.json`,
+    );
+    assert.equal(r.next.version, review.version);
+    assert.equal(r.next.build, Number(review.build));
+    assert.equal(review.releaseType, "AFTER_APPROVAL");
+  } else {
+    assert.equal(r.next.reviewSubmitted, false);
+  }
+  const receipt = await read(
+    `../../docs/releases/${r.public.version}-build${r.public.build}-release.json`,
   );
-  assert.equal(r.next.version, review.version);
-  assert.equal(r.next.build, Number(review.build));
-  assert.equal(review.releaseType, "AFTER_APPROVAL");
-  const receipt = await read("../../docs/releases/1.2.0-submission.json");
   assert.equal(r.public.version, receipt.version);
   assert.equal(r.public.build, Number(receipt.build));
+  assert.equal(receipt.state, "READY_FOR_SALE");
   assert.ok(r.next.build > r.public.build);
 });
 

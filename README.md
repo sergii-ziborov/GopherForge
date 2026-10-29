@@ -17,11 +17,11 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 28 October 2026 | Changes |
+| Version | Status, checked 29 October 2026 | Changes |
 | --- | --- | --- |
-| **1.3.1 (49)** | Internal QA TestFlight · Waiting for App Review | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
+| **1.3.1 (49)** | Available on the App Store | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
 | **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
-| **1.2.0 (45)** | Available on the App Store | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
+| **1.2.0 (45)** | Previous App Store release | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
 | **1.1.6 (44)** | Available on the App Store | Two ownership readings: borrowed bytes, Scanner tokens and sync.Pool. 171 teaching lessons and 124 readings. |
 | **1.1.5 (43)** | Available on the App Store | Continue for Course and Interview, matching learning layouts, saved progress, and compact Projects/Learn/Settings roots. Fresh learning screenshots for six device sizes. |
 | **1.1.5 (42)** | Superseded by build 43 | Removed duplicate root headings while retaining titles and Back navigation inside details. |
@@ -29,12 +29,12 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.2.0 (45)**, verified on 28 October 2026.
-It includes the earlier 186-lesson curriculum, corrected exercise examples and
-the selected dark teal gopher icon.
+The store currently distributes **1.3.1 (49)**, verified in App Store Connect on 29 October 2026.
+It includes the 220-lesson course, 132 interview guides, offline React and source-debugging workbench,
+and the selected dark teal gopher icon.
 Web material is available with the same stable identifiers. Existing completion, bookmarks
 and Continue storage formats are preserved.
-**1.3.1 (49)** is available in Internal QA TestFlight and submitted to App Review.
+**1.3.1 (49)** passed App Review and was automatically released.
 It includes the 220-lesson course and 132 interview guides together with the direct
 web previews, restored lesson drafts, source-safety fixes, offline React mode and
 automatic source debugging from build 48. Automatic publication after approval is enabled.
@@ -131,7 +131,7 @@ Full Gin/database services need an external native environment.
 
 #### 1.3.0 beta: isolated offline React and source debugging
 
-The beta adds **React + Gin study board** in Examples → Offline frontend. This feature is **not in the current App Store 1.2.0 (45) binary**. It bundles
+The beta adds **React + Gin study board** in Examples → Offline frontend. This feature is included in the current App Store 1.3.1 (49) binary. It bundles
 esbuild 0.28.2 as WASI and a fixed browser catalog: React / React DOM 19.3.1
 and scheduler 0.28.0. The installed app needs no registry or server for this mode.
 
@@ -342,7 +342,7 @@ The [28 October audit plan](docs/audits/2026-10-28-plan.md) tracks source-safety
 
 ## MCP Playground and progress links — development preview
 
-The next development build adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in submitted native 1.3.1 (49).
+Development 1.3.2 (51) adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in public native 1.3.1 (49).
 
 Claude, Codex and compatible clients can read a selected room, publish a revision-checked file set and request a run. Only a person pressing Run/Test in the native app invokes the bundled compiler on that device; other participants receive device-attributed Output. No relay compiler, shell, auto-run on edits or browser Go runner is provided. Standard-library multi-file examples are the initial native Playground contract; save an independent project to use ordinary dependency workflows. Native Stop/runtime limits remain unchanged.
 

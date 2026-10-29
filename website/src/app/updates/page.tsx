@@ -4,7 +4,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
   title: "Version history",
   description:
-    "GopherForge release history: 1.2.0 on the App Store and 1.3.1 with 220 Go lessons, 132 interview guides, offline React and source debugging.",
+    "GopherForge 1.3.1 is on the App Store with 220 Go lessons and 132 interview guides. The 1.3.2 development preview adds MCP collaboration and shareable progress.",
   alternates: { canonical: "/updates" },
 };
 export default function Updates() {
@@ -17,6 +17,21 @@ export default function Updates() {
         <em>What’s next.</em>
       </h1>
       <section className="release" id="v131">
+        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
+        <h2>
+          GopherForge 1.3.1 <small>build 49</small>
+        </h2>
+        <p>
+          Apple released 1.3.1 after review. The course includes 220 teaching
+          lessons, 173 readings and 22 prediction challenges across 28 units,
+          plus 132 interview guides. Offline React, the source debugger, direct
+          web previews, source recovery and saved Continue places are included.
+        </p>
+        <Link className="button" href="/learn">
+          Explore the course →
+        </Link>
+      </section>
+      <section className="release" id="v132">
         <span className="release-badge muted">
           {releases.next.status.toUpperCase()} ·{" "}
           {releases.beta.status.toUpperCase()}
@@ -26,9 +41,11 @@ export default function Updates() {
           <small>build {releases.curriculum.build}</small>
         </h2>
         <p>
-          34 new readings and 40 worked interview guides bring the library to
-          220 teaching lessons, 173 readings and 22 prediction challenges in 28
-          units, with 132 interview guides across 15 topics.
+          The development preview adds a guest Playground for people and AI, a
+          Streamable HTTP MCP server for Claude/Codex, and explicit read-only
+          progress links for teachers and assistants. Run/Test is local to the
+          native device whose person presses the button; other participants
+          receive Output.
         </p>
         <p>
           Explore Gin middleware and request ownership, blockchain package
@@ -39,11 +56,9 @@ export default function Updates() {
           retained.
         </p>
         <p>
-          Version {releases.next.version} ({releases.next.build}) includes the
-          expanded curriculum and all offline frontend, source-debugging and
-          source-recovery improvements. It is{" "}
-          {releases.next.status.toLowerCase()} with automatic release after
-          approval; Internal QA can install it from TestFlight.
+          Version {releases.next.version} ({releases.next.build}) is{" "}
+          {releases.next.status.toLowerCase()}. Room expiry, source revisions,
+          local copies and provider boundaries are explained in the MCP guide.
         </p>
         <Link className="button" href="/learn?direction=design">
           Explore the expanded learning map →
@@ -60,7 +75,7 @@ export default function Updates() {
           Build a React interface offline and trace your Go program one
           statement at a time. These workbench features first appeared in the
           1.3.0 beta and are included in 1.3.1 (49), which replaces that review
-          candidate. The App Store currently distributes 1.2.0.
+          candidate. The App Store currently distributes 1.3.1.
         </p>
         <ul>
           <li>
