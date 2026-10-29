@@ -17,5 +17,14 @@
     ],
     "scope": "local TLS configuration controls; not incident-specific patch verification"
   },
-  "publication": "pending production verification"
+  "publication": "passed; production HTTPS",
+  "publicationReceipt": "docs/website/2026-10-29-mcp51-publication.json",
+  "articleURL": "https://gopherforge.app/news/go-emudhra-urgent-tls-incident-response",
+  "SEO": "Canonical, NewsArticle/OpenGraph/Twitter metadata, RSS newest first and sitemap verified",
+  "responsive": {
+    "viewport": 390,
+    "documentWidth": 390,
+    "navigation": "wrap"
+  },
+  "screenshot": "docs/website/emudhra-published.jpg"
 }

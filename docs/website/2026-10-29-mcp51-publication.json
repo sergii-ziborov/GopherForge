@@ -1,0 +1,137 @@
+{
+  "checkedAt": "2026-10-29T08:36:14.058244+00:00",
+  "sourceCommit": "00415ed237811bc1d19af38760e483a9b6494d67",
+  "nativeSourceCommit": "697ee9b760adc5b9a86e41312c755e6daf1f9c40",
+  "imageDigest": "sha256:92f8192a6f698a762da36b51000ba1e421adee0941bf7a4428f6724575cf145d",
+  "hostwatchJob": "gopherforge-review51-news-00415ed-20261029",
+  "deploymentState": "succeeded",
+  "publicApp": "1.3.1 (49)",
+  "nextApp": "1.3.2 (51) WAITING_FOR_REVIEW / AFTER_APPROVAL",
+  "liveHTTPS": {
+    "checkedAt": "2026-10-29T08:36:14.058244+00:00",
+    "sourceCommit": "00415ed",
+    "articleURL": "https://gopherforge.app/news/go-emudhra-urgent-tls-incident-response",
+    "canonicalAndArticleSchema": "passed",
+    "threeGeneratedImages": "passed",
+    "RSSNewestFirst": "passed",
+    "sitemap": "passed",
+    "lessonLinks": "passed",
+    "reviewStatus": "passed",
+    "priceUSD": "6.99",
+    "MCPGuide": "passed",
+    "routes": {
+      "/news/go-emudhra-urgent-tls-incident-response": {
+        "status": 200,
+        "bytes": 124539
+      },
+      "/images/news/emudhra-hero.webp": {
+        "status": 200,
+        "bytes": 149148
+      },
+      "/images/news/emudhra-detail.webp": {
+        "status": 200,
+        "bytes": 144334
+      },
+      "/images/news/emudhra-infographic.webp": {
+        "status": 200,
+        "bytes": 100856
+      },
+      "/news": {
+        "status": 200,
+        "bytes": 62611
+      },
+      "/news/rss.xml": {
+        "status": 200,
+        "bytes": 9515
+      },
+      "/sitemap.xml": {
+        "status": 200,
+        "bytes": 79464
+      },
+      "/learn/security.tls-trust": {
+        "status": 200,
+        "bytes": 49221
+      },
+      "/learn/modules.tools-toolchain": {
+        "status": 200,
+        "bytes": 36599
+      },
+      "/learn/modules.fuzz-vulnerability": {
+        "status": 200,
+        "bytes": 44476
+      },
+      "/learn/operations.kubernetes-rollout": {
+        "status": 200,
+        "bytes": 45182
+      },
+      "/updates": {
+        "status": 200,
+        "bytes": 39156
+      },
+      "/guide/mcp": {
+        "status": 200,
+        "bytes": 35977
+      },
+      "/": {
+        "status": 200,
+        "bytes": 80360
+      },
+      "/privacy": {
+        "status": 200,
+        "bytes": 21634
+      },
+      "/api/health": {
+        "status": 200,
+        "bytes": 43
+      }
+    }
+  },
+  "preflight": {
+    "articleSEOAndThreeImages": "passed",
+    "sitemap": "passed",
+    "reviewStatus": "passed",
+    "health": "passed",
+    "MCPInitialize": "passed",
+    "progressPublishReadHTML": "passed",
+    "persistentHostFile": "present",
+    "source": "00415ed"
+  },
+  "MCPInteroperability": {
+    "sdk": "@modelcontextprotocol/sdk 1.32.2",
+    "origin": "https://gopherforge.app",
+    "transport": "Streamable HTTP",
+    "initialize": "passed",
+    "toolsListed": 4,
+    "revisionCheckedEdit": "passed",
+    "runRequest": "awaiting_local_button",
+    "automaticRuns": 0,
+    "viewWriteRejected": true
+  },
+  "persistentProgress": {
+    "image": "92f8192a6f698a762da36b51000ba1e421adee0941bf7a4428f6724575cf145d",
+    "restartPolicy": "unless-stopped",
+    "persistentMount": "verified",
+    "snapshotSurvivedProcessReplacement": true,
+    "publicRead": "passed",
+    "revocation": "passed",
+    "source": "00415ed"
+  },
+  "article": {
+    "url": "https://gopherforge.app/news/go-emudhra-urgent-tls-incident-response",
+    "proseWords": 2256,
+    "primarySources": 11,
+    "generatedIllustrations": 3,
+    "eventDate": "2026-10-26",
+    "publishedAt": "2026-10-29"
+  },
+  "mobileLayout": {
+    "viewport": 390,
+    "clientWidth": 390,
+    "documentScrollWidth": 390,
+    "navigation": "wrap"
+  },
+  "screenshot": "docs/website/emudhra-published.jpg",
+  "webTestsPassed": 34,
+  "productionBuild": "passed",
+  "QAOnly": "Disposable rooms closed; the synthetic progress snapshot survived replacement and was revoked. Local 3064 user room was not restarted."
+}
