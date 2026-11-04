@@ -1,0 +1,43 @@
+{
+  "site": "https://gopherforge.app",
+  "sourceCommit": "935162c",
+  "publicationDate": "2026-11-04",
+  "deployment": {
+    "job": "gopherforge-november-935162c-20261104",
+    "state": "succeeded",
+    "finishedAt": "2026-11-04T18:10:19.046676251Z",
+    "image": "sha256:c88158593622de25c9a856dd911d869d78d7efb7313562508ebc7333b980bc78",
+    "previousImage": "sha256:4daeb66dafb0bc14725810e2d6a1b289daf9941bdcc75a280c88015b1772c963",
+    "rollbackTag": "localhost/gopherforge-web:rollback-before-november-935162c"
+  },
+  "published": {
+    "newGuides": 6,
+    "editionDates": ["2026-10-30", "2026-10-31", "2026-11-01", "2026-11-02", "2026-11-03", "2026-11-04"],
+    "proseWordsExcludingCode": 13583,
+    "builtInImageGenIllustrations": 18,
+    "totalJournalArticles": 39,
+    "archivePages": 5,
+    "archivePageCounts": [9, 9, 9, 9, 3],
+    "sitemapURLs": 464,
+    "RSSItems": 39
+  },
+  "publicVerification": {
+    "report": "live-verification.json",
+    "allSixArticlesAnd18Images": "passed",
+    "canonicalTechArticleDatesAndDescriptions": "passed",
+    "internalLinksChecked": 37,
+    "downloadSourceHashes": "passed",
+    "emptyEditionsThrough20261104": [],
+    "newsScreenshot": "live-news.jpg",
+    "blogScreenshot": "live-blog.jpg"
+  },
+  "statePreservation": {
+    "syntheticSnapshotSurvivedReplacement": true,
+    "privateHTMLAndJSONNoindex": true,
+    "revocation": "passed",
+    "QAFileRemoved": true,
+    "newsFeedDelivery": "ok",
+    "restartPolicy": "unless-stopped"
+  },
+  "scope": "Website publication only; no native app binary or App Store submission changes."
+}
