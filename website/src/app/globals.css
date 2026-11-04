@@ -604,6 +604,14 @@ div[id] {
   font-weight: 400;
   margin: 6px 0 18px;
 }
+.journal-teaser-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3/2;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
 .blog-tile > p:not(.card-meta) {
   font-size: 0.85rem;
   color: var(--muted);

@@ -51,23 +51,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
           ? curriculumUpdatedOn
           : path === "/news/feed"
             ? "2026-10-28"
-            : path === "/news" || path.startsWith("/news/page/")
+            : path === "/news" ||
+                path === "/blog" ||
+                path.startsWith("/news/page/")
               ? news[0].modifiedAt
               : path === "/guide"
                 ? guide.updated
-                : ["", "/updates", "/support"].includes(path)
-                  ? releases.checkedOn
-                  : ["/learn", "/interview"].includes(path)
-                    ? curriculumUpdatedOn
-                    : path.startsWith("/learn/units/")
-                      ? unitUpdatedOn(path.split("/").pop()!)
-                      : path.startsWith("/learn/")
-                        ? lessonUpdatedOn(path.slice(7))
-                        : path.startsWith("/interview/")
-                          ? interviewUpdatedOn(
-                              decodeURIComponent(path.slice(11)),
-                            )
-                          : "2026-10-25",
+                : path === ""
+                  ? [releases.checkedOn, news[0].modifiedAt].sort().at(-1)!
+                  : ["/updates", "/support"].includes(path)
+                    ? releases.checkedOn
+                    : ["/learn", "/interview"].includes(path)
+                      ? curriculumUpdatedOn
+                      : path.startsWith("/learn/units/")
+                        ? unitUpdatedOn(path.split("/").pop()!)
+                        : path.startsWith("/learn/")
+                          ? lessonUpdatedOn(path.slice(7))
+                          : path.startsWith("/interview/")
+                            ? interviewUpdatedOn(
+                                decodeURIComponent(path.slice(11)),
+                              )
+                            : "2026-10-25",
       ...(path === "/guide"
         ? {
             images: [

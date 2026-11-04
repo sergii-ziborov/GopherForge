@@ -1,0 +1,156 @@
+{
+  "checkedOn": "2026-11-04",
+  "articles": [
+    {
+      "editionDate": "2026-10-30",
+      "slug": "go-generics-interfaces-generic-methods-api-design",
+      "proseWords": 2304,
+      "sources": [
+        {
+          "title": "Go generics tutorial",
+          "url": "https://go.dev/doc/tutorial/generics"
+        },
+        {
+          "title": "language specification",
+          "url": "https://go.dev/ref/spec#Type_constraints"
+        },
+        {
+          "title": "official generic-methods explanation",
+          "url": "https://go.dev/blog/generic-methods"
+        },
+        {
+          "title": "cmp package",
+          "url": "https://pkg.go.dev/cmp"
+        }
+      ]
+    },
+    {
+      "editionDate": "2026-10-31",
+      "slug": "go-embed-react-assets-routing-offline",
+      "proseWords": 2272,
+      "sources": [
+        {
+          "title": "embed package",
+          "url": "https://pkg.go.dev/embed"
+        },
+        {
+          "title": "io/fs documentation",
+          "url": "https://pkg.go.dev/io/fs"
+        },
+        {
+          "title": "net/http file-serving APIs",
+          "url": "https://pkg.go.dev/net/http#FileServerFS"
+        }
+      ]
+    },
+    {
+      "editionDate": "2026-11-01",
+      "slug": "go-redis-cache-stampede-singleflight",
+      "proseWords": 2313,
+      "sources": [
+        {
+          "title": "singleflight package",
+          "url": "https://pkg.go.dev/golang.org/x/sync/singleflight"
+        },
+        {
+          "title": "context package",
+          "url": "https://pkg.go.dev/context"
+        },
+        {
+          "title": "Redis SET documentation",
+          "url": "https://redis.io/docs/latest/commands/set/"
+        },
+        {
+          "title": "Redis distributed-lock discussion",
+          "url": "https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/"
+        }
+      ]
+    },
+    {
+      "editionDate": "2026-11-02",
+      "slug": "go-mongodb-cursors-indexes-transactions",
+      "proseWords": 2218,
+      "sources": [
+        {
+          "title": "MongoDB Go connection-pool documentation",
+          "url": "https://www.mongodb.com/docs/drivers/go/current/connect/connection-options/connection-pools/"
+        },
+        {
+          "title": "MongoDB cursor guide",
+          "url": "https://www.mongodb.com/docs/drivers/go/current/crud/query/cursor/"
+        },
+        {
+          "title": "equality-sort-range guideline",
+          "url": "https://www.mongodb.com/docs/manual/tutorial/equality-sort-range-guideline/"
+        },
+        {
+          "title": "driver's WithTransaction contract",
+          "url": "https://pkg.go.dev/go.mongodb.org/mongo-driver/v2/mongo#Session.WithTransaction"
+        }
+      ]
+    },
+    {
+      "editionDate": "2026-11-03",
+      "slug": "go-opentelemetry-tracing-context-propagation",
+      "proseWords": 2251,
+      "sources": [
+        {
+          "title": "W3C Trace Context",
+          "url": "https://www.w3.org/TR/trace-context/"
+        },
+        {
+          "title": "Go propagation package",
+          "url": "https://pkg.go.dev/go.opentelemetry.io/otel/propagation"
+        },
+        {
+          "title": "OpenTelemetry Go instrumentation guide",
+          "url": "https://opentelemetry.io/docs/languages/go/instrumentation/"
+        },
+        {
+          "title": "OpenTelemetry's baggage guidance",
+          "url": "https://opentelemetry.io/docs/concepts/signals/baggage/"
+        },
+        {
+          "title": "SDK trace documentation",
+          "url": "https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace"
+        },
+        {
+          "title": "in-memory test recorder",
+          "url": "https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace/tracetest"
+        }
+      ]
+    },
+    {
+      "editionDate": "2026-11-04",
+      "slug": "go-fuzz-testing-parsers-regression-corpus",
+      "proseWords": 2225,
+      "sources": [
+        {
+          "title": "official Go fuzzing documentation",
+          "url": "https://go.dev/doc/security/fuzz/"
+        },
+        {
+          "title": "Go fuzzing tutorial",
+          "url": "https://go.dev/doc/tutorial/fuzz"
+        },
+        {
+          "title": "testing package",
+          "url": "https://pkg.go.dev/testing#F.Fuzz"
+        }
+      ]
+    }
+  ],
+  "toolchain": "go1.27.3 darwin/arm64",
+  "dependencies": {
+    "golang.org/x/sync": "v0.24.0",
+    "go.opentelemetry.io/otel": "v1.47.0"
+  },
+  "experiments": {
+    "packages": 6,
+    "raceRepetitions": 10,
+    "fuzzExecutions": 650458,
+    "negativeControls": 6,
+    "databaseAndCollectorIntegration": "not claimed"
+  },
+  "publicationPolicy": "All six first published and source-checked 2026-11-04; edition dates fill the archive calendar."
+}

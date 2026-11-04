@@ -550,5 +550,113 @@
     "width": 1536,
     "height": 1024,
     "alt": "An incomplete encoded token crosses two input chunks and is held until completion; end of input exposes an unfinished token."
+  },
+  "genericfit-hero": {
+    "src": "/images/news/genericfit-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An engineer compares a direct tool, a behavioral interface socket and a reusable typed jig."
+  },
+  "genericfit-infographic": {
+    "src": "/images/news/genericfit-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Contract, types, behavior and test form a conceptual API-design workflow."
+  },
+  "genericfit-detail": {
+    "src": "/images/news/genericfit-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A typed container transforms an input into a result type beside a separate behavior interface socket."
+  },
+  "embedsite-hero": {
+    "src": "/images/news/embedsite-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "An application artifact contains selected web files while an external API remains a distinct boundary."
+  },
+  "embedsite-infographic": {
+    "src": "/images/news/embedsite-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Build, embed, route and verify separate asset packaging from request behavior."
+  },
+  "embedsite-detail": {
+    "src": "/images/news/embedsite-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Page, script, API and missing-resource requests follow distinct routing outcomes."
+  },
+  "cacheflight-hero": {
+    "src": "/images/news/cacheflight-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Equivalent local requests join one bounded loader before receiving a shared cache result."
+  },
+  "cacheflight-infographic": {
+    "src": "/images/news/cacheflight-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Lookup, coalesce, bound and publish represent separate cache-fill responsibilities."
+  },
+  "cacheflight-detail": {
+    "src": "/images/news/cacheflight-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Staggered expiry clocks and independent waiting callers surround a shared bounded loader."
+  },
+  "mongocursor-hero": {
+    "src": "/images/news/mongocursor-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A bounded tray of documents is processed while the cursor resource returns through cleanup."
+  },
+  "mongocursor-infographic": {
+    "src": "/images/news/mongocursor-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Filter, batch, close and explain connect query shape to resource ownership and plan inspection."
+  },
+  "mongocursor-detail": {
+    "src": "/images/news/mongocursor-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A conceptual failure case shows repeated transaction callbacks reaching an independent external effect."
+  },
+  "traceflow-hero": {
+    "src": "/images/news/traceflow-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A trace joins distinct request stages while a separate boundary excludes sensitive attributes."
+  },
+  "traceflow-infographic": {
+    "src": "/images/news/traceflow-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Extract, start, propagate and record describe explicit tracing boundaries."
+  },
+  "traceflow-detail": {
+    "src": "/images/news/traceflow-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A durable job trace is linked to a request trace and telemetry cleanup has a finite lifecycle."
+  },
+  "fuzzcraft-hero": {
+    "src": "/images/news/fuzzcraft-hero.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A parser checks varied inputs and preserves a small failing example as a regression fixture."
+  },
+  "fuzzcraft-infographic": {
+    "src": "/images/news/fuzzcraft-infographic.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Seed, mutate, assert and keep connect generated inputs to explicit correctness requirements."
+  },
+  "fuzzcraft-detail": {
+    "src": "/images/news/fuzzcraft-detail.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "Two parser implementations are checked against an independent requirement because agreement can hide a shared bug."
   }
 }

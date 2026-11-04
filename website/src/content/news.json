@@ -527,7 +527,8 @@
     "related": [
       "go-1-27-3-security-patch-deployment",
       "go-1-27-http-connection-reuse",
-      "gopherforge-go-learning-workbench-continue"
+      "gopherforge-go-learning-workbench-continue",
+      "go-generics-interfaces-generic-methods-api-design"
     ],
     "publishedAt": "2026-10-21",
     "modifiedAt": "2026-10-21",
@@ -1157,7 +1158,8 @@
       "gopls-0-24-error-contracts-memory",
       "go-1-27-small-allocation-performance",
       "go-heap-graphs-reachability-retained-memory",
-      "go-strings-unicode-bytes-runes-graphemes"
+      "go-strings-unicode-bytes-runes-graphemes",
+      "go-generics-interfaces-generic-methods-api-design"
     ],
     "imagePrefix": "slices",
     "sections": [
@@ -1377,7 +1379,8 @@
       "go-bytes-buffer-sync-pool-ownership",
       "go-1-27-http-connection-reuse",
       "go-json-v2-migration-api-compatibility",
-      "go-slog-structured-logging-context-redaction"
+      "go-slog-structured-logging-context-redaction",
+      "go-generics-interfaces-generic-methods-api-design"
     ],
     "imagePrefix": "errors",
     "sections": [
@@ -1612,7 +1615,8 @@
       "go-garbage-collector-gogc-gomemlimit-lab",
       "go-time-utc-dst-monotonic-deadlines",
       "go-retries-idempotency-keys-unknown-outcomes",
-      "go-popularity-2026-google-trends-cloud-ai-directions"
+      "go-popularity-2026-google-trends-cloud-ai-directions",
+      "go-redis-cache-stampede-singleflight"
     ],
     "imagePrefix": "backpressure",
     "wordCount": 3708,
@@ -2093,7 +2097,8 @@
       "go-http-graceful-shutdown-kubernetes",
       "go-1-27-http-connection-reuse",
       "go-retries-idempotency-keys-unknown-outcomes",
-      "go-context-deadline-exceeded-timeout-diagnosis"
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-mongodb-cursors-indexes-transactions"
     ],
     "wordCount": 2230,
     "proseWordCount": 2230,
@@ -2203,7 +2208,9 @@
       "go-database-sql-pool-timeouts-transactions",
       "go-concurrency-tests-synctest-without-sleeps",
       "go-backpressure-concurrency-limits-queues-deadlines",
-      "go-context-deadline-exceeded-timeout-diagnosis"
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-embed-react-assets-routing-offline",
+      "go-opentelemetry-tracing-context-propagation"
     ],
     "wordCount": 2215,
     "proseWordCount": 2215,
@@ -2322,7 +2329,8 @@
       "go-1-27-goroutine-leak-profiles",
       "go-backpressure-concurrency-limits-queues-deadlines",
       "go-time-utc-dst-monotonic-deadlines",
-      "go-concurrency-invariants-mutex-atomic-snapshots"
+      "go-concurrency-invariants-mutex-atomic-snapshots",
+      "go-fuzz-testing-parsers-regression-corpus"
     ],
     "wordCount": 2114,
     "proseWordCount": 2114,
@@ -2808,7 +2816,8 @@
       "go-time-utc-dst-monotonic-deadlines",
       "go-json-v2-migration-api-compatibility",
       "go-bytes-buffer-sync-pool-ownership",
-      "go-strings-unicode-bytes-runes-graphemes"
+      "go-strings-unicode-bytes-runes-graphemes",
+      "go-embed-react-assets-routing-offline"
     ],
     "wordCount": 2288,
     "proseWordCount": 2288,
@@ -3055,7 +3064,8 @@
       "go-concurrency-tests-synctest-without-sleeps",
       "go-heap-graphs-reachability-retained-memory",
       "go-slog-structured-logging-context-redaction",
-      "go-developer-jobs-salary-djinni-dou-2026"
+      "go-developer-jobs-salary-djinni-dou-2026",
+      "go-fuzz-testing-parsers-regression-corpus"
     ],
     "wordCount": 2310,
     "proseWordCount": 2310,
@@ -3182,7 +3192,9 @@
       "go-concurrency-invariants-mutex-atomic-snapshots",
       "go-database-sql-pool-timeouts-transactions",
       "go-backpressure-concurrency-limits-queues-deadlines",
-      "go-context-deadline-exceeded-timeout-diagnosis"
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-redis-cache-stampede-singleflight",
+      "go-mongodb-cursors-indexes-transactions"
     ],
     "wordCount": 2404,
     "proseWordCount": 2404,
@@ -3426,7 +3438,8 @@
       "go-popularity-2026-google-trends-cloud-ai-directions",
       "go-typed-nil-errors-as-contracts",
       "go-bytes-buffer-sync-pool-ownership",
-      "go-context-deadline-exceeded-timeout-diagnosis"
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-opentelemetry-tracing-context-propagation"
     ],
     "wordCount": 2268,
     "proseWordCount": 2268,
@@ -3663,7 +3676,9 @@
       "go-developer-jobs-salary-djinni-dou-2026",
       "go-database-sql-pool-timeouts-transactions",
       "go-retries-idempotency-keys-unknown-outcomes",
-      "go-slog-structured-logging-context-redaction"
+      "go-slog-structured-logging-context-redaction",
+      "go-redis-cache-stampede-singleflight",
+      "go-opentelemetry-tracing-context-propagation"
     ],
     "wordCount": 2321,
     "proseWordCount": 2321,
@@ -3847,7 +3862,8 @@
       "go-slices-backing-array-append-clip-clone",
       "go-bytes-buffer-sync-pool-ownership",
       "go-streaming-io-reader-eof-limits-json",
-      "go-heap-graphs-reachability-retained-memory"
+      "go-heap-graphs-reachability-retained-memory",
+      "go-fuzz-testing-parsers-regression-corpus"
     ],
     "wordCount": 4491,
     "proseWordCount": 4491,
@@ -3860,6 +3876,642 @@
       "Go strings Clone memory retention"
     ],
     "editionDate": "2026-10-08",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-generics-interfaces-generic-methods-api-design",
+    "title": "Go generics vs interfaces: design APIs with clear contracts",
+    "description": "Choose Go generics, interfaces or direct functions using tested contracts. Explore Go 1.27 generic methods, nil semantics, ownership and comparable-key pitfalls.",
+    "category": "GUIDE · GO API DESIGN",
+    "eventDate": "2026-10-30",
+    "publishedAt": "2026-11-04",
+    "modifiedAt": "2026-11-04",
+    "imagePrefix": "genericfit",
+    "sections": [
+      {
+        "id": "start-with-the-duplication-you-can-explain",
+        "title": "Start with the duplication you can explain",
+        "body": "A team has three small helpers that turn identifiers into labels. Someone proposes replacing them with a generic repository, a generic service and a generic response pipeline. The pull request removes repeated loops but introduces type parameters throughout unrelated business logic. Another engineer rejects all generics because ordinary functions used to work. Both positions skip the useful question: what invariant is actually shared, and which differences should remain visible to callers?\n\nThis guide belongs to the **30 October 2026 archive edition** and was first researched and published on **4 November 2026**. It uses original examples tested with Go 1.27.3, including the generic-method syntax introduced in Go 1.27. The purpose is to make API choices concrete. There is no universal ranking in which generics defeat interfaces or interfaces defeat direct functions. The better design exposes the contract with the least unnecessary machinery.\n\nBegin by collecting two real call sites and one likely change. If the shared operation is simply a loop that preserves element relationships, a generic helper may be useful. If callers need different external behaviors, an interface may express the boundary. If the only benefit is avoiding six obvious lines, a direct function may be the easiest code to maintain."
+      },
+      {
+        "id": "keep-ordinary-functions-in-the-comparison",
+        "title": "Keep ordinary functions in the comparison",
+        "body": "Suppose one endpoint converts internal order identifiers into a public response. The conversion includes an authorization decision, localization and a missing-record policy. These operations are not interchangeable just because another endpoint also iterates over a slice. An explicit `OrderLabels` function can keep the decisions together and give the operation a meaningful name. A reusable loop should not hide the rules that determine what a customer is allowed to see.\n\nWrite the direct version first. Identify its inputs, output ownership, error behavior and order guarantees. Then ask which parts remain identical when a second input type appears. This produces a much better generic candidate than designing a type hierarchy before any useful operation exists. It also gives reviewers a baseline against which to assess the abstraction's actual cost.\n\nOne practical review technique is to read only the call sites. Can a colleague infer the result type and the failure policy without opening several helper packages? If not, the abstraction may be moving complexity rather than removing it. This does not imply that a longer function is always clearer. It means that local brevity and system-wide comprehensibility are different measurements, and both deserve attention before publishing a reusable API."
+      },
+      {
+        "id": "choose-a-contract-before-choosing-a-mechanism",
+        "title": "Choose a contract before choosing a mechanism",
+        "body": "Use four questions: what relationship must remain true, which concrete types vary, which behavior varies, and what experiment could disprove the design? A typed collection transformation relates input elements to output elements. A storage adapter varies behavior behind a small set of operations. A domain command may need neither mechanism because its business meaning is already specific.\n\nConsider a slice mapping operation. Its contract might preserve order and nil input, allocate independent outer result storage and call the supplied function once for each element. Those promises can be expressed and tested without mentioning a database, HTTP server or architecture pattern. That makes the operation a reasonable generic candidate. The business-specific conversion can remain an ordinary function passed to it.\n\nNow consider a receipt writer. The caller needs a `WriteReceipt` behavior from either a local file adapter or a remote service adapter. An interface near that caller can express the required operation. Making the entire application generic over every adapter type may increase coupling without adding useful guarantees. The [Go generics tutorial](https://go.dev/doc/tutorial/generics) provides the language starting point; the decision framework here is a review method built around concrete callers and explicit tests."
+      },
+      {
+        "id": "constraints-describe-permitted-operations-not-business-truth",
+        "title": "Constraints describe permitted operations, not business truth",
+        "body": "A constraint restricts a type parameter's possible arguments. It does not certify that every value of those types satisfies the application invariant. An integer constraint does not establish that an account quantity is positive. A string-like constraint does not establish valid UTF-8, a permitted identifier alphabet or an authorized resource name. Those remain value-level checks at an appropriate boundary.\n\nThe [language specification](https://go.dev/ref/spec#Type_constraints) explains type sets and underlying-type terms. In the lab, `S ~[]E` allows a named slice type while retaining its element relationship. This is useful when callers define domain-specific slice names. It is not a reason to accept every representation into every helper. A narrower signature may communicate more than an elaborate union that admits values the implementation cannot sensibly interpret.\n\nDesign constraints from operations the implementation actually uses. If a helper only needs equality, do not require ordering. If ordering has domain-specific rules, accept an explicit comparison function rather than pretending numeric order answers the question. Names should also reflect the promise: a helper called `Normalize` is much harder to assess than one called `SortByPriority`. The constraint and the function name work together; neither can substitute for an explanation of the domain policy."
+      },
+      {
+        "id": "interfaces-describe-behavior-at-a-useful-boundary",
+        "title": "Interfaces describe behavior at a useful boundary",
+        "body": "An interface is valuable when the caller needs an operation while the implementation can vary. Keep it near the consumer and as small as the actual requirement permits. A reader that only needs to retrieve one configuration value should not depend on a giant administration interface merely because an existing concrete client implements it. The large interface would make every test and alternative adapter carry unrelated obligations.\n\nGeneric functions and behavioral interfaces can coexist. A generic collection helper can accept an ordinary function that invokes a small interface. A concrete service can expose a stable non-generic interface while using typed helpers internally. The architectural choice is not a binary switch applied to an entire repository. Different boundaries can use different mechanisms because they solve different kinds of variation.\n\nPay particular attention to test doubles. If a fake must reproduce a large external SDK, the production boundary may be too broad. If a fake ignores deadlines or collapses a miss and an outage into one result, the tests may be protecting the wrong contract. Our [architecture introduction](/blog/choose-a-go-architecture) and [error-contract article](/news/go-typed-nil-errors-as-contracts) provide useful companion exercises. A small interface is helpful because its semantics can be stated clearly, not merely because it contains fewer method declarations."
+      },
+      {
+        "id": "generic-methods-expand-organization-without-changing-every-interface",
+        "title": "Generic methods expand organization without changing every interface",
+        "body": "Go 1.27 permits a concrete method to declare its own type parameters. The [official generic-methods explanation](https://go.dev/blog/generic-methods) also identifies an important boundary: interface methods cannot declare their own type parameters, and a generic method does not become an implementation of an ordinary interface method merely because one instantiation appears to have the desired signature.\n\nOur small example uses a generic method to organize a transformation beside the container it transforms:\n\n```go\ntype Box[T any] struct {\n    Value T\n}\n\nfunc (b Box[T]) Map[U any](fn func(T) U) Box[U] {\n    return Box[U]{Value: fn(b.Value)}\n}\n```\n\nThe test transforms an integer box into a string box using `strconv.Itoa`. It verifies a useful type relationship without introducing a runtime registry or reflection. The method still says nothing about cancellation, ownership of referenced objects or whether a supplied function can fail. Those would need additional contract decisions rather than an assumption that type parameters automatically provide them.\n\nWhen supporting an older compiler, offer an ordinary generic function with an equivalent relationship or keep the older API until the module can raise its language requirement. Do not publish syntax that requires a newer toolchain while claiming that only an editor upgrade is necessary."
+      },
+      {
+        "id": "nil-preservation-and-copying-deserve-explicit-tests",
+        "title": "Nil preservation and copying deserve explicit tests",
+        "body": "The lab's `MapSlice` returns nil for nil input and otherwise allocates a new outer slice. These are deliberate API choices. Another library could reasonably choose a non-nil empty result, but switching between the two can affect consumers that distinguish absent data from an empty collection. The contract should be selected before a refactor rather than discovered through a downstream serialization difference.\n\nIndependent outer storage also does not imply a deep copy. If the mapping function returns a pointer, map or slice from the input, the referenced object may remain shared. One of our tests changes a pointed-to integer through the output and observes the original value change. That test documents the intended limit instead of advertising independence that the function never promised.\n\nThink through ownership with a concrete caller. If the result is retained in a cache while the input buffer becomes reusable, sharing may be wrong. If both views intentionally observe the same immutable object, copying every nested structure may be wasteful. The [slice backing-array guide](/news/go-slices-backing-array-append-clip-clone) develops this distinction. Type parameters preserve type relationships; they do not decide lifetime or mutability policies. These concerns should remain visible in the helper's documentation and in tests that change one side after construction."
+      },
+      {
+        "id": "comparable-does-not-make-every-key-well-behaved",
+        "title": "Comparable does not make every key well behaved",
+        "body": "The `comparable` constraint permits equality operations and map-key use for applicable types. It does not guarantee that every value compares equal to itself or that an interface key cannot contain an unsuitable dynamic value. Floating-point NaN is a particularly instructive fixture. The lab inserts a NaN key into a map, observes a length of one and then fails to retrieve that entry using the same NaN variable.\n\nThis is not a defect in generic syntax. It is a mismatch between a permitted operation and the stronger mathematical behavior an algorithm assumed. A set abstraction that accepts floating-point keys needs to decide how NaNs should be treated. An interface-keyed cache needs to control the values its callers can supply. Neither question disappears when the compiler accepts the declaration.\n\nThe [cmp package](https://pkg.go.dev/cmp) documents its ordering and NaN behavior. Choose that behavior deliberately if it matches the algorithm, or define a domain-specific rule. An especially useful interview follow-up is to ask whether a generic deduplication helper should preserve the first representation of a value, canonicalize it or reject unsupported cases. A correct answer discusses the contract before proposing an implementation, and tests a value that violates the simplest assumption."
+      },
+      {
+        "id": "public-apis-create-a-longer-obligation-than-local-helpers",
+        "title": "Public APIs create a longer obligation than local helpers",
+        "body": "An internal helper can be changed alongside its callers. An exported generic API becomes a commitment to callers you may never see. The chosen type parameters, inference behavior, constraints and nil semantics all affect future changes. A constraint that seems convenient today can be difficult to tighten later without breaking users. A highly general name can also invite uses outside the cases you actually tested.\n\nBefore exporting, write several examples that a new user could compile without reading the implementation. Include named types, empty input and one rejected design alternative. Explain which compiler version the syntax requires. Avoid encoding every possible future use into the first release. A smaller supported surface is often easier to improve because its behavior can be demonstrated rather than guessed.\n\nThe module's Go directive and the selected toolchain should be part of the reproducibility record. Our [toolchain and artifact article](/news/go-reproducible-build-report-october-21-2026) is relevant here: a developer machine accepting a feature is not proof that every supported build environment accepts it. Review CI, local tooling and teaching environments before raising the minimum. Version compatibility is a user-facing property of a library, not an administrative detail to fix after publication."
+      },
+      {
+        "id": "test-semantics-before-making-performance-claims",
+        "title": "Test semantics before making performance claims",
+        "body": "The supplied package tests a cross-type generic method, a named slice input, nil preservation, independent outer storage, shared nested references and the NaN counterexample. These are different assertions because they protect different promises. Combining them into a single happy-path example would make a future failure harder to interpret and might hide which behavior a refactor changed.\n\nDo not infer performance from syntax alone. A generic implementation, an interface-based implementation and a direct loop can differ according to inlining, representation, workload and compiler version. Compare equivalent behavior under the selected compiler if performance matters. Include allocation and retention effects, not just a short elapsed-time number. The [profiling lab](/news/go-allocation-profiling-pprof-escape-benchmarks) explains how to keep those measurements separate.\n\nA useful experiment starts with a real repeated operation, preserves its output and error contract, and changes one implementation choice. An unrepresentative microbenchmark can favor an abstraction that complicates the actual program. This article supplies correctness fixtures rather than invented speedups. A faster result is meaningful only when it still performs the same work and remains understandable enough for the next engineer to maintain."
+      },
+      {
+        "id": "practice-the-decision-in-a-small-workspace",
+        "title": "Practice the decision in a small workspace",
+        "body": "[Download the six-topic Go lab](/downloads/go-engineering-lab-20261104.zip) and run `go test ./genericlab` with a compatible Go 1.27 compiler. The full module records its dependencies and compiler requirement. The generic package itself uses only the standard library, and its examples do not require a database or network service. Keep the supplied tests when adapting the code so that changes to ownership or nil semantics remain observable.\n\nFor a personal exercise, start with two concrete functions that genuinely share an invariant. Write a generic version and compare the call sites. Then attempt the same refactor on two operations that merely look similar. Explain why sharing the loop may be harmless while sharing the business operation would be misleading. This contrast is much more educational than converting every function in a project into a generic one.\n\nThe [generics lessons](/learn/generics.type-parameters), [generic-method lesson](/learn/generics.methods) and [when-not-to lesson](/learn/generics.when-not-to) provide a guided route. You can also use [Playground](/playground) for a compatible example after saving your current draft. An AI assistant can propose alternatives through the [MCP workflow](/guide/mcp), but you still need to inspect the actual compiler requirement and tests before accepting its abstraction."
+      },
+      {
+        "id": "a-review-that-ends-with-a-concrete-choice",
+        "title": "A review that ends with a concrete choice",
+        "body": "Ask the author to state the shared invariant in one sentence. Ask which differences are intentionally left outside the helper. Check the ownership and error policy, then examine a named type, empty input and one awkward value. If the explanation depends primarily on a claim that a feature is modern, return to the direct implementation and compare again.\n\nFor a library, include a migration example and a minimum-toolchain statement. For an application, keep the abstraction close to the callers until its meaning stabilizes. For interview preparation, explain why a small interface can be a better boundary than a generic service, while a generic container transformation can be clearer than repeated type-specific helpers. The purpose is to reason about variation rather than defend a preferred language feature.\n\nFinish by recording the choice and the evidence that supports it. A short comment describing a non-obvious nil policy or a test demonstrating shared nested references is often more valuable than another layer of type machinery. The resulting API should make useful programs easier to write and incorrect assumptions easier to notice. That is a practical standard a reviewer can apply to generics, interfaces and ordinary functions alike."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Go generics tutorial",
+        "url": "https://go.dev/doc/tutorial/generics"
+      },
+      {
+        "title": "language specification",
+        "url": "https://go.dev/ref/spec#Type_constraints"
+      },
+      {
+        "title": "official generic-methods explanation",
+        "url": "https://go.dev/blog/generic-methods"
+      },
+      {
+        "title": "cmp package",
+        "url": "https://pkg.go.dev/cmp"
+      }
+    ],
+    "related": [
+      "go-slices-backing-array-append-clip-clone",
+      "go-typed-nil-errors-as-contracts",
+      "go-reproducible-build-report-october-21-2026",
+      "go-embed-react-assets-routing-offline",
+      "go-fuzz-testing-parsers-regression-corpus"
+    ],
+    "wordCount": 2304,
+    "proseWordCount": 2304,
+    "sourceCheckedAt": "2026-11-04",
+    "keywords": [
+      "Go generics vs interfaces",
+      "Go 1.27 generic methods",
+      "Golang type constraints API design"
+    ],
+    "editionDate": "2026-10-30",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-embed-react-assets-routing-offline",
+    "title": "Go embed for React assets: routing, caching and offline delivery",
+    "description": "Package web assets in Go with explicit routing, cache policies and missing-file behavior. A tested embedded filesystem lab covers deep links, HEAD and API paths.",
+    "category": "GUIDE · GO WEB ASSETS",
+    "eventDate": "2026-10-31",
+    "publishedAt": "2026-11-04",
+    "modifiedAt": "2026-11-04",
+    "imagePrefix": "embedsite",
+    "sections": [
+      {
+        "id": "when-a-successful-build-still-produces-a-broken-website",
+        "title": "When a successful build still produces a broken website",
+        "body": "A Go service starts, its health endpoint responds, and its frontend homepage loads. A user then refreshes a nested React route and receives a not-found response. Another user requests a missing JavaScript file and receives HTML with a successful status. The deployment looks healthy from one endpoint while the actual application cannot reliably load. The mistake is treating a web interface as a loose directory rather than a versioned set of assets with routing contracts.\n\nThis practical guide is the **31 October 2026 archive edition**, first researched and published on **4 November 2026**. It develops an original embedded-asset fixture tested with Go 1.27.3. The fixture uses a tiny HTML document and script we wrote ourselves. It demonstrates delivery rules that can apply to a compiled React interface; it does not bundle someone else's React project or pretend that a static asset server executes frontend build tools.\n\nThe objective is a deployable artifact whose page routes, asset routes and API routes remain distinct. Build success is only one part of that objective. You also need to verify the files included in the artifact, the content type returned for each request, the treatment of missing resources and the relationship between browser caches and backend releases."
+      },
+      {
+        "id": "define-the-boundary-between-building-and-serving",
+        "title": "Define the boundary between building and serving",
+        "body": "A frontend build transforms source into deployable files. Serving those files is a different operation. The Go process needs the resulting HTML, scripts, styles and other declared resources, not the development server's transient state. If the build imports a font or library from a remote URL, embedding the local directory does not automatically remove that network dependency.\n\nTreat the frontend output as an input to the Go build. Record which command creates it and fail the pipeline when required output is absent. A stale directory from a previous successful build can otherwise hide a broken current build. Use a clean output location or verify a build manifest against the artifact being packaged. The deployment should contain files produced from the same source revision that the release record describes.\n\nThis separation also improves local learning. A student can inspect the frontend output, inspect the embedded filesystem and compare requests without needing a remote host. A production team can apply the same checks in CI. Neither case requires a complicated framework to establish the basic invariant: the executable and the files it serves must describe the same application version. Once that relationship is explicit, routing failures become much easier to reproduce."
+      },
+      {
+        "id": "build-embed-route-and-verify",
+        "title": "Build, embed, route and verify",
+        "body": "Use four stages. Build the frontend with pinned inputs. Embed the intended output directory. Route requests according to their role. Verify the resulting HTTP behavior against a finite request table. Each stage has an observable result, which makes the process easier to diagnose than a single deployment script that silently copies whatever files happen to exist.\n\nThe [embed package](https://pkg.go.dev/embed) describes the compile-time inclusion mechanism and pattern rules. Its important consequence for our workflow is that changing a source asset requires a new build of the consuming artifact. Embedding is not a live synchronization process. A successful running process will not discover an updated source file somewhere else on the developer's machine.\n\nVerification should include a nested page route, a real asset, a missing asset, a real API endpoint, an unknown API endpoint and a disallowed method. The original lab uses `httptest` and starts no network listener. That keeps routing assertions reproducible while leaving deployment concerns, browser behavior and authentication to additional checks. A single homepage screenshot is useful for presentation, but it cannot establish that these distinct request classes behave correctly."
+      },
+      {
+        "id": "give-the-embedded-filesystem-an-intentional-root",
+        "title": "Give the embedded filesystem an intentional root",
+        "body": "The directory structure inside an embedded filesystem may differ from the URL structure you want to expose. Our fixture includes `ui/index.html` and `ui/assets/app.js`. The handler uses `fs.Sub` to make `ui` the logical root before looking up web files. That makes the mapping explicit instead of scattering prefix removal across unrelated handlers.\n\nThe [io/fs documentation](https://pkg.go.dev/io/fs) defines filesystem paths and the `Sub` operation. Use those APIs rather than treating every path as an operating-system filename. An embedded filesystem is useful partly because it gives the program a finite packaged set of files. It does not make every asset appropriate to publish. A credential accidentally included at build time is still included, even if the server process has no permission to read the original source directory later.\n\nReview the packaging directory as a public surface. Keep source maps, development configuration and internal manifests only when their publication is intentional. Do not embed a repository root just to avoid choosing a smaller directory. For a project with several tools, define which tool owns the output and which step verifies it. A clear root reduces both accidental exposure and the common bug where the requested URL contains a directory prefix that the embedded lookup does not expect."
+      },
+      {
+        "id": "separate-documents-assets-and-api-responses",
+        "title": "Separate documents, assets and API responses",
+        "body": "An application document can legitimately serve several client-side routes. A JavaScript asset must return JavaScript, and a missing API route must not quietly become an application document. The lab expresses these cases with separate ServeMux registrations. Only the known document routes return the HTML fixture; the asset subtree has its own handler; the API endpoint has its own response type.\n\nFor a large single-page application, you may need a broader document-route policy than the fixture's explicit allowlist. Make that policy deliberate. Checking whether a path has a file extension can be a useful supporting rule, but it is not a complete definition of which routes are documents. API prefixes, reserved paths and future route migrations also need consideration. Avoid a catch-all handler that returns the homepage for every unknown request.\n\nThe [net/http file-serving APIs](https://pkg.go.dev/net/http#FileServerFS) provide the serving primitives; they do not decide the product's route taxonomy. Keep that decision near the router and document it. A frontend router and a backend router must agree about which nested paths are page requests. The most productive debugging question is often not why React failed, but which handler actually answered the browser's request and what representation it returned."
+      },
+      {
+        "id": "make-a-missing-script-fail-as-a-missing-script",
+        "title": "Make a missing script fail as a missing script",
+        "body": "Our test table expects `/assets/app.js` to succeed and `/assets/missing.js` to return not found. It expects `/projects/42` to return a document, while `/missing.js` and `/api/missing` remain failures. This catches a particularly confusing class of bug: an asset request receives the homepage, and the browser later reports a syntax error at the first HTML character.\n\nThe fixture's essential route layout is small:\n\n```go\nmux.HandleFunc(\"GET /{$}\", page)\nmux.HandleFunc(\"GET /projects/{id}\", page)\nmux.HandleFunc(\"GET /assets/\", assetHandler)\nmux.HandleFunc(\"GET /api/status\", statusHandler)\n```\n\nThe download supplies the full handlers, embedded files and tests. The asset handler refuses directory URLs in this fixture, so a directory listing cannot accidentally become part of the public interface. It also uses an explicit revalidation-oriented cache policy rather than pretending that our teaching filename is a content-hashed immutable asset.\n\nWhen diagnosing a real deployment, inspect the failed response before changing frontend code. Check its status, content type and first bytes. If the body is an HTML document, follow the backend routing decision. That observation can save hours of investigating a script bundle that was never actually returned."
+      },
+      {
+        "id": "cache-policies-must-match-filename-guarantees",
+        "title": "Cache policies must match filename guarantees",
+        "body": "An immutable cache policy is useful when a resource URL changes whenever its content changes. That guarantee normally comes from the build's content hashing. Applying a long immutable policy to a stable filename can leave browsers using old code after the backend changes. Renaming a file to something that looks hashed is not enough; the build needs to maintain the content-to-name relationship.\n\nHTML often needs a different strategy because it points to the current asset set. Our fixture uses `no-cache` so clients must revalidate stored responses before reuse. It does not implement a complete production validator strategy or claim a cache-hit benchmark. A production deployment should test its chosen ETag, modification-time or content-hash behavior alongside compression and the reverse proxy.\n\nThink through a rolling release. A browser may receive one version's document and request its scripts after another instance begins answering traffic. If old asset names disappear immediately, an otherwise valid document can become unloadable. Retaining compatible versioned assets for the expected cache window or serving an atomic artifact consistently can address that risk. The correct choice depends on deployment topology. The invariant to test is that every script reference in a served document remains resolvable under the rollout policy you actually operate."
+      },
+      {
+        "id": "offline-delivery-is-a-dependency-audit",
+        "title": "Offline delivery is a dependency audit",
+        "body": "An embedded directory can eliminate one category of external dependency, but a page can still call remote APIs, fetch a third-party stylesheet or load an image from another host. Inspect both the emitted files and the browser's network activity. A local homepage appearing once while a development server remains open does not establish offline operation.\n\nStart from a clean browser context or an explicitly understood cache state. Record which resources the page requests and which application actions require a backend. Distinguish serving a local document, loading every required asset and completing a feature that needs remote data. These are separate acceptance criteria. A useful educational exercise is to replace a remote dependency with a small original local fixture, then verify the expected feature under the intended network conditions.\n\nGopherForge's [application guide](/guide) explains its local development workflow and current boundaries. Use that guide to choose a compatible exercise rather than assuming that every desktop build tool or package exists inside every mobile environment. This article's Go handler tests run without a network listener, but browser execution and a full React-plus-backend integration remain additional checks. Describing those boundaries clearly makes an offline claim useful rather than merely reassuring."
+      },
+      {
+        "id": "test-http-behavior-without-opening-a-port",
+        "title": "Test HTTP behavior without opening a port",
+        "body": "`httptest.NewRecorder` and `httptest.NewRequest` let the lab call the handler directly. The request table checks status and representation for each route class. Another test checks that a HEAD request returns no body and that an unsupported POST to a document route receives method-not-allowed behavior. No live domain, credential or external API is required for these assertions.\n\nThis level of testing is effective because it sits at the contract boundary. It does not merely call an internal path-cleaning function and assume the router will use it correctly. The test exercises the same handler composition that receives a real request. It can catch the accidental broad fallback or route-registration change that would otherwise produce a successful HTML response for a missing asset.\n\nAfter these deterministic tests pass, test the built artifact and the browser separately. Verify the actual packaged files, resource URLs, content types and deep-link refresh behavior. When a reverse proxy rewrites a prefix, repeat the request table through that public prefix. The [streaming I/O guide](/news/go-streaming-io-reader-eof-limits-json) is a useful companion for response handling, while the [shutdown guide](/news/go-http-graceful-shutdown-kubernetes) addresses the process lifecycle after the routing contract is correct."
+      },
+      {
+        "id": "use-the-same-invariants-with-gin",
+        "title": "Use the same invariants with Gin",
+        "body": "The framework can change without changing the questions. A Gin application still needs a defined static-files root, explicit API routes, a document fallback policy and meaningful failures for missing assets. Middleware order and catch-all behavior can alter which handler answers a request, so test the assembled router rather than reasoning about isolated registrations.\n\nIf a project already uses Gin, do not rewrite its whole routing layer merely to adopt embedded assets. Introduce the packaging boundary, connect the filesystem through the framework's supported APIs and reproduce the same request table. Keep middleware that performs authentication or records metrics aware of the route class. A missing script should not be counted as a successful application page just because a broad fallback produced a document.\n\nThe lab deliberately stays with the standard library so that the delivery contract is easy to inspect. It is an original teaching fixture, not a production Gin integration benchmark. For your application, add cases for authenticated paths, generated asset prefixes and any proxy mount point. Test one feature through the actual browser after the router checks pass. This keeps framework-specific details in their proper place while preserving the underlying contract across implementations."
+      },
+      {
+        "id": "turn-the-package-into-a-reproducible-learning-exercise",
+        "title": "Turn the package into a reproducible learning exercise",
+        "body": "[Download the engineering lab](/downloads/go-engineering-lab-20261104.zip) and run `go test ./embedlab`. Inspect the embedded `ui` directory before reading the handler. Predict which routes should succeed and which should fail, then change one registration and observe which test catches the mistake. Restore the correct version before building a deployable artifact.\n\nFor a frontend exercise, replace the original fixture with output from your own small React application. List every resource referenced by the resulting document. Add an assertion for a deep-link refresh and a missing generated script. Check the application after a clean build, not only while a frontend development process is serving files from a different directory. Preserve the original source and tests so that the transformation remains reviewable.\n\nThe [module and embedded-file lesson](/learn/modules.vendor-embed) connects this workflow to reproducible packaging. [Playground](/playground) and the [MCP guide](/guide/mcp) can help share a compatible example and its observed output, but editing a shared document does not prove the browser delivery contract. The evidence should include the artifact and request behavior. That makes the exercise useful to another developer who was not present when the successful screenshot was taken."
+      },
+      {
+        "id": "a-release-check-that-follows-the-browser",
+        "title": "A release check that follows the browser",
+        "body": "Before releasing, verify the document, every referenced asset and at least one nested page route. Request a missing script and an unknown API endpoint deliberately. Confirm that the correct failures survive the reverse proxy and cache layer. Check the headers that matter to the browser rather than relying only on a process health endpoint.\n\nThen review the artifact's ownership. Which build created the frontend files? Which source revision created the executable? Can a rolling deployment serve references to assets it no longer has? Are remote resources intentional and documented? These questions reveal deployment coupling that is invisible in a local happy-path run.\n\nSave a small request table beside the packaging code. It should be short enough to run whenever routing or asset generation changes, and specific enough to catch a false HTML success. The result is a Go application whose web interface is part of the tested artifact. That is the foundation for a useful offline example, a reliable Gin deployment and a release that remains understandable after the original developer has moved on."
+      }
+    ],
+    "sources": [
+      {
+        "title": "embed package",
+        "url": "https://pkg.go.dev/embed"
+      },
+      {
+        "title": "io/fs documentation",
+        "url": "https://pkg.go.dev/io/fs"
+      },
+      {
+        "title": "net/http file-serving APIs",
+        "url": "https://pkg.go.dev/net/http#FileServerFS"
+      }
+    ],
+    "related": [
+      "go-http-graceful-shutdown-kubernetes",
+      "go-streaming-io-reader-eof-limits-json",
+      "go-generics-interfaces-generic-methods-api-design"
+    ],
+    "wordCount": 2272,
+    "proseWordCount": 2272,
+    "sourceCheckedAt": "2026-11-04",
+    "keywords": [
+      "Go embed React assets",
+      "Golang embedded filesystem SPA routing",
+      "Go offline web application assets"
+    ],
+    "editionDate": "2026-10-31",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-redis-cache-stampede-singleflight",
+    "title": "Go Redis cache stampedes: singleflight, TTLs and bounded loaders",
+    "description": "Prevent duplicate cache fills in Go without confusing TTLs, cancellation or distributed locks. Includes tested singleflight examples and Redis cache-aside policies.",
+    "category": "GUIDE · GO REDIS CACHING",
+    "eventDate": "2026-11-01",
+    "publishedAt": "2026-11-04",
+    "modifiedAt": "2026-11-04",
+    "imagePrefix": "cacheflight",
+    "sections": [
+      {
+        "id": "a-fast-cache-can-still-overload-the-database",
+        "title": "A fast cache can still overload the database",
+        "body": "A popular record expires, many handlers miss the cache at the same moment, and each handler starts the same expensive database query. Redis can answer the misses quickly while the application becomes less healthy. Increasing the Redis connection pool does not solve the duplicated backend work. The missing part is a policy for coordinating fills, bounding admitted work and deciding what happens while a value is unavailable.\n\nThis is the **1 November 2026 archive edition**, researched and first published on **4 November 2026**. It includes an original Go lab using `golang.org/x/sync` v0.24.0 under Go 1.27.3. The lab proves specific local coordination and cancellation behavior with synthetic loaders. It does not start a Redis server or claim a production throughput improvement. Redis deployment behavior still needs integration testing against the topology and client configuration you operate.\n\nThe useful design separates three mechanisms: a cache stores results for some period, duplicate suppression joins equivalent work that is currently running, and admission control limits work across distinct keys. A service may need all three. Combining their names into a helper called `GetOrLoad` does not make their contracts disappear. Write down each responsibility before deciding where the helper belongs."
+      },
+      {
+        "id": "distinguish-a-miss-an-outage-and-a-rejected-request",
+        "title": "Distinguish a miss, an outage and a rejected request",
+        "body": "A missing key is an expected cache outcome. A timeout, authorization failure or connection error is a different event. Treating every error as a miss can redirect an entire cache outage into the primary database. The application may then overload the dependency that the cache was meant to protect. The fallback policy needs a capacity budget, not just an optimistic database call.\n\nDecide which data is eligible for fallback and how much additional work the backend can accept. Some reads can return a previously approved stale value. Some can fail promptly with a retryable application response. Authorization decisions or rapidly changing ownership information may require a stricter policy. The decision should follow the data's meaning rather than the convenience of one shared cache wrapper.\n\nInstrument the outcomes separately. A single cache-hit percentage cannot show whether misses were ordinary expirations or failures in the cache path. Count loader starts, coalesced waiters, rejected fills and backend completions. Keep keys and values out of metric labels when they create unbounded cardinality or expose data. The [Go overload guide](/news/go-backpressure-concurrency-limits-queues-deadlines) explains why useful completions and bounded waiting matter more than accepting every request into a growing queue."
+      },
+      {
+        "id": "lookup-coalesce-bound-and-publish",
+        "title": "Lookup, coalesce, bound and publish",
+        "body": "Start with a normal lookup. On an eligible miss, join equivalent in-flight work within the chosen coordination boundary. The shared loader needs its own finite budget and access to a bounded backend. After successful loading, publish an appropriate cache value with an intentional expiration policy. A failed or invalid result must not become a successful cached entry merely because the loader completed.\n\nThe [singleflight package](https://pkg.go.dev/golang.org/x/sync/singleflight) suppresses duplicate calls for a key within a group. It does not store a result after the call finishes. A later request may start new work unless a separate cache lookup succeeds. It also does not coordinate independent processes, and it cannot decide whether two callers are authorized to receive the same result.\n\nIn a cache-aside implementation, check the cache again inside the winning loader if another process could have filled it between the first miss and loader execution. Keep that second lookup within the shared budget. Then load only if the value is still absent under the selected policy. This closes one avoidable duplication window, while acknowledging that multiple replicas can still perform simultaneous fills. The four-stage workflow helps reviewers see exactly which race a mechanism addresses and which races remain outside its boundary."
+      },
+      {
+        "id": "a-key-is-a-statement-about-equivalence",
+        "title": "A key is a statement about equivalence",
+        "body": "Duplicate suppression is safe only when equal keys mean that sharing the result is valid. A resource ID alone may be insufficient when the answer depends on tenant, authorization scope, locale, feature version or requested projection. An incorrectly broad key can return a perfectly fresh value to the wrong caller. This is a semantic failure that an excellent cache-hit rate would not reveal.\n\nBuild keys from a documented schema and version that schema when its meaning changes. Avoid inserting raw authorization tokens into keys or logs. Include the minimum stable attributes needed to distinguish permissible results. If a callback reads additional request-local state that is absent from the key, the apparent equality of keys may be misleading. Review the key and loader inputs together.\n\nTests should include two requests that look similar but must remain separate. For example, two tenants can use the same local record number while referring to different records. Another useful fixture changes the projection version while leaving the resource ID unchanged. A correct shared loader should not quietly combine those operations. This is a better correctness test than proving only that twenty identical public-data requests can share one synthetic computation."
+      },
+      {
+        "id": "separate-the-caller-s-patience-from-shared-work-ownership",
+        "title": "Separate the caller's patience from shared work ownership",
+        "body": "A handler may stop waiting because its client disconnects. That does not necessarily mean every other caller waiting for the same public value should lose the shared result. Conversely, detaching shared work from every request without giving it an owner can create background work that survives indefinitely. The design needs both an independent loader budget and a way for each caller to stop waiting.\n\nThe lab creates the loader context from an explicit application-owned background context with a finite timeout. It deliberately does not inherit arbitrary values from the first request. Each waiter selects between its own context and its result channel. In a service, also connect shared work to the process lifecycle so shutdown can stop new fills and wait for or cancel outstanding work according to a defined grace period.\n\nThe [context package](https://pkg.go.dev/context) supplies cancellation primitives, but it does not assign ownership for you. A child context cannot extend an already expired request budget. A detached context cannot enforce a meaningful lifetime unless another owner supplies one. Our [deadline diagnosis article](/news/go-context-deadline-exceeded-timeout-diagnosis) provides the complementary workflow for identifying which budget actually expired and what work remains after a caller returns."
+      },
+      {
+        "id": "test-a-canceled-waiter-while-another-waiter-succeeds",
+        "title": "Test a canceled waiter while another waiter succeeds",
+        "body": "The original coordination test starts a loader behind a controlled gate, registers two waiters for the same key and cancels one waiter's context. That waiter returns a cancellation error. Opening the gate then allows the other waiter to receive the result. Another test registers twenty duplicate calls before releasing the loader and verifies that the callback ran once. These are controlled correctness observations, not HTTP load-test results.\n\nThe waiting function receives one result rather than ranging over the channel:\n\n```go\nselect {\ncase <-ctx.Done():\n    return \"\", ctx.Err()\ncase result := <-ch:\n    if result.Err != nil {\n        return \"\", result.Err\n    }\n    return result.Val.(string), nil\n}\n```\n\nThe complete lab checks an already canceled context before this select and controls which values its loader can produce. The package documentation states that a `DoChan` result channel is not closed. Ranging over it would therefore add an incorrect completion assumption. A canceled waiter may leave its buffered result unread; that does not imply that the shared operation should be canceled for the remaining waiters. This is exactly the sort of small lifecycle detail that deserves a targeted test."
+      },
+      {
+        "id": "ttls-define-freshness-windows-not-coordination",
+        "title": "TTLs define freshness windows, not coordination",
+        "body": "An expiration says when a cached value should stop being considered available under a particular cache policy. It does not prevent many clients from noticing that expiration simultaneously. If many popular keys share an identical lifetime and are populated together, synchronized expiry can concentrate backend work into bursts. Modest bounded jitter can spread some refresh demand, but it does not replace a backend concurrency limit.\n\nThe [Redis SET documentation](https://redis.io/docs/latest/commands/set/) specifies atomic value-setting options and expiration forms. Choose the operation that establishes the value and its intended lifetime together rather than relying on a separate expiration command that might never execute after a failure. Also check how overwriting a key affects its lifetime under the chosen options. A refactor that accidentally removes expiration can turn a freshness policy into permanent retention.\n\nTreat zero, negative and extreme TTL values as explicit configuration cases. Validate them before turning durations into client arguments. For a teaching exercise, write a table that distinguishes absent, fresh, stale-but-eligible and rejected values. Then assign each state a caller-visible result. This makes it possible to discuss freshness precisely without pretending that one timeout value answers every availability or correctness requirement."
+      },
+      {
+        "id": "process-local-suppression-is-not-a-distributed-lock",
+        "title": "Process-local suppression is not a distributed lock",
+        "body": "Each replica has its own memory and its own singleflight group. A deployment with several replicas can therefore perform several fills for one key even when each replica suppresses its own duplicates correctly. Decide whether the backend can tolerate that bounded duplication before introducing a distributed coordination mechanism. A distributed lock has its own failure, ownership and recovery requirements.\n\nThe [Redis distributed-lock discussion](https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/) is useful for understanding leases and safe ownership-aware release. Do not translate a short lock example into a universal exactly-once guarantee. A lease can expire while a paused owner still believes it holds authority. Whether an old owner's later write is acceptable depends on the protected operation and any fencing or version checks at the resource being modified.\n\nFor a cache fill, duplicate read work may be acceptable while duplicate external side effects are not. Keep those cases separate. Loading a public catalog value and issuing an irreversible command should not share the same retry assumptions. If a fill callback performs a durable effect, review idempotency and the uncertain-outcome path explicitly. The [retry and idempotency guide](/news/go-retries-idempotency-keys-unknown-outcomes) explains why a repeated call can be safe only when the effect's identity and recovery contract support it."
+      },
+      {
+        "id": "bound-distinct-keys-as-well-as-duplicate-keys",
+        "title": "Bound distinct keys as well as duplicate keys",
+        "body": "Singleflight helps when many callers request equivalent work. It does little for a surge of unique keys. An attacker or an ordinary broad report can still create many simultaneous loaders, each retaining input, a context, a result channel and backend resources. The number of distinct in-flight keys is therefore an operational quantity worth bounding and observing.\n\nPlace admission control around the actual expensive stage. Choose whether capacity is global, per tenant or partitioned by backend. Keep the wait finite, and avoid making rejected callers immediately retry in a synchronized loop. If a loader occupies a slot while waiting for another bounded queue, include that nested waiting in the capacity model. Otherwise several individually reasonable limits can combine into a system that spends most of its budget waiting.\n\nConnection pools are another boundary, not a substitute for all upstream control. Reusing a Redis client and understanding its pool is sensible, but increasing pool size can increase concurrent demand on Redis and the origin database. Record what is actually saturated before changing a limit. The [Redis capacity lesson](/learn/services.redis-capacity) and [Redis under-load lesson](/learn/datastores.redis-load) connect these decisions to practical service behavior."
+      },
+      {
+        "id": "mutable-results-need-an-ownership-policy",
+        "title": "Mutable results need an ownership policy",
+        "body": "The lab returns immutable string values to keep the sharing contract simple. A real loader might return a slice, map or pointer to a document. Every waiter can then receive a reference to the same underlying object. If one caller modifies it, another caller may observe the change or participate in a data race. Duplicate suppression does not make shared mutable data safe.\n\nChoose immutable result types, copy at an appropriate boundary or document a synchronization rule that every caller can actually follow. Be precise about shallow and deep copies. Copying an outer slice does not detach nested maps or pointed-to objects. If a result is also retained by a local cache, include the cache's ownership in the same analysis rather than treating it as a separate implementation detail.\n\nThe [borrowed-buffer guide](/news/go-bytes-buffer-sync-pool-ownership) provides useful examples of storage that becomes unsafe after reuse. Adapt that reasoning to coalesced results: which owner can modify this object, how long can waiters retain it, and when can the storage be reused? A small correctness test that mutates one returned value can expose assumptions that a successful high-concurrency run would miss. A race-free test run alone does not establish immutability; it only observes the schedules and paths exercised."
+      },
+      {
+        "id": "do-not-publish-an-old-fill-over-a-newer-value",
+        "title": "Do not publish an old fill over a newer value",
+        "body": "Coalescing duplicate reads does not decide how a concurrent write interacts with an in-flight fill. Consider a loader that reads version one, then pauses while another request writes version two and invalidates the cache. If the old loader later publishes its earlier result, the cache can become stale immediately after the write path appeared to invalidate it successfully. No simultaneous duplicate fill is required for this race.\n\nDefine the version relationship between the authoritative record and the cached derivative. Depending on the application, a versioned cache key, an ownership-aware conditional publication or a deliberate bounded-staleness contract may be appropriate. The choice needs to match how readers discover the current version and how older entries expire. Simply adding a distributed lock around the read does not automatically cover a writer that follows a different protocol.\n\nTest the interleaving explicitly with a controlled gate: capture an old result, perform the newer write, release the old loader and inspect what later readers receive. Keep the assertion tied to the selected freshness policy. If stale values are permitted for a bounded interval, say so. If they are forbidden after the write acknowledgment, the publication protocol must protect that stronger invariant. This is another reason to review cache fills and invalidation together rather than optimizing their helpers independently."
+      },
+      {
+        "id": "run-a-bounded-experiment-before-tuning-production",
+        "title": "Run a bounded experiment before tuning production",
+        "body": "[Download the engineering lab](/downloads/go-engineering-lab-20261104.zip) and run `go test -race ./cachelab`. The pinned module and checksum file make the example reproducible after dependencies are installed. Initial dependency setup may need network access; the recorded test suite also runs from a populated cache with module downloads disabled. No Redis server is required for these particular coordination tests.\n\nRead the tests before altering the helper. Predict what happens when one waiter cancels, when the shared budget expires and when the loader returns an error. Then add a distinct-key admission policy and verify it with explicit barriers rather than arbitrary sleeps. Keep integration tests for the real Redis client separate so connection, expiration and topology behavior remain visible rather than being inferred from the synthetic fixture.\n\nThe [cache-aside lesson](/learn/datastores.redis-cache) offers a shorter guided route. A compatible example can be discussed in [Playground](/playground), with the [MCP guide](/guide/mcp) explaining how an assistant can inspect shared source and observed output. Before claiming a production improvement, compare useful backend completions, queue time, rejected work and freshness under a representative workload. The result should be a cache policy whose failure modes you can explain, not merely a more impressive hit-rate graph."
+      }
+    ],
+    "sources": [
+      {
+        "title": "singleflight package",
+        "url": "https://pkg.go.dev/golang.org/x/sync/singleflight"
+      },
+      {
+        "title": "context package",
+        "url": "https://pkg.go.dev/context"
+      },
+      {
+        "title": "Redis SET documentation",
+        "url": "https://redis.io/docs/latest/commands/set/"
+      },
+      {
+        "title": "Redis distributed-lock discussion",
+        "url": "https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/"
+      }
+    ],
+    "related": [
+      "go-backpressure-concurrency-limits-queues-deadlines",
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-retries-idempotency-keys-unknown-outcomes",
+      "go-mongodb-cursors-indexes-transactions"
+    ],
+    "wordCount": 2313,
+    "proseWordCount": 2313,
+    "sourceCheckedAt": "2026-11-04",
+    "keywords": [
+      "Go Redis cache stampede",
+      "Golang singleflight cancellation",
+      "Redis cache aside TTL jitter"
+    ],
+    "editionDate": "2026-11-01",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-mongodb-cursors-indexes-transactions",
+    "title": "MongoDB in Go: cursors, indexes and transaction retries",
+    "description": "Bound MongoDB work in Go: cursor cleanup, compound indexes, connection pools, pagination and retryable transactions. Includes an original resource-ownership lab.",
+    "category": "GUIDE · GO MONGODB",
+    "eventDate": "2026-11-02",
+    "publishedAt": "2026-11-04",
+    "modifiedAt": "2026-11-04",
+    "imagePrefix": "mongocursor",
+    "sections": [
+      {
+        "id": "diagnose-the-work-behind-a-slow-query",
+        "title": "Diagnose the work behind a slow query",
+        "body": "A Go endpoint is slow, the MongoDB query looks simple, and the first proposed fix is a larger connection pool. The request might actually be waiting for a connection, scanning too many documents, sorting an unsuitable result set, decoding large documents or holding a cursor longer than expected. Increasing the pool can increase concurrent pressure without addressing the stage that dominates the request.\n\nThis is the **2 November 2026 archive edition**, first researched and published on **4 November 2026**. It combines MongoDB's primary documentation with an original standard-library Go fixture for cursor ownership and cleanup. The fixture does not connect to a MongoDB deployment. It verifies a narrow consumer contract using a controlled cursor implementation; query plans, server limits and driver integration still require a real deployment test.\n\nStart with a request whose purpose is explicit. Define its filter, sort order, projection, maximum result and deadline. Then trace the stages that can consume that budget. A useful diagnosis identifies which work is expensive and why it is being performed. A generic statement that MongoDB needs tuning is much less useful than a request shape, an observed plan and a resource whose lifetime is known."
+      },
+      {
+        "id": "reuse-the-client-and-budget-the-topology",
+        "title": "Reuse the client and budget the topology",
+        "body": "A database client is usually a long-lived application resource, not something to recreate for every request. The [MongoDB Go connection-pool documentation](https://www.mongodb.com/docs/drivers/go/current/connect/connection-options/connection-pools/) explains that clients maintain pools for servers in their topology. A pool setting therefore needs to be considered alongside topology and replica count, rather than interpreted as one global connection total for the entire deployment.\n\nImagine several application replicas, each with its own client, while a rolling release temporarily runs both old and new replicas. The potential demand differs from the number written in a single configuration file. Include operational headroom and other applications that share the database. A pool also does not make the server execute queries more efficiently; it governs one part of how the application obtains reusable connections.\n\nDefine what happens while waiting for capacity and how request cancellation reaches that wait. Observe acquisition delays separately from query execution and decoding. The [database/sql pool article](/news/go-database-sql-pool-timeouts-transactions) concerns a different client API, but its budgeting questions transfer: which resource is scarce, how long may a request wait, and what useful work completes after a limit changes? Keep driver-specific behavior tied to the version and topology you test."
+      },
+      {
+        "id": "filter-batch-close-and-explain",
+        "title": "Filter, batch, close and explain",
+        "body": "Use four checkpoints. Filter for the intended records, request a bounded result shape, release the cursor on every owned exit path, and inspect the actual query plan for representative data. These checkpoints connect application code to database behavior without assuming that one index or one client setting will solve every workload.\n\nWrite the request as a small table before implementing it. Include equality predicates, sort fields, any range predicate, the fields returned to the caller and the maximum useful number of records. This makes it easier to distinguish a page of labels from an unbounded export. The two operations may use the same collection while requiring very different resource policies.\n\nThe [MongoDB cursor guide](https://www.mongodb.com/docs/drivers/go/current/crud/query/cursor/) describes batched iteration, cursor errors and cleanup. A cursor should not be used concurrently by unrelated goroutines. Decide which function owns it and which function is responsible for closing it. The synthetic lab makes that ownership transfer explicit so tests can observe cleanup after success, cancellation and decoding failure. Server-side query planning remains a separate checkpoint rather than something a fake cursor can prove."
+      },
+      {
+        "id": "design-the-index-with-the-query-shape",
+        "title": "Design the index with the query shape",
+        "body": "An index is not merely a list of fields that appear somewhere in a filter. Field order, sort requirements, selectivity and projection affect whether the chosen index helps the actual operation. The [equality-sort-range guideline](https://www.mongodb.com/docs/manual/tutorial/equality-sort-range-guideline/) explains why equality fields belong first and why the order of sort and range fields can depend on whether avoiding a sort or exploiting a selective range matters more.\n\nApply the guideline to one concrete request. Suppose a service lists one tenant's recently updated records in a stable order. The tenant predicate is part of the shape, and the sort needs a deterministic tie-breaker if timestamps can match. Record the intended index and test the result order under duplicate timestamps. A pagination implementation that omits the tie-breaker can skip or repeat records even when its average query time looks good.\n\nUse explain output from representative data to investigate documents examined, keys examined and sort behavior. Do not publish an invented winning plan as though it came from production. A small local dataset may make several plans look similar while a skewed tenant distribution exposes very different costs. Also account for write amplification and storage: creating every plausible index can trade one read problem for expensive writes and a larger operational footprint."
+      },
+      {
+        "id": "a-row-limit-is-only-one-resource-limit",
+        "title": "A row limit is only one resource limit",
+        "body": "Limiting the number of returned documents is useful, but it does not automatically bound document size, batch memory, server execution time or the bytes already received by the driver. An endpoint returning ten enormous documents can still exceed a practical memory or response budget. A query that returns few rows can still examine many candidates if its filter and index are poorly matched.\n\nChoose a projection that includes only the fields the operation actually needs. Make the result-count policy visible to callers: does exceeding the limit return a partial result with an error, a continuation token or a normal page? These are different contracts. Avoid silently truncating an export while reporting that the complete job succeeded.\n\nOur fixture bounds the number of `Label` values returned to its caller. It explicitly does not claim to bound MongoDB batch memory or server work. This narrow statement makes its tests useful instead of misleading. The same discipline applies when a handler encodes the result to JSON: decide whether a failure after partial work can still produce a complete valid response, and avoid treating a partially written response as an ordinary recoverable return value."
+      },
+      {
+        "id": "close-the-cursor-even-when-decoding-fails",
+        "title": "Close the cursor even when decoding fails",
+        "body": "The lab's consumer accepts a cursor interface and takes responsibility for closing it. A deferred cleanup function runs after a successful iteration, a result limit, a decoding error, a cursor error or caller cancellation. It preserves both the primary failure and any cleanup failure through `errors.Join`, so a cleanup problem cannot silently erase the reason the operation stopped.\n\nThe cleanup context is created when cleanup begins:\n\n```go\ndefer func() {\n    cleanup, cancel := context.WithTimeout(\n        context.WithoutCancel(ctx), time.Second,\n    )\n    defer cancel()\n    err = errors.Join(err, cursor.Close(cleanup))\n}()\n```\n\nThis is a fragment from the named-return function in the download. Creating the timeout at function entry could leave an already expired cleanup budget after a long iteration. Reusing an already canceled request context can also prevent useful cleanup. The fixture verifies that cleanup receives a live finite context after caller cancellation. It is an application-level resource policy, not a claim that every driver operation must always use this exact duration or detachment strategy."
+      },
+      {
+        "id": "keep-cursor-errors-distinct-from-an-empty-result",
+        "title": "Keep cursor errors distinct from an empty result",
+        "body": "Iteration ending does not necessarily mean the query completed successfully. Check the cursor's error after the loop and preserve cancellation where relevant. An empty successful result, a malformed document and a network interruption can otherwise collapse into the same empty slice. A caller cannot make a sensible retry or user-message decision when these outcomes are indistinguishable.\n\nThe tests inject a cursor failure independently of decoding failure. Another test makes both decoding and cleanup fail and checks that the returned error retains both identities. These assertions protect the boundary that the application consumes. They do not attempt to recreate the complete MongoDB driver inside a mock, and they do not establish how a real server behaves during failover.\n\nReview how partial rows are handled. The lab can return rows collected before an error so that the contract remains explicit. A production API might choose to discard those rows and return a failure instead. Either can be reasonable for a specific operation. What is dangerous is accidentally publishing partial data as complete. The [Go error-contract guide](/news/go-typed-nil-errors-as-contracts) helps connect classification, wrapping and caller-visible behavior to these resource-lifecycle decisions."
+      },
+      {
+        "id": "transaction-callbacks-may-execute-again",
+        "title": "Transaction callbacks may execute again",
+        "body": "The [driver's WithTransaction contract](https://pkg.go.dev/go.mongodb.org/mongo-driver/v2/mongo#Session.WithTransaction) states that a callback may run multiple times during retry attempts. A callback that sends an external message or performs an unrelated durable effect can therefore repeat that effect even when the database transaction is eventually committed once. Database atomicity does not automatically extend to independent systems called from inside the callback.\n\nKeep retryable database work distinct from external delivery. One design records an outbox entry with the database change, then lets a separate worker deliver it using a stable operation identity and an explicit acknowledgment policy. That worker still needs retry and recovery logic. An outbox is a boundary for reasoning about effects, not a magic exactly-once label that removes every uncertain outcome.\n\nDo not hide an operation error inside the callback and return success merely to keep the code moving. The driver needs the error to determine the transaction outcome and retry behavior. Also use the transaction's intended context for operations that belong to it. The [transaction lesson](/learn/datastores.mongo-transactions) and [idempotency article](/news/go-retries-idempotency-keys-unknown-outcomes) give complementary exercises. Ask what can be repeated, which system owns the durable receipt, and how a caller discovers an outcome after losing a response."
+      },
+      {
+        "id": "put-simple-invariants-in-the-write-predicate",
+        "title": "Put simple invariants in the write predicate",
+        "body": "Some updates can express their invariant in one conditional database operation. For example, a versioned record can be updated only when its stored version matches the caller's expected version. The application must inspect whether a document matched, rather than reporting success solely because no transport error occurred. This makes an optimistic-concurrency decision visible instead of implementing an unsafe read-then-write sequence in application memory.\n\nChoose transactions when the invariant genuinely spans the operations that must change together. Do not use them merely to make a sequence look organized. Conversely, do not remove a necessary transaction because a single-record happy path appears to work. Write a competing-operation scenario and identify the exact state that must never become visible. Then choose the smallest supported database mechanism that protects that state.\n\nThe [atomic-update lesson](/learn/datastores.mongo-atomic) is a useful starting point. A controlled Go test can model the intended state transition, while an integration test must exercise the actual database predicate and retry semantics. Keep those levels separate in the evidence. A fake returning a successful update count cannot prove that a real filter, collation, index or write concern protects the invariant under concurrency."
+      },
+      {
+        "id": "observe-stages-without-exposing-document-contents",
+        "title": "Observe stages without exposing document contents",
+        "body": "Useful telemetry can identify pool wait, query execution, cursor iteration, decoding and response encoding as separate stages. Record stable operation names and approved outcome classifications. Raw filters and full documents can contain sensitive or high-cardinality values, and recording them indiscriminately can create a second data-handling problem while investigating the first performance problem.\n\nPrefer an operation catalog that associates a stable name with the known query shape and index expectation. Then correlate a slow request with that name, the selected application version and bounded counts. A trace can show where time was spent, while explain output from a controlled reproduction can show how the database planned the query. Neither replaces the other.\n\nOur [OpenTelemetry guide](/news/go-opentelemetry-tracing-context-propagation) develops context propagation and safe recording in more detail. The [slog article](/news/go-slog-structured-logging-context-redaction) covers structured event fields. For MongoDB, include the lifecycle outcome: was the cursor exhausted, closed early due to the limit, canceled or interrupted? That information helps distinguish a deliberately bounded response from an incomplete operation that happened to return some data before failing."
+      },
+      {
+        "id": "make-pagination-tokens-part-of-the-query-contract",
+        "title": "Make pagination tokens part of the query contract",
+        "body": "A continuation token should describe where a specific ordered query resumes. If the sort uses a timestamp that is not unique, include a stable tie-breaker in both the order and the resume predicate. Otherwise two records with the same timestamp can move across the boundary in a way that repeats or skips results. Write a fixture with equal timestamps before trusting a pagination implementation that works on uniquely ordered sample data.\n\nBind the token to the filter and ordering semantics it represents. A token from one tenant, projection version or query mode should not silently resume an unrelated request. Validate the decoded fields and apply the normal authorization rules independently of the token. An opaque-looking encoded string is not evidence that its contents are trusted or unmodifiable.\n\nAlso choose a policy for concurrent changes. A list that reflects current data while the user moves between pages has different guarantees from an export that needs a stable logical snapshot. Neither can be established merely by replacing an offset with a keyset predicate. Document what insertions, deletions and updates can do between requests, and test a deliberately changing dataset against that promise. This keeps the pagination mechanism connected to user-visible correctness rather than treating it only as a query-speed optimization."
+      },
+      {
+        "id": "use-two-levels-of-tests-deliberately",
+        "title": "Use two levels of tests deliberately",
+        "body": "[Download the engineering lab](/downloads/go-engineering-lab-20261104.zip) and run `go test -race ./cursorlab`. Its controlled cursor checks result limits, exact-limit success, cleanup after cancellation and preservation of decoding, cursor and cleanup errors. These tests are fast because they exercise consumer ownership directly and do not require credentials or a database process.\n\nThen add integration tests for the actual driver and deployment. Verify the BSON model, query shape, projection, ordering, pagination token, expected index behavior and transaction retry path. Include representative skew rather than only a uniformly tiny collection. Test how deadlines affect pool acquisition and iteration under your selected driver version. Record the versions and topology so a later engineer can reproduce a failure instead of interpreting an unexplained latency chart.\n\nThe [MongoDB cursor lesson](/learn/datastores.mongo-cursors) and [index lesson](/learn/datastores.mongo-indexes) provide shorter guided steps. When an AI assistant suggests a larger pool or a new index, ask it to identify the stage and evidence supporting that change. A useful MongoDB optimization ends with a specific request doing less unnecessary work, a clearly owned resource lifetime and a test that would notice the original mistake returning."
+      }
+    ],
+    "sources": [
+      {
+        "title": "MongoDB Go connection-pool documentation",
+        "url": "https://www.mongodb.com/docs/drivers/go/current/connect/connection-options/connection-pools/"
+      },
+      {
+        "title": "MongoDB cursor guide",
+        "url": "https://www.mongodb.com/docs/drivers/go/current/crud/query/cursor/"
+      },
+      {
+        "title": "equality-sort-range guideline",
+        "url": "https://www.mongodb.com/docs/manual/tutorial/equality-sort-range-guideline/"
+      },
+      {
+        "title": "driver's WithTransaction contract",
+        "url": "https://pkg.go.dev/go.mongodb.org/mongo-driver/v2/mongo#Session.WithTransaction"
+      }
+    ],
+    "related": [
+      "go-database-sql-pool-timeouts-transactions",
+      "go-retries-idempotency-keys-unknown-outcomes",
+      "go-redis-cache-stampede-singleflight",
+      "go-opentelemetry-tracing-context-propagation"
+    ],
+    "wordCount": 2218,
+    "proseWordCount": 2218,
+    "sourceCheckedAt": "2026-11-04",
+    "keywords": [
+      "MongoDB Go cursor close context",
+      "Golang MongoDB indexes transactions",
+      "MongoDB Go connection pool pagination"
+    ],
+    "editionDate": "2026-11-02",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-opentelemetry-tracing-context-propagation",
+    "title": "OpenTelemetry in Go: trace requests across service boundaries",
+    "description": "Trace Go requests with explicit context propagation, span ownership, safe attributes and bounded shutdown. Includes OpenTelemetry SDK parent-child tests.",
+    "category": "GUIDE · GO OBSERVABILITY",
+    "eventDate": "2026-11-03",
+    "publishedAt": "2026-11-04",
+    "modifiedAt": "2026-11-04",
+    "imagePrefix": "traceflow",
+    "sections": [
+      {
+        "id": "a-request-id-is-not-a-distributed-trace",
+        "title": "A request ID is not a distributed trace",
+        "body": "A handler logs one request ID, a database wrapper logs another identifier, and a worker reports that a job failed later. Each component has records, yet the team cannot follow one operation across the boundaries. Adding more log lines may increase volume without restoring the missing relationships. A distributed trace is useful because it represents related work explicitly, including where one stage waits for another and where independent work begins.\n\nThis guide belongs to the **3 November 2026 archive edition** and was researched and first published on **4 November 2026**. Its original lab uses OpenTelemetry Go v1.47.0 with an in-memory span recorder under Go 1.27.3. The tests verify propagation and parent relationships without installing a collector or sending telemetry to a remote service. The article describes instrumentation choices for your applications; it does not add telemetry to GopherForge.\n\nBegin with one operation you cannot currently diagnose. Identify its inbound boundary, the work it calls synchronously and any job that outlives the request. Then decide which relationships a trace must preserve. A clear boundary map is more valuable than instrumenting every function before anyone can explain what the resulting spans mean or which data they are allowed to contain."
+      },
+      {
+        "id": "trace-context-carries-correlation-not-authorization",
+        "title": "Trace context carries correlation, not authorization",
+        "body": "[W3C Trace Context](https://www.w3.org/TR/trace-context/) standardizes headers that communicate tracing identifiers and related metadata between services. An inbound trace identifier can help join observations, but it is not proof of identity, permission or trustworthy origin. Do not use it as an authorization token or as the sole key for a security-sensitive operation.\n\nAt a public boundary, treat incoming tracing headers as external input. Let a supported propagator parse the format and decide how invalid context is handled. Also decide whether your trust model permits continuing an external trace or requires a new local tracing boundary. That policy should be distinct from authentication and from the application's own durable operation identifiers.\n\nA useful review exercise is to remove the word tracing from the design temporarily. Would accepting this caller-supplied identifier let someone read another user's data, select an internal tenant or bypass a limit? If so, correlation has accidentally become authority. Keep those decisions in explicit application fields with their own validation. Tracing should help explain an operation after it has been admitted under the correct rules, not silently change which operation a caller is allowed to perform."
+      },
+      {
+        "id": "extract-start-propagate-and-record",
+        "title": "Extract, start, propagate and record",
+        "body": "Use four stages. Extract accepted context at the incoming boundary. Start a span representing the work your component owns. Propagate the current context when calling another component. Record approved outcomes and attributes that help explain that work. This sequence is small enough to inspect in a test and general enough to apply to Gin, ordinary HTTP handlers, RPC clients and queue consumers.\n\nThe [Go propagation package](https://pkg.go.dev/go.opentelemetry.io/otel/propagation) supplies carrier abstractions and the TraceContext propagator. A carrier represents where the metadata travels, such as HTTP headers. Creating a context in Go does not automatically write it into a network request; injection and extraction are the bridge between in-process state and the transport.\n\nDocument who owns each boundary. A server middleware may already create the inbound server span, while an instrumented HTTP client may already create an outbound span and inject headers. Adding another layer without checking the existing instrumentation can duplicate spans and confuse the picture. The right result is not the largest number of spans. It is a coherent account of useful work, with enough detail to distinguish execution from waiting and with a clear explanation of which instrumentation produced each observation."
+      },
+      {
+        "id": "separate-api-use-from-sdk-configuration",
+        "title": "Separate API use from SDK configuration",
+        "body": "Application libraries can use tracing interfaces without owning the process-wide export configuration. The executable normally chooses the SDK provider, resource identity, processing and export behavior. This separation lets a reusable package describe its work while the application decides where observations go and how much information is retained.\n\nThe [OpenTelemetry Go instrumentation guide](https://opentelemetry.io/docs/languages/go/instrumentation/) explains provider and tracer setup. A common failure is adding span calls while leaving the executable with a provider configuration that records nothing useful. Another is letting each library independently configure global export behavior. Inspect initialization and ownership before concluding that missing spans prove propagation is broken.\n\nOur lab passes a provider explicitly to the function under test. That makes the test self-contained and prevents it from changing global instrumentation for unrelated packages. Production code may choose a process-level provider, but it still needs a single intentional lifecycle owner. Record the selected SDK version and exporter configuration with the deployment. A working local console example is evidence that the code can create observations, not evidence that a production collector received them or that every replica uses the same configuration."
+      },
+      {
+        "id": "preserve-the-active-context-across-synchronous-calls",
+        "title": "Preserve the active context across synchronous calls",
+        "body": "Starting a child operation from an unrelated background context breaks its relationship to the request. Passing a context through a function signature is useful only if the implementation actually uses that context when starting the child work and invoking the downstream operation. A context stored in a struct but ignored at the boundary is not propagation.\n\nThe lab extracts a fixed synthetic parent, starts a server span and then starts an outbound client span from that server context. It injects the client span's context into a fresh carrier. The test checks that the server retains the remote parent, the client retains the server parent, and the outgoing carrier identifies the client span within the same trace. These assertions target the relationships directly rather than checking only that two spans exist.\n\nThis is especially useful when reviewing helper wrappers. A wrapper that creates a new context for convenience can retain cancellation behavior differently from correlation behavior, or lose both. Inspect the complete call path. The [deadline guide](/news/go-context-deadline-exceeded-timeout-diagnosis) provides the complementary question: does cancellation reach the operation that can stop? Correlation and cancellation both travel through context, but they remain different contracts that deserve separate assertions."
+      },
+      {
+        "id": "durable-jobs-need-a-lifetime-decision",
+        "title": "Durable jobs need a lifetime decision",
+        "body": "A job can outlive the HTTP request that created it. Pretending that all of its work remains inside one continuously open request span can misrepresent ownership and duration. The producer should record the handoff, and the consumer should establish the job-processing observation according to the queue's lifecycle and your tracing policy. A link can express a relationship where a single synchronous parent-child story would be misleading.\n\nChoose what survives in the message envelope. A durable application operation ID, a tracing carrier and business payload fields serve different purposes. Define how retries, delayed delivery and multiple attempts appear. One job attempt may fail while a later attempt succeeds; hiding both inside an undifferentiated span makes it harder to understand actual processing and acknowledgment behavior.\n\nAlso distinguish request cancellation from job cancellation. Once a durable enqueue succeeds, a disconnected browser does not necessarily cancel the job. Conversely, a job should not run forever merely because it was detached from the original request context. Give the worker its own owner, finite execution policy and shutdown behavior. Our illustration is conceptual; the supplied lab verifies synchronous propagation only. Extending it to a queue requires tests for message carriers, retries, acknowledgment and the durable handoff you actually implement."
+      },
+      {
+        "id": "keep-attributes-useful-bounded-and-approved",
+        "title": "Keep attributes useful, bounded and approved",
+        "body": "A stable route template is usually more useful for grouping requests than a raw URL containing identifiers. An operation name such as a fixed catalog lookup can remain meaningful across calls without creating a new label value for every resource. Record approved outcome classes and bounded counts, then use controlled correlation when investigating a specific operation.\n\nFull request bodies, database documents, authorization headers and arbitrary query strings should not become default span attributes. Apart from data-handling concerns, unbounded values and cardinality can make telemetry expensive and difficult to query. Define an attribute schema with named owners rather than relying on every developer to guess which fields are appropriate at each call site.\n\n[OpenTelemetry's baggage guidance](https://opentelemetry.io/docs/concepts/signals/baggage/) explains that baggage can propagate to downstream resources. Baggage is not simply a private map attached to the current function. Our fixture deliberately uses only TraceContext propagation and verifies that a synthetic baggage field is absent from the outgoing carrier. That narrow test establishes the fixture's selected behavior; it does not prove that other middleware, another propagator or a collector transformation follows the same policy. Review the assembled pipeline and its actual destinations."
+      },
+      {
+        "id": "record-failures-without-turning-raw-errors-into-payload-dumps",
+        "title": "Record failures without turning raw errors into payload dumps",
+        "body": "An operation can fail without the trace making that failure visible in the way a query expects. The instrumentation documentation distinguishes recording an error event from setting a span status: `RecordError` does not automatically set error status. Choose the outcome semantics for the operation and record them intentionally before ending the span.\n\nAlso inspect the error value being recorded. A raw error string may contain a connection string, query value or document fragment. A stable approved classification can be useful without forwarding every internal detail. Preserve enough local diagnostic context under the application's data policy to investigate the failure, but avoid making a tracing wrapper a universal serialization mechanism for arbitrary error objects.\n\nTests should distinguish a business-level not-found result, caller cancellation, dependency failure and an internal defect where those outcomes matter to the operation. Do not label every non-nil error identically merely because a helper accepts an error argument. The [structured logging guide](/news/go-slog-structured-logging-context-redaction) develops similar field-selection rules for events. A consistent classification across logs and traces is valuable, provided the classification describes the operation rather than hiding every failure behind one generic success-shaped record."
+      },
+      {
+        "id": "sampling-changes-what-absence-can-tell-you",
+        "title": "Sampling changes what absence can tell you",
+        "body": "A trace that is not present in a backend may have been unsampled, dropped under pressure, rejected by an exporter or sent somewhere other than the environment you are viewing. Missing observations do not automatically prove that the request never ran. Sampling and delivery behavior need to be part of the operational explanation.\n\nChoose a policy that matches the diagnostic questions and resource budget. The lab uses an explicit test configuration so its synthetic spans are recorded predictably. That is not a recommendation to record every production request. A high-volume service needs to evaluate sampling, attribute limits, queue capacity and collector behavior using its real workload and failure requirements.\n\nKeep service identity and deployment version stable enough to distinguish replicas and releases. When comparing an incident with a previous version, verify that the instrumentation and sampling configuration are comparable. An apparent reduction in slow traces might result from a changed recording policy rather than faster operations. The [SDK trace documentation](https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace) is the implementation reference; the engineering task is to connect those settings to a finite operational budget and an interpretation that remains valid when some observations are missing."
+      },
+      {
+        "id": "shutdown-is-part-of-the-telemetry-lifecycle",
+        "title": "Shutdown is part of the telemetry lifecycle",
+        "body": "Buffered observations can remain in process when the application begins stopping. Give the tracing provider and exporter a lifecycle owner that participates in graceful shutdown. Stop admitting work according to the application policy, let owned operations finish within their budget and allow a bounded opportunity to flush and release telemetry resources.\n\nDo not reuse an already canceled request context as the only cleanup budget for the process-wide provider. Create an intentional shutdown budget when that cleanup stage begins. Record whether flushing or shutdown failed, and avoid blocking indefinitely merely to preserve a final observation. Telemetry should help operate the service rather than become an unbounded dependency during termination.\n\nThe SDK documents provider and processor shutdown behavior. Our in-memory test cleans up its provider and makes no claim about a remote collector's delivery guarantees. For an actual deployment, test collector unavailability, a full exporter queue and process termination during active requests. The [Go shutdown guide](/news/go-http-graceful-shutdown-kubernetes) connects that work to HTTP, background workers and orchestrator grace periods. The useful result is a known lifecycle policy, not a promise that every final span always reaches its destination."
+      },
+      {
+        "id": "assert-the-trace-graph-directly-in-tests",
+        "title": "Assert the trace graph directly in tests",
+        "body": "[Download the engineering lab](/downloads/go-engineering-lab-20261104.zip) and run `go test -race ./tracelab`. It uses the official SDK's [in-memory test recorder](https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace/tracetest). One test checks the remote parent, server span, client span and outgoing carrier. Another supplies malformed parent metadata and verifies that a fresh valid trace begins instead of accepting the invalid parent.\n\nThese tests are more informative than checking only that a logging function was called. A function can record spans while assigning the wrong parent, injecting an old span ID or losing the trace at a helper boundary. The graph assertions expose those mistakes without requiring a dashboard, an account or a network collector.\n\nKeep integration tests for the assembled application as a separate layer. Confirm that the real Gin or HTTP middleware, client instrumentation and exporter produce the expected graph under your selected configuration. Verify both a successful request and a canceled or failed one. An in-memory fixture proves SDK interactions for its inputs; it cannot establish remote ingestion, retention, access control or production sampling. Naming that boundary keeps the example useful when it is adapted into a real service."
+      },
+      {
+        "id": "introduce-tracing-around-one-unanswered-question",
+        "title": "Introduce tracing around one unanswered question",
+        "body": "Choose a request that currently takes too long or fails without a clear stage. Add stable observations around its meaningful boundaries, then reproduce the problem with synthetic or approved data. Compare execution time, waiting and outcome classification. Avoid starting with a requirement to instrument every helper in the repository; excessive detail can obscure the relationship you were trying to understand.\n\nFor interview preparation, explain why creating a context is not the same as injecting it into a carrier, why a trace ID is not authorization, and why a durable job may need a different lifetime model. The [context-contract lesson](/learn/clean-production.context-contracts) and [distributed-service guide](/news/dapr-1-19-rc4-go-service-boundaries) make useful next steps. A compatible fixture can be discussed through [Playground](/playground) and its [MCP workflow](/guide/mcp) using the observed output.\n\nFinish by documenting the span owner, attribute policy, propagation format, sampling configuration and shutdown budget. Another engineer should be able to explain an observed graph and identify what it cannot prove. That is a much stronger foundation than a colorful trace screenshot whose boundaries, payloads and missing spans nobody can account for."
+      }
+    ],
+    "sources": [
+      {
+        "title": "W3C Trace Context",
+        "url": "https://www.w3.org/TR/trace-context/"
+      },
+      {
+        "title": "Go propagation package",
+        "url": "https://pkg.go.dev/go.opentelemetry.io/otel/propagation"
+      },
+      {
+        "title": "OpenTelemetry Go instrumentation guide",
+        "url": "https://opentelemetry.io/docs/languages/go/instrumentation/"
+      },
+      {
+        "title": "OpenTelemetry's baggage guidance",
+        "url": "https://opentelemetry.io/docs/concepts/signals/baggage/"
+      },
+      {
+        "title": "SDK trace documentation",
+        "url": "https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace"
+      },
+      {
+        "title": "in-memory test recorder",
+        "url": "https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace/tracetest"
+      }
+    ],
+    "related": [
+      "go-slog-structured-logging-context-redaction",
+      "go-context-deadline-exceeded-timeout-diagnosis",
+      "go-http-graceful-shutdown-kubernetes",
+      "go-mongodb-cursors-indexes-transactions"
+    ],
+    "wordCount": 2251,
+    "proseWordCount": 2251,
+    "sourceCheckedAt": "2026-11-04",
+    "keywords": [
+      "OpenTelemetry Go tracing context propagation",
+      "Golang distributed tracing span parent",
+      "Go trace baggage sampling shutdown"
+    ],
+    "editionDate": "2026-11-03",
+    "kind": "guide"
+  },
+  {
+    "slug": "go-fuzz-testing-parsers-regression-corpus",
+    "title": "Go fuzz testing: turn parser bugs into durable regressions",
+    "description": "Build useful Go fuzz tests with explicit grammars, bounded inputs, independent assertions and regression fixtures. Includes a tested parser and reproducible lab.",
+    "category": "GUIDE · GO FUZZ TESTING",
+    "eventDate": "2026-11-04",
+    "publishedAt": "2026-11-04",
+    "modifiedAt": "2026-11-04",
+    "imagePrefix": "fuzzcraft",
+    "sections": [
+      {
+        "id": "make-the-test-say-what-must-remain-true",
+        "title": "Make the test say what must remain true",
+        "body": "A parser passes a handful of examples, a refactor makes the code shorter, and an unexpected input later exposes an assumption nobody wrote down. Adding more random input is not enough if the test still cannot distinguish a valid transformation from a plausible but incorrect one. Fuzzing becomes useful when a precise contract lets the test reject behavior the implementation should never produce.\n\nThis is the **4 November 2026 edition**, researched and first published today. It includes an original bounded record parser and a fuzz target tested with Go 1.27.3. The parser accepts a deliberately small format: an ASCII key, the first equals delimiter and a UTF-8 value. It is a teaching format, not a replacement for a standard configuration or wire protocol. Its limited domain makes the correctness questions visible.\n\nThe aim is to build a repeatable route from a requirement to a failing example and then to a durable regression. A short fuzz campaign is evidence about the inputs and properties exercised during that run. It is not a certificate of security, complete input coverage or correctness for requirements that the test never asserted. Start by naming the invariant before choosing the fuzzing command."
+      },
+      {
+        "id": "write-a-small-grammar-and-its-limits",
+        "title": "Write a small grammar and its limits",
+        "body": "Our record has a key of one to thirty-two lowercase ASCII letters, digits or underscores. An equals sign separates the key from the value. The value may contain more equals signs, including in a string such as `mode=a=b`. Empty values are allowed. Carriage returns, newlines, malformed UTF-8 and records exceeding 1024 bytes are rejected. The byte unit is intentional and independent of visible character count.\n\nThese decisions turn vague expectations into fixtures. `empty=` is valid; `=value` is invalid. A multibyte value can be valid while an uppercase key is invalid. The parser must split at the first delimiter, not the last. Each statement protects a different part of the grammar. A review that cannot answer these cases is not ready to judge whether the implementation is correct.\n\nUse established formats and parsers for real application protocols unless you have a concrete reason to define another grammar. The lab's small format exists to make testing concepts inspectable. In a production parser, also document encoding, size limits, duplicate-field behavior and compatibility policy. The [Unicode guide](/news/go-strings-unicode-bytes-runes-graphemes) explains why byte validity, rune counting and user-visible text are separate requirements rather than interchangeable ways to measure one string."
+      },
+      {
+        "id": "seed-mutate-assert-and-keep",
+        "title": "Seed, mutate, assert and keep",
+        "body": "A seed supplies a meaningful starting example. Mutation explores variations. Assertions decide whether behavior violates the contract. A useful failing input is then retained so the same defect can be checked after a fix and during later ordinary test runs. This workflow makes the fuzzing engine part of an engineering feedback loop rather than a source of unexplained random failures.\n\nThe [official Go fuzzing documentation](https://go.dev/doc/security/fuzz/) describes the target shape, supported argument types and coverage-guided execution. Our target accepts one string and seeds valid, invalid, empty-value and multibyte cases. These seeds reflect distinct parts of the grammar; they are not a claim that those examples cover every behavior the program can express.\n\nChoose a target small enough to run repeatedly and independently. A target that calls a live paid API, relies on a production database or mutates shared state is difficult to reproduce and can make the test environment itself part of the failure. If the real feature spans several stages, start with the pure parsing or transformation boundary. Keep integration and concurrency tests alongside it so the small target does not become an excuse to ignore the rest of the application."
+      },
+      {
+        "id": "select-properties-that-have-a-defined-domain",
+        "title": "Select properties that have a defined domain",
+        "body": "For every accepted record, parsing followed by encoding should preserve the exact accepted representation under our grammar. The accepted key must be nonempty and cannot contain the delimiter or line breaks. Accepted input must remain within the byte envelope. Rejected inputs are normal outcomes; the property is not that every arbitrary string should be accepted.\n\nThe lab's target makes those assertions directly:\n\n```go\nf.Fuzz(func(t *testing.T, line string) {\n    record, err := Parse(line)\n    if err != nil {\n        return\n    }\n    encoded, err := Encode(record)\n    if err != nil || encoded != line {\n        t.Fatal(record, encoded, err)\n    }\n})\n```\n\nThe complete target in the download includes additional envelope and key checks. A returned parse error is not automatically a test failure because arbitrary input includes malformed records. This is a common source of low-quality fuzz tests: they either fail on every rejection or recover from every panic and thereby erase the bug the engine was supposed to expose.\n\nDescribe why the round trip should preserve bytes before asserting it. A normalizing parser might intentionally choose a canonical encoding instead. Its property would need to describe that policy rather than copy our exact-representation rule into a different domain."
+      },
+      {
+        "id": "bound-resource-use-as-well-as-representation",
+        "title": "Bound resource use as well as representation",
+        "body": "A target runs many times, so accidental unbounded work can dominate the campaign. Bound the parser's accepted input and any expansion it performs. Keep one iteration independent of previous iterations. Large allocations, uncontrolled recursion, blocking reads and an ever-growing global cache can make the target fail for reasons unrelated to the specific parser contract being investigated.\n\nThe lab checks the byte envelope before performing its content work. Its parsing operation does not start goroutines, open files or contact a service. That small scope makes failures easy to reproduce and lets a campaign spend its time exploring the grammar rather than waiting for an environment. The fuzzing engine's own input memory is a separate resource; a function-level envelope does not mean the entire test process has a fixed memory footprint.\n\nFor a decompressor, decoder or templating operation, include output growth and repeated structure in the resource model. A tiny input can request substantial work in some formats. The [streaming boundary guide](/news/go-streaming-io-reader-eof-limits-json) develops finite input envelopes and exact completion checks. Fuzzing can exercise those rules, but it should not substitute for defining them. A test cannot protect a resource budget that the application has never chosen."
+      },
+      {
+        "id": "round-trips-and-agreement-can-share-the-same-mistake",
+        "title": "Round trips and agreement can share the same mistake",
+        "body": "Two functions can agree while both violate the requirement. If a parser splits at the last equals sign and an encoder reassembles the same pieces, the original string can still round-trip successfully. That does not make the interpretation of `mode=a=b` correct. The parser would assign the wrong key and value while the round-trip property remains satisfied.\n\nOur deterministic test therefore checks the literal expected result: key `mode`, value `a=b`. A deliberately broken last-delimiter variant fails this assertion. This is an example of why a small hand-checked fixture complements a broad generated campaign. The invariant must connect to the specification, not merely to another function that repeats the same assumption.\n\nDifferential testing against an independent implementation can be useful when the implementations truly have different failure modes and equivalent contracts. First align their accepted domains, normalization rules and error behavior. A difference is evidence to investigate, not automatic proof that one implementation is wrong. Conversely, agreement does not establish correctness when both use the same underlying parser or copied algorithm. The conceptual illustration emphasizes this limitation: an independent specification check remains valuable even when two machines produce matching output."
+      },
+      {
+        "id": "preserve-a-reproducer-that-explains-the-failure",
+        "title": "Preserve a reproducer that explains the failure",
+        "body": "When a fuzz campaign finds a failure, keep the input and the assertion that makes it meaningful. The [Go fuzzing tutorial](https://go.dev/doc/tutorial/fuzz) demonstrates the workflow from a failing generated case to a regression fixture. A minimized input often makes the missing assumption easier to see, but minimal size is not the same as a clear explanation of the product requirement.\n\nWrite down the original failure and the intended behavior before modifying the implementation. If a malformed sequence caused a panic, the fix might be a controlled rejection. If valid input was interpreted incorrectly, merely rejecting that input could violate compatibility. The test should distinguish those outcomes. Otherwise a patch can make the fuzzer green by shrinking the supported domain without acknowledging the change.\n\nKeep fixtures synthetic and suitable for the repository. Do not commit private documents or tokens because they happened to be present in an incident payload. Replace them with a reduced case that preserves the failure shape. If the issue is a dependency defect, retain an application-level regression as well as the upstream reference where practical. That protects the contract your callers actually rely on while the dependency is upgraded or replaced."
+      },
+      {
+        "id": "stateful-systems-need-a-model-of-operations",
+        "title": "Stateful systems need a model of operations",
+        "body": "Not every useful target is a single parser call. A cache, collection or state machine can be exercised through a generated sequence of operations. The challenge is to define the state transition model and reset it for each iteration. A sequence that depends on whatever a previous iteration left behind is harder to reproduce and can confuse the source of a failure.\n\nFor a small collection, compare operations against a straightforward reference model whose semantics are explicit. Include insertion, lookup, deletion and duplicate handling where relevant. Bound the sequence length and the key domain so a failing history can be minimized and understood. A reference model that uses the same optimized implementation underneath would provide much weaker evidence than it appears to.\n\nConcurrency introduces another dimension. Fuzzing inputs does not automatically explore all goroutine schedules or prove a synchronization invariant. Use controlled competing operations, race checks and explicit completion signals for that work. The [concurrency-invariant guide](/news/go-concurrency-invariants-mutex-atomic-snapshots) and [synctest article](/news/go-concurrency-tests-synctest-without-sleeps) provide complementary techniques. Choose the tool according to the uncertainty: malformed data, incorrect state transitions and unsafe publication can coexist, but they are not the same test problem."
+      },
+      {
+        "id": "make-ci-runs-finite-and-reproducible",
+        "title": "Make CI runs finite and reproducible",
+        "body": "Use a finite fuzzing budget in routine CI, preserve ordinary unit and regression tests, and keep the selected compiler version in the evidence. A longer scheduled campaign can explore more input while normal pull-request checks remain predictable. Decide how failures are reported and retained before relying on an unattended job to discover important defects.\n\nThe [testing package](https://pkg.go.dev/testing#F.Fuzz) documents fuzz-test behavior and the surrounding test APIs. An ordinary `go test` runs seed cases; an active fuzzing command explores generated inputs. Both are useful, but they establish different observations. Do not describe a seed-only run as a completed fuzz campaign, and do not assume a campaign replaces review of the seed corpus and assertions.\n\nOur example command is intentionally bounded:\n\n```sh\ngo test ./fuzzlab\ngo test ./fuzzlab -run '^$' -fuzz FuzzParse -fuzztime=5s -parallel=2\n```\n\nThe recorded short campaign completed 650,458 executions without a failure. That is a result from this environment and target, not an expected rate for another machine or a universal coverage number. Preserve the command, version and output so the observation remains interpretable when the code, workload or compiler changes."
+      },
+      {
+        "id": "use-deliberate-breakage-to-assess-the-assertions",
+        "title": "Use deliberate breakage to assess the assertions",
+        "body": "A passing test can be weak because it never notices the mistake it claims to prevent. Try one controlled mutation in a temporary copy of the implementation. Change the first-delimiter search to a last-delimiter search, remove a validation check or alter a boundary comparison. The relevant test should fail for the intended reason rather than merely failing to compile.\n\nThe engineering lab includes negative-control evidence across its examples. These are development checks against deliberately broken local variants, not defects secretly left in the downloadable source. For the record parser, the important lesson is that the explicit interpretation fixture catches a bug a simple round-trip property can miss. That gives the reader a concrete way to evaluate the quality of an oracle.\n\nAI assistance can help propose adversarial inputs and alternative properties, but review those suggestions against the actual domain. A model may confidently assume Unicode characters are bytes, treat all parser errors as crashes or propose a property that excludes valid data. Ask it to explain which requirement each assertion protects and to construct a counterexample to its own proposed test. The [MCP guide](/guide/mcp) explains how to share a compatible example and observed output for that review."
+      },
+      {
+        "id": "run-the-lab-without-confusing-tool-support",
+        "title": "Run the lab without confusing tool support",
+        "body": "[Download the engineering lab](/downloads/go-engineering-lab-20261104.zip) and start with `go test ./fuzzlab`. The package itself uses only the standard library. The combined module also contains examples with pinned dependencies for other articles, so initial module setup may require access to those dependencies. The saved checksum file and test receipts document the selected inputs.\n\nNative coverage-guided fuzzing has platform and toolchain requirements described by the official documentation. A Go example compiling in a sandbox does not establish that the sandbox exposes the desktop fuzzing command or coverage instrumentation. Use a supported local compiler for the recorded campaign. In [GopherForge Playground](/playground), a compatible ordinary example can still help explain the parser and reproduce a selected case after you save your current draft.\n\nConnect the exercise to the [testing and vulnerability lesson](/learn/modules.fuzz-vulnerability). First predict the result of the supplied seeds, then explain the deliberately broken delimiter variant. Add a genuinely new invariant only when you can state its accepted domain. That progression turns the lab into interview preparation and practical debugging work rather than a contest to display the largest execution counter."
+      },
+      {
+        "id": "choose-a-real-boundary-for-the-next-campaign",
+        "title": "Choose a real boundary for the next campaign",
+        "body": "Look for a small function that accepts data from outside its trust boundary and has an outcome you can specify. Parsers, encoders, path adapters, state transitions and bounded transformations are often useful candidates. Prefer a target that can run without a live account, an external service or hidden global state. Write several clear fixtures before starting mutation.\n\nThen ask what a successful campaign would still leave unknown. It may not establish throughput, concurrency safety, complete protocol conformance or compatibility with every historical input. Keep those questions in their own checks rather than inflating the meaning of a green fuzz run. A finite campaign can still be valuable when its limits are understood and its regressions are durable.\n\nThe strongest outcome is a concrete improvement: an assumption becomes a contract, a counterexample becomes a small fixture, and a future refactor has a test capable of detecting the same mistake. Carry that method into the [course](/learn) and [interview preparation](/interview). The execution counter is useful evidence about a run; the lasting asset is the precise requirement and the reproducer that the next engineer can understand."
+      }
+    ],
+    "sources": [
+      {
+        "title": "official Go fuzzing documentation",
+        "url": "https://go.dev/doc/security/fuzz/"
+      },
+      {
+        "title": "Go fuzzing tutorial",
+        "url": "https://go.dev/doc/tutorial/fuzz"
+      },
+      {
+        "title": "testing package",
+        "url": "https://pkg.go.dev/testing#F.Fuzz"
+      }
+    ],
+    "related": [
+      "go-strings-unicode-bytes-runes-graphemes",
+      "go-concurrency-invariants-mutex-atomic-snapshots",
+      "go-concurrency-tests-synctest-without-sleeps",
+      "go-generics-interfaces-generic-methods-api-design"
+    ],
+    "wordCount": 2225,
+    "proseWordCount": 2225,
+    "sourceCheckedAt": "2026-11-04",
+    "keywords": [
+      "Go fuzz testing parsers",
+      "Golang fuzz corpus regression tests",
+      "Go testing Fuzz property based testing"
+    ],
+    "editionDate": "2026-11-04",
     "kind": "guide"
   }
 ]

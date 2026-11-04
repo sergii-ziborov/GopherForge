@@ -4,6 +4,7 @@ export {
   newsExtraFigures,
   newsImageSuffixes,
   newsDetailSection,
+  newsDetailCaptions,
 } from "@/lib/news-image-layout";
 export type News = (typeof data)[number];
 export const news = [...data].sort(
@@ -23,6 +24,18 @@ export const dateLabel = (date: string) =>
     timeZone: "UTC",
   }).format(new Date(date));
 export const imageCaption: Record<string, string> = {
+  genericfit:
+    "Contract → Types → Behavior → Test. Choose a mechanism after identifying the invariant and kind of variation. Conceptual API-design workflow; no mechanism is universally preferred.",
+  embedsite:
+    "Build → Embed → Route → Verify. Package intentional assets, keep page, asset and API requests distinct, and test missing resources. Conceptual deployment workflow, not a browser or framework screenshot.",
+  cacheflight:
+    "Lookup → Coalesce → Bound → Publish. A cache, local duplicate suppression and backend admission are separate mechanisms. This conceptual workflow does not promise distributed exactly-once execution.",
+  mongocursor:
+    "Filter → Batch → Close → Explain. Match the query shape, bound the useful result, release owned resources and inspect the real database plan. Conceptual illustration, not measured query-plan output.",
+  traceflow:
+    "Extract → Start → Propagate → Record. Preserve correlation at explicit boundaries and record approved outcomes. Conceptual trace workflow; identifiers provide correlation, not authorization.",
+  fuzzcraft:
+    "Seed → Mutate → Assert → Keep. Explore inputs against a stated contract and preserve a meaningful reproducer. Conceptual workflow, not a coverage or performance measurement.",
   unicodefield:
     "Bytes → Runes → Clusters → Policy. Storage, decoded values, text boundaries and application rules answer different questions. Abstract tokens do not represent measured UTF-8 lengths; the accompanying table supplies exact examples.",
   gohiring:

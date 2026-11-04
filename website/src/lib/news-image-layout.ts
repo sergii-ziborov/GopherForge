@@ -2,6 +2,12 @@
 // additional figures at named sections without relying on shifting indices.
 export const newsDetailSection: Record<string, string> = {
   unicodefield: "a-tiny-substring-can-keep-a-large-allocation-reachable",
+  mongocursor: "transaction-callbacks-may-execute-again",
+};
+
+export const newsDetailCaptions: Record<string, string> = {
+  mongocursor:
+    "A conceptual counterexample: repeating a transaction callback can repeat an independent external effect. The database transaction does not make those external calls atomic; see the separate delivery-boundary discussion.",
 };
 
 export const newsExtraFigures: Record<

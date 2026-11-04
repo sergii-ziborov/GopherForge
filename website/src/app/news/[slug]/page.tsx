@@ -11,6 +11,7 @@ import {
   newsExtraFigures,
   newsImageSuffixes,
   newsDetailSection,
+  newsDetailCaptions,
 } from "@/lib/news";
 import { Prose } from "@/components/Prose";
 import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
@@ -180,7 +181,8 @@ export default async function NewsArticle({
               )
                 ? figure(
                     "detail",
-                    `A closer look at the workflow: ${s.title.toLowerCase()}`,
+                    newsDetailCaptions[n.imagePrefix] ??
+                      `A closer look at the workflow: ${s.title.toLowerCase()}`,
                   )
                 : null}
               {(newsExtraFigures[n.imagePrefix] ?? [])
