@@ -7,19 +7,18 @@ options:
   createIntermediateGroups: true
   generateEmptyDirectories: true
 
-# Keep release documentation and captured screenshots browsable in Xcode.
+# Keep public documentation and captured screenshots browsable in Xcode.
 # These groups are references only; they are not added to the app bundle.
+# Release and publication records stay on the maintainer's machine, so they
+# are not listed here either.
 fileGroups:
   - README.md
   - PRIVACY.md
   - TERMS.md
   - SUPPORT.md
-  - docs/releases
-  - docs/website
+  - docs/website/lessons.json
   - docs/screenshots
-  - docs/app-store/listing.md
   - docs/app-store/screenshot-order.json
-  - docs/app-store/metadata
   - docs/app-store/screenshots
   - docs/app-store/creative-assets
 

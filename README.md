@@ -47,10 +47,16 @@ pinned catalog and bundled trusted runtimes; course bodies and QA fixtures are
 absent from Release. [Files and instructions](https://gopherforge.app/downloads).
 
 **DevOps:** a separate area brings together 34 readings in four units, six local
-terminal labs and a free shell playground with persistent private files. The
-bounded WASI shell supports files, quotes, variables, redirects, pipelines,
-conditions and scripts. It has no host processes, sockets, SSH, Docker or kubectl.
-Real infrastructure practice requires an owned disposable native environment.
+terminal labs and a terminal playground with persistent private files. The
+terminal is interactive: one prompt with history, Tab completion, continuation
+lines, type-ahead, a key row for Tab, arrows and Ctrl-C, ANSI colours and a
+built-in editor (`nano FILE`). The bounded WASI shell parses Bash syntax and
+interprets it over a private `/lab`: globs, `$(…)`, arithmetic, heredocs,
+functions, `case`, `[[ ]]`, `set -euo pipefail`, redirects including `2>&1`, and
+coreutils-style `ls`, `find`, `tree`, `grep -E`, `sed`, `awk`, `cut`, `sort`,
+`uniq`, `diff`, `xargs` and more (`help` lists them). It has no host processes,
+sockets, SSH, Docker or kubectl. Real infrastructure practice requires an owned
+disposable native environment.
 
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.

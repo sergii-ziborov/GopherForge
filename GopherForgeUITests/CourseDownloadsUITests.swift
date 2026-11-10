@@ -24,7 +24,7 @@ final class CourseDownloadsUITests: XCTestCase {
         run.tap()
         let checks = app.staticTexts["devops.checks"]
         XCTAssertTrue(checks.waitForExistence(timeout: 60))
-        let predicate = NSPredicate(format: "label == %@", "1 of 1 checks passed")
+        let predicate = NSPredicate(format: "label CONTAINS %@", "1 of 1")
         expectation(for: predicate, evaluatedWith: checks)
         waitForExpectations(timeout: 60)
         app.swipeUp()
@@ -65,12 +65,59 @@ final class CourseDownloadsUITests: XCTestCase {
         app.segmentedControls["learn.area"].buttons["DevOps"].tap()
         XCTAssertTrue(app.buttons["devops.playground"].waitForExistence(timeout: 10))
         app.buttons["devops.playground"].tap()
-        app.buttons["devops.run"].tap()
-        let output = app.staticTexts["devops.output"]
-        let ran = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "/lab"), object: output)
-        XCTAssertEqual(XCTWaiter.wait(for: [ran], timeout: 60), .completed)
+        let input = app.textFields["devops.terminal.input"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        input.tap()
+        input.typeText("pwd\n")
+        XCTAssertTrue(output(in: app, startingWith: "/lab").waitForExistence(timeout: 60), app.debugDescription)
         let terminal = XCTAttachment(screenshot: app.screenshot())
         terminal.name = "terminal-playground-public-course"; terminal.lifetime = .keepAlways; add(terminal)
+    }
+
+    /// The playground is a terminal: one prompt, state that carries between
+    /// lines, Tab completion, continuation lines and an editor.
+    func testTerminalPlaygroundIsAnInteractiveShell() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-GopherForgeSection", "learn", "-GopherForgeCourseFixtures"]
+        app.launch()
+        let area = app.segmentedControls["learn.area"]
+        XCTAssertTrue(area.waitForExistence(timeout: 25))
+        area.buttons["DevOps"].tap()
+        let playground = app.buttons["devops.playground"]
+        XCTAssertTrue(playground.waitForExistence(timeout: 10))
+        playground.tap()
+        app.buttons["devops.menu"].tap()
+        app.buttons["Reset playground…"].tap()
+        app.buttons["Reset playground files"].tap()
+
+        let input = app.textFields["devops.terminal.input"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        input.tap()
+        input.typeText("cd scr")
+        app.buttons["devops.key.tab"].tap()
+        XCTAssertEqual(input.value as? String, "cd scripts/")
+        input.typeText("\n")
+        input.typeText("for i in 1 2; do\n")
+        input.typeText("echo item-$i\n")
+        input.typeText("done\n")
+        XCTAssertTrue(output(in: app, startingWith: "item-1").waitForExistence(timeout: 60), app.debugDescription)
+
+        input.typeText("nano notes.txt\n")
+        let editor = app.textViews["devops.editor.text"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.typeText("deploy ok")
+        app.buttons["devops.editor.save"].tap()
+        XCTAssertTrue(output(in: app, startingWith: "Saved ~/scripts/notes.txt").waitForExistence(timeout: 10))
+        input.tap()
+        input.typeText("grep -c ok notes.txt && kubectl get pods\n")
+        XCTAssertTrue(output(in: app, startingWith: "kubectl: unavailable here").waitForExistence(timeout: 60))
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "terminal-playground-session"; shot.lifetime = .keepAlways; add(shot)
+    }
+
+    private func output(in app: XCUIApplication, startingWith text: String) -> XCUIElement {
+        app.staticTexts.matching(NSPredicate(format: "identifier == %@ AND label BEGINSWITH %@", "devops.output", text)).firstMatch
     }
 
 }

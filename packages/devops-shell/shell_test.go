@@ -13,7 +13,7 @@ func TestFilesPipelinesVariablesAndScripts(t *testing.T) {
 	state := initialState()
 	script := "mkdir logs; printf 'ERROR z\\nINFO ok\\nERROR a\\nERROR z\\n' > logs/input; NAME=errors; grep ERROR logs/input | sort | uniq > $NAME; cat errors; wc -l errors"
 	r := run(script, state, nil)
-	if r.Status != 0 || r.Stdout != "ERROR a\nERROR z\n2\n" {
+	if r.Status != 0 || r.Stdout != "ERROR a\nERROR z\n2 errors\n" {
 		t.Fatalf("%+v", r)
 	}
 	r = run("printf 'if test -f errors; then echo ready; else echo blocked; fi\\n' > verify.sh; sh verify.sh", r.State, nil)
@@ -41,13 +41,13 @@ func TestNoHostPathsProcessesNetworkOrSyntaxEscapes(t *testing.T) {
 			t.Fatalf("escaped with %s: %+v", source, r)
 		}
 	}
-	for _, source := range []string{"curl https://example.com", "docker ps", "kubectl get pods", "sudo true", "ln -s /etc/passwd leak", "eval echo x", "exec /bin/sh"} {
+	for _, source := range []string{"curl https://example.com", "docker ps", "kubectl get pods", "sudo true", "ln -s /etc/passwd leak", "exec /bin/sh", "python3 -c 1"} {
 		r := run(source, initialState(), nil)
 		if r.Status != 127 {
 			t.Fatalf("unexpected executor for %s: %+v", source, r)
 		}
 	}
-	for _, source := range []string{"echo changed > marker; echo x &", "echo changed > marker; echo $(pwd)", "echo changed > marker; (true)", "echo changed > marker; x=$((1+1))"} {
+	for _, source := range []string{"echo changed > marker; echo x &", "echo changed > marker; cat <(ls)", "echo changed > marker; a=(1 2)", "echo changed > marker; echo ${!x}"} {
 		r := run(source, initialState(), nil)
 		if r.Status == 0 || len(r.State.Files) != 0 {
 			t.Fatalf("unsupported syntax mutated state: %s %+v", source, r)
