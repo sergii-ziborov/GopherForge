@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3047",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "node scripts/start.mjs",
     "check": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
@@ -16,17 +16,32 @@
     "format": "prettier --write src scripts/*.mjs next.config.ts tests/*.mjs"
   },
   "dependencies": {
+    "@bjorn3/browser_wasi_shim": "0.4.2",
+    "@codemirror/autocomplete": "6.20.4",
+    "@codemirror/commands": "6.11.1",
+    "@codemirror/language": "6.13.1",
+    "@codemirror/legacy-modes": "6.5.5",
+    "@codemirror/search": "6.5.11",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.15",
+    "@lezer/highlight": "1.2.5",
+    "fflate": "0.8.3",
+    "lib0": "0.2.117",
     "next": "16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "shiki": "^3.13.0"
+    "shiki": "^3.13.0",
+    "y-codemirror.next": "0.3.6",
+    "y-protocols": "1.0.6",
+    "yjs": "13.6.33"
   },
   "devDependencies": {
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild": "0.28.2",
     "prettier": "^3.9.10",
     "typescript": "^5.9.3"
   }

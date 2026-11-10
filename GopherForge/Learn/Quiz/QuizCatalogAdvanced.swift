@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Quizzes for interfaces, errors, concurrency and the standard library.
@@ -161,3 +162,5 @@ enum QuizCatalogAdvanced {
         ]
     )
 }
+
+#endif

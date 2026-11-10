@@ -97,6 +97,8 @@ enum GoConcept {
     static let toolingKubernetes = "tooling.kubernetes"
 
     /// Each new environment topic has its own review evidence.
+    static let devopsLessonTags: Set<String> = ["devops.delivery-loop", "devops.safe-cli", "devops.reconciliation", "devops.delivery-artifacts", "devops.slo-burn", "devops.incident-recovery", "devops.iam-boundaries", "devops.iac-state", "devops.network-evidence"]
+
     static let environmentLessonTags: Set<String> = [
         "modules.identity-versions",
         "modules.version-graph",
@@ -213,5 +215,5 @@ enum GoConcept {
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
         architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
         "stdlib.borrowed-buffers", "runtime.pool-ownership",
-    ]).union(designLessonTags).union(environmentLessonTags).union(curriculumExpansionTags).union(InterviewCurriculumExpansion.lessonIDs)
+    ]).union(designLessonTags).union(environmentLessonTags).union(curriculumExpansionTags).union(InterviewCurriculumExpansion.lessonIDs).union(devopsLessonTags)
 }

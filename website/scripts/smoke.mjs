@@ -1,3 +1,4 @@
+import { newsPageCount, newsPageURL } from "../src/lib/news-pagination.ts";
 import { readFile, writeFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 const base = process.env.SITE_URL ?? "http://127.0.0.1:3047";
@@ -52,6 +53,13 @@ const paths = [
   "/architectures",
   "/blog",
   "/updates",
+  "/guide",
+  "/downloads",
+  "/guide/mcp",
+  "/playground",
+  ...Array.from({ length: newsPageCount(news.length) }, (_, i) =>
+    newsPageURL(i + 1),
+  ),
   "/support",
   "/privacy",
   "/terms",
@@ -73,7 +81,27 @@ async function worker() {
   }
 }
 await Promise.all(Array.from({ length: 4 }, worker));
+// The live community feed can advance beyond the bundled seed between releases.
+// Resolve those links as real pages before checking the complete internal graph.
+const liveFeedRoutes = new Set(
+  [
+    ...(html.get("/news/feed") ?? "").matchAll(
+      /href="(\/news\/feed\/[a-f0-9]{16})"/g,
+    ),
+  ].map((match) => match[1]),
+);
+for (const path of liveFeedRoutes) {
+  if (html.has(path)) continue;
+  const response = await fetch(base + path);
+  assert.equal(response.status, 200, path);
+  assert.equal(response.headers.get("x-content-type-options"), "nosniff", path);
+  const text = await response.text();
+  assert.match(text, /<h1[ >]/, path);
+  html.set(path, text);
+}
+
 const broken = [];
+const downloads = new Set();
 for (const [path, text] of html)
   for (const m of text.matchAll(/href="(\/[^"<>]*)"/g)) {
     const url = new URL(m[1].replaceAll("&amp;", "&"), base);
@@ -85,6 +113,10 @@ for (const [path, text] of html)
       url.pathname.includes("opengraph-image")
     )
       continue;
+    if (url.pathname.startsWith("/downloads/")) {
+      downloads.add(url.pathname);
+      continue;
+    }
     if (!html.has(url.pathname)) broken.push({ from: path, to: url.pathname });
     else if (
       url.hash &&
@@ -95,6 +127,8 @@ for (const [path, text] of html)
       broken.push({ from: path, to: url.pathname + url.hash });
   }
 assert.deepEqual(broken, [], "Internal routes and anchors");
+for (const path of downloads)
+  assert.equal((await fetch(base + path)).status, 200, path);
 const missing = await fetch(base + "/learn/not-a-real-lesson");
 assert.equal(missing.status, 404);
 const health = await fetch(base + "/api/health");
@@ -108,7 +142,10 @@ for (const n of news) {
   const path = `/news/${n.slug}`,
     text = html.get(path);
   assert.ok(text.includes("application/ld+json"), path);
-  assert.match(text, /NewsArticle/, path);
+  assert.ok(
+    text.includes(n.kind === "guide" ? "TechArticle" : "NewsArticle"),
+    path,
+  );
   assert.ok(
     text.includes('rel="canonical" href="https://gopherforge.app' + path + '"'),
     path,
@@ -135,19 +172,23 @@ for (const e of feed.entries) {
   assert.ok(text.includes("Creative Commons Attribution 4.0"));
 }
 for (const path of ["/register", "/login"]) {
-  const text = html.get(path);
-  assert.ok(text.includes("noindex"));
-  assert.ok(text.includes("disabled"));
-  assert.ok(text.includes("No credentials are collected or stored"));
+  const redirect = await fetch(base + path, { redirect: "manual" });
+  assert.equal(redirect.status, 308);
+  assert.equal(
+    new URL(redirect.headers.get("location"), base).pathname,
+    "/learn",
+  );
 }
-assert.ok(html.get("/").includes("$6.99 USD"));
+const home = html.get("/").replace(/<!--.*?-->/g, "");
+assert.match(home, /<del[^>]*>\$9\.99<\/del>/);
+assert.match(home, /Sale price[^>]*>\$6\.99 USD/);
 assert.ok(html.get("/updates").includes("1.1.5"));
-assert.ok(html.get("/learn").includes("/interview/ai.workflow"));
+assert.ok(html.get("/guide").includes("/learn/ai.go-workflow"));
 assert.ok(html.get("/learn/core.zero-values").includes("LearningResource"));
 const rss = await fetch(base + "/news/rss.xml");
 assert.equal(rss.status, 200);
 assert.match(rss.headers.get("content-type"), /rss/);
-assert.equal(((await rss.text()).match(/<item>/g) || []).length, 5);
+assert.equal(((await rss.text()).match(/<item>/g) || []).length, news.length);
 const license = await fetch(base + "/licenses/go-code.txt");
 assert.equal(license.status, 200);
 const licenseText = await license.text();
@@ -161,9 +202,9 @@ const result = {
   sitemap: "passed",
   newsAssetsAndSchema: "passed",
   fullExternalAttributionAndCanonical: "passed",
-  accountPreviewNoCredentials: "passed",
+  legacyAccountRedirects: "passed",
   releasePricingAndAgentLinks: "passed",
-  rssItems: 5,
+  rssItems: news.length,
   checkedAt: new Date().toISOString(),
 };
 if (process.env.REPORT_PATH)

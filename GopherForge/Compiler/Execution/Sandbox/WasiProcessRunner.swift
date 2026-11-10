@@ -25,6 +25,7 @@ struct WasiProcessRunner: Sendable {
         /// here are the toolchain; running a user's program passes its own.
         let outputLimitBytes: Int
         let debugControl: GoDebugControl?
+        let cancellation: WasiCancellation?
 
         init(
             arguments: [String],
@@ -33,7 +34,8 @@ struct WasiProcessRunner: Sendable {
             memoryLimitBytes: Int = WasmSandboxPolicy.toolchainMemoryLimitBytes,
             tableElementLimit: Int = WasmSandboxPolicy.userProgramTableElementLimit,
             outputLimitBytes: Int = WasmSandboxPolicy.toolchainOutputLimitBytes,
-            debugControl: GoDebugControl? = nil
+            debugControl: GoDebugControl? = nil,
+            cancellation: WasiCancellation? = nil
         ) {
             self.arguments = arguments
             self.environment = environment
@@ -42,6 +44,7 @@ struct WasiProcessRunner: Sendable {
             self.tableElementLimit = tableElementLimit
             self.outputLimitBytes = outputLimitBytes
             self.debugControl = debugControl
+            self.cancellation = cancellation
         }
     }
 
@@ -99,6 +102,11 @@ struct WasiProcessRunner: Sendable {
             store.resourceLimiter = limiter
             var imports = Imports()
             wasi.link(to: &imports, store: store)
+            if let cancellation = invocation.cancellation {
+                imports.define(module: "gopherforge_shell", name: "checkpoint", Function(store: store, parameters: [], results: [.i32]) { _, _ in
+                    [.i32(cancellation.isCancelled ? 1 : 0)]
+                })
+            }
             if let debug = invocation.debugControl {
                 imports.define(module: "gopherforge_debug", name: "checkpoint", Function(store: store, parameters: [.i32, .i32, .i32, .i32, .i32]) { caller, args in
                     guard let memory = caller.instance?.exports[memory: "memory"] else { throw GoDebugControl.Stopped() }
@@ -113,6 +121,15 @@ struct WasiProcessRunner: Sendable {
             return try wasi.start(instance)
         }
     }
+}
+
+/// The bounded educational shell checks this at every interpreted statement.
+/// It does not claim to interrupt arbitrary Go programs or Wasm instructions.
+final class WasiCancellation: @unchecked Sendable {
+    private let lock = NSLock()
+    private var cancelled = false
+    var isCancelled: Bool { lock.withLock { cancelled } }
+    func cancel() { lock.withLock { cancelled = true } }
 }
 
 /// Captures a guest's stdout and stderr, keeping a bounded amount of each.

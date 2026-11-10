@@ -15,6 +15,28 @@ import UIKit
 final class CodeEditorView: UIView {
     let textView: UITextView
     let gutter = LineNumberGutterView()
+    var remoteCursors: [PlaygroundPeerCursor] = [] { didSet { updatePeerCursors() } }
+    private var peerViews: [UIView] = []
+    func updatePeerCursors() {
+        peerViews.forEach { $0.removeFromSuperview() }; peerViews.removeAll()
+        for peer in remoteCursors.prefix(24) {
+            let offset = min((textView.text as NSString?)?.length ?? 0, max(0, peer.head))
+            guard let position = textView.position(from: textView.beginningOfDocument, offset: offset) else { continue }
+            let rect = textView.caretRect(for: position)
+            guard rect.minX.isFinite, rect.minY.isFinite else { continue }
+            let color = UIColor(red: CGFloat(Int(peer.color.dropFirst().prefix(2), radix: 16) ?? 99) / 255,
+                                green: CGFloat(Int(peer.color.dropFirst(3).prefix(2), radix: 16) ?? 184) / 255,
+                                blue: CGFloat(Int(peer.color.dropFirst(5).prefix(2), radix: 16) ?? 196) / 255, alpha: 1)
+            let caret = UIView(frame: CGRect(x: rect.minX, y: rect.minY, width: 2, height: rect.height)); caret.backgroundColor = color
+            caret.isUserInteractionEnabled = false; textView.addSubview(caret); peerViews.append(caret)
+            let label = UILabel(); label.text = " \(peer.name) "; label.font = .systemFont(ofSize: 10, weight: .medium)
+            label.textColor = .init(red: 0.06, green: 0.13, blue: 0.16, alpha: 1); label.backgroundColor = color
+            label.layer.cornerRadius = 3; label.clipsToBounds = true; label.sizeToFit()
+            label.frame = CGRect(x: rect.minX, y: max(0, rect.minY - label.bounds.height), width: label.bounds.width, height: label.bounds.height)
+            label.isUserInteractionEnabled = false; label.accessibilityLabel = "\(peer.name)'s cursor"; label.isAccessibilityElement = true
+            textView.addSubview(label); peerViews.append(label)
+        }
+    }
 
     private let horizontalScroll = UIScrollView()
     private var textWidth: NSLayoutConstraint?
@@ -86,6 +108,7 @@ final class CodeEditorView: UIView {
         super.layoutSubviews()
         updateTextWidth()
         gutter.setNeedsDisplay()
+        updatePeerCursors()
     }
 
     /// The text view is as wide as its longest line, or as wide as the space

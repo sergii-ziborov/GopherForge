@@ -1,3 +1,4 @@
+import { AppPrice } from "@/components/AppPrice";
 import { releases } from "@/lib/releases";
 import { news, newsURL } from "@/lib/news";
 import { StudyContinue } from "@/components/StudyContinue";
@@ -7,6 +8,7 @@ import { appStore, github, lessons, units, readings } from "@/lib/course";
 import { posts } from "@/lib/posts";
 import { Code } from "@/components/Code";
 import { EditorialIllustration } from "@/components/EditorialIllustration";
+import { StructuredData } from "@/components/StructuredData";
 const heroCode = `package main\n\nimport "fmt"\n\nfunc main() {\n    ideas := []string{"learn", "build", "understand"}\n    for _, idea := range ideas {\n        fmt.Println("Go", idea)\n    }\n}`;
 export default function Home() {
   return (
@@ -22,16 +24,16 @@ export default function Home() {
             GO BEYOND THE TUTORIAL
           </p>
           <h1>
-            Learn it.
+            Write Go.
             <br />
-            Build it.
+            Learn Go.
             <br />
             <em>Make it Go.</em>
           </h1>
           <p>
-            A practical learning library and a native Go workbench. Understand
-            the language, make better design decisions, and turn your next idea
-            into working code.
+            A Go compiler for iPhone, iPad and your browser, with a practical
+            learning library. Write real projects, debug locally and build your
+            understanding one lesson at a time.
           </p>
           <div className="hero-actions">
             <Link href="/learn" className="button">
@@ -42,13 +44,13 @@ export default function Home() {
             </a>
           </div>
           <p className="small-note">
-            Free web lessons. iOS app: $6.99 USD, one-time U.S. purchase.
+            Free web lessons. iOS app: <AppPrice /> · one-time U.S. purchase.
             Regional prices vary.
           </p>
           <p className="small-note">
-            TestFlight {releases.beta.version} ({releases.beta.build}): MCP Playground
-            and shareable learning-progress links.{" "}
-            <Link href="/guide/mcp">Setup and workflows →</Link>
+            Browser Playground: encrypted collaboration and GopherForge MCP.
+            Native encrypted rooms: {releases.beta.version} TestFlight.{" "}
+            <Link href="/guide/mcp">Connect your AI agent →</Link>
           </p>
         </div>
         <div className="hero-workbench">
@@ -227,7 +229,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="app-price" id="pricing">
-              <strong>$6.99 USD</strong>
+              <AppPrice />
               <span>One-time purchase · U.S. App Store</span>
               <p>
                 No subscription or in-app purchases. Regional prices and taxes
@@ -238,9 +240,10 @@ export default function Home() {
             <p className="small-note">
               App Store version {releases.public.version} is available now.
               Continue is included. The web library adds JSON v2, SQL service
-              lifetimes, modern concurrency and practical coding-agent lessons.
-              Native {releases.next.version}: {releases.next.status}. See
-              version history for its availability.
+              lifetimes, modern concurrency, practical coding-agent workflows
+              and Go for DevOps. Named live collaboration is available in the
+              browser; the native 1.3.3 upgrade is in preparation. See version
+              history for its availability.
             </p>
           </div>
         </div>
@@ -312,35 +315,58 @@ export default function Home() {
           Explore the source ↗
         </a>
       </section>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            name: "GopherForge: Go Compiler",
-            description:
-              "On-device Go compiler and editor for iPhone and iPad, with tests, vet, formatting, a practical course and interview preparation.",
-            image: "https://gopherforge.app/images/app-icon.png",
-            screenshot: "https://gopherforge.app/images/workbench.png",
-            featureList: [
-              "Offline on-device Go compilation",
-              "Package tests and vet",
-              "Go course and saved learning progress",
-              "Interview preparation and interactive algorithms",
-            ],
-            applicationCategory: "DeveloperApplication",
-            operatingSystem: "iOS, iPadOS",
-            softwareVersion: releases.public.version,
-            offers: {
-              "@type": "Offer",
-              price: "6.99",
-              priceCurrency: "USD",
-              url: appStore,
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://gopherforge.app/#website",
+              url: "https://gopherforge.app/",
+              name: "GopherForge",
+              alternateName: "Gopher Forge",
+              inLanguage: "en",
+              publisher: { "@id": "https://gopherforge.app/#organization" },
             },
-            url: "https://gopherforge.app",
-            downloadUrl: appStore,
-          }),
+            {
+              "@type": "Organization",
+              "@id": "https://gopherforge.app/#organization",
+              name: "GopherForge",
+              url: "https://gopherforge.app/",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://gopherforge.app/images/app-icon.png",
+              },
+              sameAs: [github, appStore],
+            },
+            {
+              "@type": "SoftwareApplication",
+              "@id": "https://gopherforge.app/#native-app",
+              name: "GopherForge: Go Compiler",
+              description:
+                "On-device Go compiler and editor for iPhone and iPad, with tests, vet, formatting, a practical course and interview preparation.",
+              image: "https://gopherforge.app/images/app-icon.png",
+              screenshot: "https://gopherforge.app/images/workbench.png",
+              featureList: [
+                "Offline on-device Go compilation",
+                "Package tests and vet",
+                "Go course and saved learning progress",
+                "Interview preparation and interactive algorithms",
+              ],
+              applicationCategory: "DeveloperApplication",
+              operatingSystem: "iOS, iPadOS",
+              softwareVersion: releases.public.version,
+              publisher: { "@id": "https://gopherforge.app/#organization" },
+              offers: {
+                "@type": "Offer",
+                price: releases.priceUSD,
+                priceCurrency: "USD",
+                url: appStore,
+              },
+              url: "https://gopherforge.app",
+              downloadUrl: appStore,
+            },
+          ],
         }}
       />
     </>

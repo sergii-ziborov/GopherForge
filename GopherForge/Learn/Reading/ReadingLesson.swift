@@ -1,6 +1,6 @@
 import Foundation
 
-/// Reading material is bundled, so it never needs a compiler or a network request.
+/// Reading material belongs to a complete, explicitly installed offline course.
 struct ReadingLesson: Codable, Sendable, Identifiable {
     struct DesignGuide: Codable, Sendable {
         struct Rating: Codable, Sendable {
@@ -47,6 +47,7 @@ struct ReadingLesson: Codable, Sendable, Identifiable {
 }
 
 enum ReadingLessonCatalog {
+    #if LESSON_CATALOG_EXPORT
     static let all: [ReadingLesson] = {
         #if LESSON_CATALOG_EXPORT
         // Command-line export uses the same source without needing an app bundle.
@@ -63,6 +64,10 @@ enum ReadingLessonCatalog {
               let lessons = try? JSONDecoder().decode([ReadingLesson].self, from: data) else { return [] }
         return lessons
     }()
+
+    #else
+    static var all: [ReadingLesson] { CourseLibrary.shared.packages.flatMap(\.readings) }
+    #endif
 
     static func reading(for id: String) -> ReadingLesson? { all.first { $0.id == id } }
 

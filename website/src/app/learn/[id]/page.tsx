@@ -30,6 +30,7 @@ export async function generateMetadata({
       title: l?.title,
       description: l?.objective,
       url: lessonURL(id),
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
       type: "article",
       modifiedTime: metadataDate(lessonUpdatedOn(id)),
     },

@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Three more for collections: bounds, map order, and building strings.
@@ -162,3 +163,5 @@ extension CourseUnitCollections {
         """
     )
 }
+
+#endif

@@ -124,21 +124,21 @@ struct WorkspaceView: View {
             if workspace.hasUnsavedChanges || workspace.saveError != nil {
                 HStack(spacing: 8) {
                     Label(
-                        workspace.saveError ?? "Сохранение…",
+                        workspace.saveError ?? "Saving…",
                         systemImage: workspace.saveError == nil ? "arrow.clockwise" : "exclamationmark.triangle"
                     )
                     .font(.caption)
                     .foregroundStyle(workspace.saveError == nil ? Color.secondary : Color.red)
                     Spacer(minLength: 0)
                     if workspace.saveError != nil {
-                        Button("Повторить") { Task { await workspace.retrySave() } }
+                        Button("Retry") { Task { await workspace.retrySave() } }
                             .font(.caption)
                         if let project = workspace.recoveryProject ?? workspace.project {
                             ShareLink(
                                 item: ProjectExport(project: project),
                                 preview: SharePreview(project.name)
                             ) {
-                                Text("Экспорт").font(.caption)
+                                Text("Export").font(.caption)
                             }
                         }
                     }

@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// The quizzes closing the two units added last.
@@ -173,3 +174,5 @@ enum QuizCatalogTypes {
         ]
     )
 }
+
+#endif

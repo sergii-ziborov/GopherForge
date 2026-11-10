@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Two more for errors: your own error type, and what panic is actually for.
@@ -188,3 +189,5 @@ extension CourseUnitErrors {
         """
     )
 }
+
+#endif

@@ -779,8 +779,8 @@
         "reading" : {
           "quiz" : {
             "alternatives" : [
-              "Yes, allocation is the only shared operation",
-              "Yes, if the slice contains integers"
+              "Needs synchronization only when append allocates",
+              "Is always safe when the element type is int"
             ],
             "correct" : "Needs one owner or synchronization, even with capacity",
             "explanation" : "Independent slots are safe only with fixed ownership and synchronization before the final read.",
@@ -981,8 +981,8 @@
         "reading" : {
           "quiz" : {
             "alternatives" : [
-              "Clipping capacity with data[:n:n]",
-              "Assigning a second variable to the same slice"
+              "Always releases the unused backing bytes immediately",
+              "Owns an independent copy of only its visible elements"
             ],
             "correct" : "Can retain a much larger backing allocation",
             "explanation" : "Reducing a slice capacity does not copy storage or shorten the backing array lifetime.",
@@ -2432,7 +2432,7 @@
             "correct" : "Can depend on unpublished local replacements",
             "explanation" : "GOWORK=off removes the local workspace composition. That exposes missing published requirements and APIs that only worked through sibling modules or local replacements.",
             "hint" : "Compare the local composition with a separate consumer.",
-            "question" : "Why also test with GOWORK=off?"
+            "question" : "What risk can a build that passes only in the developer’s workspace hide?"
           },
           "references" : [
             "https://go.dev/doc/tutorial/workspaces",
@@ -2503,7 +2503,7 @@
             "correct" : "Runs only when explicitly requested",
             "explanation" : "Compilation does not automatically invoke go generate. Generation is an explicit workflow step whose tool version and output need their own checks.",
             "hint" : "Distinguish an explicit generation step from compilation.",
-            "question" : "When does go build automatically run go generate?"
+            "question" : "How is go generate invoked in the module workflow?"
           },
           "references" : [
             "https://pkg.go.dev/cmd/go#hdr-Generate_Go_files_by_processing_source",
@@ -2574,7 +2574,7 @@
             "correct" : "Need isolated fixtures and a shared capacity budget",
             "explanation" : "Package test binaries and parallel subtests share downstream capacity. Isolate fixtures and bound their combined demand; the race detector does not size a database pool.",
             "hint" : "Count clients, test binaries and parallel subtests together.",
-            "question" : "What prevents tests from overloading one test database?"
+            "question" : "What contract should parallel tests sharing a development database follow?"
           },
           "references" : [
             "https://pkg.go.dev/testing",
@@ -2929,7 +2929,7 @@
             "correct" : "Report bounded evidence, not absence of every bug",
             "explanation" : "A weak property can pass even when the parser is wrong; choose an oracle tied to the contract.",
             "hint" : "State the input budget and the property actually asserted.",
-            "question" : "What does a passing bounded fuzz run establish?"
+            "question" : "How should you describe a bounded fuzz run that found no failure?"
           },
           "references" : [
             "https://go.dev/doc/tutorial/fuzz",
@@ -3000,7 +3000,7 @@
             "correct" : "Construct once; close after owned work drains",
             "explanation" : "The application component owns a shared client across requests, stops new work and drains existing work before closing it. Per-request pools multiply connection and startup costs.",
             "hint" : "Match resource lifetime to the component that uses it.",
-            "question" : "Who should own a service-wide database client?"
+            "question" : "What lifecycle should a service-wide database client follow?"
           },
           "references" : [
             "https://go.dev/ref/spec#Package_initialization",
@@ -3132,8 +3132,8 @@
         "reading" : {
           "quiz" : {
             "alternatives" : [
-              "Every goroutine using it has already exited",
-              "Every blocking primitive is forcibly interrupted"
+              "Cancellation proves every worker has already exited",
+              "Cancellation forcibly interrupts every blocking primitive"
             ],
             "correct" : "Request a stop, then observe the worker finishing",
             "explanation" : "A context only helps at code paths and APIs that observe it; cancellation alone does not join workers.",
@@ -3598,7 +3598,7 @@
             "correct" : "Task registration and a join",
             "explanation" : "Use an error-aware group for returned task errors and keep a separate bounded cancellation path for work that may block.",
             "hint" : "Joining waits for exit; it cannot manufacture an exit path.",
-            "question" : "A WaitGroup task blocks forever on an uncancellable send. What does calling Wait do?"
+            "question" : "Which capabilities do WaitGroup.Go and Wait provide for owned goroutines?"
           },
           "references" : [
             "https://pkg.go.dev/sync#WaitGroup.Go",
@@ -3671,7 +3671,7 @@
             "correct" : "Time inside a supported test bubble",
             "explanation" : "Use the bubble for a deterministic in-process protocol and retain isolated integration tests for external services.",
             "hint" : "Separate in-process evidence from an external system boundary.",
-            "question" : "A virtual-time unit test passes. What can it establish about a remote PostgreSQL failover?"
+            "question" : "What does a supported testing/synctest bubble control, rather than real remote-service behavior?"
           },
           "references" : [
             "https://pkg.go.dev/testing/synctest",
@@ -3743,7 +3743,7 @@
             "correct" : "Wait ends the derived context",
             "explanation" : "SetLimit bounds active group functions, not every queued byte. All started work must be joined before its dependencies are released.",
             "hint" : "The derived context belongs to the group operation.",
-            "question" : "A successful group.Wait returns. Which context should an independent later operation use?"
+            "question" : "Which fact must guide reuse of an errgroup-derived context after Wait returns successfully?"
           },
           "references" : [
             "https://pkg.go.dev/golang.org/x/sync/errgroup",
@@ -3890,7 +3890,7 @@
             "correct" : "One invariant, one shared synchronization protocol",
             "explanation" : "The lock is copied while the map storage remains shared. Use a stable lock owner and pointer receivers; test both races and the compound invariant.",
             "hint" : "Both methods use pointer receivers so calls share the lock owner.",
-            "question" : "A struct with a mutex and a map uses a value receiver. What can go wrong?"
+            "question" : "Which rule should govern a shared map and the mutex protecting its multi-step invariant?"
           },
           "references" : [
             "https://pkg.go.dev/sync#Mutex",
@@ -4505,7 +4505,7 @@
             "correct" : "Only with the chosen strict policy",
             "explanation" : "Strict decoding cannot authorize a resource or make an external write exactly once.",
             "hint" : "Duplicate names and unknown names are different cases.",
-            "question" : "A v2 command endpoint must reject additional properties. What should its decoder do?"
+            "question" : "When should a decoder be expected to reject unknown JSON member names?"
           },
           "references" : [
             "https://pkg.go.dev/encoding/json/v2",
@@ -4653,7 +4653,7 @@
             "correct" : "Reuse client; bound time, bytes and retry semantics",
             "explanation" : "No. Check status, bound time and response bytes, validate parsing and always close the body; retry semantics depend on the operation.",
             "hint" : "The body is limited to the allowed bytes plus one detection byte, so a truncated success cannot be mistaken for a complete valid response.",
-            "question" : "Does a nil error from http.Client.Do guarantee HTTP success and a small complete body?"
+            "question" : "Which policy should govern an HTTP client used by a busy service?"
           },
           "references" : [
             "https://pkg.go.dev/net/http#Client",
@@ -4762,7 +4762,7 @@
               "The garbage collector never handles byte slices",
               "Setting any variable to nil disables future collection"
             ],
-            "correct" : "Stays live until its remaining references disappear",
+            "correct" : "Stays live while strong references still reach it",
             "explanation" : "Eligible for collection does not mean the same bytes disappear from process RSS immediately.",
             "hint" : "Follow every remaining reference path, including caches and blocked workers.",
             "question" : "Which statement is correct about a cached reachable object?"
@@ -4772,7 +4772,7 @@
             "https://pkg.go.dev/runtime"
           ],
           "review" : {
-            "answer" : "Stays live until its remaining references disappear",
+            "answer" : "Stays live while strong references still reach it",
             "prompt" : "A cached reachable object"
           },
           "sections" : [
@@ -4807,8 +4807,8 @@
         "reading" : {
           "quiz" : {
             "alternatives" : [
-              "Yes, it caps every byte used by the process",
-              "Yes, it also bounds caches and request queues"
+              "A hard cap covering every byte used by the process",
+              "A fixed limit on the number of queued requests"
             ],
             "correct" : "A soft runtime budget, not a process hard cap",
             "explanation" : "The runtime memory limit is soft and cannot substitute for a bounded workload or a measured container budget.",
@@ -4856,8 +4856,8 @@
         "reading" : {
           "quiz" : {
             "alternatives" : [
-              "Yes, each goroutine reserves a physical core",
-              "Yes, once the goroutine has a large enough stack"
+              "Reserves one physical core for every goroutine",
+              "Places a fixed bound on the total number of goroutines"
             ],
             "correct" : "Limits parallel Go execution slots, not goroutines",
             "explanation" : "A low CPU percentage can coexist with severe overload caused by blocked downstream calls and growing queues.",
@@ -5187,8 +5187,8 @@
         "reading" : {
           "quiz" : {
             "alternatives" : [
-              "Yes, every connection always allows exactly one request per second",
-              "Yes, it also bounds every other application instance"
+              "Limits every connection to exactly one request per second",
+              "Provides one global connection budget across all replicas"
             ],
             "correct" : "Reuses connections; it is not a request-rate limit",
             "explanation" : "A cache outage can become a database outage if fallback traffic has no admission control.",
@@ -8009,7 +8009,7 @@
             "correct" : "A durable business action that may also fail",
             "explanation" : "The outcome is unknown. Reconcile the stable payment identity before retrying or compensating, and keep the workflow state durable.",
             "hint" : "Shipping failure moves the workflow into refunding.",
-            "question" : "A payment request timed out. Can the workflow safely create a fresh payment?"
+            "question" : "How should a compensating action, such as refunding an accepted payment, be modeled in a saga?"
           },
           "references" : [
             "https://microservices.io/patterns/data/saga.html",
@@ -8155,7 +8155,7 @@
             "correct" : "Verified identity + scoped access on every path",
             "explanation" : "No. The verified tenant scope must participate in lookup and authorization, including the cache key, storage predicate and job context.",
             "hint" : "The composite key demonstrates why order ID alone is insufficient when IDs are only unique within a tenant.",
-            "question" : "Two tenants use order ID 42. Is a cache key containing only 42 safe?"
+            "question" : "Which invariant must cover database queries and cache lookups in a multi-tenant service?"
           },
           "references" : [
             "https://pkg.go.dev/context",
@@ -8301,7 +8301,7 @@
             "correct" : "Generated types still need budgets and replay rules",
             "explanation" : "No. Define partial-result, durable-effect and resume/idempotency semantics; deadlines and generated types do not provide atomic rollback.",
             "hint" : "The cancelled context maps to the protocol’s cancellation status.",
-            "question" : "A streaming RPC was cancelled after several replies. Can its entire operation be assumed to have had no effects?"
+            "question" : "Which responsibilities remain with an application even when its RPC types are generated?"
           },
           "references" : [
             "https://grpc.io/docs/guides/deadlines/",
@@ -8449,7 +8449,7 @@
             "correct" : "State which operations may proceed and reconcile",
             "explanation" : "No. A consistency protocol also needs durable ordering, authority and membership rules; define the guarantee and failure policy of each operation.",
             "hint" : "Three acknowledgements meet a simple majority threshold for five configured replicas; two do not.",
-            "question" : "Does a majority-count helper by itself implement linearizable distributed storage?"
+            "question" : "During a network partition, what policy must be explicit beyond merely counting replies?"
           },
           "references" : [
             "https://raft.github.io/raft.pdf",
@@ -8531,7 +8531,7 @@
             "correct" : "Wiring owns startup, lifetimes and shutdown",
             "explanation" : "No. The composition root owns the shared client; requests borrow it and close only request-scoped resources such as rows or bodies.",
             "hint" : "main owns the client and schedules its cleanup exactly once.",
-            "question" : "A service receives a shared database client. Should each request close it?"
+            "question" : "Who should own construction and shutdown of shared service dependencies?"
           },
           "references" : [
             "https://go.dev/doc/effective_go",
@@ -8605,7 +8605,7 @@
             "correct" : "Propagate stop; join or durably own detached work",
             "explanation" : "No. It removes cancellation and deadline propagation; detached work needs a separately owned context, budget and completion or recovery policy.",
             "hint" : "Err identifies cancellation broadly; Cause retains the chosen explanation.",
-            "question" : "Does context.WithoutCancel preserve the request deadline?"
+            "question" : "Which contract should govern cancellation and work detached from a request?"
           },
           "references" : [
             "https://pkg.go.dev/context#WithoutCancel",
@@ -8678,7 +8678,7 @@
             "correct" : "The caller names the capability it needs",
             "explanation" : "Prefer the narrow capability the consumer needs; keep driver and transaction details in adapters and verify those with real integration tests.",
             "hint" : "The reader contract is declared near its consumer and contains one capability.",
-            "question" : "Should a consumer depend on a full database client when it only reads one order?"
+            "question" : "How should a consumer define its interface when it only needs to read one order?"
           },
           "references" : [
             "https://go.dev/doc/effective_go#interfaces",
@@ -8751,7 +8751,7 @@
             "correct" : "Explicit units, exact values, deliberate conversion",
             "explanation" : "No. Parse exact integer base units or validated decimal text directly, and make scaling, range and rounding explicit.",
             "hint" : "The duration is explicitly milliseconds, the amount is cents, and the large token amount is parsed without a floating-point round trip.",
-            "question" : "Can a token amount with 18 decimals safely travel through float64 before big.Int?"
+            "question" : "What contract should protect a token amount with 18 decimal places during serialization and conversion?"
           },
           "references" : [
             "https://pkg.go.dev/math/big#Int",
@@ -12632,6 +12632,662 @@
     "translationNote" : "Start with the context lesson and a disposable development cluster. Examples keep cluster and namespace explicit; replace placeholder names and images before use."
   },
   {
+    "id" : "devops",
+    "lessons" : [
+      {
+        "explanation" : "A DevOps engineer helps teams deliver and operate changes reliably. Go is useful for portable command-line tools, controllers, exporters and services. The work also involves Linux, networking, release ownership, incident response and collaboration. Start with one service and a repeatable feedback loop rather than collecting tool names.",
+        "id" : "devops.delivery-loop",
+        "kind" : "reading",
+        "objective" : "Connect a service change to tests, delivery, operation and feedback, and choose a small automation project with a measurable outcome.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A useful automation reduces repeated manual work while keeping changes bounded, observable and recoverable; its command count is not the success criterion."
+            ],
+            "cost" : "Automation needs explicit ownership, bounded privileges, tests and recovery evidence; a shorter command is not sufficient.",
+            "family" : "Go for DevOps and reliability",
+            "flow" : [
+              "Define a small contract",
+              "Verify one artifact",
+              "Observe the deployed result",
+              "Feed evidence back"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Connect a service change to tests, delivery, operation and feedback, and choose a small automation project with a measurable outcome.",
+              "Make changes reviewable and verify the result against the original contract."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Change → rebuild separately for production → stop after a green build",
+              "Add tools → grant broad privileges → omit recovery verification"
+            ],
+            "correct" : "Change → verify → deliver → observe → improve",
+            "explanation" : "A useful automation reduces repeated manual work while keeping changes bounded, observable and recoverable; its command count is not the success criterion.",
+            "hint" : "Measure a repeatable outcome and retain failure/recovery evidence.",
+            "question" : "Which sequence forms a DevOps delivery feedback loop?"
+          },
+          "references" : [
+            "https://go.dev/solutions/devops",
+            "https://sre.google/sre-book/eliminating-toil/",
+            "https://go.dev/doc/tutorial/compile-install",
+            "https://gopherforge.app/downloads/go-devops-capstone-20261106.zip"
+          ],
+          "review" : {
+            "answer" : "Change → verify → deliver → observe → improve",
+            "prompt" : "DevOps feedback loop"
+          },
+          "sections" : [
+            {
+              "body" : "Suppose a Go API must return a new optional JSON field. Write the observable contract and a compatibility test, inspect the current module/toolchain, build one immutable artifact, deploy it to an isolated environment, check a real request and useful telemetry, then promote the same artifact. A green build does not establish that the deployed route reaches the intended version. Record a source revision, artifact digest, target, rollout outcome and a recovery decision. Feedback from production should change the next test or design, rather than disappear into a chat message.",
+              "title" : "Follow one change through the whole loop"
+            },
+            {
+              "body" : "Before this unit, complete Command line: arguments, exit codes, processes, Git, HTTP and Linux services. Then study Containers and Kubernetes: images, persistent data, contexts, probes and rollouts. The modules lessons explain toolchain pins and build capacity; service-security and SQL lessons cover trust boundaries and transaction ownership. This unit joins those topics into an operational workflow. A disposable local service is enough for the first exercises; paid cloud resources, a public cluster and production credentials are unnecessary.",
+              "title" : "Use the existing foundation in a deliberate order"
+            },
+            {
+              "body" : "Write down a repeated task, its current frequency, failure modes and time cost. A useful first tool may validate a configuration, produce an inventory report or compare desired and observed state. Give it read-only credentials first. Require a reviewable plan before mutation, bounded work, cancellation, structured output and tests for partial failure. Measure whether the tool reduced repeated manual work without creating a new unowned service. Keep a simple script when it remains clear; move to Go when types, testing, concurrency or distribution make the contract easier to maintain.",
+              "title" : "Choose toil that can be reduced safely"
+            },
+            {
+              "body" : "These commands belong on a native development machine in a repository you control. Tests need independent assertions; vet and vulnerability checks answer different questions. A clean run cannot prove operational readiness, secrets hygiene or rollback safety.",
+              "code" : "go version\ngo env GOMOD GOTOOLCHAIN\ngo test -count=1 ./...\ngo vet ./...\ngo build -trimpath -o ./build/service ./cmd/service",
+              "language" : "bash",
+              "title" : "Run a local evidence loop",
+              "walkthrough" : "Use the repository’s pinned toolchain and an explicitly reviewed working directory. Do not paste deployment or deletion commands into a production shell while exploring this lesson."
+            },
+            {
+              "body" : "Create a small Go HTTP service in a disposable native environment. Define one successful request, a bounded shutdown, a health contract and one expected failure. Write a runbook containing the exact environment, observable symptom, first read-only checks, a reversible mitigation and how to verify recovery. Ask another person to follow it without undocumented credentials or shell history. The deliverable is a working feedback loop with evidence, not a claim to have completed every DevOps discipline.",
+              "title" : "Your first operational contract"
+            },
+            {
+              "body" : "Return to this capstone after completing the six DevOps readings. Download the complete lab, including independent tests and its README, from https://gopherforge.app/downloads/go-devops-capstone-20261106.zip. The default main.go below uses httptest recorders: it opens no socket and prints readiness 503, then 204, and version 200 with revision local-review. It can be explored in GopherForge. The optional -serve mode listens only on loopback and belongs in a native development environment. Liveness and readiness express different contracts; a successful health request does not prove a successful business operation.",
+              "code" : "package main\n\nimport (\n\t\"context\"\n\t\"encoding/json\"\n\t\"errors\"\n\t\"flag\"\n\t\"fmt\"\n\t\"io\"\n\t\"log\"\n\t\"net\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"os\"\n\t\"os/signal\"\n\t\"strings\"\n\t\"sync/atomic\"\n\t\"syscall\"\n\t\"time\"\n)\n\nvar buildRevision = \"local-review\"\n\nfunc newService(revision string, ready *atomic.Bool) (http.Handler, error) {\n\tif strings.TrimSpace(revision) == \"\" || ready == nil {\n\t\treturn nil, errors.New(\"revision and readiness owner are required\")\n\t}\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"GET /livez\", func(w http.ResponseWriter, _ *http.Request) {\n\t\tw.WriteHeader(http.StatusNoContent)\n\t})\n\tmux.HandleFunc(\"GET /readyz\", func(w http.ResponseWriter, _ *http.Request) {\n\t\tif !ready.Load() {\n\t\t\thttp.Error(w, \"not ready\", http.StatusServiceUnavailable)\n\t\t\treturn\n\t\t}\n\t\tw.WriteHeader(http.StatusNoContent)\n\t})\n\tmux.HandleFunc(\"GET /version\", func(w http.ResponseWriter, _ *http.Request) {\n\t\tw.Header().Set(\"Content-Type\", \"application/json\")\n\t\tif err := json.NewEncoder(w).Encode(map[string]string{\"revision\": revision}); err != nil {\n\t\t\tlog.Printf(\"version response: %v\", err)\n\t\t}\n\t})\n\treturn mux, nil\n}\n\nfunc probe(handler http.Handler, method, path string) *httptest.ResponseRecorder {\n\trecorder := httptest.NewRecorder()\n\thandler.ServeHTTP(recorder, httptest.NewRequest(method, path, nil))\n\treturn recorder\n}\n\n// The default demonstration opens no socket: it also works as a local model.\nfunc demonstrate(out io.Writer, revision string) error {\n\tvar ready atomic.Bool\n\thandler, err := newService(revision, &ready)\n\tif err != nil {\n\t\treturn err\n\t}\n\tif _, err := fmt.Fprintln(out, \"not ready:\", probe(handler, \"GET\", \"/readyz\").Code); err != nil {\n\t\treturn err\n\t}\n\tready.Store(true)\n\tif _, err := fmt.Fprintln(out, \"ready:\", probe(handler, \"GET\", \"/readyz\").Code); err != nil {\n\t\treturn err\n\t}\n\tversion := probe(handler, \"GET\", \"/version\")\n\t_, err = fmt.Fprintf(out, \"version: %d %s\", version.Code, version.Body.String())\n\treturn err\n}\n\n// Native development only. This owner joins its HTTP serving goroutine.\nfunc serveOwned(ctx context.Context, listener net.Listener, handler http.Handler, ready *atomic.Bool) error {\n\tserver := &http.Server{\n\t\tHandler: handler, ReadHeaderTimeout: 2 * time.Second,\n\t\tIdleTimeout: 30 * time.Second, WriteTimeout: 5 * time.Second,\n\t\tMaxHeaderBytes: 16 << 10,\n\t}\n\tfinished := make(chan error, 1)\n\tready.Store(true)\n\tgo func() { finished <- server.Serve(listener) }()\n\tselect {\n\tcase err := <-finished:\n\t\tready.Store(false)\n\t\tif errors.Is(err, http.ErrServerClosed) {\n\t\t\treturn nil\n\t\t}\n\t\treturn err\n\tcase <-ctx.Done():\n\t\tready.Store(false)\n\t\tshutdown, cancel := context.WithTimeout(context.Background(), 2*time.Second)\n\t\tdefer cancel()\n\t\terr := server.Shutdown(shutdown)\n\t\tif err != nil {\n\t\t\t_ = server.Close()\n\t\t}\n\t\tserveErr := <-finished\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif !errors.Is(serveErr, http.ErrServerClosed) {\n\t\t\treturn serveErr\n\t\t}\n\t\treturn nil\n\t}\n}\n\nfunc run(args []string, out io.Writer) error {\n\tflags := flag.NewFlagSet(\"service\", flag.ContinueOnError)\n\tflags.SetOutput(io.Discard)\n\tserve := flags.Bool(\"serve\", false, \"listen in a native development environment\")\n\taddress := flags.String(\"addr\", \"127.0.0.1:8080\", \"explicit loopback address\")\n\trevision := flags.String(\"revision\", buildRevision, \"reported build label\")\n\tif err := flags.Parse(args); err != nil {\n\t\treturn err\n\t}\n\tif flags.NArg() != 0 {\n\t\treturn errors.New(\"unexpected positional argument\")\n\t}\n\tif !*serve {\n\t\treturn demonstrate(out, *revision)\n\t}\n\tvar ready atomic.Bool\n\thandler, err := newService(*revision, &ready)\n\tif err != nil {\n\t\treturn err\n\t}\n\thost, _, err := net.SplitHostPort(*address)\n\tip := net.ParseIP(host)\n\tif err != nil || ip == nil || !ip.IsLoopback() {\n\t\treturn errors.New(\"this lab listens only on an explicit loopback IP\")\n\t}\n\tlistener, err := net.Listen(\"tcp\", *address)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer listener.Close()\n\tctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)\n\tdefer stop()\n\treturn serveOwned(ctx, listener, handler, &ready)\n}\n\nfunc main() {\n\tif err := run(os.Args[1:], os.Stdout); err != nil {\n\t\tfmt.Fprintln(os.Stderr, err)\n\t\tos.Exit(1)\n\t}\n}\n",
+              "language" : "go",
+              "title" : "Run the capstone model",
+              "walkthrough" : "Run without flags first. newService owns route contracts, demonstrate drives readiness explicitly, and serveOwned owns the native HTTP serving goroutine. On cancellation it clears readiness, bounds HTTP shutdown to two seconds, closes on timeout and joins Serve. Application workers, hijacked connections and deployment traffic draining need their own owners; this example does not establish their shutdown. A revision label, which -revision can override, is not proof of binary identity."
+            },
+            {
+              "body" : "In the downloaded lab, run ./verify.sh from a native development machine or a clean CI checkout with a reviewed Go 1.27 toolchain and C compiler for the race detector. The independent tests check response contracts, invalid input, readiness and native cancellation. Retain the generated executable, source manifest, toolchain, build information and executable digest together. Promote those exact bytes after verification; a later rebuild needs its own evidence. Source and artifact digests identify bytes; they are not signatures or trusted provenance attestations. Vulnerability checks, signing policy and deployment decisions remain separate gates.",
+              "code" : "#!/usr/bin/env bash\nset -euo pipefail\ncd \"$(dirname \"$0\")\"\nexport GOTOOLCHAIN=local\nmkdir -p build\ngo version > build/toolchain.txt\ngo test -race -count=1 ./...\ngo vet ./...\nshasum -a 256 main.go main_test.go go.mod verify.sh > build/sources.sha256\nsource_id=\"$(shasum -a 256 build/sources.sha256 | cut -d ' ' -f 1)\"\ngo build -trimpath -ldflags \"-X main.buildRevision=$source_id\" -o build/service .\nshasum -a 256 build/service > build/service.sha256\ngo version -m build/service > build/buildinfo.txt\nprintf 'Verified one artifact. Review build/service.sha256 and retain these exact bytes.\\n'\n",
+              "language" : "bash",
+              "title" : "Retain one verified artifact",
+              "walkthrough" : "The script stops on a failed test, race check, vet or build. It writes evidence into build/, embeds a source-manifest label and hashes the resulting native executable. These shell commands and -race do not run inside the app or browser WASI sandbox. The script performs no deployment."
+            },
+            {
+              "body" : "The lab README gives exact commands and expected results. Add an optional service field while retaining the old revision contract: first observe a failing independent test, then fix the code and rerun verification. Demonstrate 503 → 204 → 503 readiness, an unknown route and rejected invalid configuration. Run the native cancellation test under the race detector. Record artifact identity and target, define an SLI event/window, and write a runbook another person can follow: symptom, read-only checks, reversible mitigation and recovery evidence. Describe compatibility and accepted-data handling before choosing rollback. The lab has no database or production load balancer, so it cannot prove data-migration safety, a production rollout or an SLO from a few local requests.",
+              "title" : "Finish the capstone with evidence"
+            },
+            {
+              "body" : "Complete file from the multi-file capstone. It is included in the course download for offline reading and copying. The default model runs in WASI; native server, race-detector and infrastructure exercises require your own disposable native environment. The linked ZIP is an optional convenience, not a prerequisite for reading these files offline.",
+              "code" : "# Go DevOps capstone: prove one service change\n\nComplete the six GopherForge DevOps readings, then return to this lab. The goal is a small, reviewable delivery loop with evidence. Go builds the service and its checks; deployment, monitoring and recovery still need explicit owners.\n\n## Run the local model\n\nUse Go 1.27 with the toolchain version recorded in your evidence. The project has no third-party dependencies. From this directory:\n\n```sh\ngo run .\n```\n\nExpected output:\n\n```text\nnot ready: 503\nready: 204\nversion: 200 {\"revision\":\"local-review\"}\n```\n\nThe default mode uses `httptest` recorders and opens no network socket. Copy `main.go` into GopherForge to explore that mode. Listening, process signals, shell commands and the race detector belong in a native development environment, outside the app/browser sandbox.\n\n## Verify and retain one artifact\n\nOn a native machine with a supported C compiler for Go's race detector:\n\n```sh\n./verify.sh\n./build/service\ngo version -m ./build/service\nshasum -a 256 ./build/service\n```\n\nThe script runs independent contract tests, a race check and `go vet`, records the toolchain and a source manifest, and builds one executable. It embeds the manifest digest in `/version` and records the binary digest. Keep `build/toolchain.txt`, `build/sources.sha256`, `build/buildinfo.txt` and `build/service.sha256` with that exact executable. A source digest is an identifier, not a signature or a trusted build attestation. The `-revision` flag can override the label; the label alone never proves binary identity.\n\nThe same `./verify.sh` command can be a CI step after a clean checkout and installation of the reviewed Go/C toolchains. Restrict the job to the permissions it needs. A vulnerability check, provenance/signing policy and deployment approval are separate gates; this script does not establish them.\n\n## Inspect the native service\n\nIn one terminal, run the verified artifact on loopback:\n\n```sh\n./build/service -serve -addr 127.0.0.1:8080\n```\n\nIn another terminal:\n\n```sh\ncurl --fail --silent --show-error http://127.0.0.1:8080/version\ncurl --fail --silent --show-error -o /dev/null -w '%{http_code}\\n' http://127.0.0.1:8080/readyz\ncurl --silent --show-error -o /dev/null -w '%{http_code}\\n' http://127.0.0.1:8080/missing\n```\n\nExpect the recorded revision, `204`, and `404`. Stop the first terminal with Ctrl-C. The server owner clears readiness, gives HTTP shutdown two seconds, closes on timeout and joins its serving goroutine. It does not own hypothetical application workers or hijacked connections. A real deployment also needs traffic draining and explicit ownership of those resources. The test suite checks readiness transitions directly; this lab does not simulate a production load balancer.\n\n## Acceptance checklist\n\n1. Add an optional `service` field to `/version`. Keep an independent test for the existing `revision` field so older clients remain compatible. Change the test expectation first, observe failure, then implement the field and rerun verification.\n2. Demonstrate invalid configuration, an unknown route and readiness changing from `503` to `204` and back. Explain why liveness and readiness are different contracts.\n3. Run the native cancellation test under `-race`. Record the process exit and explain which goroutine is joined, the shutdown deadline and what still needs a separate owner.\n4. Record the exact verified binary digest and target environment. Promote those bytes; rebuilding for a later environment creates a different artifact that needs new evidence. Never use the `/version` label as a substitute for the artifact digest.\n5. Draft a runbook with an observable symptom, first read-only checks, a reversible mitigation and a recovery check. Specify the success/error event and time window you would measure for an SLI; three local requests do not establish an SLO.\n6. Write a recovery decision for the optional-field change. Explain compatibility and accepted-data handling. This lab has no database; it cannot prove that rolling back a real data migration preserves writes. Have another person follow the runbook in an environment you control.\n\nKeep a short evidence file with commands, observed outcomes, source and artifact identities, target and remaining limits. A green test run is one input to a release decision. It is not evidence of a production rollout or a complete DevOps qualification.\n",
+              "language" : "markdown",
+              "title" : "Offline capstone source: README.md"
+            },
+            {
+              "body" : "Complete file from the multi-file capstone. It is included in the course download for offline reading and copying. The default model runs in WASI; native server, race-detector and infrastructure exercises require your own disposable native environment. The linked ZIP is an optional convenience, not a prerequisite for reading these files offline.",
+              "code" : "module example.com/gopherforge-devops-capstone\n\ngo 1.27.0\n",
+              "language" : "gomod",
+              "title" : "Offline capstone source: go.mod"
+            },
+            {
+              "body" : "Complete file from the multi-file capstone. It is included in the course download for offline reading and copying. The default model runs in WASI; native server, race-detector and infrastructure exercises require your own disposable native environment. The linked ZIP is an optional convenience, not a prerequisite for reading these files offline.",
+              "code" : "package main\n\nimport (\n\t\"context\"\n\t\"encoding/json\"\n\t\"errors\"\n\t\"flag\"\n\t\"fmt\"\n\t\"io\"\n\t\"log\"\n\t\"net\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"os\"\n\t\"os/signal\"\n\t\"strings\"\n\t\"sync/atomic\"\n\t\"syscall\"\n\t\"time\"\n)\n\nvar buildRevision = \"local-review\"\n\nfunc newService(revision string, ready *atomic.Bool) (http.Handler, error) {\n\tif strings.TrimSpace(revision) == \"\" || ready == nil {\n\t\treturn nil, errors.New(\"revision and readiness owner are required\")\n\t}\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"GET /livez\", func(w http.ResponseWriter, _ *http.Request) {\n\t\tw.WriteHeader(http.StatusNoContent)\n\t})\n\tmux.HandleFunc(\"GET /readyz\", func(w http.ResponseWriter, _ *http.Request) {\n\t\tif !ready.Load() {\n\t\t\thttp.Error(w, \"not ready\", http.StatusServiceUnavailable)\n\t\t\treturn\n\t\t}\n\t\tw.WriteHeader(http.StatusNoContent)\n\t})\n\tmux.HandleFunc(\"GET /version\", func(w http.ResponseWriter, _ *http.Request) {\n\t\tw.Header().Set(\"Content-Type\", \"application/json\")\n\t\tif err := json.NewEncoder(w).Encode(map[string]string{\"revision\": revision}); err != nil {\n\t\t\tlog.Printf(\"version response: %v\", err)\n\t\t}\n\t})\n\treturn mux, nil\n}\n\nfunc probe(handler http.Handler, method, path string) *httptest.ResponseRecorder {\n\trecorder := httptest.NewRecorder()\n\thandler.ServeHTTP(recorder, httptest.NewRequest(method, path, nil))\n\treturn recorder\n}\n\n// The default demonstration opens no socket: it also works as a local model.\nfunc demonstrate(out io.Writer, revision string) error {\n\tvar ready atomic.Bool\n\thandler, err := newService(revision, &ready)\n\tif err != nil {\n\t\treturn err\n\t}\n\tif _, err := fmt.Fprintln(out, \"not ready:\", probe(handler, \"GET\", \"/readyz\").Code); err != nil {\n\t\treturn err\n\t}\n\tready.Store(true)\n\tif _, err := fmt.Fprintln(out, \"ready:\", probe(handler, \"GET\", \"/readyz\").Code); err != nil {\n\t\treturn err\n\t}\n\tversion := probe(handler, \"GET\", \"/version\")\n\t_, err = fmt.Fprintf(out, \"version: %d %s\", version.Code, version.Body.String())\n\treturn err\n}\n\n// Native development only. This owner joins its HTTP serving goroutine.\nfunc serveOwned(ctx context.Context, listener net.Listener, handler http.Handler, ready *atomic.Bool) error {\n\tserver := &http.Server{\n\t\tHandler: handler, ReadHeaderTimeout: 2 * time.Second,\n\t\tIdleTimeout: 30 * time.Second, WriteTimeout: 5 * time.Second,\n\t\tMaxHeaderBytes: 16 << 10,\n\t}\n\tfinished := make(chan error, 1)\n\tready.Store(true)\n\tgo func() { finished <- server.Serve(listener) }()\n\tselect {\n\tcase err := <-finished:\n\t\tready.Store(false)\n\t\tif errors.Is(err, http.ErrServerClosed) {\n\t\t\treturn nil\n\t\t}\n\t\treturn err\n\tcase <-ctx.Done():\n\t\tready.Store(false)\n\t\tshutdown, cancel := context.WithTimeout(context.Background(), 2*time.Second)\n\t\tdefer cancel()\n\t\terr := server.Shutdown(shutdown)\n\t\tif err != nil {\n\t\t\t_ = server.Close()\n\t\t}\n\t\tserveErr := <-finished\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif !errors.Is(serveErr, http.ErrServerClosed) {\n\t\t\treturn serveErr\n\t\t}\n\t\treturn nil\n\t}\n}\n\nfunc run(args []string, out io.Writer) error {\n\tflags := flag.NewFlagSet(\"service\", flag.ContinueOnError)\n\tflags.SetOutput(io.Discard)\n\tserve := flags.Bool(\"serve\", false, \"listen in a native development environment\")\n\taddress := flags.String(\"addr\", \"127.0.0.1:8080\", \"explicit loopback address\")\n\trevision := flags.String(\"revision\", buildRevision, \"reported build label\")\n\tif err := flags.Parse(args); err != nil {\n\t\treturn err\n\t}\n\tif flags.NArg() != 0 {\n\t\treturn errors.New(\"unexpected positional argument\")\n\t}\n\tif !*serve {\n\t\treturn demonstrate(out, *revision)\n\t}\n\tvar ready atomic.Bool\n\thandler, err := newService(*revision, &ready)\n\tif err != nil {\n\t\treturn err\n\t}\n\thost, _, err := net.SplitHostPort(*address)\n\tip := net.ParseIP(host)\n\tif err != nil || ip == nil || !ip.IsLoopback() {\n\t\treturn errors.New(\"this lab listens only on an explicit loopback IP\")\n\t}\n\tlistener, err := net.Listen(\"tcp\", *address)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer listener.Close()\n\tctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)\n\tdefer stop()\n\treturn serveOwned(ctx, listener, handler, &ready)\n}\n\nfunc main() {\n\tif err := run(os.Args[1:], os.Stdout); err != nil {\n\t\tfmt.Fprintln(os.Stderr, err)\n\t\tos.Exit(1)\n\t}\n}\n",
+              "language" : "go",
+              "title" : "Offline capstone source: main.go"
+            },
+            {
+              "body" : "Complete file from the multi-file capstone. It is included in the course download for offline reading and copying. The default model runs in WASI; native server, race-detector and infrastructure exercises require your own disposable native environment. The linked ZIP is an optional convenience, not a prerequisite for reading these files offline.",
+              "code" : "package main\n\nimport (\n\t\"bytes\"\n\t\"context\"\n\t\"encoding/json\"\n\t\"errors\"\n\t\"net\"\n\t\"net/http\"\n\t\"sync/atomic\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestReadinessAndVersionContract(t *testing.T) {\n\tvar ready atomic.Bool\n\thandler, err := newService(\"reviewed-a1\", &ready)\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n\tif got := probe(handler, \"GET\", \"/readyz\").Code; got != 503 {\n\t\tt.Fatal(got)\n\t}\n\tif got := probe(handler, \"GET\", \"/livez\").Code; got != 204 {\n\t\tt.Fatal(got)\n\t}\n\tready.Store(true)\n\tif got := probe(handler, \"GET\", \"/readyz\").Code; got != 204 {\n\t\tt.Fatal(got)\n\t}\n\tversion := probe(handler, \"GET\", \"/version\")\n\tvar payload map[string]string\n\tif err := json.Unmarshal(version.Body.Bytes(), &payload); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tif version.Code != 200 || payload[\"revision\"] != \"reviewed-a1\" || version.Header().Get(\"Content-Type\") != \"application/json\" {\n\t\tt.Fatal(version, payload)\n\t}\n\tif got := probe(handler, \"POST\", \"/version\").Code; got != 405 {\n\t\tt.Fatal(got)\n\t}\n\tif got := probe(handler, \"GET\", \"/missing\").Code; got != 404 {\n\t\tt.Fatal(got)\n\t}\n\tready.Store(false)\n\tif got := probe(handler, \"GET\", \"/readyz\").Code; got != 503 {\n\t\tt.Fatal(got)\n\t}\n}\n\ntype failedWriter struct{}\n\nfunc (failedWriter) Write([]byte) (int, error) { return 0, errors.New(\"output unavailable\") }\nfunc TestInvalidConfigurationAndOutputFailure(t *testing.T) {\n\tvar ready atomic.Bool\n\tif _, err := newService(\" \", &ready); err == nil {\n\t\tt.Fatal(\"blank revision accepted\")\n\t}\n\tif _, err := newService(\"a1\", nil); err == nil {\n\t\tt.Fatal(\"missing owner accepted\")\n\t}\n\tfor _, args := range [][]string{{\"-typo\"}, {\"extra\"}, {\"-serve\", \"-addr\", \"0.0.0.0:8080\"}} {\n\t\tif err := run(args, &bytes.Buffer{}); err == nil {\n\t\t\tt.Fatal(\"invalid input accepted\", args)\n\t\t}\n\t}\n\tif err := demonstrate(failedWriter{}, \"a1\"); err == nil {\n\t\tt.Fatal(\"output failure hidden\")\n\t}\n\tvar out bytes.Buffer\n\tif err := run(nil, &out); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tif out.String() != \"not ready: 503\\nready: 204\\nversion: 200 {\\\"revision\\\":\\\"local-review\\\"}\\n\" {\n\t\tt.Fatal(out.String())\n\t}\n}\n\nfunc TestNativeServerJoinsAfterCancellation(t *testing.T) {\n\tlistener, err := net.Listen(\"tcp\", \"127.0.0.1:0\")\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n\tdefer listener.Close()\n\tvar ready atomic.Bool\n\thandler, err := newService(\"native-test\", &ready)\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n\tctx, cancel := context.WithCancel(context.Background())\n\tdefer cancel()\n\tfinished := make(chan error, 1)\n\tgo func() { finished <- serveOwned(ctx, listener, handler, &ready) }()\n\tclient := &http.Client{Timeout: 2 * time.Second}\n\tresponse, err := client.Get(\"http://\" + listener.Addr().String() + \"/version\")\n\tif err != nil {\n\t\tcancel()\n\t\tt.Fatal(err)\n\t}\n\tresponse.Body.Close()\n\tif response.StatusCode != 200 {\n\t\tt.Fatal(response.StatusCode)\n\t}\n\tcancel()\n\tselect {\n\tcase err := <-finished:\n\t\tif err != nil || ready.Load() {\n\t\t\tt.Fatal(err, ready.Load())\n\t\t}\n\tcase <-time.After(4 * time.Second):\n\t\tt.Fatal(\"server owner did not join\")\n\t}\n}\n",
+              "language" : "go",
+              "title" : "Offline capstone source: main_test.go"
+            },
+            {
+              "body" : "Complete file from the multi-file capstone. It is included in the course download for offline reading and copying. The default model runs in WASI; native server, race-detector and infrastructure exercises require your own disposable native environment. The linked ZIP is an optional convenience, not a prerequisite for reading these files offline.",
+              "code" : "#!/usr/bin/env bash\nset -euo pipefail\ncd \"$(dirname \"$0\")\"\nexport GOTOOLCHAIN=local\nmkdir -p build\ngo version > build/toolchain.txt\ngo test -race -count=1 ./...\ngo vet ./...\nshasum -a 256 main.go main_test.go go.mod verify.sh > build/sources.sha256\nsource_id=\"$(shasum -a 256 build/sources.sha256 | cut -d ' ' -f 1)\"\ngo build -trimpath -ldflags \"-X main.buildRevision=$source_id\" -o build/service .\nshasum -a 256 build/service > build/service.sha256\ngo version -m build/service > build/buildinfo.txt\nprintf 'Verified one artifact. Review build/service.sha256 and retain these exact bytes.\\n'\n",
+              "language" : "bash",
+              "title" : "Offline capstone source: verify.sh"
+            }
+          ],
+          "takeaway" : "Connect a service change to tests, delivery, operation and feedback, and choose a small automation project with a measurable outcome."
+        },
+        "tags" : [
+          "devops.delivery-loop"
+        ],
+        "title" : "DevOps is a delivery feedback loop; Go builds its tools"
+      },
+      {
+        "explanation" : "A script becomes infrastructure when other programs rely on it. Define its input, output, exit codes and side effects before adding concurrency or cloud APIs. A read-only inventory tool is a useful first project because failure can be tested without changing a real system.",
+        "id" : "devops.safe-cli",
+        "kind" : "reading",
+        "objective" : "Design a Go command with bounded input, machine-readable output, explicit exit status and cancellation ownership.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Reject unknown input and apply independent byte, target, concurrency and time budgets. Validate and test a dry run before introducing writes."
+            ],
+            "cost" : "Automation needs explicit ownership, bounded privileges, tests and recovery evidence; a shorter command is not sufficient.",
+            "family" : "Go for DevOps and reliability",
+            "flow" : [
+              "Parse bounded input",
+              "Build a read-only plan",
+              "Run owned bounded work",
+              "Report an explicit outcome"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Design a Go command with bounded input, machine-readable output, explicit exit status and cancellation ownership.",
+              "Make changes reviewable and verify the result against the original contract."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Ignore it and assume the default action is safe",
+              "Accept it as a shell command fragment"
+            ],
+            "correct" : "Reject unknown input before any side effect",
+            "explanation" : "Reject unknown input and apply independent byte, target, concurrency and time budgets. Validate and test a dry run before introducing writes.",
+            "hint" : "Validate at the boundary, before any side effect.",
+            "question" : "What should happen before a misspelled safety field reaches the operational client?"
+          },
+          "references" : [
+            "https://pkg.go.dev/flag",
+            "https://pkg.go.dev/os/exec#CommandContext",
+            "https://pkg.go.dev/os/signal#NotifyContext",
+            "https://pkg.go.dev/encoding/json#Decoder.DisallowUnknownFields"
+          ],
+          "review" : {
+            "answer" : "Reject unknown input before any side effect",
+            "prompt" : "Operational CLI input"
+          },
+          "sections" : [
+            {
+              "body" : "Keep machine-readable results on stdout and diagnostic messages on stderr. Return a nonzero exit code for an unsuccessful operation; an empty result is different from a failed request. Reject unknown flags and configuration fields so a misspelled safety option cannot silently do nothing. Limit input bytes, target count, response bytes, concurrency and total elapsed time independently. A timeout does not limit how much input is read, and a worker limit does not bound a queue.",
+              "title" : "Specify what callers can depend on"
+            },
+            {
+              "body" : "This complete program validates a small JSON inventory and emits one JSON report. It performs no network calls or writes. The fixed input makes it runnable in the app/browser as a teaching model. Unknown fields, trailing documents, excessive bytes, duplicate targets and empty inventories fail before producing a success report.",
+              "code" : "package main\n\nimport (\n \"encoding/json\"\n \"errors\"\n \"fmt\"\n \"io\"\n \"strings\"\n)\n\ntype Input struct { Targets []string `json:\"targets\"` }\ntype Report struct { Mode string `json:\"mode\"`; Count int `json:\"count\"` }\nfunc inspect(r io.Reader, w io.Writer) error {\n data, err := io.ReadAll(io.LimitReader(r, 4097))\n if err != nil { return err }\n if len(data) > 4096 { return errors.New(\"input exceeds 4096 bytes\") }\n dec := json.NewDecoder(strings.NewReader(string(data)))\n dec.DisallowUnknownFields()\n var input Input\n if err := dec.Decode(&input); err != nil { return err }\n var extra any\n if err := dec.Decode(&extra); err != io.EOF { return errors.New(\"expected one JSON document\") }\n if len(input.Targets) == 0 || len(input.Targets) > 20 { return errors.New(\"use 1-20 targets\") }\n seen := map[string]bool{}\n for _, target := range input.Targets {\n  if target == \"\" || strings.ContainsAny(target, \" \\t\\r\\n\") || seen[target] { return errors.New(\"invalid or repeated target\") }\n  seen[target] = true\n }\n return json.NewEncoder(w).Encode(Report{Mode: \"dry-run\", Count: len(input.Targets)})\n}\nfunc main() {\n err := inspect(strings.NewReader(`{\"targets\":[\"api-a\",\"api-b\"]}`), writer{})\n if err != nil { fmt.Println(\"error:\", err) }\n}\ntype writer struct{}\nfunc (writer) Write(p []byte) (int, error) { return fmt.Print(string(p)) }\n",
+              "language" : "go",
+              "title" : "A bounded, deterministic inventory model",
+              "walkthrough" : "Expected output: {\"mode\":\"dry-run\",\"count\":2}. The writer deliberately demonstrates io.Writer injection. Tests can supply bytes.Buffer and a reader that returns an error, without redirecting process-global stdout."
+            },
+            {
+              "body" : "In a real native CLI, parse flags with a dedicated flag.FlagSet, pass os.Stdin and injected stdout/stderr into a run function, and call os.Exit only in main after owned resources have been closed. Use signal.NotifyContext for the top-level interrupt, derive operation deadlines, and join workers before returning. Keep this process/signal layer outside the reusable planning package. It is not available as an arbitrary OS shell in the app’s WASI sandbox.",
+              "title" : "Add native process behavior at the edge"
+            },
+            {
+              "body" : "When a reviewed native task truly needs a subprocess, pass an executable and an argument slice to exec.CommandContext. Never concatenate inventory values into sh -c. Use an allowlisted executable, a known working directory, a controlled environment and bounded output. Command cancellation alone may not end every descendant process: process-group cleanup and platform-specific behavior require explicit tests. A redacted log should identify the operation and result without exposing access tokens or user-controlled terminal escapes.",
+              "title" : "Treat shell execution as a separate capability"
+            },
+            {
+              "body" : "Test valid input, an unknown field, two JSON documents, an over-budget reader, a duplicate target and a failing output writer. Assert both exit behavior and whether a success record was written. Next add a fake client that blocks until context cancellation; verify that the command returns and all workers exit. Run an actual local smoke test against a disposable target before adding any apply mode. A dry-run flag is credible only when tests prove it cannot reach mutation methods.",
+              "title" : "Exercise failure as part of the interface"
+            }
+          ],
+          "takeaway" : "Design a Go command with bounded input, machine-readable output, explicit exit status and cancellation ownership."
+        },
+        "tags" : [
+          "devops.safe-cli"
+        ],
+        "title" : "Build a small operational CLI with explicit boundaries"
+      },
+      {
+        "explanation" : "A controller repeatedly compares desired state with observed state. Network retries and concurrent operators make “run this command once” an unreliable model. A useful plan says exactly what will change, from which observed version, and what evidence will establish convergence.",
+        "id" : "devops.reconciliation",
+        "kind" : "reading",
+        "objective" : "Separate observation, planning and application; use a version precondition and make a repeated successful reconciliation converge.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "A stale plan must be rejected and regenerated from a fresh observation. Use server-side preconditions; client-side checks alone cannot prevent a concurrent write."
+            ],
+            "cost" : "Automation needs explicit ownership, bounded privileges, tests and recovery evidence; a shorter command is not sufficient.",
+            "family" : "Go for DevOps and reliability",
+            "flow" : [
+              "Observe version and owner",
+              "Plan the intended fields",
+              "Apply with a precondition",
+              "Read back and converge"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Separate observation, planning and application; use a version precondition and make a repeated successful reconciliation converge.",
+              "Make changes reviewable and verify the result against the original contract."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Force the old complete object over the newer version",
+              "Retry forever without reading the current object"
+            ],
+            "correct" : "Observe → plan → apply if version matches",
+            "explanation" : "A stale plan must be rejected and regenerated from a fresh observation. Use server-side preconditions; client-side checks alone cannot prevent a concurrent write.",
+            "hint" : "The plan is evidence about a particular observation.",
+            "question" : "A resource changed after you generated the plan. What is the next action?"
+          },
+          "references" : [
+            "https://kubernetes.io/docs/reference/using-api/api-concepts/",
+            "https://kubernetes.io/docs/reference/using-api/server-side-apply/",
+            "https://pkg.go.dev/context"
+          ],
+          "review" : {
+            "answer" : "Observe → plan → apply if version matches",
+            "prompt" : "Reconciliation precondition"
+          },
+          "sections" : [
+            {
+              "body" : "Represent an observed object, its version and the intended fields as data. Planning should be deterministic and read-only. Review the resource identifier, environment, version, desired fields and blast radius before applying. A plan computed for one namespace or cloud account must not silently apply to another. Re-read state after a conflict rather than forcing the old plan.",
+              "title" : "Make observation and mutation separate operations"
+            },
+            {
+              "body" : "The example changes a replica count only if the observed version still matches. Applying an old change a second time returns a conflict. Planning again against the new observation finds no work. That is convergence; it does not mean every repeated API request is harmless.",
+              "code" : "package main\n\nimport (\n \"errors\"\n \"fmt\"\n)\nvar ErrConflict = errors.New(\"observed version changed\")\ntype State struct { Version, Replicas int }\ntype Change struct { ExpectedVersion, Replicas int }\nfunc plan(desired int, observed State) (*Change, error) {\n if desired < 0 || desired > 20 { return nil, errors.New(\"replicas outside budget\") }\n if observed.Replicas == desired { return nil, nil }\n return &Change{ExpectedVersion: observed.Version, Replicas: desired}, nil\n}\nfunc apply(state *State, change Change) error {\n if state.Version != change.ExpectedVersion { return ErrConflict }\n state.Replicas = change.Replicas\n state.Version++\n return nil\n}\nfunc main() {\n state := State{Version: 41, Replicas: 2}\n change, _ := plan(3, state)\n fmt.Println(\"planned\", change.ExpectedVersion, change.Replicas)\n fmt.Println(\"applied\", apply(&state, *change), state)\n fmt.Println(\"stale\", errors.Is(apply(&state, *change), ErrConflict))\n again, _ := plan(3, state)\n fmt.Println(\"converged\", again == nil)\n}\n",
+              "language" : "go",
+              "title" : "An in-memory compare-and-swap exercise",
+              "walkthrough" : "Expected lines: planned 41 3; applied <nil> {42 3}; stale true; converged true. This map-free model has no external infrastructure and can run in the app. A real API needs server-side version checks; a local if statement around two HTTP requests is not atomic."
+            },
+            {
+              "body" : "A full-object replacement can erase another controller’s fields. Define ownership and use the API’s supported preconditions and patch semantics. In Kubernetes, resourceVersion is an opaque string, not a client-side integer counter; server-side apply also tracks field ownership. The integer here is only a teaching model. Conflicts are evidence of a newer observation, not permission to remove another writer’s changes.",
+              "title" : "Reconcile only the fields you own"
+            },
+            {
+              "body" : "After a transport timeout, a write may have committed even though its response was lost. Read the authoritative object or query by a stable operation identity before trying a non-idempotent operation again. Retry only classified transient failures, with cancellation, a total deadline, a maximum attempt count and jitter where appropriate. An error caused by invalid configuration or authorization does not become valid after sleeping. Stop an automated loop when it cannot establish a safe outcome.",
+              "title" : "Retry with budgets and outcome reconciliation"
+            },
+            {
+              "body" : "Write tests where a second writer advances Version between plan and apply. Verify that the stale attempt changes neither replicas nor version. Test a no-op plan, an invalid desired value and a successful retry after a fresh observation. Extend the model with an environment identifier and prove that a plan for staging cannot mutate production. Only then adapt the interface to a disposable local API, using least-privilege credentials and an explicit apply action.",
+              "title" : "Practice a concurrent operator"
+            }
+          ],
+          "takeaway" : "Separate observation, planning and application; use a version precondition and make a repeated successful reconciliation converge."
+        },
+        "tags" : [
+          "devops.reconciliation"
+        ],
+        "title" : "Reconcile desired state without overwriting a newer observation"
+      },
+      {
+        "explanation" : "A source commit, mutable image tag and built binary are different identities. A pipeline can test one artifact and accidentally deploy another. Make every promotion name the exact digest already verified, and keep the build environment and target architecture visible.",
+        "id" : "devops.delivery-artifacts",
+        "kind" : "reading",
+        "objective" : "Bind verification evidence and release approval to an immutable artifact, then distinguish application rollout from data recovery.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Tie trusted verification and approval to the exact artifact digest. A mutable tag, a source commit or a self-reported success flag is not equivalent evidence."
+            ],
+            "cost" : "Automation needs explicit ownership, bounded privileges, tests and recovery evidence; a shorter command is not sufficient.",
+            "family" : "Go for DevOps and reliability",
+            "flow" : [
+              "Verify without release secrets",
+              "Record immutable identity",
+              "Approve the exact target",
+              "Promote and check behavior"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Bind verification evidence and release approval to an immutable artifact, then distinguish application rollout from data recovery.",
+              "Make changes reviewable and verify the result against the original contract."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "A tag permanently authenticates every future image",
+              "Rebuilding always produces byte-identical artifacts"
+            ],
+            "correct" : "Promote the exact verified artifact digest",
+            "explanation" : "Tie trusted verification and approval to the exact artifact digest. A mutable tag, a source commit or a self-reported success flag is not equivalent evidence.",
+            "hint" : "Approval and test evidence refer to specific bytes.",
+            "question" : "Which release identity should promotion use after verification?"
+          },
+          "references" : [
+            "https://docs.github.com/en/actions/reference/security/secure-use",
+            "https://go.dev/doc/security/vuln/",
+            "https://docs.docker.com/dhi/core-concepts/digests/"
+          ],
+          "review" : {
+            "answer" : "Promote the exact verified artifact digest",
+            "prompt" : "Artifact promotion identity"
+          },
+          "sections" : [
+            {
+              "body" : "On an untrusted change, run formatting/lint rules, unit and integration tests, vet and the repository’s pinned vulnerability check without release credentials. Build the supported target with the pinned Go toolchain and record the commit, module sums, tool versions and artifact digest. A cache hit is useful but does not replace a check that the contract requires. A vulnerability check has a dated database and scope; it is not proof that the service is secure.",
+              "title" : "Define a small pipeline with independent gates"
+            },
+            {
+              "body" : "The function verifies both the artifact bytes and the digest attached to the required evidence. The booleans stand for outcomes from a trusted verification system; accepting untrusted JSON that says tests=true is not a secure gate. The model performs no publishing or deployment.",
+              "code" : "package main\n\nimport (\n \"crypto/sha256\"\n \"encoding/hex\"\n \"errors\"\n \"fmt\"\n)\ntype Evidence struct { Digest string; Tests, Vet, VulnerabilityCheck bool }\nfunc promote(artifact []byte, evidence Evidence, approvedDigest string) error {\n actual := sha256.Sum256(artifact)\n digest := hex.EncodeToString(actual[:])\n if len(approvedDigest) != 64 || digest != approvedDigest || evidence.Digest != approvedDigest { return errors.New(\"artifact identity mismatch\") }\n if !evidence.Tests || !evidence.Vet || !evidence.VulnerabilityCheck { return errors.New(\"required gate failed\") }\n return nil\n}\nfunc main() {\n artifact := []byte(\"reviewed release artifact\")\n hash := sha256.Sum256(artifact)\n digest := hex.EncodeToString(hash[:])\n evidence := Evidence{Digest: digest, Tests: true, Vet: true, VulnerabilityCheck: true}\n fmt.Println(\"approved\", promote(artifact, evidence, digest))\n fmt.Println(\"changed\", promote([]byte(\"rebuilt differently\"), evidence, digest))\n evidence.Tests = false\n fmt.Println(\"failed gate\", promote(artifact, evidence, digest))\n}\n",
+              "language" : "go",
+              "title" : "A digest-bound promotion model",
+              "walkthrough" : "Expected output: approved <nil>; changed artifact identity mismatch; failed gate required gate failed. Replace the artifact bytes after approval to see why rebuilding during promotion breaks the tested-artifact contract."
+            },
+            {
+              "body" : "Use read-only repository access for normal checks. Give the publishing/deployment job only its required permissions and target, with environment approval where the repository requires it. Prefer short-lived workload identity over a permanent cloud key when the provider supports it. Pin third-party actions to reviewed full commit SHAs, review updates and keep untrusted pull-request code away from privileged runners and secrets. An immutable action reference does not itself audit its implementation.",
+              "title" : "Scope credentials to the job that needs them"
+            },
+            {
+              "body" : "Deploy the same image digest to a disposable environment, confirm readiness and exercise an end-to-end request through the real route. Observe a representative workload before promotion; a successful container start alone does not show API compatibility. A later production promotion needs its own target/digest check, ownership and recovery conditions. Retain the previous image, configuration references, accepted-write boundary and migration state without copying secrets into a public build log.",
+              "title" : "Promote, observe and retain recovery evidence"
+            },
+            {
+              "body" : "In a local repository, produce a binary and a small manifest. Change its bytes after generating the manifest and assert rejection. Fail one test gate and assert that the deployment client is never called. Add an approval for a staging target and reject reuse for another environment. Then rehearse an old-binary/new-schema compatibility failure. Container-registry and Kubernetes lessons provide the actual native commands; this lesson defines the evidence those commands must preserve.",
+              "title" : "Build a reviewable local release exercise"
+            }
+          ],
+          "takeaway" : "Bind verification evidence and release approval to an immutable artifact, then distinguish application rollout from data recovery."
+        },
+        "tags" : [
+          "devops.delivery-artifacts"
+        ],
+        "title" : "CI/CD: build once, verify the digest, promote the same artifact"
+      },
+      {
+        "explanation" : "An SLI measures a user-relevant outcome; an SLO defines the intended level over a stated window. Error-budget burn relates the observed bad-event fraction to the allowed fraction. It can connect delivery decisions to reliability evidence more usefully than paging on every CPU spike.",
+        "id" : "devops.slo-burn",
+        "kind" : "reading",
+        "objective" : "Define eligible events, compute error-budget burn and require both recent and sustained evidence before paging.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "No observations mean missing evidence, not demonstrated health. Define eligible events and require appropriate sustained and recent signals before alerting."
+            ],
+            "cost" : "Automation needs explicit ownership, bounded privileges, tests and recovery evidence; a shorter command is not sufficient.",
+            "family" : "Go for DevOps and reliability",
+            "flow" : [
+              "Define eligible user outcomes",
+              "Measure bad and total events",
+              "Compare sustained and recent burn",
+              "Respond and verify recovery"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Define eligible events, compute error-budget burn and require both recent and sustained evidence before paging.",
+              "Make changes reviewable and verify the result against the original contract."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "CPU usage divided by the number of Pods",
+              "The error count without an eligible-event denominator"
+            ],
+            "correct" : "Bad fraction ÷ allowed fraction",
+            "explanation" : "No observations mean missing evidence, not demonstrated health. Define eligible events and require appropriate sustained and recent signals before alerting.",
+            "hint" : "A ratio needs a valid, meaningful denominator.",
+            "question" : "What does error-budget burn compare?"
+          },
+          "references" : [
+            "https://sre.google/workbook/alerting-on-slos/",
+            "https://sre.google/workbook/implementing-slos/",
+            "https://prometheus.io/docs/practices/instrumentation/"
+          ],
+          "review" : {
+            "answer" : "Bad fraction ÷ allowed fraction",
+            "prompt" : "Error-budget burn"
+          },
+          "sections" : [
+            {
+              "body" : "For a request-driven API, state which requests are eligible, what counts as bad, the latency boundary if any and the measurement point. A timeout observed by the caller may be invisible in a server’s completed-request counter. Do not exclude difficult traffic just to improve the number. Business rejections, client cancellation and internal failures need an explicit classification agreed with the service contract. Version that definition when it changes.",
+              "title" : "Write the denominator before the dashboard"
+            },
+            {
+              "body" : "For target 99.9%, the allowed bad-event fraction is 0.001. An observed 2% bad-event fraction burns that budget at about 20 times its sustainable rate. The example requires both windows to pass the configured threshold, and rejects an empty denominator rather than calling missing telemetry healthy. The chosen threshold is an exercise input, not a universal paging policy.",
+              "code" : "package main\n\nimport (\n \"errors\"\n \"fmt\"\n \"math\"\n)\ntype Window struct { Total, Bad uint64 }\nfunc burn(w Window, target float64) (float64, error) {\n if math.IsNaN(target) || math.IsInf(target, 0) || target <= 0 || target >= 1 || w.Total == 0 || w.Bad > w.Total { return 0, errors.New(\"invalid or missing evidence\") }\n return (float64(w.Bad) / float64(w.Total)) / (1 - target), nil\n}\nfunc page(long, short Window, target, threshold float64) (bool, error) {\n if math.IsNaN(threshold) || math.IsInf(threshold, 0) || threshold <= 0 { return false, errors.New(\"invalid threshold\") }\n a, err := burn(long, target); if err != nil { return false, err }\n b, err := burn(short, target); if err != nil { return false, err }\n return a >= threshold && b >= threshold, nil\n}\nfunc main() {\n high := Window{Total: 10000, Bad: 200}\n rate, _ := burn(high, 0.999)\n alert, _ := page(high, high, 0.999, 14.4)\n recovered, _ := page(high, Window{Total: 1000}, 0.999, 14.4)\n _, missing := burn(Window{}, 0.999)\n fmt.Printf(\"burn %.1fx page %t recovered %t missing %t\\n\", rate, alert, recovered, missing != nil)\n}\n",
+              "language" : "go",
+              "title" : "Calculate burn in a bounded model",
+              "walkthrough" : "Expected output: burn 20.0x page true recovered false missing true. Both window samples are explicit input data; they are not collected automatically from a real monitoring system. Use tolerances when asserting floating-point rates."
+            },
+            {
+              "body" : "A long window captures significant consumption, while a short window confirms the problem is still active. Windows, thresholds and minimum event volume depend on the service and response time; a low-traffic service may need additional signals and careful sampling. Write down who receives the alert, the symptom, evidence links and a first safe action. Separate an urgent user-impacting page from a capacity-planning ticket.",
+              "title" : "Combine time windows with a response contract"
+            },
+            {
+              "body" : "For a Go HTTP service, count eligible outcomes and record latency with stable operation labels. Avoid user IDs, raw URLs, request bodies, secrets and unbounded error strings as metric labels. Correlate structured logs and traces without treating either as a substitute for an aggregate SLI. A per-instance health probe answers a routing/process question; it is not automatically the service-level user outcome.",
+              "title" : "Keep telemetry bounded and useful"
+            },
+            {
+              "body" : "Feed a sustained high-error sample, a brief spike, a recovered short window, zero observations and impossible counters into the model. Verify that missing evidence is visibly unavailable. Explain why each scenario pages or does not. Add a small load test in a disposable native service, observe the real route and compare client timeouts with server outcomes. Preserve the incident timeline and tune the policy from those observations, rather than muting unexplained alerts.",
+              "title" : "Rehearse one page and one recovery"
+            }
+          ],
+          "takeaway" : "Define eligible events, compute error-budget burn and require both recent and sustained evidence before paging."
+        },
+        "tags" : [
+          "devops.slo-burn"
+        ],
+        "title" : "Use an SLO to decide when an incident needs attention"
+      },
+      {
+        "explanation" : "An incident begins with user impact and uncertainty. A useful responder establishes scope, a current owner and an evidence timeline before trying unrelated commands. Recovery must preserve work the service already acknowledged, including writes accepted after a backup or a server move.",
+        "id" : "devops.incident-recovery",
+        "kind" : "reading",
+        "objective" : "Use a bounded runbook to gather evidence, choose a reversible mitigation and distinguish binary rollback from restoring persistent data.",
+        "reading" : {
+          "designGuide" : {
+            "cautions" : [
+              "Rehearse restoration in isolation and preserve/reconcile later accepted writes. Binary compatibility, persistent-data recovery and route verification are separate obligations."
+            ],
+            "cost" : "Automation needs explicit ownership, bounded privileges, tests and recovery evidence; a shorter command is not sufficient.",
+            "family" : "Go for DevOps and reliability",
+            "flow" : [
+              "Establish impact and owner",
+              "Collect bounded evidence",
+              "Choose a recoverable mitigation",
+              "Verify and improve the runbook"
+            ],
+            "ratings" : [
+
+            ],
+            "strengths" : [
+              "Use a bounded runbook to gather evidence, choose a reversible mitigation and distinguish binary rollback from restoring persistent data.",
+              "Make changes reviewable and verify the result against the original contract."
+            ]
+          },
+          "quiz" : {
+            "alternatives" : [
+              "Overwrite the live volume and assume the writes can be retried",
+              "Treat an image rollback as a complete database recovery"
+            ],
+            "correct" : "Preserve accepted writes before restoring state",
+            "explanation" : "Rehearse restoration in isolation and preserve/reconcile later accepted writes. Binary compatibility, persistent-data recovery and route verification are separate obligations.",
+            "hint" : "Track the writer boundary and where later acknowledged work lives.",
+            "question" : "An old backup predates accepted writes. What makes a restore plan reviewable?"
+          },
+          "references" : [
+            "https://sre.google/workbook/incident-response/",
+            "https://sre.google/sre-book/postmortem-culture/",
+            "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment",
+            "https://www.postgresql.org/docs/current/continuous-archiving.html"
+          ],
+          "review" : {
+            "answer" : "Preserve accepted writes before restoring state",
+            "prompt" : "Rollback and persistent data"
+          },
+          "sections" : [
+            {
+              "body" : "Confirm the environment, service, affected operation and time window. Inspect the actual serving image, route, process health, recent release and user-outcome telemetry. For Kubernetes, verify context/namespace before logs or rollout inspection; for a Linux service, verify the named unit and journal window. Record facts separately from hypotheses. Keep access credentials and customer payloads out of shared incident notes.",
+              "title" : "Start with read-only evidence and an explicit target"
+            },
+            {
+              "body" : "A mitigation may reduce traffic, disable a failing optional feature or restore a compatible binary. Name the person controlling the change, the exact target and version, the expected result, a deadline and the point at which to stop or reverse. Preserve original evidence while limiting ongoing impact. Communicate the observed effect rather than declaring recovery because a command exited zero. Concurrent responders should avoid silently changing the same resource.",
+              "title" : "Select a mitigation with an owner and stop condition"
+            },
+            {
+              "body" : "The program returns a reviewable recommendation and performs no rollback or restore. An old binary is a candidate only when its declared reader range includes the current schema. If a restore would erase later acknowledged writes, recovering into a separate environment and reconciling those writes must be considered. The model intentionally has no “overwrite live data now” action.",
+              "code" : "package main\n\nimport \"fmt\"\n\ntype Incident struct { CurrentSchema, OldReaderMin, OldReaderMax int; WritesSinceBackup bool }\nfunc recoveryPlan(i Incident) string {\n if i.CurrentSchema < 1 || i.OldReaderMin < 1 || i.OldReaderMin > i.OldReaderMax { return \"reject invalid compatibility evidence\" }\n if i.CurrentSchema >= i.OldReaderMin && i.CurrentSchema <= i.OldReaderMax { return \"candidate: roll back binary; verify route and outcomes\" }\n if i.WritesSinceBackup { return \"roll forward or restore separately and reconcile accepted writes\" }\n return \"rehearse isolated restore; do not overwrite the live writer\"\n}\nfunc main() {\n fmt.Println(recoveryPlan(Incident{CurrentSchema: 2, OldReaderMin: 1, OldReaderMax: 2}))\n fmt.Println(recoveryPlan(Incident{CurrentSchema: 2, OldReaderMin: 1, OldReaderMax: 1, WritesSinceBackup: true}))\n fmt.Println(recoveryPlan(Incident{CurrentSchema: 2, OldReaderMin: 1, OldReaderMax: 1}))\n}\n",
+              "language" : "go",
+              "title" : "A recovery decision model",
+              "walkthrough" : "Expected lines: candidate: roll back binary; verify route and outcomes; roll forward or restore separately and reconcile accepted writes; rehearse isolated restore; do not overwrite the live writer. Compatibility metadata itself needs tests against real schemas, not optimistic labels."
+            },
+            {
+              "body" : "A completed backup job does not prove a usable restore. In an isolated environment, restore a known snapshot, verify integrity and application reads, document required configuration/key references and measure recovery time. State the accepted data-loss window and the source of truth for later writes. A container image rollback does not restore a database, and copying files while a writer is active is not automatically a consistent backup. Use the storage engine’s documented recovery method.",
+              "title" : "Rehearse backup restoration before an emergency"
+            },
+            {
+              "body" : "Verify the user operation through the real route and observe the recovery window. Record the impact, detection gap, sequence of actions, contributing conditions and evidence for recovery. Add an independently testable action with an owner and due criterion: a missing compatibility test, a clearer runbook or a safer rollout gate. Keep the record focused on system behavior and learning. The goal is to reduce the chance and cost of repetition, not to identify a person to blame.",
+              "title" : "Close the loop with a blameless improvement"
+            }
+          ],
+          "takeaway" : "Use a bounded runbook to gather evidence, choose a reversible mitigation and distinguish binary rollback from restoring persistent data."
+        },
+        "tags" : [
+          "devops.incident-recovery"
+        ],
+        "title" : "Respond to an incident without destroying the accepted writes"
+      },
+      {
+        "explanation" : "A green build does not authorize a deployment. Each job needs an identity, a target and a bounded permission set. Keep production credentials out of source, course exports and lab files.",
+        "id" : "devops.iam-boundaries",
+        "kind" : "reading",
+        "objective" : "Separate authentication, authorization and credential lifetime in a delivery workflow.",
+        "reading" : {
+          "quiz" : {
+            "alternatives" : [
+              "Only the friendly name of the deployment role.",
+              "A shared administrator key committed with the pipeline."
+            ],
+            "correct" : "The issuer, audience and workload or environment claims.",
+            "explanation" : "An identity can authenticate successfully and still be denied a resource action. Test that denial deliberately.",
+            "hint" : "Separate who may assume the role from what the role may do.",
+            "question" : "What should constrain a workload identity exchange?"
+          },
+          "references" : [
+            "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+          ],
+          "review" : {
+            "answer" : "The issuer, audience and workload or environment claims.",
+            "prompt" : "A workload trust policy"
+          },
+          "sections" : [
+            {
+              "body" : "Record the CI job identity, environment and intended action before choosing permissions. A pull request from a fork should not receive deployment rights. Separate artifact-read, staging-deploy and production-promote roles. Restrict both the allowed actions and resource scope; a role name alone does not establish the boundary.",
+              "title" : "Identify the principal and target"
+            },
+            {
+              "body" : "A workload identity can exchange an identity token for a short-lived role session. Bind trust to the expected issuer, audience, repository and protected environment. Inspect the trust policy as well as the permission policy. Avoid storing a long-lived administrator key in a workflow variable. Rotation and expiration reduce exposure but do not replace authorization.",
+              "title" : "Prefer a short-lived exchange"
+            },
+            {
+              "body" : "In an owned disposable account, verify that the staging role can inspect its own target and is denied production changes. Record the principal, resource, attempted action and redacted audit event. Never paste tokens into logs. The local shell deliberately has no cloud authentication or egress; write the expected access matrix here, then perform the integration test in your own isolated environment.",
+              "code" : "principal          staging/read  staging/deploy  production/deploy\nci-verify          allow         deny            deny\nci-staging         allow         allow           deny\nci-production      allow         deny            allow after approval",
+              "language" : "text",
+              "title" : "Prove denial as well as success"
+            }
+          ],
+          "takeaway" : "An operational identity is a narrow authorization contract with a lifetime, not a reusable administrator secret."
+        },
+        "tags" : [
+          "devops.iam-boundaries"
+        ],
+        "title" : "IAM: give a job one narrow, short-lived identity"
+      },
+      {
+        "explanation" : "Declarative infrastructure tools compare configuration, recorded state and an observed provider view. A plan is a proposal at an observation boundary; it is not a guarantee that the world stays unchanged until apply.",
+        "id" : "devops.iac-state",
+        "kind" : "reading",
+        "objective" : "Explain state ownership, review a proposed change and recover from a failed apply without discarding evidence.",
+        "reading" : {
+          "quiz" : {
+            "alternatives" : [
+              "Delete the state file and recreate every object.",
+              "Force-unlock immediately without checking the current writer."
+            ],
+            "correct" : "Inspect resources and state, then re-plan the change.",
+            "explanation" : "Locking coordinates cooperating writers; it does not prove that an apply is safe or that external drift cannot happen.",
+            "hint" : "Retain the record that connects intent to real objects.",
+            "question" : "What should follow a partial apply failure?"
+          },
+          "references" : [
+            "https://developer.hashicorp.com/terraform/language/state/locking",
+            "https://developer.hashicorp.com/terraform/cli/commands/plan"
+          ],
+          "review" : {
+            "answer" : "Inspect resources and state, then re-plan the change.",
+            "prompt" : "A partial IaC apply failure"
+          },
+          "sections" : [
+            {
+              "body" : "Configuration describes intent; state binds configured resources to provider objects; a refresh observes the current remote system. Drift is an out-of-band change, not necessarily permission to overwrite it. Before an apply, identify the workspace, backend, account and region. A correct plan against the wrong account is still a dangerous change.",
+              "title" : "Separate the three views"
+            },
+            {
+              "body" : "Use a backend with appropriate state locking and access control, keep state and plan files out of public repositories, and serialize writers. State can contain sensitive values. Do not remove a lock simply because another job is slow: establish ownership and whether the operation is still running. A forced unlock or manual state edit requires a recovery procedure and evidence.",
+              "title" : "Preserve state ownership"
+            },
+            {
+              "body" : "Review create/update/destroy actions and blast radius before an explicit apply in a disposable environment. After a partial failure, inspect both provider reality and state, re-plan and resolve the cause. Do not delete state to make a red error disappear. Restore and import are operations with identity and backup requirements, not generic undo commands. The app provides no provider executables or remote backend; the exercise here is a reviewable plan and access checklist, followed by a real rehearsal in your own environment.",
+              "title" : "Verify outcomes and recovery"
+            }
+          ],
+          "takeaway" : "Treat infrastructure state as sensitive operational evidence with one accountable writer."
+        },
+        "tags" : [
+          "devops.iac-state"
+        ],
+        "title" : "Infrastructure as code: plan, lock and inspect drift"
+      },
+      {
+        "explanation" : "A request can fail before an HTTP handler runs. Start from the exact caller, hostname, port and scheme, then locate the first failing boundary: name resolution, connection, TLS identity or application contract.",
+        "id" : "devops.network-evidence",
+        "kind" : "reading",
+        "objective" : "Collect evidence at the failing boundary without disabling peer verification.",
+        "reading" : {
+          "quiz" : {
+            "alternatives" : [
+              "That the TLS peer identity is trusted and matches the hostname.",
+              "That the application route is healthy and returns the intended version."
+            ],
+            "correct" : "Name resolution from that caller at that time.",
+            "explanation" : "Repeatedly testing from a different environment can hide the original failure. Preserve the caller and verify the failing boundary.",
+            "hint" : "Separate name resolution from the connection and application contract.",
+            "question" : "What does a successful DNS lookup prove?"
+          },
+          "references" : [
+            "https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/"
+          ],
+          "review" : {
+            "answer" : "Name resolution from that caller at that time.",
+            "prompt" : "A successful DNS lookup"
+          },
+          "sections" : [
+            {
+              "body" : "DNS results and routing depend on the actual environment. A successful lookup on a laptop does not establish what a pod resolves. Identify the namespace, search domains, service name, endpoint addresses and caller network policy. Record timestamps and the failing request before changing configuration.",
+              "title" : "Keep the caller in the experiment"
+            },
+            {
+              "body" : "An address resolving is not proof that the port accepts connections. A connected socket is not proof of the TLS peer name or trusted chain. A TLS handshake is not proof that a route returns the expected version. Use explicit deadlines and correlate a request ID with server evidence. Disabling certificate validation hides the trust failure instead of diagnosing it.",
+              "title" : "Separate layers and preserve identity"
+            },
+            {
+              "body" : "Write down the expected name, scheme, port, peer identity and HTTP status/body. Change one boundary at a time in an owned disposable environment, re-run the same request, and retain negative cases. Local shell files can model a contract and log analysis, but do not generate DNS, TLS or cluster evidence. The app has no guest sockets, curl, SSH or kubectl; use an isolated native environment for those integration checks.",
+              "title" : "Turn the finding into a regression check"
+            }
+          ],
+          "takeaway" : "A useful incident note identifies the first failed boundary and proves recovery from the same caller."
+        },
+        "tags" : [
+          "devops.network-evidence"
+        ],
+        "title" : "Diagnose a service boundary: DNS, transport, TLS and HTTP"
+      }
+    ],
+    "summary" : "Operational CLIs, reconciliation, verified delivery, SLOs, incidents and data-safe recovery.",
+    "title" : "Around Go: DevOps and reliability",
+    "translationNote" : "Begin with command line, containers and Kubernetes. Go models run locally; real infrastructure, process and monitoring exercises need your own disposable native environment."
+  },
+  {
     "id" : "datastores",
     "lessons" : [
       {
@@ -12738,7 +13394,7 @@
             "correct" : "Trades selected read work for storage and write cost",
             "explanation" : "The useful plan depends on filter, sort, selectivity and index shape. Explain measures examined work; a client pool setting does not guarantee index use.",
             "hint" : "Compare work examined with useful rows returned.",
-            "question" : "Why inspect explain after creating an index?"
+            "question" : "Which trade-off should be evaluated when adding a MongoDB index?"
           },
           "references" : [
             "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
@@ -12809,7 +13465,7 @@
             "correct" : "Is an outcome to handle, not automatic success",
             "explanation" : "No driver error does not mean the predicate matched. Check MatchedCount and handle an absent or stale-version document; one-document atomicity does not cover every business invariant.",
             "hint" : "No driver error does not imply that the predicate matched.",
-            "question" : "What must a version-checked update inspect after no driver error?"
+            "question" : "How should a version-checked MongoDB update that matches no document be treated?"
           },
           "references" : [
             "https://www.mongodb.com/docs/manual/core/write-operations-atomicity/",
@@ -12880,7 +13536,7 @@
             "correct" : "Can repeat its application-side code",
             "explanation" : "The driver can rerun the transaction callback. MongoDB cannot roll back an external payment or email, so make database work repeatable and deliver external effects through an idempotent boundary.",
             "hint" : "The database cannot undo an effect in another system.",
-            "question" : "Why keep an external payment call outside WithTransaction?"
+            "question" : "What can an automatic WithTransaction retry do to the application callback?"
           },
           "references" : [
             "https://www.mongodb.com/docs/drivers/go/current/crud/transactions/",
@@ -13022,7 +13678,7 @@
             "correct" : "Can increase pressure without reducing the bottleneck",
             "explanation" : "Client pool capacity, waiting goroutines and total deployment connections are different quantities.",
             "hint" : "Find the stage that consumes the operation deadline.",
-            "question" : "What should precede a pool-size increase during high latency?"
+            "question" : "What risk does a larger connection pool carry when the database is already the bottleneck?"
           },
           "references" : [
             "https://www.mongodb.com/docs/drivers/go/current/connect/connection-options/connection-pools/",
@@ -13164,7 +13820,7 @@
             "correct" : "Does not prevent misses from flooding the origin",
             "explanation" : "In-process coalescing does not coordinate other replicas or make invalidation races disappear.",
             "hint" : "Consider the empty-cache path, including all replicas.",
-            "question" : "What extra protection does a cache-aside loader need during a burst of misses?"
+            "question" : "Why is cache-aside alone insufficient protection during a burst of misses?"
           },
           "references" : [
             "https://redis.io/docs/latest/commands/set/",
@@ -13377,7 +14033,7 @@
             "correct" : "Can cause redelivery after an effect already happened",
             "explanation" : "The effect may commit before a worker crashes without acknowledging. Redelivery can then repeat it; pending-entry recovery needs destination-side idempotency.",
             "hint" : "The worker can fail between the effect and acknowledgment.",
-            "question" : "Why must a stream consumer make its external effect idempotent?"
+            "question" : "A consumer performed its external effect but crashed before acknowledging. What can later recovery cause?"
           },
           "references" : [
             "https://redis.io/docs/latest/commands/xreadgroup/",
@@ -13523,13 +14179,13 @@
           },
           "quiz" : {
             "alternatives" : [
-              "Only one replica’s connection count",
-              "The number of Go source files"
+              "One dedicated connection reserved for each handler",
+              "One global pool automatically shared by every service replica"
             ],
             "correct" : "A shared pool, not one connection",
             "explanation" : "A larger connection cap can move waiting into an overloaded database. Admission and query efficiency still need their own policies.",
             "hint" : "Multiply per-process settings by every active pool owner.",
-            "question" : "Fifty replicas each allow twelve connections. Which budget must be checked before scaling further?"
+            "question" : "What does one shared *sql.DB represent inside a Go service?"
           },
           "references" : [
             "https://go.dev/doc/database/manage-connections",
@@ -13605,7 +14261,7 @@
             "correct" : "Rows.Err after the loop",
             "explanation" : "A parameterized tenant value still requires authorization, and LIMIT is not a universal bound on query execution cost.",
             "hint" : "Next returning false can mean end of rows or an error.",
-            "question" : "A query yields three records and then the driver reports a network error. Which result is correct for an all-or-nothing helper?"
+            "question" : "What must be checked after Rows.Next stops before claiming that the complete query succeeded?"
           },
           "references" : [
             "https://go.dev/doc/database/querying",
@@ -13672,13 +14328,13 @@
           },
           "quiz" : {
             "alternatives" : [
-              "Yes, because both use the same variable ctx",
-              "Yes, because it is in the same function"
+              "Any *sql.DB that receives the same context",
+              "Any query executed inside the same Go function"
             ],
             "correct" : "The same transaction handle",
             "explanation" : "A transaction does not automatically include pool calls or an external provider. Check commit outcomes and idempotency at the actual boundary.",
             "hint" : "Context propagation and transaction membership are different contracts.",
-            "question" : "A helper calls db.ExecContext after its caller opened tx. Is that write guaranteed to roll back with tx?"
+            "question" : "What must a helper use for its write to participate in the caller’s open SQL transaction?"
           },
           "references" : [
             "https://go.dev/doc/database/execute-transactions",
@@ -13817,13 +14473,13 @@
           },
           "quiz" : {
             "alternatives" : [
-              "Charge again with a fresh identity",
-              "Assume rollback because err is non-nil"
+              "The charge definitely failed and needs a fresh payment identity",
+              "Any non-nil error proves that the server rolled back"
             ],
             "correct" : "The durable outcome may be unknown",
             "explanation" : "Retry classification is driver-specific. Preserve one total deadline and use durable deduplication for ambiguous side effects.",
             "hint" : "Distinguish an explicit abort from a missing acknowledgment.",
-            "question" : "A network error occurs after the server may have committed a charge. What is the safe next step?"
+            "question" : "A network error arrives after a charge may have committed. What can be concluded about the durable effect?"
           },
           "references" : [
             "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html",
@@ -13978,7 +14634,7 @@
             "correct" : "Limit bytes, bind, validate, authorize, then act",
             "explanation" : "No. Normalize and validate the business rule explicitly; body limits, parsing, authorization and side-effect ordering are separate contracts.",
             "hint" : "MaxBytesReader supplies a 1 KiB input budget.",
-            "question" : "A title contains only spaces and has a required tag. Is the business input necessarily valid?"
+            "question" : "Which sequence should an HTTP JSON boundary follow before changing business state?"
           },
           "references" : [
             "https://pkg.go.dev/github.com/gin-gonic/gin#Context.ShouldBindJSON",
@@ -14052,7 +14708,7 @@
             "correct" : "Extract input; give the worker its own owner",
             "explanation" : "No. Extract the data a worker needs, never reuse the completed response writer, and define queue capacity, lifetime and durability.",
             "hint" : "The handler sends a copied string in a small value and never lets the worker use c.Writer.",
-            "question" : "Does c.Copy make it safe to write a response after the handler returns?"
+            "question" : "How should a Gin handler hand work to a worker that continues after the response?"
           },
           "references" : [
             "https://github.com/gin-gonic/gin/blob/master/context.go",
@@ -14199,7 +14855,7 @@
             "correct" : "One owner maps expected errors to one response",
             "explanation" : "No. Recovery handles control flow; transaction and external-effect recovery need their own explicit ownership and reconciliation rules.",
             "hint" : "The route records an application error and stops the pending handler chain.",
-            "question" : "A panic recovery middleware returns 500. Does that prove earlier side effects were rolled back?"
+            "question" : "What is the ownership rule for turning an expected use-case error into an HTTP response?"
           },
           "references" : [
             "https://pkg.go.dev/github.com/gin-gonic/gin#Context.Error",
@@ -14354,7 +15010,7 @@
             "correct" : "Protocol + operation determine the library",
             "explanation" : "No. It provides RPC access to a node. Choose libraries by protocol and role, and separately verify network identity, data trust and release compatibility.",
             "hint" : "The table assigns a role rather than claiming one universal package is best.",
-            "question" : "Does importing ethclient turn an application into an Ethereum consensus validator?"
+            "question" : "How should a Go library be selected for a blockchain integration?"
           },
           "references" : [
             "https://pkg.go.dev/github.com/ethereum/go-ethereum/ethclient",
@@ -14510,7 +15166,7 @@
             "correct" : "Validated decimal text -> exact bounded integer",
             "explanation" : "Reject it under the explicit precision policy instead of silently rounding or converting through float64; network, token and units must be verified.",
             "hint" : "The sample produces 1000000000000000001 exactly, without a floating-point intermediate.",
-            "question" : "An amount has one more fractional digit than the supported token scale. What should this parser do?"
+            "question" : "Which representation path preserves a token amount according to its declared decimal scale?"
           },
           "references" : [
             "https://pkg.go.dev/math/big#Int",
@@ -14732,7 +15388,7 @@
             "correct" : "Validate intent; isolate key custody and replay policy",
             "explanation" : "No. They are distinct hash functions. Use the protocol’s reviewed primitives and validate domain, chain and replay policy separately from signature recovery.",
             "hint" : "The unsigned intent carries a chain ID, nonce, destination, value and distinct fee fields.",
-            "question" : "Can Ethereum Keccak-256 be replaced by standard SHA3-256 because both output 256 bits?"
+            "question" : "Which boundary should surround construction and signing of a blockchain transaction?"
           },
           "references" : [
             "https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto",
@@ -14962,7 +15618,7 @@
             "correct" : "Password KDF, MAC, encryption and signature differ",
             "explanation" : "No. A MAC authenticates bytes; confidentiality, expiry, replay prevention and key lifecycle require separate protocol decisions.",
             "hint" : "The secret key comes from crypto/rand rather than a predictable simulation PRNG.",
-            "question" : "Does an HMAC both hide its message and prevent the same message being replayed?"
+            "question" : "Which distinction must be made before choosing a cryptographic primitive?"
           },
           "references" : [
             "https://pkg.go.dev/crypto/hmac",
@@ -15036,7 +15692,7 @@
             "correct" : "User data is not authority to choose a host",
             "explanation" : "No. Each redirect and actual connection must satisfy the egress policy; fixed configured destinations reduce the attack surface.",
             "hint" : "The attacker-shaped string stays inside a query parameter on the configured example domain.",
-            "question" : "An allowed public URL redirects to a private address. May a client follow it without rechecking policy?"
+            "question" : "Which principle must govern an initial outbound URL and every redirect target?"
           },
           "references" : [
             "https://pkg.go.dev/net/http#Client",
@@ -15158,7 +15814,7 @@
     "id" : "ai",
     "lessons" : [
       {
-        "explanation" : "Claude Code, Codex and Cursor can inspect files, propose patches and run available tools. Useful work still needs a concrete behavior and a way to check it. In this unit you guide an agent in your own repository; Ordinary native projects stay local. The separate development Playground adds explicit, opt-in sharing with people and MCP clients; it never uploads an existing project automatically.",
+        "explanation" : "Claude Code, Codex and Cursor can inspect files, propose patches and run available tools. Useful work still needs a concrete behavior and a way to check it. In this unit you guide an agent in your own repository. Ordinary native projects stay local. The separate Playground adds explicit, opt-in sharing with people and MCP clients; it never uploads an existing project automatically.",
         "id" : "ai.go-workflow",
         "kind" : "reading",
         "objective" : "Turn an ambiguous coding request into a small, verifiable Go change.",
@@ -15198,7 +15854,8 @@
             "https://code.claude.com/docs/en/best-practices",
             "https://cursor.com/docs/agent/overview",
             "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
-            "https://learn.chatgpt.com/docs/extend/mcp"
+            "https://learn.chatgpt.com/docs/extend/mcp",
+            "https://gopherforge.app/guide/mcp"
           ],
           "review" : {
             "answer" : "A contract and a failing example",
@@ -15225,11 +15882,11 @@
               "title" : "Repeat a reproducible check"
             },
             {
-              "body" : "For a collaborative Go task, first read the source and its exact revision. Ask the agent to describe the failing input and make a small patch against that revision. Publishing the patch is not a test run. In GopherForge’s development Playground, MCP can request a run; a person presses Run or Test in the native app and that device performs the build. Other participants receive labelled Output, not an instruction to execute the source. Browser participants can edit and read results but do not have the native Go runner.",
-              "code" : "Read revision 7\n  ├─ patch against 7 → revision 8\n  ├─ request Test at 8 → awaiting local button\n  └─ iPhone presses Test → result for revision 8\n\nIf revision 9 is now current, result 8 is historical evidence.",
+              "body" : "For a collaborative Go task, read the current source and identify the state your edit is based on. GopherForge’s encrypted JavaScript MCP companion uses sourceHash; the compatible remote MCP uses an integer revision. Ask the agent to show its named cursor, describe the failing input and publish a small checked edit. Publishing source and requesting Test are not execution. A person presses Run or Test in their browser or native app; that execution client builds locally and shares a result labelled with its source and participant. The browser has its own Go/WASI worker. Native encrypted rooms require GopherForge 1.3.3 or newer; public 1.3.2 uses compatible rooms.",
+              "code" : "Read sourceHash A (encrypted) or revision 7 (compatible)\n  ├─ checked edit → new source identity\n  ├─ request Test → awaiting local button\n  ├─ person presses Test on web/iPhone/iPad → local Go\n  └─ read the reported result for that captured source\n\nIf source has changed again, the earlier result is historical evidence.",
               "language" : "text",
               "title" : "A shared Playground keeps editing separate from execution",
-              "walkthrough" : "Tie the claim to the actual source and result. An AI saying “tests requested” has not established “tests passed.” A successful run on one device is evidence from that device, not proof that every platform or production integration works."
+              "walkthrough" : "The two protocols use different change guards; do not send an encryption key to the compatible remote endpoint. The JavaScript companion keeps its key client-side, but the selected MCP host and AI provider can read decrypted tool results. A reported pass applies to the captured source and environment, not automatically to the latest edit or every platform."
             },
             {
               "body" : "A learner can explicitly publish a read-only progress link for a teacher or assistant. Ask for a short plan based on unfinished lessons and interview topics marked Revisit, then explain and solve a concrete exercise yourself. The snapshot is not an account or a competency certificate. A compiler mark describes a recorded lesson check; a self-reported reading mark describes study, not execution. Never let an assistant silently replace your learning record from another person’s URL.",
@@ -15277,7 +15934,7 @@
             "correct" : "Guidance is not an access control",
             "explanation" : "Do not share secret values in instruction files or assume that a context exclusion blocks all tool access.",
             "hint" : "Distinguish what the model is told from what its tools are allowed to do.",
-            "question" : "A repository instruction says not to query production, but the shell has a production credential. What provides the actual boundary?"
+            "question" : "Repository guidance forbids production queries, but the agent still has a production credential. What should you conclude?"
           },
           "references" : [
             "https://learn.chatgpt.com/docs/agent-configuration/agents-md",

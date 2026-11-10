@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Generics, which the course did not mention at all.
@@ -483,3 +484,5 @@ enum CourseUnitGenerics {
         """
     )
 }
+
+#endif

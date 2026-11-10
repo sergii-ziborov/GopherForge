@@ -17,9 +17,10 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 29 October 2026 | Changes |
+| Version | Status, checked 10 November 2026 | Changes |
 | --- | --- | --- |
-| **1.3.2 (51)** | Internal QA TestFlight · Waiting for App Review | Guest MCP Playground, local device execution, shared Output, progress links and expanded agent guidance. Automatic release after approval. |
+| **1.3.3 (56)** | In App Review · private TestFlight | Named cursors, encrypted browser/native live rooms, shared change history, Playground debug/tools, complete course downloads and a local DevOps terminal. |
+| **1.3.2 (51)** | Available on the App Store | Compatible MCP Playground, local execution, shared Output and progress links. |
 | **1.3.1 (49)** | Available on the App Store | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
 | **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
 | **1.2.0 (45)** | Previous App Store release | 15 readings on JSON v2, SQL, modern concurrency and agents; 92 interview guides, 12 algorithm labs, new icon and app guide. |
@@ -30,35 +31,52 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-The store currently distributes **1.3.1 (49)**, verified in App Store Connect on 29 October 2026.
-It includes the 220-lesson course, 132 interview guides, offline React and source-debugging workbench,
-and the selected dark teal gopher icon.
-Web material is available with the same stable identifiers. Existing completion, bookmarks
-and Continue storage formats are preserved.
-**1.3.1 (49)** passed App Review and was automatically released.
-It includes the 220-lesson course and 132 interview guides together with the direct
-web previews, restored lesson drafts, source-safety fixes, offline React mode and
-automatic source debugging from build 48. Automatic publication after approval is enabled.
-The previous 1.3.0 (48) review was superseded; no store release of 1.3.0 is claimed.
-The external GitHub project used for verification is not bundled in the app.
-[Review submission](docs/releases/1.3.1-build49-submission.json) · [Store assets](docs/releases/1.3.1-build49-assets.json) · [Build 48 QA](docs/audits/2026-10-28-web-preview.md) · [Beta receipt](docs/releases/1.3.1-build49-beta.json) · [Build 49 QA](docs/releases/1.3.1-build49-qa.json) · [Original frontend/debugger QA](docs/releases/1.3.0-beta-qa.json).
-**1.3.2 (51)** was submitted on 29 October and is **WAITING_FOR_REVIEW**, with automatic release after approval. Its 55 store screenshots include twelve new native Playground/progress captures across six sizes. Optional room content and published progress are declared as **not linked to identity**, for app functionality only, without tracking. [Submission receipt](docs/releases/1.3.2-build51-submission.json) · [New assets](docs/releases/1.3.2-build51-assets.json) · [Privacy verification](docs/releases/1.3.2-build51-privacy.json).
+**1.3.2** is the current App Store release, published 29 October 2026.
+
+**1.3.3 (56)** is in App Review and not yet released on the App Store. Its native/web course has **229 lessons for guided study, including 182 readings,
+and 22 question-and-answer challenges in 29 units**, with the previous 220 teaching lessons and
+all stable IDs retained. Existing public 1.3.2 has compatible MCP sharing and
+132 interview guides.
+
+**Complete offline courses:** Learn → Course downloads lists every course with
+its size; a course installs only when you tap Download, from that screen or from
+its own Learn area. It installs full Go, DevOps or Interview documents. Export/import complete official files; remove
+content without losing progress, bookmarks, drafts or independent lab states.
+Lessons never fetch their content automatically. The signed app keeps a small
+pinned catalog and bundled trusted runtimes; course bodies and QA fixtures are
+absent from Release. [Files and instructions](https://gopherforge.app/downloads).
+
+**DevOps:** a separate area brings together 34 readings in four units, six local
+terminal labs and a free shell playground with persistent private files. The
+bounded WASI shell supports files, quotes, variables, redirects, pipelines,
+conditions and scripts. It has no host processes, sockets, SSH, Docker or kubectl.
+Real infrastructure practice requires an owned disposable native environment.
 
 TestFlight access is private; there is no public invitation link.
 Release status is a dated snapshot, not a live indicator.
 
-[Submission receipt](docs/releases/1.2.0-submission.json) ·
-[Asset verification](docs/releases/1.2.0-assets-verified.json) ·
-[QA results](docs/releases/1.2.0-qa.json) ·
-[Version history](https://gopherforge.app/updates) ·
-[Release records](docs/releases).
+[Version history](https://gopherforge.app/updates).
 
 The app is a one-time purchase: US $6.99, US $4.99 in Ukraine, with localized
 App Store prices elsewhere. No subscription or in-app purchase.
 
 ## Current curriculum
 
-The expanded source/web library is available in **App Store 1.3.1 (49)**: 34 additional readings and 40 worked interview guides. **1.3.2 (51)** retains these IDs and counts, and expands existing agent/MCP guidance while adding optional Playground and progress-link features. Existing lesson and interview IDs are retained for local progress. [Coverage and validation](docs/audits/2026-10-28-interview-coverage.md) · [TestFlight receipt](docs/releases/1.3.2-build51-beta.json).
+The native 1.3.3 (56) build and the web mirror include **Go for DevOps and
+reliability**: a delivery feedback loop, bounded operational CLIs, reconciliation,
+verified artifact promotion, SLO/error-budget burn, incident/data recovery, IAM, IaC state and DNS/TLS evidence.
+Six complete Go examples, including a service capstone, have independent executable checks. Native process,
+network and infrastructure exercises explicitly use your own disposable native
+environment. The app does not become a cloud shell. Existing Bash/Git, Linux,
+container, Kubernetes, security, database and coding-agent material is retained.
+
+The 6 November course review aligns
+self-checks in 48 readings, updates the encrypted-agent workflow and adds a
+[tested DevOps capstone](docs/examples/go-devops-capstone/README.md). All 44
+exercise solutions pass their hidden tests, all unfinished starters are rejected,
+and 98 complete reading programs compile with native Go. These lesson refinements
+are available on the web and in build 56. Stable lesson IDs and progress formats are preserved.
+
 
 ## What you can do
 
@@ -70,7 +88,7 @@ The expanded source/web library is available in **App Store 1.3.1 (49)**: 34 add
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** 220 teaching lessons in 28 units, including 173 readings,
+- **Learn Go.** The 1.3.3 source has 229 teaching lessons in 29 units, including 182 readings,
   plus 22 prediction challenges. Worked Go programs, diagrams, matching
   reviews and three-choice mistake practice accompany the material.
 - **Continue studying.** Reopen the last course lesson or interview guide.
@@ -227,9 +245,8 @@ publication dates. Course, interview and original News pages have individual
 metadata, structured data and entries in the [sitemap](https://gopherforge.app/sitemap.xml).
 
 Lessons and interview preparation need no registration. The site does not
-execute or upload arbitrary code. It is hosted on Hetzner through Hostwatch,
-with query-free access-log analytics; domain registration and DNS remain in
-Lovable. [Deployment and recovery](website/README.md).
+execute or upload arbitrary code. Analytics come only from query-free access
+logs. [Building and deploying the site](website/README.md).
 
 [Browse the course](https://gopherforge.app/learn) ·
 [Prepare for interviews](https://gopherforge.app/interview) ·
@@ -339,20 +356,48 @@ The two new course readings are
 The native catalog is the source for both platforms; browser and app progress
 remain independent.
 
-## Audit roadmap — development branch
+## Source safety
 
-The [28 October audit plan](docs/audits/2026-10-28-plan.md) tracks source-safety fixes before further learning and Playground work. The current development branch adds coordinated library writes, preserved conflict copies, scoped dependency publication, reviewed file-specific idiom repairs, strict terminal commands and a [visible import inventory](docs/IMPORT_SNAPSHOTS.md). These are not claims that every roadmap package or physical provider gate has passed. Apple release identity remains in `docs/releases/`; source implementation is not the same as a shipped build.
+The current development branch adds coordinated library writes, preserved conflict copies, scoped dependency publication, reviewed file-specific idiom repairs, strict terminal commands and a [visible import inventory](docs/IMPORT_SNAPSHOTS.md). Source implementation is not the same as a shipped build.
 
-## MCP Playground and progress links — development preview
+## Playground collaboration, nicknames and MCP
 
-**1.3.2 (51), available in Internal QA TestFlight,** adds **Projects → Playground** and **Learn → Share progress**. The website exposes `/playground`, the HTTPS Streamable HTTP MCP endpoint `/mcp`, and [setup/mobile/permission guidance](https://gopherforge.app/guide/mcp). These are not included in public native 1.3.1 (49).
+App Store **1.3.2 (51)** provides compatible guest rooms and progress links.
+The **1.3.3 (56) build** includes encrypted Yjs rooms that
+interoperate with the browser, nickname prompts, always-visible cursor labels,
+participant-attributed recent changes, file recovery and local Debug/Check/Format/
+Prepare packages. Dependency source is cached separately on the device, outside
+the shared editable file set. Run/Test/Debug always require a local button.
 
-Claude, Codex and compatible clients can read a selected room, publish a revision-checked file set and request a run. Only a person pressing Run/Test in the native app invokes the bundled compiler on that device; other participants receive device-attributed Output. No relay compiler, shell, auto-run on edits or browser Go runner is provided. Standard-library multi-file examples are the initial native Playground contract; save an independent project to use ordinary dependency workflows. Native Stop/runtime limits remain unchanged.
+Browser rooms use the same bounded encrypted relay and source fingerprint for
+results. The key stays in the link fragment; source, Output and awareness are
+AES-256-GCM encrypted before relay delivery. The native Yjs model is a checked-in,
+licensed bundle generated by `website/scripts/build-native-collaboration.mjs` and
+runs in JavaScriptCore; encryption uses CryptoKit. Source is never JavaScript.
+Original UTF-8 source, stable file identities, concurrent edits and deleted-file
+recovery have interoperability fixtures and native/browser tests. A nickname is
+a self-chosen label, not authenticated authorship.
 
-Rooms are guest capabilities (Owner/Edit/View), normally one hour, and volatile across relay restarts. Secrets live in fragments and explicit API authorization, not page query strings. The relay can read shared source and Output; this preview is not end-to-end encrypted. Concurrent edits use revision rejection and preserved drafts, not CRDT merging. Save/download an independent copy before expiry.
+Remote Claude/Codex MCP clients and older native apps use **Compatible** rooms.
+These carry plaintext source/output and exact-revision edits. The five MCP tools
+are `playground_join` (named agent seat), `playground_read`, `playground_write`,
+`playground_request_run` and `learning_progress_read`. A bearer token still limits
+the room and maximum role when an agent uses a named participant capability.
+No incoming edit, cursor, request, link or reconnect executes code. The relay has
+no shell or compiler. [Complete connection/sharing guide](https://gopherforge.app/guide/mcp).
 
-A progress link is a separately published, read-only, revocable 90-day snapshot. Its HTML and JSON can be read by Grok, Claude, Codex or a teacher. It contains lesson IDs, app-reported compiler marks, interview self-assessments and Continue places; no code, drafts, attempts, names or device identifiers. It is not automatic sync, a backup or a skills certificate. Existing local progress and project identities are preserved.
+For encrypted agent sessions, install GopherForge's own JavaScript stdio server
+from [npm](https://www.npmjs.com/package/gopherforge-mcp):
+`npm install --global gopherforge-mcp@0.1.0`, then `gopherforge-mcp setup`.
+It asks for a nickname and a complete encrypted Edit/View link, keeps the key
+local and provides six room tools, including a named cursor. Run/Test requests
+wait for a person to press the local button. The MCP host/provider can read
+decrypted tool results. The guide explains all clients, roles and limits.
 
-[Build 51 TestFlight receipt](docs/releases/1.3.2-build51-beta.json) · [Public 1.3.1 release](docs/releases/1.3.1-build49-release.json) · [MCP verification and boundaries](docs/audits/2026-10-29-playground-mcp.md). Intermediate build 50 was expired before final delivery; use build 51.
+Rooms normally last one hour and can end earlier on a relay restart. Keep an
+independent project/ZIP and review actual results for the captured source. Native
+debugger Stop acts at checkpoints; ordinary tight loops have no guaranteed Stop.
+Published progress snapshots are separately whitelisted, read-only and revocable;
+learning storage formats and previous lesson IDs remain intact.
 
 <img src="docs/screenshots/mcp51/playground-local-run.png" width="300" alt="Native GopherForge Playground running Go locally with syntax highlighting and local Output">

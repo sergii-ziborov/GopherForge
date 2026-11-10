@@ -50,8 +50,11 @@ settings:
       SWIFT_ENABLE_TESTABILITY: YES
       ENABLE_TESTABILITY: YES
       ONLY_ACTIVE_ARCH: YES
-      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) GOPHERFORGE_AUDIT_QA"
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) GOPHERFORGE_AUDIT_QA COURSE_FIXTURES"
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) DEBUG COURSE_FIXTURES"
     Gate:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) COURSE_FIXTURES"
       SWIFT_ENABLE_TESTABILITY: YES
       ENABLE_TESTABILITY: YES
       # One slice, because the gate only ever runs on the machine that built
@@ -75,6 +78,10 @@ targets:
         excludes:
           - Resources/Toolchain
           - Resources/VendoredModules
+          - Resources/ReadingLessons.json
+          - Resources/LessonGuides.json
+          - Resources/InterviewPrep.json
+          - Resources/DevOpsLabs.json
       - path: build/Resources/Toolchain
         type: folder
         buildPhase: resources
@@ -151,6 +158,22 @@ targets:
       - package: SwiftSystem
         product: SystemPackage
     preBuildScripts:
+      - name: Prepare bundled DevOps shell
+        script: |
+          /usr/bin/python3 "$SRCROOT/scripts/prepare_devops_shell.py"
+          /usr/bin/ditto "$SRCROOT/build/Resources/DevOpsShell" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/DevOpsShell"
+        basedOnDependencyAnalysis: false
+      - name: Prepare course QA fixtures
+        script: |
+          /bin/rm -rf "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/CourseFixtures"
+          for COURSE_SOURCE in ReadingLessons LessonGuides InterviewPrep DevOpsLabs; do
+            /bin/rm -f "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/$COURSE_SOURCE.json"
+          done
+          if [ "$CONFIGURATION" != "Release" ]; then
+            "$SRCROOT/scripts/build_course_packs.sh"
+            /usr/bin/ditto "$SRCROOT/build/Resources/CourseFixtures" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/CourseFixtures"
+          fi
+        basedOnDependencyAnalysis: false
       - name: Prepare offline frontend compiler
         script: |
           /usr/bin/python3 "$SRCROOT/scripts/prepare_frontend.py"
@@ -177,8 +200,8 @@ targets:
         PRODUCT_NAME: GopherForge
         APP_DISPLAY_NAME: GopherForge
         APP_URL_SCHEME: gopherforge
-        MARKETING_VERSION: "1.3.2"
-        CURRENT_PROJECT_VERSION: 51
+        MARKETING_VERSION: "1.3.3"
+        CURRENT_PROJECT_VERSION: 56
         CODE_SIGN_ENTITLEMENTS: GopherForge/GopherForge.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
@@ -225,8 +248,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForge.Share
         PRODUCT_NAME: GopherForgeShare
-        MARKETING_VERSION: "1.3.2"
-        CURRENT_PROJECT_VERSION: 51
+        MARKETING_VERSION: "1.3.3"
+        CURRENT_PROJECT_VERSION: 56
         CODE_SIGN_ENTITLEMENTS: GopherForgeShare/GopherForgeShare.entitlements
         CODE_SIGN_STYLE: Automatic
         APPLICATION_EXTENSION_API_ONLY: YES
@@ -271,6 +294,17 @@ targets:
           PRODUCT_BUNDLE_IDENTIFIER: com.sergiiziborov.GopherForgeAuditQA.Tests
 
 schemes:
+  GopherForgeReleaseQA:
+    build:
+      targets:
+        GopherForge: all
+        GopherForgeUITests: [test]
+    test:
+      config: Gate
+      targets:
+        - name: GopherForgeUITests
+          selectedTests:
+            - PlaygroundRelease52UITests
   GopherForgePlaygroundQA:
     build:
       targets:
@@ -302,6 +336,7 @@ schemes:
             # They compile real Go and the native laptop capture requires a
             # real Duo hinge; neither belongs in the ordinary regression run.
             - AppStoreScreenshotUITests
+            - PlaygroundRelease52UITests
         - name: GopherForgeTests
           skippedTests:
             - BundledCompilerGateTests/testBundledGoReportsUnusedVariable()

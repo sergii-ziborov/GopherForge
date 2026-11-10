@@ -1,0 +1,17 @@
+{
+  "files": {
+    "go.mod": "module playground\n\ngo 1.27.1\n\nrequire github.com/google/uuid v1.6.0\n",
+    "main.go": "package main\nimport(\"fmt\";\"github.com/google/uuid\")\nfunc main(){fmt.Println(uuid.MustParse(\"123e4567-e89b-12d3-a456-426614174000\"))}\n"
+  },
+  "modules": [
+    {
+      "path": "github.com/google/uuid",
+      "version": "v1.6.0",
+      "checksum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0="
+    }
+  ],
+  "goSum": "github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=\ngithub.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=\n",
+  "stdout": "123e4567-e89b-12d3-a456-426614174000\n",
+  "checkedAt": "2026-11-05T11:04:17.131Z",
+  "boundary": "Public Go proxy and signed checksum-log proof captured as deterministic test evidence; UUID archive retains its upstream LICENSE."
+}

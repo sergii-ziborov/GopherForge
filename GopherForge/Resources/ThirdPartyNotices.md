@@ -164,3 +164,7 @@ ecosystem in advance. Each module's own `LICENSE`, `LICENCE` or `NOTICE`
 is vendored with it. Until that file is present, treat the terms as
 **unknown** and do not assume MIT or Apache. GopherForge neither relicenses
 them nor claims any rights in them.
+
+## DevOps shell parser
+
+The bundled GopherForge DevOps shell uses mvdan.cc/sh/v3 v3.14.1 for POSIX syntax parsing and word expansion (BSD 3-Clause). Its complete copyright and licence notice is bundled at DevOpsShell/PARSER-LICENSE.txt; the Go standard-library licence is at DevOpsShell/GO-LICENSE.txt. Source: https://github.com/mvdan/sh/tree/v3.14.1. The bounded executor, commands and private virtual filesystem are GopherForge code.

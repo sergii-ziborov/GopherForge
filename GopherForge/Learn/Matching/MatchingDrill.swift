@@ -1,7 +1,7 @@
 import Foundation
 
 /// One pair to connect: a term on the left, what it means on the right.
-struct MatchingPair: Identifiable, Equatable, Sendable {
+struct MatchingPair: Codable, Identifiable, Equatable, Sendable {
     let id: String
     /// The left tile. Short by design — a term, a signature, a line of Go.
     let prompt: String
@@ -37,7 +37,7 @@ struct MatchingPair: Identifiable, Equatable, Sendable {
 ///
 /// Kept small on purpose. Twelve tiles on a phone is already a full screen,
 /// and a drill that needs scrolling stops being a glance-and-match exercise.
-struct MatchingDrill: Identifiable, Equatable, Sendable {
+struct MatchingDrill: Codable, Identifiable, Equatable, Sendable {
     /// The most pairs one drill may hold. Enforced by a test rather than by
     /// hope, because the board's whole promise is that nothing jumps or hides.
     static let maximumPairs = 6

@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Quizzes for concurrency, modules and the standard library.
@@ -288,3 +289,5 @@ enum QuizCatalogConcurrency {
         ]
     )
 }
+
+#endif

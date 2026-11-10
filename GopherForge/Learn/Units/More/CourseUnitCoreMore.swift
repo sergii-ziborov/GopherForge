@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Three more for the core unit: constants, switch, and conversions.
@@ -166,3 +167,5 @@ extension CourseUnitCore {
         """
     )
 }
+
+#endif

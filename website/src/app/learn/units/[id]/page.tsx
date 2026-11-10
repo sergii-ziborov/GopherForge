@@ -22,6 +22,7 @@ export async function generateMetadata({
       title: u?.title,
       description: u?.summary,
       url: `/learn/units/${id}`,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
     },
   };
 }

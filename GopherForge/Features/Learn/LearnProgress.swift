@@ -44,7 +44,7 @@ final class LearnProgress {
         guard GoCourseCatalog.lesson(id: id) != nil else { return }
         lastLessonID = id
         bookmarks.set(id, forKey: Self.lessonBookmarkKey)
-        bookmarks.set(0, forKey: "learning.lastArea.v1")
+        bookmarks.set(["operations", "containers", "kubernetes", "devops"].contains(GoCourseCatalog.unit(containing: id)?.id ?? "") ? 2 : 0, forKey: "learning.lastArea.v1")
     }
 
     func visitInterview(_ id: String) {

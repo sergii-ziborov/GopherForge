@@ -3,7 +3,57 @@
 Next.js App Router website, blog and complete native-course library. Readings,
 code, diagrams, editorial architecture comparisons and three-choice checks are
 available without registration. Progress is local browser storage, independent
-of native progress; no server-side code execution or grading is claimed.
+of native progress; no server-side code execution or grading is claimed. The browser Playground runs Go locally in a dedicated worker.
+
+## Browser Go toolchain
+
+The browser reuses the pinned native Go 1.27.1 compile/link artifacts, with a small
+Go parser/planner built from `toolchain/planner.go`. To prepare generated assets:
+
+```sh
+GOPHERFORGE_GO=/path/to/go1.27/bin/go ./scripts/build-go-browser.sh
+```
+
+The pinned native artifact must already exist in `../GopherForge/Resources/Toolchain`.
+The generated manifest records exact asset hashes; `public/toolchain` is ignored
+build output and must be included in runtime bundles. Keep the Go license and
+patent notice beside those assets. Source never goes to a remote compiler.
+
+## Browser IDE and rooms
+
+The workspace offers Run/Test/Check/Format/Build, a source debugger ported from
+the native AST instrumentation, a searchable file tree and a resizable output
+dock. Debug pauses the worker through SharedArrayBuffer; the Playground route
+and worker assets require the configured COOP/COEP headers. Links into
+Playground use document navigation so those headers take effect even from a
+non-isolated course/home page. Production uses Next’s webpack builder so the TypeScript Worker is bundled as
+JavaScript, rather than emitted as a raw media asset. Original source is
+compiled before instrumentation. Never auto-run received source or room requests.
+
+`toolchain/modules.go` uses x/mod's official checksum database client and pinned
+sum.golang.org key. `go-modules.ts` verifies Go h1 archive hashes, resolves bounded
+public module graphs and caches prepared source separately from user files.
+Run the deterministic captured-proof tests with `pnpm test`. Refresh the UUID
+integration fixture deliberately with `node scripts/verify-go-modules.mjs`;
+that command contacts the official public Go proxy/log and executes the result.
+
+Encrypted browser rooms use Yjs and AES-256-GCM, with the encryption key only in
+URL fragments. The bounded in-memory `/api/playground/secure` endpoint receives
+ciphertext, enforces Edit/View/Owner capabilities and uses exact-head snapshot
+compaction/publication. The hook keeps a server-only CRDT replica so compaction
+never publishes unacknowledged local updates as if they were already shared.
+Offline edits and conflicted/deleted files remain recoverable/exportable.
+Legacy `/api/playground` and remote MCP retain the compatible native protocol;
+they see plaintext and reject whole-file revision conflicts. Public native 1.3.2 and remote MCP use the compatible mode. Native 1.3.3 (52),
+currently in preparation, also joins encrypted rooms through the same Yjs wire format.
+Both modes ask for a nickname and show named cursors and bounded edit history.
+MCP clients call `playground_join` before attributed writes; a configured View bearer
+cannot escalate through another participant capability.
+
+The trusted native JavaScriptCore engine is built from the same model with
+`node scripts/build-native-collaboration.mjs`. Regenerate the checked-in
+`../GopherForge/Resources/PlaygroundCRDT.js` and license notices whenever that
+model changes. Native CryptoKit handles AES-GCM; this bundle never executes Go.
 
 ## Content and development
 
@@ -31,62 +81,20 @@ articles and three generated assets per story. Asset prompts and hashes are
 recorded in `../docs/website/news-image-manifest.json`. Existing native lesson
 IDs are URL slugs; keep them stable.
 
-## Hostwatch deployment and analytics
+## Deployment
 
 `Dockerfile` builds a non-root standalone Next.js service. Build from this
-directory or use `deploy/compose.yaml`. Compose binds the app to loopback,
-limits resources, drops capabilities and bounds logs. Inspect the runtime UID
-if your platform remaps non-root users; adjust cache tmpfs ownership if needed.
+directory or use `deploy/compose.yaml`, which binds the app to loopback, limits
+resources, drops capabilities and bounds logs. `deploy/Dockerfile.bundle`
+packages a verified prebuilt `standalone/` release for hosts with little build
+capacity. No credentials belong in either image.
 
-`deploy/nginx.conf` provides reverse proxy, canonical redirects and a bounded
-JSON access stream compatible with Hostwatch's traffic reader. It intentionally
-omits query values and referrers. `deploy/gopherforge.logrotate` retains 14 daily
-rotations. Client IP handling must follow the real trusted-proxy topology;
-never trust arbitrary inbound forwarded headers.
+`deploy/nginx.conf` provides the reverse proxy, canonical redirects and a
+bounded JSON access log that omits query values and referrers;
+`deploy/gopherforge.logrotate` keeps 14 daily rotations. Client IP handling must
+follow the real trusted-proxy topology; never trust arbitrary forwarded headers.
 
-Production: **https://gopherforge.app**, hosted on the existing Hetzner
-application node with Hostwatch site ID `gopherforge` and governed target
-`gopherforge-web`. Registration and DNS remain managed in Lovable; apex and
-www point to the Hetzner origin. Nginx redirects www and HTTP to the HTTPS apex.
-The previous Lovable project remains available at its lovable.app address.
-
-`deploy/provision-hostwatch.py` is the additive operator setup for this
-installation. It preserves unrelated profiles and governance, writes an atomic
-config with a timestamped backup, and registers the exact non-root deployment.
-The production profile uses UID/GID 10001, 256 MiB, half a CPU and loopback port
-3047. Hostwatch MCP performs digest/revision-checked deployments and health
-verification. `deploy/gopherforge-web.service`, the container's
-`unless-stopped` policy and the enabled Podman restart unit provide startup
-recovery. Reapply the restart policy after a governed container replacement. After replacement,
-restore the news cache into the new container's writable tmpfs with
-`python3 /srv/apps/gopherforge/news-feed/deliver.py /var/lib/gopherforge-news`
-on the origin. Verify the community reader shows **Feed connected**; its
-bundled saved edition is a fallback, not evidence of a live cache.
-
-For a verified prebuilt standalone release on a capacity-constrained origin,
-`deploy/Dockerfile.bundle` packages `standalone/` from the release build. It
-replaces the builder's traced Sharp links with the same Sharp version installed
-for Linux. Keep the build's Git revision and catalog hash in a release receipt;
-verify the Next dependency's Sharp import and all public routes on the target.
-Build with Podman's `--format docker` to retain the image health check, and
-bound build CPU/memory. The full source Dockerfile remains the portable build
-path when build capacity is available. No credentials belong in either bundle.
-
-The installed agent tails the shared `/var/log/nginx/hostwatch.json.log` stream.
-Nginx writes this site's query-free JSON to that stream as well as the separate
-14-rotation GopherForge log; merely creating a per-site log would not feed this
-agent. Live Hostwatch traffic reads have verified requests under this site ID.
-Both apex/www certificates were issued before cutover and the new lineage was
-reconfigured to HTTP webroot renewal. Certbot's staging renewal passed, and
-`certbot.timer` remains enabled with the existing Nginx renewal hook.
-
-Before each update, inspect `deployment_preview`, keep the old revision for
-rollback, and verify health, static assets, course navigation, self-checks,
-progress, sitemap and 404 behavior. Domain rollback requires reconnecting the
-existing Lovable project and restoring its previous A records. Do not alter
-registration, unrelated DNS records, other sites or registry credentials.
-
-There is no public analytics dashboard. Analytics uses operational reverse-proxy
-logs and Hostwatch's authenticated operator view. A deployment configuration is
-not proof that analytics has received data; only a live traffic read establishes
-that integration.
+Production is **https://gopherforge.app**. Before each update, keep the previous
+revision for rollback and verify health, static assets, course navigation,
+self-checks, progress, the sitemap and 404 behavior. There is no public
+analytics dashboard or browser analytics SDK.

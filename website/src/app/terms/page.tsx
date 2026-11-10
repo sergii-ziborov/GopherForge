@@ -1,11 +1,11 @@
+import { pageMetadata } from "@/lib/page-metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
-export const metadata: Metadata = {
-  title: "Terms of Use",
-  description:
-    "Product scope, purchase terms and educational content terms for GopherForge.",
-  alternates: { canonical: "/terms" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/terms",
+  "Terms of Use",
+  "Product scope, purchase terms and educational content terms for GopherForge.",
+);
 export default function Terms() {
   return (
     <article className="page article legal">

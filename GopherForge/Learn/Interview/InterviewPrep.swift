@@ -2,7 +2,7 @@ import Foundation
 
 /// Shared, authored interview preparation. This resource is copied byte-for-byte
 /// into the web build; progress stays separate from compiler-verified lessons.
-struct InterviewPrepBank: Decodable, Sendable {
+struct InterviewPrepBank: Codable, Sendable {
     let schemaVersion: Int
     let reviewedOn: String
     let levels: [String]
@@ -10,17 +10,12 @@ struct InterviewPrepBank: Decodable, Sendable {
     let questions: [InterviewPrepQuestion]
     let demonstrations: [AlgorithmDemonstration]
 
-    static let shared: InterviewPrepBank = {
-        do {
-            guard let url = Bundle.main.url(forResource: "InterviewPrep", withExtension: "json") else {
-                throw CocoaError(.fileNoSuchFile)
-            }
-            return try JSONDecoder().decode(Self.self, from: Data(contentsOf: url))
-        } catch {
-            assertionFailure("Interview preparation could not be loaded: \(error)")
-            return Self(schemaVersion: 1, reviewedOn: "", levels: [], topics: [], questions: [], demonstrations: [])
-        }
-    }()
+    #if !LESSON_CATALOG_EXPORT
+    static var shared: InterviewPrepBank {
+        CourseLibrary.shared.packages.compactMap(\.interview).first ?? empty
+    }
+    #endif
+    static let empty = Self(schemaVersion: 1, reviewedOn: "", levels: [], topics: [], questions: [], demonstrations: [])
 
     func filtered(topic: String, level: Int, search: String) -> [InterviewPrepQuestion] {
         let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -31,12 +26,12 @@ struct InterviewPrepBank: Decodable, Sendable {
         }
     }
 }
-struct InterviewPrepTopic: Decodable, Identifiable, Sendable {
+struct InterviewPrepTopic: Codable, Identifiable, Sendable {
     let id: String
     let title: String
     let route: String
 }
-struct InterviewPrepQuestion: Decodable, Identifiable, Sendable {
+struct InterviewPrepQuestion: Codable, Identifiable, Sendable {
     let id: String
     let topic: String
     let level: Int
@@ -51,22 +46,22 @@ struct InterviewPrepQuestion: Decodable, Identifiable, Sendable {
     let code: String
     let complexity: String
 }
-struct AlgorithmDemonstration: Decodable, Identifiable, Sendable {
+struct AlgorithmDemonstration: Codable, Identifiable, Sendable {
     let id: String
     let cases: [AlgorithmCase]
 }
-struct AlgorithmCase: Decodable, Sendable {
+struct AlgorithmCase: Codable, Sendable {
     let name: String
     let input: String
     let result: String
     let steps: [AlgorithmStep]
 }
-struct AlgorithmStep: Decodable, Sendable {
+struct AlgorithmStep: Codable, Sendable {
     let title: String
     let note: String
     let rows: [AlgorithmRow]
 }
-struct AlgorithmRow: Decodable, Sendable {
+struct AlgorithmRow: Codable, Sendable {
     let label: String
     let values: [String]
     let active: [Int]

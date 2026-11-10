@@ -1,3 +1,4 @@
+import { nickname } from "./playground-identity.ts";
 import { createHash, randomBytes } from "node:crypto";
 
 // One bounded relay process. No shell, compiler, eval, or server execution.
@@ -41,6 +42,7 @@ type Participant = {
   kind: "web" | "native" | "agent";
   role: Role;
   seenAt: number;
+  cursor?: { path: string; anchor: number; head: number; revision: number };
 };
 export type RoomRun = {
   id: string;
@@ -73,6 +75,7 @@ type Room = {
   participants: Map<string, Participant>;
   runs: RoomRun[];
   requests: RunRequest[];
+  changes: { id: string; name: string; revision: number; paths: string[] }[];
 };
 type State = { rooms: Map<string, Room> };
 const globalState = globalThis as typeof globalThis & {
@@ -145,6 +148,15 @@ export function authenticate(capability: unknown) {
   }
   return { room, ...grant };
 }
+function participantName(value: unknown) {
+  try {
+    return nickname(value);
+  } catch (error) {
+    throw new RelayError(
+      error instanceof Error ? error.message : "Choose a nickname",
+    );
+  }
+}
 function writable(role: Role) {
   assert(role !== "view", "This is a view-only link.", 403);
 }
@@ -181,18 +193,23 @@ function snapshot(room: Room, role: Role, participantID?: string) {
       (p) => now - p.seenAt < 45_000,
     ),
     runs: room.runs,
+    changes: room.changes ?? [],
     requests: room.requests.filter((r) => now - r.requestedAt < 120_000),
     execution:
       "Only a person pressing Run/Test in the native app starts a local build. The relay never executes code.",
   };
 }
 function trimOutput(room: Room) {
-  let bytes = room.runs.reduce((n, r) => n + Buffer.byteLength(r.stdout) + Buffer.byteLength(r.stderr), 0);
+  let bytes = room.runs.reduce(
+    (n, r) => n + Buffer.byteLength(r.stdout) + Buffer.byteLength(r.stderr),
+    0,
+  );
   while (bytes > 256 * 1024) {
-    const index = room.runs.findIndex(r => r.status !== "running");
+    const index = room.runs.findIndex((r) => r.status !== "running");
     if (index < 0) break;
     const [removed] = room.runs.splice(index, 1);
-    bytes -= Buffer.byteLength(removed.stdout) + Buffer.byteLength(removed.stderr);
+    bytes -=
+      Buffer.byteLength(removed.stdout) + Buffer.byteLength(removed.stderr);
   }
 }
 export function roomAction(
@@ -232,6 +249,7 @@ export function roomAction(
       participants: new Map(),
       runs: [],
       requests: [],
+      changes: [],
     };
     for (const [role, token] of Object.entries(capabilities))
       room.credentials.set(digest(token), { role: role as Role });
@@ -260,7 +278,7 @@ export function roomAction(
     );
     const id = secret(),
       token = room.id + "." + secret();
-    const name = text(input.name ?? "Guest", 50).trim() || "Guest";
+    const name = participantName(input.name ?? "Guest");
     room.participants.set(id, {
       id,
       name,
@@ -273,6 +291,43 @@ export function roomAction(
     room.credentials.set(digest(token), { role: seatRole, participantID: id });
     return { ...snapshot(room, seatRole, id), participantCapability: token };
   }
+  if (op === "presence") {
+    const peer = participantID && room.participants.get(participantID);
+    assert(peer, "Join before publishing presence", 403);
+    if (input.name !== undefined) peer.name = participantName(input.name);
+    if (input.cursor === null) delete peer.cursor;
+    else if (input.cursor !== undefined) {
+      const c = input.cursor as Participant["cursor"];
+      assert(
+        c && typeof c.path === "string",
+        "Select a shared file",
+      );
+      assert(
+        Number.isSafeInteger(c.revision) && c.revision >= 0,
+        "Invalid cursor revision",
+      );
+      if (c.revision !== room.revision) delete peer.cursor;
+      else {
+        assert(Object.hasOwn(room.files,c.path), "Select a shared file");
+        assert(
+          [c.anchor, c.head].every(
+            (n) =>
+              Number.isSafeInteger(n) &&
+              n >= 0 &&
+              n <= room.files[c.path].length,
+          ),
+          "Invalid cursor position",
+        );
+        peer.cursor = {
+          path: c.path,
+          anchor: c.anchor,
+          head: c.head,
+          revision: c.revision,
+        };
+      }
+    }
+    return snapshot(room, role, participantID);
+  }
   if (op === "write") {
     writable(role);
     assert(
@@ -280,8 +335,19 @@ export function roomAction(
       "Source changed elsewhere. Your draft was kept; review the latest source before publishing.",
       409,
     );
-    room.files = validateFiles(input.files);
+    const next = validateFiles(input.files);
+    const paths = [
+      ...new Set([...Object.keys(room.files), ...Object.keys(next)]),
+    ].filter((path) => room.files[path] !== next[path]);
+    room.files = next;
     room.revision++;
+    const author =
+      (participantID && room.participants.get(participantID)?.name) ||
+      "AI / Edit link";
+    room.changes = [
+      ...(room.changes ?? []),
+      { id: secret(), name: author, revision: room.revision, paths },
+    ].slice(-32);
     return snapshot(room, role, participantID);
   }
   if (op === "request_run") {
@@ -303,7 +369,7 @@ export function roomAction(
       input.targetID === undefined ? undefined : text(input.targetID, 100);
     if (targetID)
       assert(
-        room.participants.get(targetID)?.kind === "native",
+        ["native", "web"].includes(room.participants.get(targetID)?.kind ?? ""),
         "That native device is not connected.",
       );
     const request: RunRequest = {
@@ -319,15 +385,15 @@ export function roomAction(
       request,
       state: "awaiting_local_button",
       message:
-        "No code was executed. A person must press Run/Test on their native device. Read the room again for the result.",
+        "No code was executed. A person must press Run/Test in their browser or native app. Read the room again for the result.",
     };
   }
   if (op === "begin_run") {
     writable(role);
     const p = participantID && room.participants.get(participantID);
     assert(
-      p && p.kind === "native",
-      "Only a joined native device can publish a local run.",
+      p && (p.kind === "native" || p.kind === "web"),
+      "Only a joined browser or native device can publish a local run.",
       403,
     );
     assert(
@@ -342,7 +408,11 @@ export function roomAction(
       "This device already has an unfinished run. Finish it or reconnect with a new seat.",
       409,
     );
-    assert(room.runs.filter(r => r.status === "running").length < 24, "This room has 24 unfinished device runs. Keep a copy and create another room if those devices cannot finish.", 429);
+    assert(
+      room.runs.filter((r) => r.status === "running").length < 24,
+      "This room has 24 unfinished device runs. Keep a copy and create another room if those devices cannot finish.",
+      429,
+    );
     const run: RoomRun = {
       id: secret(),
       participantID,

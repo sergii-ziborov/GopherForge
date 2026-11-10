@@ -1,6 +1,8 @@
 import expansion from "@/content/interview-expansion.json";
+import latestAudit from "@/content/curriculum-audit.json";
+import downloadReview from "@/content/course-downloads-review.json";
 // Dates describe content edits, not the date the page was requested.
-export const curriculumUpdatedOn = "2026-10-29";
+export const curriculumUpdatedOn = downloadReview.reviewedOn;
 const expansionUpdatedOn = "2026-10-28";
 const earlierCurriculumOn = "2026-10-27";
 const auditChangedLessons = new Set([
@@ -85,6 +87,10 @@ const changedLessons = new Set([
   "ai.trust-boundaries",
 ]);
 export function lessonUpdatedOn(id: string) {
+  if (downloadReview.changedLessons.includes(id))
+    return downloadReview.reviewedOn;
+  if (latestAudit.changedLessons.includes(id)) return latestAudit.reviewedOn;
+  if (id.startsWith("devops.")) return "2026-11-05";
   if (id.startsWith("ai.")) return "2026-10-29";
   return id === "collections.make-and-new" ||
     expansion.lessons.includes(id) ||
@@ -112,6 +118,9 @@ export const changedInterview = new Set([
 ]);
 
 export function unitUpdatedOn(id: string) {
+  if (downloadReview.changedUnits.includes(id))
+    return downloadReview.reviewedOn;
+  if (latestAudit.changedUnits.includes(id)) return latestAudit.reviewedOn;
   if (id === "ai") return "2026-10-29";
   return [
     "system-design",

@@ -1,30 +1,48 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { appStore, github } from "@/lib/course";
+import { appStore, github, teachingCount } from "@/lib/course";
 import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://gopherforge.app"),
   title: {
-    default: "GopherForge — Go Compiler, Course & Interview Prep",
+    default: "GopherForge — Go Compiler for iPhone, iPad & Web",
     template: "%s — GopherForge",
   },
-  description:
-    "Learn Go with worked examples, interactive algorithms and interview guides. Compile, run and test Go offline on iPhone and iPad with GopherForge.",
+  description: `Run Go in your browser or offline on iPhone and iPad. Learn with ${teachingCount} Go lessons, practice interviews and collaborate through encrypted rooms and GopherForge MCP.`,
   alternates: {
     canonical: "/",
     types: { "application/rss+xml": "/news/rss.xml" },
   },
   openGraph: {
-    title: "GopherForge — Go Compiler, Course & Interview Prep",
+    title: "GopherForge — Go Compiler for iPhone, iPad & Web",
     description:
-      "Free Go lessons, interview preparation and a native offline Go workbench.",
+      "A local Go compiler, free browser Playground, practical Go lessons and encrypted collaboration with your AI agent.",
+    url: "/",
     siteName: "GopherForge",
     type: "website",
     locale: "en_US",
-    images: ["/images/news/launch-hero.webp"],
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "GopherForge — Go on iPhone, iPad and the web",
+      },
+    ],
   },
   twitter: { card: "summary_large_image" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
 };
 export default function RootLayout({
   children,
@@ -32,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <a className="skip" href="#main">
           Skip to content
@@ -56,7 +74,7 @@ export default function RootLayout({
             <Link href="/interview">Interview</Link>
             <Link href="/news">News</Link>
             <Link href="/guide">App guide</Link>
-            <Link href="/playground">Playground</Link>
+            <a href="/playground">Playground</a>
             <Link href="/updates">Updates</Link>
             <a className="nav-app" href={appStore}>
               Get the app <span aria-hidden="true">↗</span>
@@ -89,6 +107,7 @@ export default function RootLayout({
           <div>
             <h2>Help & details</h2>
             <Link href="/guide">App guide</Link>
+            <Link href="/downloads">Course downloads</Link>
             <Link href="/guide/mcp">MCP & AI collaboration</Link>
             <Link href="/support">Support</Link>
             <Link href="/support#package-limits">Package limits</Link>

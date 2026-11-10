@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// The rest of the verified answers: interfaces, errors, modules, concurrency
@@ -277,3 +278,5 @@ extension LessonSolutionCatalog {
         """,
     ]
 }
+
+#endif

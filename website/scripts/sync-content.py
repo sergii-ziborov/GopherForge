@@ -15,5 +15,6 @@ shutil.copyfile(root/'GopherForge/Resources/InterviewPrep.json',target/'intervie
 media=web/'public/images'; media.mkdir(parents=True,exist_ok=True)
 for src,name in [('GopherForge/Resources/Assets.xcassets/AppIcon.appiconset/GopherForgeIcon-1024.png','app-icon.png'),('docs/app-store/screenshots/iphone-6.9/00-code.png','workbench.png'),('docs/screenshots/next/architecture-comparison.png','architecture-comparison.png'),('docs/screenshots/next/architecture-landscape.png','architecture-landscape.png')]:
  shutil.copyfile(root/src,media/name)
-shutil.copyfile(media/'app-icon.png',web/'src/app/icon.png')
+# Browser icons are deliberately retained at their approved 64/180px sizes.
+# Copying the 1024px source over icon.png regresses the browser asset budget.
 print(f'Synced {len(units)} units and {sum(len(u["lessons"]) for u in units)} lessons from native source.')

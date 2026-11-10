@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Three more for the standard library: time, sorting, and context in practice.
@@ -389,3 +390,5 @@ extension CourseUnitStandardLibrary {
         """
     )
 }
+
+#endif

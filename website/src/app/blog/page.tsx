@@ -1,13 +1,13 @@
+import { pageMetadata } from "@/lib/page-metadata";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { posts } from "@/lib/posts";
 import { news, newsURL, newsImage, dateLabel } from "@/lib/news";
-export const metadata: Metadata = {
-  title: "Field notes — practical Go articles",
-  description:
-    "Practical Go guides: generics, Redis caching, MongoDB, OpenTelemetry, fuzz testing and offline web assets, with tested examples and illustrated explanations.",
-  alternates: { canonical: "/blog" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/blog",
+  "Field notes — practical Go articles",
+  "Practical Go guides: generics, Redis caching, MongoDB, OpenTelemetry, fuzz testing and offline web assets, with tested examples and illustrated explanations.",
+);
 export default function Blog() {
   return (
     <section className="page">

@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit D — errors as values.
@@ -145,3 +146,5 @@ enum CourseUnitErrors {
         idiomaticSolution: nil
     )
 }
+
+#endif

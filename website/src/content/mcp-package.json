@@ -1,0 +1,12 @@
+{
+  "name": "gopherforge-mcp",
+  "version": "0.1.0",
+  "node": ">=22",
+  "archive": "/downloads/gopherforge-mcp-0.1.0.tgz",
+  "sha256": "fc645ce9d30c66a7d81c64698a833ea445afce942fc10a972f6c35f56e709bb2",
+  "bytes": 20411,
+  "registryPublished": true,
+  "status": "Published on npm; official versioned archive also available",
+  "updatedOn": "2026-11-06",
+  "registryURL": "https://www.npmjs.com/package/gopherforge-mcp"
+}

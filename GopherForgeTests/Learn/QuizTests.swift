@@ -94,10 +94,18 @@ final class QuizSessionTests: XCTestCase {
 final class QuizCatalogTests: XCTestCase {
     func testEveryUnitWithLessonsHasAQuiz() {
         for unit in GoCourseCatalog.units where !unit.lessons.isEmpty {
-            XCTAssertNotNil(
-                QuizCatalog.quiz(forUnit: unit.id),
-                "unit \(unit.id) has lessons but no quiz to close it"
-            )
+            if QuizCatalog.quiz(forUnit: unit.id) == nil {
+                // Supplemental reading units close each lesson with an inline
+                // three-choice check; compiler units retain their unit quiz.
+                for lesson in unit.teachingLessons {
+                    guard case .reading = lesson.task else { XCTFail("\(lesson.id) lacks a quiz"); continue }
+                    let reading = ReadingLessonCatalog.reading(for: lesson.id)
+                    XCTAssertNotNil(reading, lesson.id)
+                    XCTAssertFalse(reading?.question.isEmpty ?? true, lesson.id)
+                    XCTAssertEqual(reading?.wrongAnswers.count, 2, lesson.id)
+                    XCTAssertFalse(reading?.reviewAnswer.isEmpty ?? true, lesson.id)
+                }
+            }
         }
     }
 

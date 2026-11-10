@@ -1,31 +1,35 @@
 {
-  "checkedOn": "2026-10-29",
+  "checkedOn": "2026-11-07",
   "public": {
-    "version": "1.3.1",
-    "build": 49,
-    "status": "Available on the App Store"
-  },
-  "next": {
     "version": "1.3.2",
     "build": 51,
-    "status": "Waiting for App Review; automatic release after approval",
-    "reviewSubmitted": true
+    "status": "Available on the App Store",
+    "verificationPath": "docs/website/playground-20261105/app-store-verification.json"
+  },
+  "next": {
+    "version": "1.3.3",
+    "build": 55,
+    "status": "Private TestFlight — Internal QA; App Store draft",
+    "reviewSubmitted": false,
+    "released": false
   },
   "toolchain": "Go 1.27.1",
   "priceUSD": "6.99",
+  "regularPriceUSD": "9.99",
   "beta": {
-    "version": "1.3.2",
-    "build": 51,
+    "version": "1.3.3",
+    "build": 55,
     "status": "Internal QA TestFlight"
   },
   "curriculum": {
-    "version": "1.3.2",
-    "build": 51,
-    "status": "Internal QA TestFlight"
+    "version": "1.3.3",
+    "build": 55,
+    "status": "Available on web and private Internal QA TestFlight build 55"
   },
   "previousCandidate": {
     "version": "1.3.0",
     "build": 48,
     "status": "Superseded by 1.3.1 (49)"
-  }
+  },
+  "websiteUpdatedOn": "2026-11-07"
 }

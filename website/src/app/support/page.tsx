@@ -1,13 +1,13 @@
+import { pageMetadata } from "@/lib/page-metadata";
 import { releases } from "@/lib/releases";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { github, appStore } from "@/lib/course";
-export const metadata: Metadata = {
-  title: "Support & package compatibility",
-  description:
-    "Contact GopherForge support. Understand WASI, module downloads, the 4,000-file ZIP budget and what the on-device Go toolchain supports.",
-  alternates: { canonical: "/support" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/support",
+  "Support & package compatibility",
+  "Contact GopherForge support. Understand WASI, module downloads, the 4,000-file ZIP budget and what the on-device Go toolchain supports.",
+);
 export default function Support() {
   return (
     <article className="page article">
@@ -152,24 +152,24 @@ export default function Support() {
             {releases.public.version} ({releases.public.build}) is available on
             the App Store.
           </strong>{" "}
-          It includes 186 teaching lessons in 23 units, 139 readings, 22
-          prediction challenges and 92 interview guides.
+          It includes 220 teaching lessons in 28 units, 173 readings, 22
+          prediction challenges and 132 interview guides, plus native Playground
+          and progress sharing.
         </p>
         <p>
           The expanded web library has 220 teaching lessons, 173 readings and 22
           challenges in 28 units. Interview has 132 guides across 15 topics and
           twelve interactive algorithm labs. New blocks cover Gin, blockchain
           infrastructure, security and production system design; they are
-          prepared for native {releases.curriculum.version}. Native{" "}
-          {releases.next.version} ({releases.next.build}) is{" "}
-          {releases.next.status.toLowerCase()}. See{" "}
+          included in native {releases.curriculum.version}. See{" "}
           <Link href="/updates">version history</Link>
           and the <Link href="/guide">complete app guide</Link>.
         </p>
         <p>
           Web progress stays in this browser and is independent of app progress.
-          Web completion marks are self-reported; this site does not compile
-          arbitrary source. Eight{" "}
+          Web completion marks are self-reported; the separate browser
+          Playground compiles Go locally and does not grade those learning
+          marks. Eight{" "}
           <Link href="/interview/ai.workflow">Go coding-agent guides</Link>{" "}
           cover practical use of Codex, Claude and Cursor.
         </p>

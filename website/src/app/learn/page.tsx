@@ -5,15 +5,15 @@ import { curriculumUpdatedOn } from "@/lib/curriculum-revision";
 import { StructuredData } from "@/components/StructuredData";
 import { releases } from "@/lib/releases";
 import type { Metadata } from "next";
-import { units, lessons, minutes, readings } from "@/lib/course";
+import { units, lessons, minutes, readings, teachingCount } from "@/lib/course";
+import { pageMetadata } from "@/lib/page-metadata";
 import { CourseBrowser } from "@/components/CourseBrowser";
 import { EditorialIllustration } from "@/components/EditorialIllustration";
-export const metadata: Metadata = {
-  title: "Learn Go — the complete course",
-  description:
-    "Learn Go with 220 teaching lessons: concurrency, Gin, system design, security, blockchain, SQL, MongoDB, Redis and coding agents. Worked code and self-checks; no account.",
-  alternates: { canonical: "/learn" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/learn",
+  `Learn Go — ${teachingCount} practical lessons`,
+  `Learn Go with ${teachingCount} lessons across ${units.length} units: concurrency, architecture, DevOps, databases and security. Worked code and self-checks; no account.`,
+);
 export default function Learn() {
   return (
     <section className="page learn-map-page">

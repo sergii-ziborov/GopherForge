@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// The Tour of Go concurrency pages this unit used to skip: buffers, ranging
@@ -257,3 +258,5 @@ extension CourseUnitConcurrency {
         """
     )
 }
+
+#endif

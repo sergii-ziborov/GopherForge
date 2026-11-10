@@ -86,6 +86,47 @@ import XCTest
         XCTAssertEqual(restored.files, a.files); XCTAssertFalse(restored.isRunning)
         await a.close()
     }
+    func testEncryptedNativeSeatsSyncNamedCursorsAndKeepViewRunsPrivate() async throws {
+        guard ProcessInfo.processInfo.environment["GOPHERFORGE_PLAYGROUND_RELAY_TESTS"] == "1" else { throw XCTSkip("Requires the localhost relay QA scheme.") }
+        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let transport = PlaygroundTransport(endpoint: URL(string: "http://127.0.0.1:3064/api/playground")!)
+        let counts = RunCounts()
+        func seat(_ key: String) -> PlaygroundSession {
+            PlaygroundSession(transport: transport, storageURL: directory.appending(path: key + ".json"), execute: { source, _ in
+                await counts.record(key, source: source.files["main.go"] ?? "")
+                return CompilationResult(succeeded: true, phase: .run, exitCode: 0, diagnostics: [], stdout: "encrypted output \(key)\n", stderr: "", duration: .zero, detail: "contract fixture")
+            })
+        }
+        let a = seat("owner"), b = seat("editor"), viewer = seat("viewer")
+        await a.create(name: "Alex native", encrypted: true)
+        let editURL = try XCTUnwrap(a.shareURL, a.status)
+        await b.join(editURL, name: "Sam native")
+        XCTAssertNotNil(b.encrypted, b.status)
+        a.update("// Alex\n" + a.files["main.go"]!)
+        b.update(b.files["main.go"]! + "\n// Sam\n")
+        _ = await a.publish(); _ = await b.publish(); await a.poll(); await b.poll()
+        XCTAssertEqual(a.files, b.files)
+        XCTAssertTrue(a.files["main.go"]!.contains("// Alex"))
+        XCTAssertTrue(a.files["main.go"]!.contains("// Sam"))
+        b.setCursor(anchor: 2, head: 4); await b.poll(); await a.poll()
+        XCTAssertTrue(a.encrypted?.state.cursors.contains { $0.name == "Sam native" && $0.head == 4 } == true)
+        let initially = await counts.values(); XCTAssertEqual(initially, [:])
+        await a.run(test: false); await b.poll()
+        XCTAssertEqual(b.encrypted?.state.runs.last?.name, "Alex native")
+        await viewer.join(try XCTUnwrap(a.viewURL), name: "Reader native")
+        XCTAssertFalse(viewer.canEdit)
+        let source = viewer.files
+        viewer.update("unauthorized")
+        XCTAssertEqual(viewer.files, source)
+        await viewer.run(test: false); await a.poll()
+        XCTAssertTrue(viewer.localOutput.contains("encrypted output viewer"))
+        XCTAssertEqual(a.encrypted?.state.runs.last?.name, "Alex native")
+        let observed = await counts.values(); XCTAssertEqual(observed, ["owner": 1, "viewer": 1])
+        let restored = PlaygroundSession(transport: transport, storageURL: directory.appending(path: "editor.json"))
+        XCTAssertEqual(restored.files, b.files); XCTAssertFalse(restored.isRunning)
+        await a.close()
+    }
     func testRealBundledGoRunPublishesToAnotherSeatWithoutRunningThere() async throws {
         guard ProcessInfo.processInfo.environment["GOPHERFORGE_PLAYGROUND_RELAY_TESTS"] == "1" else { throw XCTSkip("Run the dedicated Playground QA scheme with its localhost relay.") }
         let endpoint = URL(string: "http://127.0.0.1:3064/api/playground")!

@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Authored hint and nuance for every lesson that shows code.
@@ -73,3 +74,5 @@ enum LessonHintCatalog {
         entry("structs.escape", hint: "Returning &local is ordinary Go. The compiler moves it to the heap.", nuance: "There is no dangling stack pointer. Escape analysis is why NewFoo can return &Foo{}."),
     ]
 }
+
+#endif

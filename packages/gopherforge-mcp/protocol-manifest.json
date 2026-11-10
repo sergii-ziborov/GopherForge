@@ -1,0 +1,10 @@
+{
+  "protocol": "gopherforge-browser-v2",
+  "encryption": "AES-256-GCM; 96-bit random IV; channel-bound AAD",
+  "sources": {
+    "secure-collab.ts": "1ca5cb9cffc508e8dd25569543504e7761ed4d06485a77ea0c1a33c2f1c1eefb",
+    "playground-files.ts": "cf2f3db97c0721345e3cb53a602022fa5d9eec86eb68513d7f6c2c33b548befe",
+    "playground-identity.ts": "c1f3775ee37c6b46f8106bf3f3619b3dc77861d5a28249a297a31d519efdbb89",
+    "source-fingerprint.ts": "1e3f4dae079dce945e7bdcb85c15b75d86f3eba19016100f64eabab00bcb14a2"
+  }
+}

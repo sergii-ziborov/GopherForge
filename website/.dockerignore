@@ -6,3 +6,4 @@ tests
 *.tsbuildinfo
 README.md
 deploy
+build

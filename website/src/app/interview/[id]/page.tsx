@@ -28,6 +28,7 @@ export async function generateMetadata({
       title: q?.title,
       description: q?.prompt,
       url: interviewURL(id),
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
       type: "article",
       modifiedTime: metadataDate(interviewUpdatedOn(id)),
     },

@@ -36,7 +36,30 @@ const config: NextConfig = {
       },
       {
         source: "/playground",
-        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+        headers: [
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+        ],
+      },
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+        ],
+      },
+      {
+        source: "/api/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
+        source: "/downloads/courses/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
+        source: "/mcp",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
       {
         source: "/progress/:path*",

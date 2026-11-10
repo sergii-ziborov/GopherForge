@@ -17,6 +17,13 @@ import XCTest
         }
         let create = app.buttons["playground.create"]
         XCTAssertTrue(create.waitForExistence(timeout: 5)); create.tap()
+        let nickname = app.textFields["playground.nickname"]
+        XCTAssertTrue(nickname.waitForExistence(timeout: 10)); nickname.tap()
+        if let value = nickname.value as? String, value != "Nickname" {
+            nickname.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count))
+        }
+        nickname.typeText("Release QA")
+        app.buttons["playground.nickname.continue"].tap()
         let close = app.buttons["Close room"]
         XCTAssertTrue(close.waitForExistence(timeout: 20))
         connection.tap()
@@ -24,15 +31,7 @@ import XCTest
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isHittable == true AND isEnabled == true"), object: run)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
         run.tap()
-        let began = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label != %@", "Room created for one hour. Share Edit/View deliberately; keep your own copy."), object: app.staticTexts["playground.status"])
-        if XCTWaiter.wait(for: [began], timeout: 3) != .completed {
-            run.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        }
-        let finished = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "label CONTAINS %@", "Local run finished"),
-            object: app.staticTexts["playground.status"]
-        )
-        XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 45), .completed)
+        XCTAssertTrue(app.staticTexts["Release QA · run · Succeeded"].waitForExistence(timeout: 60))
         let output = app.staticTexts["playground.localOutput"]
         XCTAssertTrue(output.waitForExistence(timeout: 5))
         XCTAssertTrue(output.label.contains("Hello from my device"), output.label)

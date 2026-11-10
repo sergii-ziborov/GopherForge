@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 extension ReviewMatchCatalog {
@@ -92,3 +93,5 @@ extension ReviewMatchCatalog {
         )
     }
 }
+
+#endif

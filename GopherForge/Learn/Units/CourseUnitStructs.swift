@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Types you define: structs, methods, pointers and functions as values.
@@ -351,3 +352,5 @@ enum CourseUnitStructs {
         idiomaticSolution: nil
     )
 }
+
+#endif

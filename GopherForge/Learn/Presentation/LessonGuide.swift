@@ -1,11 +1,11 @@
 import Foundation
 
 /// Authored explanations and vector diagrams shared with the product website.
-struct LessonGuide: Decodable, Equatable, Sendable, Identifiable {
-    enum Mode: String, Decodable, Sendable {
+struct LessonGuide: Codable, Equatable, Sendable, Identifiable {
+    enum Mode: String, Codable, Sendable {
         case flow, sequence, comparison, stack, shared, fanout
     }
-    struct Node: Decodable, Equatable, Sendable {
+    struct Node: Codable, Equatable, Sendable {
         let label: String
         let code: String
         let detail: String
@@ -20,12 +20,10 @@ struct LessonGuide: Decodable, Equatable, Sendable, Identifiable {
     let reference: URL
 }
 
+#if !LESSON_CATALOG_EXPORT
 enum LessonGuideCatalog {
-    static let all: [LessonGuide] = {
-        guard let url = Bundle.main.url(forResource: "LessonGuides", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let guides = try? JSONDecoder().decode([LessonGuide].self, from: data) else { return [] }
-        return guides
-    }()
+    static var all: [LessonGuide] { CourseLibrary.shared.packages.flatMap(\.guides) }
     static func guide(for id: String) -> LessonGuide? { all.first { $0.id == id } }
 }
+
+#endif

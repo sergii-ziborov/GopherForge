@@ -1,0 +1,61 @@
+{
+  "name": "gopherforge-mcp",
+  "version": "0.1.0",
+  "description": "Official GopherForge MCP server: encrypted agent collaboration with the Go Playground on web, iPhone and iPad.",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Serhii Ziborov",
+  "homepage": "https://gopherforge.app/guide/mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergii-ziborov/GopherForge.git",
+    "directory": "packages/gopherforge-mcp"
+  },
+  "bugs": "https://github.com/sergii-ziborov/GopherForge/issues",
+  "keywords": [
+    "gopherforge",
+    "mcp",
+    "golang",
+    "playground",
+    "encrypted",
+    "collaboration"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "gopherforge-mcp": "bin/gopherforge-mcp.mjs"
+  },
+  "exports": {
+    ".": "./dist/index.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "protocol-manifest.json"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "prepack": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "fflate": "0.8.3",
+    "lib0": "0.2.117",
+    "y-protocols": "1.0.6",
+    "yjs": "13.6.33",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "esbuild": "0.28.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

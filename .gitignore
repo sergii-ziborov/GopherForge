@@ -28,3 +28,19 @@ build/
 /docs/app-store/*.json
 !/docs/app-store/screenshot-order.json
 /release-evidence/
+# Release, App Store, hosting, publication, audit and design records are
+# operational evidence. They stay on the maintainer's machine; the public tree
+# keeps what builds, scripts and readers use.
+/AGENTS.md
+/docs/hosting-*.md
+/docs/operations/
+/docs/releases/
+/docs/branding/
+/docs/app-store/metadata/
+/docs/app-store/listing.md
+/docs/audits/*
+!/docs/audits/2026-10-28-interview-expansion.json
+/docs/curriculum/
+/docs/website/*
+!/docs/website/lessons.json
+__pycache__/

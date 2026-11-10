@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit F — goroutines, channels, select and cancellation.
@@ -230,3 +231,5 @@ enum CourseUnitConcurrency {
         """
     )
 }
+
+#endif

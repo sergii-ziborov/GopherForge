@@ -60,12 +60,26 @@ final class ReadingLessonTests: XCTestCase {
         }
     }
 
+    func testDevOpsPathHasExecutableModelsAndIndependentPractice() throws {
+        let unit = try XCTUnwrap(GoCourseCatalog.unit(id: "devops"))
+        XCTAssertEqual(unit.teachingLessons.count, 9)
+        for id in GoConcept.devopsLessonTags {
+            let reading = try XCTUnwrap(ReadingLessonCatalog.reading(for: id))
+            XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == id }.count, 1)
+            XCTAssertTrue(GoConcept.all.contains(id)); XCTAssertNotNil(LessonSymbol.byConcept[id])
+            XCTAssertNotNil(ReviewMatchCatalog.allPairs.first { $0.requiredLessonID == id })
+            XCTAssertNotNil(MistakeReviewCatalog.all.first { $0.id == "reading.question.\(id)" })
+            XCTAssertEqual(reading.designGuide?.flow.count, 4)
+            XCTAssertEqual(Set(reading.wrongAnswers + [reading.reviewAnswer]).count, 3)
+        }
+    }
+
     func testBundledReadingsAreIntegratedExactlyOnceAndPreserveOriginalCourse() {
-        XCTAssertEqual(ReadingLessonCatalog.all.count, 173)
-        XCTAssertEqual(GoCourseCatalog.units.count, 28)
-        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 220)
+        XCTAssertEqual(ReadingLessonCatalog.all.count, 182)
+        XCTAssertEqual(GoCourseCatalog.units.count, 29)
+        XCTAssertEqual(GoCourseCatalog.teachingLessons.count, 229)
         XCTAssertEqual(GoCourseCatalog.challenges.count, 22)
-        XCTAssertEqual(GoCourseCatalog.lessons.count, 242)
+        XCTAssertEqual(GoCourseCatalog.lessons.count, 251)
         for reading in ReadingLessonCatalog.all {
             XCTAssertEqual(GoCourseCatalog.lessons.filter { $0.id == reading.id }.count, 1, reading.id)
             XCTAssertEqual(GoCourseCatalog.unit(containing: reading.id)?.id, reading.unitID)
@@ -97,7 +111,7 @@ final class ReadingLessonTests: XCTestCase {
             "developers.openai.com", "learn.chatgpt.com", "code.claude.com", "cursor.com",
             "www.postgresql.org", "microservices.io", "opentelemetry.io", "geth.ethereum.org",
             "ethereum.org", "eips.ethereum.org", "www.rfc-editor.org", "owasp.org",
-            "modelcontextprotocol.io", "protobuf.dev", "kafka.apache.org", "raft.github.io", "www.microsoft.com", "www.cs.columbia.edu"]
+            "sre.google", "developer.hashicorp.com", "docs.github.com", "prometheus.io", "modelcontextprotocol.io", "protobuf.dev", "kafka.apache.org", "raft.github.io", "www.microsoft.com", "www.cs.columbia.edu"]
         for reading in ReadingLessonCatalog.all {
             XCTAssertGreaterThan(reading.introduction.count, 100, reading.id)
             XCTAssertGreaterThanOrEqual(reading.sections.count, 3, reading.id)

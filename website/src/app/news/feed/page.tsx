@@ -1,14 +1,14 @@
+import { pageMetadata } from "@/lib/page-metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { externalFeed } from "@/lib/external-news";
 import { dateLabel } from "@/lib/news";
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Go community news — full articles from The Go Blog",
-  description:
-    "Read complete licensed Go Blog articles with code, author credits and source references. A separate community feed checked twice daily.",
-  alternates: { canonical: "/news/feed" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/news/feed",
+  "Go community news — full articles from The Go Blog",
+  "Read complete licensed Go Blog articles with code, author credits and source references. A separate community feed checked twice daily.",
+);
 export default async function Feed() {
   const f = await externalFeed();
   const stale = Date.now() - Date.parse(f.checkedAt) > 36 * 3600 * 1000;
@@ -86,8 +86,8 @@ export default async function Feed() {
           <h2>Read freely. Keep learning.</h2>
           <p>
             GopherForge has no accounts or registration. Read the complete
-            articles here, follow their original sources, or continue with
-            a worked Go lesson. Course progress stays in this browser.
+            articles here, follow their original sources, or continue with a
+            worked Go lesson. Course progress stays in this browser.
           </p>
           <p className="small-note">
             Go Blog originals remain linked for attribution under their

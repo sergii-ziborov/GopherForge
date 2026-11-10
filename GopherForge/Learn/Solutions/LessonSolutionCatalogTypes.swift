@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Answers for the two units added last: the types you declare yourself, and
@@ -190,3 +191,5 @@ extension LessonSolutionCatalog {
         """,
     ]
 }
+
+#endif

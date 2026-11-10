@@ -7,7 +7,8 @@ import Foundation
 /// lesson would. Text lengths are budgeted rather than free-form — see
 /// `MatchingDrill.maximumPromptCharacters` — because the board's promise is
 /// that every tile is the same height and nothing shifts as you play.
-enum MatchingDrillCatalog {
+#if LESSON_CATALOG_EXPORT
+enum MatchingDrillCatalog  {
     static let drills: [MatchingDrill] = [
         core, slices, interfaces, errors, concurrency, standardLibrary,
     ]
@@ -262,3 +263,5 @@ enum MatchingDrillCatalog {
         ]
     )
 }
+
+#endif

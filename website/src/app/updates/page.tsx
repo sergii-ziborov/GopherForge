@@ -1,12 +1,12 @@
+import { pageMetadata } from "@/lib/page-metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { releases } from "@/lib/releases";
-export const metadata: Metadata = {
-  title: "Version history",
-  description:
-    "GopherForge 1.3.1 is on the App Store. Version 1.3.2 (51), with MCP collaboration and shareable progress, is in TestFlight and waiting for App Review.",
-  alternates: { canonical: "/updates" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/updates",
+  "Version history",
+  "GopherForge release history: App Store 1.3.2, private TestFlight 1.3.3, encrypted Go Playground, JavaScript MCP and Go-for-DevOps lessons.",
+);
 export default function Updates() {
   return (
     <article className="page article">
@@ -16,36 +16,97 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
-      <section className="release" id="v131">
-        <span className="release-badge muted">AVAILABLE ON THE APP STORE</span>
-        <h2>
-          GopherForge 1.3.1 <small>build 49</small>
-        </h2>
+      <section className="release" id="web20261105">
+        <span className="release-badge muted">5 NOVEMBER 2026 · WEBSITE</span>
+        <h2>A full Go workspace in your browser.</h2>
         <p>
-          Apple released 1.3.1 after review. The course includes 220 teaching
-          lessons, 173 readings and 22 prediction challenges across 28 units,
-          plus 132 interview guides. Offline React, the source debugger, direct
-          web previews, source recovery and saved Continue places are included.
+          Run, Test, Check, Format and build WASI programs locally. The new IDE
+          adds a searchable file tree, resizable output, source debugging with
+          breakpoints, steps, stack and locals, and verified public Go
+          dependency preparation. Encrypted browser rooms merge simultaneous
+          edits with shared cursors and recoverable files. Compatible native/MCP
+          rooms remain available. The expanded guide explains both workflows,
+          Settings, storage, execution limits and recovery.
         </p>
-        <Link className="button" href="/learn">
-          Explore the course →
-        </Link>
+        <p>
+          GopherForge now has its own JavaScript MCP companion. It connects an
+          agent to an encrypted room, keeps the AES key on the agent&apos;s
+          machine, shows its named cursor and publishes encrypted edits and
+          local Run/Test requests. The website offers a verified npm archive and{" "}
+          <Link href="/guide/mcp">complete connection instructions</Link>.
+        </p>
+        <a className="button" href="/playground">
+          Try the Go Playground →
+        </a>
+      </section>
+      <section className="release" id="v133">
+        <p>
+          The 6 November web lesson audit improves self-checks in 48 readings,
+          updates the encrypted agent workflow and adds a downloadable,
+          independently tested{" "}
+          <Link href="/learn/devops.delivery-loop">Go DevOps capstone</Link>.
+          These refinements first appeared in native TestFlight build 53 and
+          remain in the current candidate.
+        </p>
+        <span className="release-badge muted">
+          NATIVE {releases.beta.version} ({releases.beta.build}) · PRIVATE
+          TESTFLIGHT
+        </span>
+        <h2>Complete offline courses. A local DevOps terminal.</h2>
+        <p>
+          Open Learn → Course downloads to deliberately install the complete Go,
+          DevOps or Interview course. Export or import a whole course file;
+          removing study content keeps progress, bookmarks, drafts and lab
+          files. Lessons never fetch their content automatically. The app
+          verifies the complete version, size and checksum before installation.
+          <Link href="/downloads"> Course files and instructions →</Link>
+        </p>
+        <p>
+          The separate DevOps area has 34 readings across four units, six local
+          terminal labs and a free shell playground. Commands modify private
+          files and execute bounded pipelines, conditions and scripts. The
+          sandbox has no network or host processes; Docker, kubectl and SSH
+          exercises need your own disposable native environment.
+        </p>
+        <p>
+          The TestFlight build adds encrypted live rooms compatible with the
+          browser, nickname prompts, named cursors, recent changes and file
+          recovery. Playground gains source Debug, Check, Format and explicit
+          dependency preparation with local package storage. Receiving an edit
+          or MCP request never starts execution.
+        </p>
+        <p>
+          The DevOps path covers operational Go CLIs, reconciliation, verified
+          CI/CD, SLOs, incident response and preserving accepted writes during
+          recovery. New lessons explain IAM trust, infrastructure state and
+          caller-specific DNS/TLS diagnosis. The course has 229 teaching
+          lessons, 182 readings and 22 prediction challenges across 29 units.
+          Existing lesson IDs and progress remain valid.
+        </p>
+        <p>
+          The public App Store app remains {releases.public.version} (
+          {releases.public.build}). Build {releases.beta.build} is available to
+          Internal QA in TestFlight. It has not been submitted for App Review or
+          publicly released.
+        </p>
+        <a className="button" href="/learn/units/devops">
+          Study Go for DevOps →
+        </a>
       </section>
       <section className="release" id="v132">
         <span className="release-badge muted">
-          {releases.next.status.toUpperCase()} ·{" "}
-          {releases.beta.status.toUpperCase()}
+          {releases.public.status.toUpperCase()}
         </span>
         <h2>
-          GopherForge {releases.curriculum.version}{" "}
-          <small>build {releases.curriculum.build}</small>
+          GopherForge {releases.public.version}{" "}
+          <small>build {releases.public.build}</small>
         </h2>
         <p>
-          The development preview adds a guest Playground for people and AI, a
-          Streamable HTTP MCP server for Claude/Codex, and explicit read-only
-          progress links for teachers and assistants. Run/Test is local to the
-          native device whose person presses the button; other participants
-          receive Output.
+          Version 1.3.2 adds a guest Playground for people and AI, a Streamable
+          HTTP MCP server for Claude/Codex, and explicit read-only progress
+          links for teachers and assistants. Run/Test is local to the native
+          device whose person presses the button; other participants receive
+          Output.
         </p>
         <p>
           Explore Gin middleware and request ownership, blockchain package
@@ -64,6 +125,21 @@ export default function Updates() {
           Explore the expanded learning map →
         </Link>
       </section>
+      <section className="release" id="v131">
+        <span className="release-badge muted">EARLIER NATIVE RELEASE</span>
+        <h2>
+          GopherForge 1.3.1 <small>build 49</small>
+        </h2>
+        <p>
+          Apple released 1.3.1 after review. The course includes 220 teaching
+          lessons, 173 readings and 22 prediction challenges across 28 units,
+          plus 132 interview guides. Offline React, the source debugger, direct
+          web previews, source recovery and saved Continue places are included.
+        </p>
+        <Link className="button" href="/learn">
+          Explore the course →
+        </Link>
+      </section>
       <section className="release" id="v130">
         <span className="release-badge muted">
           EARLIER TESTFLIGHT · SUPERSEDED BY 1.3.1
@@ -75,7 +151,7 @@ export default function Updates() {
           Build a React interface offline and trace your Go program one
           statement at a time. These workbench features first appeared in the
           1.3.0 beta and are included in 1.3.1 (49), which replaces that review
-          candidate. The App Store currently distributes 1.3.1.
+          candidate. The App Store now distributes {releases.public.version}.
         </p>
         <ul>
           <li>

@@ -5,9 +5,9 @@ import Foundation
 /// The verification is a hidden test compiled and run by the same bundled
 /// toolchain the Build side uses. A lesson never marks itself complete on a
 /// text match; it passes when Go says it passes.
-struct Lesson: Identifiable, Equatable, Sendable {
+struct Lesson: Codable, Identifiable, Equatable, Sendable {
     /// What the learner is asked to do, and how the app decides they did it.
-    enum Task: Equatable, Sendable {
+    enum Task: Codable, Equatable, Sendable {
         /// Worked examples and explanations, completed by the reader.
         case reading
         /// A worked syntax example, read and self-marked. No typing score.
@@ -86,7 +86,7 @@ struct Lesson: Identifiable, Equatable, Sendable {
 }
 
 /// A group of lessons that belong together.
-struct CourseUnit: Identifiable, Equatable, Sendable {
+struct CourseUnit: Codable, Identifiable, Equatable, Sendable {
     let id: String
     let title: String
     let summary: String

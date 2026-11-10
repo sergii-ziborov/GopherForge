@@ -1,5 +1,12 @@
 import { createHash, randomBytes } from "node:crypto";
-import { mkdir, readFile, writeFile, readdir, unlink, stat } from "node:fs/promises";
+import {
+  mkdir,
+  readFile,
+  writeFile,
+  readdir,
+  unlink,
+  stat,
+} from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { assert } from "./playground-core.ts";
@@ -81,21 +88,32 @@ type Stored = {
   revokeHash: string;
 };
 const validShareID = (id: string) => /^[a-f0-9]{32}$/.test(id);
-const publisher = globalThis as typeof globalThis & { gopherForgeShareQueue?: Promise<void> };
+const publisher = globalThis as typeof globalThis & {
+  gopherForgeShareQueue?: Promise<void>;
+};
 export async function publishProgress(value: unknown) {
   const previous = publisher.gopherForgeShareQueue ?? Promise.resolve();
   let unlock!: () => void;
-  publisher.gopherForgeShareQueue = new Promise<void>(resolve => { unlock = resolve; });
+  publisher.gopherForgeShareQueue = new Promise<void>((resolve) => {
+    unlock = resolve;
+  });
   await previous;
-  try { return await publishUnlocked(value); } finally { unlock(); }
+  try {
+    return await publishUnlocked(value);
+  } finally {
+    unlock();
+  }
 }
 async function publishUnlocked(value: unknown) {
   const snapshot = parseSnapshot(value),
     dir = folder();
-  assert(Buffer.byteLength(JSON.stringify(snapshot)) <= 32 * 1024, "A progress snapshot must fit within 32 KiB.");
+  assert(
+    Buffer.byteLength(JSON.stringify(snapshot)) <= 32 * 1024,
+    "A progress snapshot must fit within 32 KiB.",
+  );
   await mkdir(dir, { recursive: true, mode: 0o700 });
   // Opportunistic cleanup complements the deployment’s daily retention timer.
-  const names = (await readdir(dir)).filter((n) =>
+  const names = (await readdir(/*turbopackIgnore: true*/ dir)).filter((n) =>
     /^[a-f0-9]{32}\.json$/.test(n),
   );
   if (names.length > 0)
@@ -109,12 +127,23 @@ async function publishUnlocked(value: unknown) {
       }
     }
   assert(
-    (await readdir(dir)).length < 10_000,
+    (await readdir(/*turbopackIgnore: true*/ dir)).length < 10_000,
     "The sharing service is full. Download your progress instead.",
     503,
   );
-  const sizes = await Promise.all((await readdir(dir)).filter(n => /^[a-f0-9]{32}\.json$/.test(n)).map(async n => (await stat(join(dir, n))).size));
-  assert(sizes.reduce((sum, n) => sum + n, 0) + Buffer.byteLength(JSON.stringify(snapshot)) + 512 <= 32 * 1024 * 1024, "The sharing storage budget is full. Download your progress instead.", 503);
+  const sizes = await Promise.all(
+    (await readdir(/*turbopackIgnore: true*/ dir))
+      .filter((n) => /^[a-f0-9]{32}\.json$/.test(n))
+      .map(async (n) => (await stat(join(dir, n))).size),
+  );
+  assert(
+    sizes.reduce((sum, n) => sum + n, 0) +
+      Buffer.byteLength(JSON.stringify(snapshot)) +
+      512 <=
+      32 * 1024 * 1024,
+    "The sharing storage budget is full. Download your progress instead.",
+    503,
+  );
   const shareID = randomBytes(16).toString("hex"),
     revokeToken = randomBytes(24).toString("base64url");
   const expiresAt = new Date(Date.now() + 90 * 86400_000).toISOString();
@@ -139,7 +168,10 @@ export async function readSharedProgress(
     const value = JSON.parse(
       await readFile(join(folder(), shareID + ".json"), "utf8"),
     ) as Stored;
-    if (Date.parse(value.expiresAt) <= Date.now()) { await unlink(join(folder(), shareID + ".json")); return null; }
+    if (Date.parse(value.expiresAt) <= Date.now()) {
+      await unlink(join(folder(), shareID + ".json"));
+      return null;
+    }
     return { snapshot: value.snapshot, expiresAt: value.expiresAt };
   } catch {
     return null;

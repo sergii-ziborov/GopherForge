@@ -8,9 +8,9 @@ import { StructuredData, Breadcrumbs } from "@/components/StructuredData";
 import { appStore } from "@/lib/course";
 import { releases } from "@/lib/releases";
 export const metadata: Metadata = {
-  title: "GopherForge Guide: Go Compiler for iPhone & iPad",
+  title: "Go Compiler Guide for iPhone, iPad & Browser",
   description:
-    "Learn GopherForge on iPhone and iPad: offline Go, npm/React builds, local Gin-compatible APIs, breakpoints, tests, Continue and sandbox limits. Includes 1.3.1 workflows.",
+    "Use GopherForge on iPhone, iPad and web: offline Go, React study builds, source debugging, encrypted rooms, the JavaScript MCP companion, lessons and recovery.",
   alternates: { canonical: "/guide" },
   openGraph: {
     title: "The complete GopherForge app guide",
@@ -82,7 +82,7 @@ export default function AppGuide() {
         />
         <div>
           <p className="eyebrow">
-            THE APP, EXPLAINED · UPDATED 29 OCTOBER 2026
+            THE APP, EXPLAINED · UPDATED 7 NOVEMBER 2026
           </p>
           <h1>
             Your Go workbench.
@@ -94,11 +94,14 @@ export default function AppGuide() {
             with GopherForge on iPhone, iPad and the web.
           </p>
           <p className="small-note">
-            App Store: {releases.public.version}. Next native:{" "}
-            {releases.next.version} · {releases.next.status}. Beta:{" "}
-            {releases.beta.version} ({releases.beta.build}) ·{" "}
-            {releases.beta.status}.{" "}
-            <Link href="/updates">Release details →</Link>
+            App Store: {releases.public.version} ({releases.public.build}) ·
+            native Playground and progress sharing are available. Go 1.27.1 runs
+            locally in the app and browser.{" "}
+            <Link href="/updates">Release details →</Link> Web rooms include
+            nicknames, visible cursors and change history. Native{" "}
+            {releases.beta.version} ({releases.beta.build}) with encrypted live
+            collaboration, complete course downloads and DevOps terminal labs is
+            available in private Internal QA TestFlight.
           </p>
         </div>
       </header>

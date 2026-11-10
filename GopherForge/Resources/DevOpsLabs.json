@@ -1,0 +1,134 @@
+[
+  {
+    "id": "files-contract",
+    "title": "Files and configuration",
+    "objective": "Create and inspect a configuration without changing another file.",
+    "instructions": "Write service.env with PORT=8080 and MODE=dev on separate lines. Inspect it with cat. Run help to see the available commands. Files in this lab persist between runs.",
+    "initialFiles": {
+      "README.txt": "Private training files. No production credentials.\n"
+    },
+    "starter": "printf 'PORT=8080\\nMODE=dev\\n' > service.env\ncat service.env",
+    "checks": [
+      {
+        "path": "service.env",
+        "description": "The configuration has the required port and mode.",
+        "equals": "PORT=8080\nMODE=dev\n"
+      },
+      {
+        "path": "README.txt",
+        "description": "The original README is preserved.",
+        "equals": "Private training files. No production credentials.\n"
+      }
+    ]
+  },
+  {
+    "id": "logs-pipeline",
+    "title": "Investigate service logs",
+    "objective": "Filter and deduplicate real log records through a bounded pipeline.",
+    "instructions": "Read logs/service.log. Select ERROR records, sort and deduplicate them into errors.txt. Confirm the result with cat or wc -l. grep matches literal substrings here, without regular-expression flags.",
+    "initialFiles": {
+      "logs/service.log": "INFO start\nERROR timeout\nERROR bad-token\nERROR timeout\n"
+    },
+    "starter": "grep ERROR logs/service.log | sort | uniq > errors.txt\ncat errors.txt",
+    "checks": [
+      {
+        "path": "errors.txt",
+        "description": "The two distinct error records are present in sorted order.",
+        "equals": "ERROR bad-token\nERROR timeout\n"
+      }
+    ]
+  },
+  {
+    "id": "artifact-digest",
+    "title": "Promote an artifact by digest",
+    "objective": "Copy the same artifact and record a digest of the delivered bytes.",
+    "instructions": "Copy src/app.conf to release/app.conf, then record its sha256sum in release/digest.txt. This command emits a digest only. The lab checks the actual bytes and digest independently.",
+    "initialFiles": {
+      "src/app.conf": "MODE=prod\nPORT=8080\n",
+      "release/README.txt": "Release directory\n"
+    },
+    "starter": "cp src/app.conf release/app.conf\nsha256sum release/app.conf > release/digest.txt\ncat release/digest.txt",
+    "checks": [
+      {
+        "path": "release/app.conf",
+        "description": "The promoted artifact matches its original source.",
+        "sameAs": "src/app.conf"
+      },
+      {
+        "path": "release/digest.txt",
+        "description": "The recorded digest describes the promoted bytes.",
+        "sha256Of": "release/app.conf"
+      }
+    ]
+  },
+  {
+    "id": "readiness-gate",
+    "title": "Gate a rollout on readiness",
+    "objective": "Distinguish a blocked gate from a passing one using actual lab state.",
+    "instructions": "Run the starter before creating a ready flag: it should write blocked. Then create health/ready.flag and run the gate again. A real deployment also needs a fresh response from the actual target; this local file contract does not claim a Kubernetes rollout.",
+    "initialFiles": {
+      "health/README.txt": "Create ready.flag only after the local contract is satisfied.\n"
+    },
+    "starter": "if test -f health/ready.flag; then\n  echo healthy > rollout.txt\nelse\n  echo blocked > rollout.txt\nfi\ncat rollout.txt",
+    "checks": [
+      {
+        "path": "rollout.txt",
+        "description": "The readiness gate recorded healthy.",
+        "equals": "healthy\n"
+      }
+    ]
+  },
+  {
+    "id": "restore-with-writes",
+    "title": "Recover configuration, preserve writes",
+    "objective": "Restore the faulty configuration while retaining accepted data.",
+    "instructions": "Inspect live/settings.conf and backups/settings.conf. Restore only the configuration. Preserve live/accepted-writes.log byte-for-byte. This is a local restore rehearsal, not proof of a database point-in-time recovery.",
+    "initialFiles": {
+      "backups/settings.conf": "MODE=prod\n",
+      "live/settings.conf": "MODE=unsafe\n",
+      "live/accepted-writes.log": "write-100\nwrite-101\nwrite-102\n"
+    },
+    "starter": "cat live/settings.conf\ncat backups/settings.conf\n# Restore only the configuration, then inspect accepted writes.",
+    "checks": [
+      {
+        "path": "live/settings.conf",
+        "description": "The live configuration matches the original backup.",
+        "sameAs": "backups/settings.conf"
+      },
+      {
+        "path": "live/accepted-writes.log",
+        "description": "All accepted writes remain intact.",
+        "equals": "write-100\nwrite-101\nwrite-102\n"
+      }
+    ]
+  },
+  {
+    "id": "ci-evidence",
+    "title": "A repeatable verification script",
+    "objective": "Run a real local script and inspect its evidence and exit status.",
+    "instructions": "Inspect verify.sh, then run it before promotion and observe failure. Copy the production configuration to release/app.conf and run sh verify.sh again. The checks inspect evidence.txt and the delivered digest. This shell has no cloud runners or credentials.",
+    "initialFiles": {
+      "src/app.conf": "MODE=prod\nPORT=8080\n",
+      "release/README.txt": "Promotion target\n",
+      "verify.sh": "test -f release/app.conf && grep MODE=prod release/app.conf > evidence.txt && sha256sum release/app.conf > release/digest.txt\n"
+    },
+    "starter": "cat verify.sh\nsh verify.sh",
+    "checks": [
+      {
+        "path": "release/app.conf",
+        "description": "The artifact matches the original source.",
+        "sameAs": "src/app.conf"
+      },
+      {
+        "path": "evidence.txt",
+        "description": "The verification script recorded the production contract.",
+        "equals": "MODE=prod\n"
+      },
+      {
+        "path": "release/digest.txt",
+        "description": "The digest matches the delivered artifact.",
+        "sha256Of": "release/app.conf"
+      }
+    ]
+  }
+]

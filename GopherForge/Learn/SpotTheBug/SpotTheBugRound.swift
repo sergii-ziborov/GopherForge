@@ -10,7 +10,7 @@ import Foundation
 /// Every fault is unambiguous under the bundled Go. Nothing here depends on a
 /// version's behaviour changing: no loop-variable capture, which Go fixed in
 /// 1.22, and no "this might be slow" opinions.
-struct SpotTheBugRound: Identifiable, Equatable, Sendable {
+struct SpotTheBugRound: Codable, Identifiable, Equatable, Sendable {
     let id: String
     let unitID: String
     /// What the program is supposed to do, so the reader knows what "wrong"
@@ -29,7 +29,8 @@ struct SpotTheBugRound: Identifiable, Equatable, Sendable {
     func isCorrect(_ index: Int) -> Bool { index == faultyLine }
 }
 
-enum SpotTheBugCatalog {
+#if LESSON_CATALOG_EXPORT
+enum SpotTheBugCatalog  {
     static func rounds(forUnit unitID: String) -> [SpotTheBugRound] {
         all.filter { $0.unitID == unitID }
     }
@@ -247,3 +248,5 @@ enum SpotTheBugCatalog {
         ),
     ]
 }
+
+#endif

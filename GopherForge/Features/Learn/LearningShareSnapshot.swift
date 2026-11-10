@@ -21,9 +21,9 @@ struct LearningShareSnapshot: Codable, Sendable {
         try c.encode(lastLessonID, forKey: .lastLessonID); try c.encode(lastInterviewID, forKey: .lastInterviewID)
     }
 
-    @MainActor static func make(store: LearningProgressStore = .shared, defaults: UserDefaults = .standard) async throws -> Self {
-        let known = Set(GoCourseCatalog.units.flatMap(\.lessons).map(\.id))
-        let interview = Set(InterviewPrepBank.shared.questions.map(\.id))
+    @MainActor static func make(store: LearningProgressStore = .shared, defaults: UserDefaults = .standard, library: CourseLibrary = .shared) async throws -> Self {
+        let known = library.knownLessonIDs
+        let interview = library.knownInterviewIDs
         let completed = try await store.completedLessonIDs().intersection(known)
         let verified = try await store.compilerVerifiedLessonIDs().intersection(completed)
         let raw = defaults.string(forKey: "interview.preparation.selfAssessment.v1") ?? "{}"

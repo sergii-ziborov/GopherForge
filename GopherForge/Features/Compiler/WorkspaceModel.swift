@@ -150,7 +150,7 @@ final class WorkspaceModel {
                     open(ProjectTemplate.commandLineTool.project(named: "Playground"))
                 }
             } catch {
-                saveError = "Не удалось открыть библиотеку: \(error.localizedDescription)"
+                saveError = "Could not open the library: \(error.localizedDescription)"
             }
         }
     }
@@ -311,7 +311,7 @@ final class WorkspaceModel {
                 self.pendingBuildRecord = nil
                 if recoveryProject == nil, !hasUnsavedChanges { saveError = nil }
             } catch {
-                saveError = "Не удалось сохранить результат сборки: \(error.localizedDescription)"
+                saveError = "Could not save the build result: \(error.localizedDescription)"
             }
         }
     }
@@ -422,7 +422,7 @@ final class WorkspaceModel {
                 saveError = nil
             }
         } catch {
-            saveError = "Не сохранено: \(error.localizedDescription)"
+            saveError = "Not saved: \(error.localizedDescription)"
             if projectID != id {
                 recoveryProject = snapshot
                 recoveryID = id
@@ -856,7 +856,7 @@ final class WorkspaceModel {
             try await library.recordBuild(id: projectID, result: ProjectBuildRecord(result: result))
         } catch {
             pendingBuildRecord = (projectID, ProjectBuildRecord(result: result))
-            saveError = "Не удалось сохранить результат сборки: \(error.localizedDescription)"
+            saveError = "Could not save the build result: \(error.localizedDescription)"
         }
         // The library keeps the last build per project, which cannot answer
         // "how much have you actually run". This is the counted record the

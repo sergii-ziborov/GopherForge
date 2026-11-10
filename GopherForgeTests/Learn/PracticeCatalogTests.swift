@@ -65,10 +65,18 @@ final class PracticeCatalogTests: XCTestCase {
 
     func testEveryUnitContributesSomethingToPractise() {
         for unit in GoCourseCatalog.units {
-            XCTAssertFalse(
-                PracticeCatalog.items(forUnit: unit.id).isEmpty,
-                "\(unit.id) offers nothing to practise"
-            )
+            if PracticeCatalog.items(forUnit: unit.id).isEmpty {
+                // Reading-only branches exercise their authored knowledge checks
+                // inside each lesson, rather than in the compiler Practice bank.
+                XCTAssertFalse(unit.teachingLessons.isEmpty, unit.id)
+                for lesson in unit.teachingLessons {
+                    guard case .reading = lesson.task else { XCTFail("\(lesson.id) lacks practice"); continue }
+                    let reading = ReadingLessonCatalog.reading(for: lesson.id)
+                    XCTAssertFalse(reading?.question.isEmpty ?? true, lesson.id)
+                    XCTAssertEqual(reading?.wrongAnswers.count, 2, lesson.id)
+                    XCTAssertFalse(reading?.reviewAnswer.isEmpty ?? true, lesson.id)
+                }
+            }
         }
     }
 

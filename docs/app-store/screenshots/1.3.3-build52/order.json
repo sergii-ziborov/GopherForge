@@ -1,0 +1,58 @@
+{
+  "version": "1.3.3",
+  "build": 52,
+  "replacesInDraft": {
+    "03-course.png": "course-overview",
+    "12-playground.png": "named-cursor-portrait"
+  },
+  "profiles": {
+    "APP_IPHONE_58": [
+      {
+        "index": 3,
+        "file": "docs/app-store/screenshots/1.3.3-build52/iphone61-course-overview-build52.png",
+        "sha256": "9c78d7000eccbd7a4e83626c3cb8f10baaea46f0186196cd3b6ec782db351de4",
+        "assetId": "0a000019-5e3c-8faf-8023-c83d7d3a015e"
+      },
+      {
+        "index": 8,
+        "file": "docs/app-store/screenshots/1.3.3-build52/iphone61-named-cursor-portrait-build52.png",
+        "sha256": "5c6d78cd16deeb9d3850d0954f8bcd63741f8c6b028bf9a01e74127c6b9d064f",
+        "assetId": "18000019-5e3c-8faf-8011-1a43fa5d3f3a"
+      }
+    ],
+    "APP_IPAD_PRO_3GEN_129": [
+      {
+        "index": 3,
+        "file": "docs/app-store/screenshots/1.3.3-build52/ipad13-course-overview-build52.png",
+        "sha256": "e9db13686973e6f56a285f3a66295e9e442cd8297c8f699ea2f304717fc183da",
+        "assetId": "95000019-5e3c-8faf-801a-32978d83dfe8"
+      },
+      {
+        "index": 8,
+        "file": "docs/app-store/screenshots/1.3.3-build52/ipad13-named-cursor-portrait-build52.png",
+        "sha256": "d90e6381894e3c63916833d37d1f89e914a35c09aaa25ea753e2f960b16c9219",
+        "assetId": "39800019-5e3c-8faf-803f-73e67bc7a05d"
+      }
+    ],
+    "APP_IPHONE_67": [
+      {
+        "index": 3,
+        "file": "docs/app-store/screenshots/1.3.3-build52/iphone69-course-overview-build52.png",
+        "sha256": "7ca1cc16accedeadc133faed5fa536bfe328238c733748708f58de7ed9464077",
+        "assetId": "79800019-5e3c-8faf-8009-f111d3f8ba70"
+      },
+      {
+        "index": 8,
+        "file": "docs/app-store/screenshots/1.3.3-build52/iphone69-named-cursor-portrait-build52.png",
+        "sha256": "a3c4b6fe2e89d85e21af81164e41bc2758871ebb989d4d1986f5fcb1c710bd0f",
+        "assetId": "dc800019-5e3c-8faf-8005-c029b5cc9e82"
+      }
+    ]
+  },
+  "inheritedOtherProfiles": [
+    "iphone-6.3",
+    "iphone-6.5",
+    "iphone-duo"
+  ],
+  "publicScreenshotManifestUnchanged": "docs/app-store/screenshot-order.json"
+}

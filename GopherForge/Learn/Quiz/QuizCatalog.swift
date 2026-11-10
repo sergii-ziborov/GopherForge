@@ -2,6 +2,7 @@ import Foundation
 
 /// Every quiz, keyed by the unit it closes.
 enum QuizCatalog {
+    #if LESSON_CATALOG_EXPORT
     static let all: [Quiz] = [
         QuizCatalogCore.core,
         QuizCatalogTypes.structs,
@@ -13,6 +14,10 @@ enum QuizCatalog {
         QuizCatalogConcurrency.modules,
         QuizCatalogConcurrency.standardLibrary,
     ]
+
+    #else
+    static var all: [Quiz] { CourseLibrary.shared.packages.flatMap { $0.practice.quizzes } }
+    #endif
 
     static func quiz(forUnit unitID: String) -> Quiz? {
         all.first { $0.unitID == unitID }

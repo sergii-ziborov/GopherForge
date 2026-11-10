@@ -7,9 +7,20 @@ enum ReviewMatchCatalog {
     static let minimumRounds = 3
     static let maximumRounds = 5
 
+    #if LESSON_CATALOG_EXPORT
     static let rounds: [MatchingDrill] = [
         core, collections, types, errors, concurrency, tour, stdlib,
     ]
+
+    #else
+    static var rounds: [MatchingDrill] { CourseLibrary.shared.packages.flatMap { $0.practice.reviewRounds } }
+    static var additionalPairs: [MatchingPair] { CourseLibrary.shared.packages.flatMap { $0.practice.reviewPairs } }
+    static var core: MatchingDrill { board("review.core") }
+    static var collections: MatchingDrill { board("review.collections") }
+    private static func board(_ id: String) -> MatchingDrill {
+        rounds.first { $0.id == id } ?? MatchingDrill(id: id, title: "Download course", subtitle: "", unitID: "core", pairs: [])
+    }
+    #endif
 
     static var allPairs: [MatchingPair] {
         rounds.flatMap(\.pairs) + additionalPairs + ReadingLessonCatalog.all.map {
@@ -86,6 +97,7 @@ enum ReviewMatchCatalog {
         return Array(shuffle(boards).prefix(maximumRounds))
     }
 
+    #if LESSON_CATALOG_EXPORT
     // MARK: - Boards
 
     static let core = MatchingDrill(
@@ -426,4 +438,5 @@ enum ReviewMatchCatalog {
             ),
         ]
     )
+    #endif
 }

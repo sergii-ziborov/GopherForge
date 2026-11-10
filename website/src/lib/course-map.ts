@@ -51,11 +51,12 @@ export const directions = [
     id: "tooling",
     title: "Around Go",
     description:
-      "The command line, containers, databases and coding agents. Real commands, bounded services and evidence-driven Go workflows.",
+      "The command line, containers, DevOps, databases and coding agents. Real commands, bounded services and evidence-driven Go workflows.",
     units: [
       "operations",
       "containers",
       "kubernetes",
+      "devops",
       "datastores",
       "sql",
       "gin",

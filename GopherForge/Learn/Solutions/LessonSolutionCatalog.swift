@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// A complete, compilable answer for every lesson that asks for code.
@@ -164,3 +165,5 @@ enum LessonSolutionCatalog {
         """,
     ]
 }
+
+#endif

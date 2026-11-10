@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 extension LessonHintCatalog {
@@ -76,3 +77,5 @@ extension LessonHintCatalog {
         entry("stdlib.image", hint: "Bounds is image.Rect(0, 0, W, H). At returns C.", nuance: "image.Image is three methods. A PNG file and your Solid both satisfy it."),
     ]
 }
+
+#endif

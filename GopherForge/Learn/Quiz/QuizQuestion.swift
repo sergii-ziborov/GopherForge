@@ -4,7 +4,7 @@ import Foundation
 ///
 /// Unit quizzes author four alternatives. Fix mistakes keeps the right answer
 /// and two distractors. Every question includes the rule behind its answer.
-struct QuizQuestion: Identifiable, Equatable, Sendable {
+struct QuizQuestion: Codable, Identifiable, Equatable, Sendable {
     let id: String
     /// The question, in plain words.
     let prompt: String
@@ -26,7 +26,7 @@ struct QuizQuestion: Identifiable, Equatable, Sendable {
 }
 
 /// The questions that close a unit.
-struct Quiz: Identifiable, Equatable, Sendable {
+struct Quiz: Codable, Identifiable, Equatable, Sendable {
     /// Enough to be evidence, few enough to finish in one sitting.
     static let maximumQuestions = 8
     /// Long options are unreadable on a phone at a glance, and a glance is what

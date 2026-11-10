@@ -8,6 +8,7 @@ import Foundation
 /// programmer translating habits rather than meeting variables for the first
 /// time.
 enum GoCourseCatalog {
+    #if LESSON_CATALOG_EXPORT
     private static let originalUnits: [CourseUnit] = [
         CourseUnitCore.unit,
         // Types you declare come straight after the basics: everything below
@@ -64,6 +65,9 @@ enum GoCourseCatalog {
         ReadingLessonCatalog.unit("kubernetes", title: "Around Go: Kubernetes",
             summary: "Contexts, deployments, logs, services, configuration, probes and rollbacks.",
             note: "Start with the context lesson and a disposable development cluster. Examples keep cluster and namespace explicit; replace placeholder names and images before use."),
+        ReadingLessonCatalog.unit("devops", title: "Around Go: DevOps and reliability",
+            summary: "Operational CLIs, reconciliation, verified delivery, SLOs, incidents and data-safe recovery.",
+            note: "Begin with command line, containers and Kubernetes. Go models run locally; real infrastructure, process and monitoring exercises need your own disposable native environment."),
         ReadingLessonCatalog.unit("datastores", title: "Around Go: MongoDB and Redis",
             summary: "Clients, queries, atomic writes, caching, streams and behavior under load.",
             note: "Read worked native-service examples here. Run them against an isolated development database on your own machine; these lessons do not add network sockets to the app sandbox."),
@@ -83,6 +87,10 @@ enum GoCourseCatalog {
             summary: "Use Codex, Claude Code and Cursor with concrete contracts, repository context and meaningful checks.",
             note: "Ordinary projects stay local. The separate development Playground adds explicit opt-in MCP sharing; read the guide for local execution and provider boundaries."),
     ]
+
+    #else
+    static var units: [CourseUnit] { CourseLibrary.shared.packages.flatMap(\.units) }
+    #endif
 
     static var lessons: [Lesson] {
         units.flatMap(\.lessons)
@@ -131,7 +139,11 @@ enum GoCourseCatalog {
     /// something to build, they live in Practice, and ending a unit by dropping
     /// someone into one would be asking a question nobody walked them to.
     static func lesson(after lessonID: String) -> Lesson? {
+        #if LESSON_CATALOG_EXPORT
         let ordered = units.flatMap(\.teachingLessons)
+        #else
+        let ordered = CourseLibrary.shared.packages.first { $0.units.contains { $0.lessons.contains { $0.id == lessonID } } }?.units.flatMap(\.teachingLessons) ?? []
+        #endif
         guard let index = ordered.firstIndex(where: { $0.id == lessonID }),
               ordered.indices.contains(index + 1)
         else {

@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Verified answers for the Tour of Go lessons added after the first course.
@@ -244,3 +245,5 @@ extension LessonSolutionCatalog {
         """,
     ]
 }
+
+#endif

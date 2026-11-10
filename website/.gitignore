@@ -4,3 +4,6 @@ out/
 .env*
 !.env.example
 *.tsbuildinfo
+
+# Generated from the pinned native Go artifact. See scripts/prepare-go-browser.py.
+/public/toolchain/*

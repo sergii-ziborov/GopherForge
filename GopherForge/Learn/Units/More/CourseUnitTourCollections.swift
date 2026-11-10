@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Pages from A Tour of Go's "More types" module the collections unit skipped:
@@ -270,3 +271,5 @@ extension CourseUnitCollections {
         """
     )
 }
+
+#endif

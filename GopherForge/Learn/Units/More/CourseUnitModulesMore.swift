@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Two more for modules: what a package is called, and what init is for.
@@ -82,3 +83,5 @@ extension CourseUnitModules {
         idiomaticSolution: nil
     )
 }
+
+#endif

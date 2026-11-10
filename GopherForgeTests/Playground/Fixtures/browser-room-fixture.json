@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.go": "package main\n// é 👩‍💻 / source\nfunc main() {}\n",
+    "go.mod": "module playground\n\ngo 1.27.1\n"
+  },
+  "secret": "wXoHXW7FETpAqz6BoUMV_QL38c6SFryEVh88pBwSQd4",
+  "packet": {
+    "iv": "DDisxKZQn_I_F6Zb",
+    "data": "eMMjVZ8QfWM7yDeHRn5lkgfR7LV-BBjS1YFT5-HB-51Xh9OrqL-mqkfHHkfbX09G7Lle5TMJbFKYG_kotieidkCrahOB4L1uBj62syCjZF0-THneZT7rX8DUGQP8J-gHB_wcw-AXOslVSjGSMZ8963FGHn0u6gaNIrkjrmJLNpaR8QEAuJHC3CQJWDOCqmovrdcKzurBuq7lnVS0pxkXUvNJzTYHdv0xSnyuakfexamodmo1SX-_HXFrx57XI_kgX6vGg3wykeLlOvyKpHjZgPgtbSYVAMSRWRgjIbeJcvptu7vWRIWbB5sWhI8ydvqflUT4ZTGcOaD8EF7o8UK219X41cs7XKmd6fkuv8LsqteWscu9MDNz3ollt0loATmb5Cqjb8XN1P-pf30BPQzrpPGDC_EQWeACh0b4dAWsPSraC_QkPwECmhoKmoEx"
+  },
+  "presence": {
+    "iv": "n1miouy4kA2zsvcN",
+    "data": "buXJNk_AOqGIaSxBSO-e9VOC6Nmz4BV4NeDVnDbPisyOcB8nm9-a"
+  },
+  "sourceHash": "cab9e3c16bf034251bc3d5277f4396c991735bcb8fc87cf19f8c975cc8449b1d",
+  "state": "AQrll8vyBwAnAQdlbnRyaWVzJDY2YmZkOTBiLTNkYWQtNGUyZC1iMzg0LTBiODc3MmZmZTAzZAEoAOWXy_IHAARwYXRoAXcHbWFpbi5nbycA5ZfL8gcABHRleHQCBADll8vyBwI4cGFja2FnZSBtYWluCi8vIGXMgSDwn5Gp4oCN8J-SuyAvIHNvdXJjZQpmdW5jIG1haW4oKSB7fQooAOWXy_IHAAdkZWxldGVkAXknAQdlbnRyaWVzJGQ0OTIyYTRlLWE4NjktNDYzMi05OGYyLWM4ZmUxYmMzNjA1MAEoAOWXy_IHNQRwYXRoAXcGZ28ubW9kJwDll8vyBzUEdGV4dAIEAOWXy_IHNx1tb2R1bGUgcGxheWdyb3VuZAoKZ28gMS4yNy4xCigA5ZfL8gc1B2RlbGV0ZWQBeQA"
+}

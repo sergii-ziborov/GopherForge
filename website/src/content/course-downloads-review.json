@@ -1,0 +1,17 @@
+{
+  "reviewedOn": "2026-11-07",
+  "changedLessons": [
+    "devops.delivery-loop",
+    "devops.iam-boundaries",
+    "devops.iac-state",
+    "devops.network-evidence"
+  ],
+  "changedUnits": [
+    "devops"
+  ],
+  "teachingLessons": 229,
+  "readings": 182,
+  "challenges": 22,
+  "units": 29,
+  "terminalLabs": 6
+}

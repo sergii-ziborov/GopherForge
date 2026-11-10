@@ -9,7 +9,7 @@ struct MistakeReviewQuestion: Identifiable, Equatable, Sendable {
 /// Reuse authored explanations and distractors, with exactly three answers.
 /// Matching remains on Review; this catalog asks one question at a time.
 enum MistakeReviewCatalog {
-    static let all: [MistakeReviewQuestion] = {
+    static var all: [MistakeReviewQuestion] {
         var questions = QuizCatalog.all.flatMap { quiz in
             quiz.questions.map { MistakeReviewQuestion(question: $0, unitID: quiz.unitID) }
         } + diagnosticQuestions + ReadingLessonCatalog.all.map { reading in
@@ -50,7 +50,7 @@ enum MistakeReviewCatalog {
                 explanation: source.explanation, conceptTag: source.conceptTag
             ), unitID: item.unitID)
         }
-    }()
+    }
 
     static func pendingQuestions(
         concepts: [String], history: [MistakeReviewAttempt]

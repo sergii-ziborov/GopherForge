@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Two more for interfaces: asking what is inside one, and embedding.
@@ -231,3 +232,5 @@ extension CourseUnitInterfaces {
         """
     )
 }
+
+#endif

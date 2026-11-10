@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Quizzes for the first half of the course.
@@ -205,3 +206,5 @@ enum QuizCatalogCore {
         ]
     )
 }
+
+#endif

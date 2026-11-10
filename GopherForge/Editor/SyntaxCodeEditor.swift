@@ -44,6 +44,8 @@ struct SyntaxCodeEditor: UIViewRepresentable {
     var executionLine: Int?
     var onToggleBreakpoint: ((Int) -> Void)?
     var isReadOnly = false
+    var peerCursors: [PlaygroundPeerCursor] = []
+    var onSelectionChange: ((NSRange) -> Void)?
 
     /// End-of-file breathing room belongs to the text, not a fixed bottom
     /// panel. Embedded snippets keep their natural height inside the lesson.
@@ -132,6 +134,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         context.coordinator.gutter = editor.gutter
         context.coordinator.editor = editor
         editor.gutter.setNeedsDisplay()
+        editor.remoteCursors = peerCursors
 
         let usesPresentationAccessory = externalKeyboardAccessory || !softwareKeyboardAccessoryEnabled
         if context.coordinator.appliedPresentationAccessory != usesPresentationAccessory {
@@ -246,6 +249,7 @@ struct SyntaxCodeEditor: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
             reportCaretLine(in: textView)
+            parent.onSelectionChange?(textView.selectedRange)
             editor?.updateTextWidth()
             gutter?.setNeedsDisplay()
             // Typing is the one path where SwiftUI cannot ask for a
@@ -290,12 +294,14 @@ struct SyntaxCodeEditor: UIViewRepresentable {
 
         func textViewDidChangeSelection(_ textView: UITextView) {
             reportCaretLine(in: textView)
+            parent.onSelectionChange?(textView.selectedRange)
         }
 
         /// Only the gutter: re-measuring the longest line on every scroll
         /// frame would lay the whole file out again for nothing.
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             gutter?.setNeedsDisplay()
+            editor?.updatePeerCursors()
         }
 
         /// The line the caret is on, and its text, which the completion and the

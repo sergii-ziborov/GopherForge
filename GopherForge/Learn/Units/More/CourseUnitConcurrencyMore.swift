@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Two more for concurrency: when a mutex beats a channel, and the pool shape.
@@ -225,3 +226,5 @@ extension CourseUnitConcurrency {
         """
     )
 }
+
+#endif

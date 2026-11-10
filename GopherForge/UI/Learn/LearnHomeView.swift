@@ -14,6 +14,7 @@ struct LearnHomeView: View {
     /// the app was relaunched.
     @Environment(LearnProgress.self) private var progress
     @AppStorage("learning.lastArea.v1") private var learningTab = 0
+    @State private var downloads = CourseDownloadsModel.shared
     @State private var openedScreen: LaunchOptions.Screen?
     /// Held by identifier rather than by value: a `Lesson` carries its starter
     /// source and its hidden test, and a navigation destination wants
@@ -24,7 +25,7 @@ struct LearnHomeView: View {
     private var stats: LearnerStats { progress.stats }
     private var mastery: [ConceptMastery] { progress.mastery }
 
-    private var units: [CourseUnit] { GoCourseCatalog.units }
+    private var units: [CourseUnit] { GoCourseCatalog.units.filter { !["operations", "containers", "kubernetes", "devops"].contains($0.id) } }
 
     private var teachingLessons: [Lesson] {
         units.flatMap(\.teachingLessons)
@@ -36,8 +37,12 @@ struct LearnHomeView: View {
 
     /// Return to the last opened lesson, including material outside the first
     /// unfinished unit. New learners start at the first unfinished lesson.
+    private var resumeInThisCourse: Lesson? {
+        guard let lesson = progress.resumeLesson, teachingLessons.contains(where: { $0.id == lesson.id }) else { return nil }; return lesson
+    }
+
     private var nextLesson: Lesson? {
-        progress.resumeLesson ?? teachingLessons.first { !completed.contains($0.id) } ?? teachingLessons.first
+        resumeInThisCourse ?? teachingLessons.first { !completed.contains($0.id) } ?? teachingLessons.first
     }
 
     /// The unit the path marks as "you are here".
@@ -48,18 +53,26 @@ struct LearnHomeView: View {
     }
 
     var body: some View {
+        let _ = downloads.revision
         VStack(spacing: 0) {
             Picker("Learning area", selection: $learningTab) {
                 Text("Course").tag(0)
                 Text("Interview").tag(1)
+                Text("DevOps").tag(2)
             }
             .pickerStyle(.segmented)
             .padding(.horizontal, 18).padding(.vertical, 8)
             .accessibilityIdentifier("learn.area")
+            NavigationLink { CourseDownloadsView() } label: {
+                Label("Course downloads", systemImage: "arrow.down.circle").font(.callout.weight(.semibold))
+            }.padding(.vertical, 6).accessibilityIdentifier("learn.downloads")
             NavigationLink { LearningShareView() } label: {
                 Label("Share progress", systemImage: "square.and.arrow.up").font(.caption)
             }.padding(.bottom, 6).accessibilityIdentifier("learn.shareProgress")
-            if learningTab == 1 { InterviewPrepView() } else { course }
+            if learningTab == 2 { DevOpsHomeView() }
+            else if learningTab == 1 {
+                if downloads.library.isInstalled("interview") { InterviewPrepView() } else { CourseDownloadPrompt(courseID: "interview") }
+            } else if units.isEmpty { CourseDownloadPrompt(courseID: "go") } else { course }
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
@@ -84,7 +97,7 @@ struct LearnHomeView: View {
                     unitCount: units.count,
                     verifiedCount: progress.compilerVerified.count,
                     isFinished: doneCount == teachingLessons.count && !teachingLessons.isEmpty,
-                    resumeTitle: progress.resumeLesson?.title,
+                    resumeTitle: resumeInThisCourse?.title,
                     onContinue: { openedLessonID = nextLesson?.id }
                 )
 

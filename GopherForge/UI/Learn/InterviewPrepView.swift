@@ -4,7 +4,7 @@ struct InterviewPrepView: View {
     @Environment(LearnProgress.self) private var progress
     @AppStorage("interview.preparation.selfAssessment.v1") private var assessment = "{}"
     private var marks: [String: String] { InterviewPresentation.marks(from: assessment) }
-    private let bank = InterviewPrepBank.shared
+    private var bank: InterviewPrepBank { InterviewPrepBank.shared }
     @State private var topic = ""
     @State private var level = 0
     @State private var query = ""
@@ -241,7 +241,7 @@ private struct InterviewQuestionJourney: View {
             let status = mark == "understood" ? "Understood" : mark == "revisit" ? "Revisit" : "Not marked"
             return CoursePathItem(
                 id: question.id, title: question.title,
-                subtitle: "\(bank.levels[question.level - 1]) · \(bank.topics.first { $0.id == question.topic }?.title ?? question.topic)",
+                subtitle: "\((bank.levels.indices.contains(question.level - 1) ? bank.levels[question.level - 1] : "Interview")) · \(bank.topics.first { $0.id == question.topic }?.title ?? question.topic)",
                 badge: saved ? "Saved place · \(status)" : status,
                 symbol: mark == "revisit" ? "arrow.counterclockwise" : "questionmark",
                 state: mark == "understood" ? .done : (saved ? .next : .upcoming),
@@ -289,7 +289,7 @@ struct InterviewPrepDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                Text(InterviewPrepBank.shared.levels[question.level - 1]).font(.caption.bold()).foregroundStyle(.secondary)
+                Text((InterviewPrepBank.shared.levels.indices.contains(question.level - 1) ? InterviewPrepBank.shared.levels[question.level - 1] : "Interview")).font(.caption.bold()).foregroundStyle(.secondary)
                 Text(question.title).font(.largeTitle.bold())
                 Text(question.prompt).font(.title3)
                 if let demo = InterviewPrepBank.shared.demonstrations.first(where: { $0.id == question.id }) {

@@ -5,12 +5,12 @@ import type { Metadata } from "next";
 import { interview } from "@/lib/interview";
 import { InterviewIndex } from "@/components/InterviewIndex";
 import { EditorialIllustration } from "@/components/EditorialIllustration";
-export const metadata: Metadata = {
-  title: "Go interview preparation — junior to expert",
-  description:
-    "132 worked Go interview guides: algorithms, concurrency, system design, Gin, security, blockchain, MongoDB, Redis, Kubernetes and coding agents. Free without registration.",
-  alternates: { canonical: "/interview" },
-};
+import { pageMetadata } from "@/lib/page-metadata";
+export const metadata: Metadata = pageMetadata(
+  "/interview",
+  "Go interview preparation — junior to expert",
+  `${interview.questions.length} worked Go interview guides: algorithms, concurrency, system design, databases, security and Kubernetes. Free explanations and interactive algorithm labs.`,
+);
 export default function InterviewPage() {
   return (
     <section className="page learn-map-page">

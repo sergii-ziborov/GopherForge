@@ -36,6 +36,7 @@ enum CourseUnitStyle {
         case "patterns-behavioral": "arrow.triangle.branch"
         case "patterns-go": "arrow.triangle.2.circlepath"
         case "operations": "terminal"
+        case "devops": "wrench.and.screwdriver"
         case "datastores": "externaldrive.connected.to.line.below"
         case "sql": "externaldrive"
         case "ai": "sparkles"

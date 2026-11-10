@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit C — interfaces without inheritance.
@@ -165,3 +166,5 @@ enum CourseUnitInterfaces {
         """
     )
 }
+
+#endif

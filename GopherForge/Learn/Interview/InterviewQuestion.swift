@@ -10,7 +10,7 @@ import Foundation
 ///
 /// Every question also names the answer that sounds right and is not, because
 /// that is usually the one that arrives first.
-struct InterviewQuestion: Identifiable, Equatable, Sendable {
+struct InterviewQuestion: Codable, Identifiable, Equatable, Sendable {
     let id: String
     let unitID: String
     /// The question, worded the way somebody would ask it across a table.
@@ -26,7 +26,8 @@ struct InterviewQuestion: Identifiable, Equatable, Sendable {
     let conceptTag: String
 }
 
-enum InterviewCatalog {
+#if LESSON_CATALOG_EXPORT
+enum InterviewCatalog  {
     static func questions(forUnit unitID: String) -> [InterviewQuestion] {
         all.filter { $0.unitID == unitID }
     }
@@ -261,3 +262,5 @@ enum InterviewCatalog {
         ),
     ]
 }
+
+#endif

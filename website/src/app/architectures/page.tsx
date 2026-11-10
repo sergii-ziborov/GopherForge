@@ -1,13 +1,13 @@
+import { pageMetadata } from "@/lib/page-metadata";
 import type { Metadata } from "next";
 import { lessons } from "@/lib/course";
 import { ArchitectureExplorer } from "@/components/ArchitectureExplorer";
 import { EditorialIllustration } from "@/components/EditorialIllustration";
-export const metadata: Metadata = {
-  title: "Compare Go architectures",
-  description:
-    "Compare monoliths, hexagonal, Clean/Onion, DDD, CQRS, event-driven systems and more for three project scenarios, with costs and tradeoffs.",
-  alternates: { canonical: "/architectures" },
-};
+export const metadata: Metadata = pageMetadata(
+  "/architectures",
+  "Compare Go architectures",
+  "Compare monoliths, hexagonal, Clean/Onion, DDD, CQRS, event-driven systems and more for three project scenarios, with costs and tradeoffs.",
+);
 export default function ArchitectureComparison() {
   const styles = lessons
     .filter(

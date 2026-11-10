@@ -28,6 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/updates",
     "/guide",
+    "/downloads",
     "/guide/mcp",
     "/playground",
     "/support",
@@ -45,8 +46,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paths.map((path) => ({
       url: origin + path,
-      lastModified: ["/guide/mcp", "/playground"].includes(path)
-        ? "2026-10-29"
+      lastModified: [
+        "/downloads",
+        "/guide/mcp",
+        "/playground",
+        "/privacy",
+        "/terms",
+      ].includes(path)
+        ? releases.websiteUpdatedOn
         : ["/learn", "/interview"].includes(path)
           ? curriculumUpdatedOn
           : path === "/news/feed"
@@ -58,7 +65,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
               : path === "/guide"
                 ? guide.updated
                 : path === ""
-                  ? [releases.checkedOn, news[0].modifiedAt].sort().at(-1)!
+                  ? [
+                      releases.websiteUpdatedOn,
+                      releases.checkedOn,
+                      news[0].modifiedAt,
+                    ]
+                      .sort()
+                      .at(-1)!
                   : ["/updates", "/support"].includes(path)
                     ? releases.checkedOn
                     : ["/learn", "/interview"].includes(path)

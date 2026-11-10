@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit B — slices, maps, strings.
@@ -308,3 +309,5 @@ enum CourseUnitCollections {
         """
     )
 }
+
+#endif

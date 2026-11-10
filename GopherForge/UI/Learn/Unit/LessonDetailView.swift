@@ -75,6 +75,15 @@ struct LessonDetailView: View {
                 if lesson.requiresCompiler { draftControls }
                 taskSection
 
+                if case .compile = lesson.task {
+                    NavigationLink {
+                        LessonCheckExperimentView(lesson: lesson, source: model.editorText)
+                            .onAppear { model.noteHintRead() }
+                    } label: {
+                        Label("Inspect and edit verification source", systemImage: "doc.text.magnifyingglass")
+                    }.accessibilityIdentifier("lesson.verificationSource")
+                }
+
                 if lesson.requiresCompiler, !model.canCheck, !model.isChecking {
                     Label(model.toolchainDetail, systemImage: "exclamationmark.triangle")
                         .font(.caption)
@@ -462,5 +471,43 @@ struct LessonVerdictView: View {
             GopherForgeTheme.statusColor(succeeded: result.succeeded).opacity(0.10),
             in: RoundedRectangle(cornerRadius: 14, style: .continuous)
         )
+    }
+}
+
+/// Downloaded educational code remains fully inspectable and editable. A
+/// changed test is an experiment, and cannot award an official course pass.
+private struct LessonCheckExperimentView: View {
+    let lesson: Lesson
+    @State private var source: String
+    @State private var tests: String
+    @State private var selectedFile = 0
+    @State private var isRunning = false
+    @State private var result: String?
+    init(lesson: Lesson, source: String) {
+        self.lesson = lesson
+        _source = State(initialValue: source)
+        if case let .compile(_, hiddenTest) = lesson.task { _tests = State(initialValue: hiddenTest) }
+        else { _tests = State(initialValue: "") }
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Inspect the complete lesson check and try an editable copy. Experimental tests do not record course completion.")
+                .font(.caption).foregroundStyle(.secondary)
+            Picker("Source file", selection: $selectedFile) { Text("main.go").tag(0); Text("lesson_test.go").tag(1) }.pickerStyle(.segmented)
+            TextEditor(text: selectedFile == 0 ? $source : $tests)
+                .font(.system(.caption, design: .monospaced)).autocorrectionDisabled().textInputAutocapitalization(.never)
+                .disabled(isRunning).accessibilityIdentifier("lesson.verificationEditor")
+            Button(isRunning ? "Running…" : "Run experimental tests") {
+                isRunning = true
+                let snapshot = GoSourceSnapshot(files: ["go.mod": GoLanguage.module("lesson"), "main.go": source, "lesson_test.go": tests],
+                    packagePattern: ".", entryFile: "main.go", workspaceReuseKey: "lesson.experiment.\(lesson.id)")
+                Task {
+                    let outcome = await WasmGoCompiler().test(project: snapshot)
+                    result = outcome.detail + "\n" + outcome.stdout + "\n" + outcome.stderr
+                    isRunning = false
+                }
+            }.buttonStyle(.bordered).disabled(isRunning)
+            if let result { ScrollView { Text(result).font(.system(.caption, design: .monospaced)).textSelection(.enabled) }.frame(maxHeight: 180) }
+        }.padding().navigationTitle("Verification source").navigationBarTitleDisplayMode(.inline)
     }
 }

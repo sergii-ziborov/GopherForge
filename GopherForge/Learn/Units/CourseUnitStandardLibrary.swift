@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit G — the standard library patterns that replace most dependencies.
@@ -135,3 +136,5 @@ enum CourseUnitStandardLibrary {
         idiomaticSolution: nil
     )
 }
+
+#endif

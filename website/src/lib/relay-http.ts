@@ -2,6 +2,7 @@ import { RelayError, assert } from "./playground-core.ts";
 export const noStore = {
   "Cache-Control": "no-store",
   "Referrer-Policy": "no-referrer",
+  "X-Robots-Tag": "noindex, nofollow",
 };
 const buckets = new Map<string, { count: number; until: number }>();
 export function guardRequest(
@@ -12,9 +13,15 @@ export function guardRequest(
   const origin = request.headers.get("origin"),
     own = new URL(request.url).origin;
   const host = request.headers.get("host");
-  const localOrigin = host && ["127.0.0.1:3064", "localhost:3064"].includes(host) ? "http://" + host : null;
+  const localOrigin =
+    host && /^(?:127\.0\.0\.1|localhost):\d{1,5}$/.test(host)
+      ? "http://" + host
+      : null;
   assert(
-    !origin || origin === own || origin === "https://gopherforge.app" || origin === localOrigin,
+    !origin ||
+      origin === own ||
+      origin === "https://gopherforge.app" ||
+      origin === localOrigin,
     "This origin is not allowed.",
     403,
   );

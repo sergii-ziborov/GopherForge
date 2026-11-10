@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit A — declarations, zero values, functions, control flow.
@@ -203,3 +204,5 @@ enum CourseUnitCore {
         """
     )
 }
+
+#endif

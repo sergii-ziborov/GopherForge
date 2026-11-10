@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Unit E — packages, modules and the commands people keep re-reading.
@@ -142,3 +143,5 @@ enum CourseUnitModules {
         """
     )
 }
+
+#endif

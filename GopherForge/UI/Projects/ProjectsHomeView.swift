@@ -274,7 +274,7 @@ struct ProjectsHomeView: View {
                     workspace.refreshMetadata(from: refreshed)
                 }
             } catch {
-                importFailure = "Не удалось сохранить проект: \(error.localizedDescription)"
+                importFailure = "Could not save the project: \(error.localizedDescription)"
             }
             await reload()
         }

@@ -22,6 +22,10 @@ export async function generateMetadata({
     description: p?.description,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
+      title: p?.title,
+      description: p?.description,
+      url: `/blog/${slug}`,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
       type: "article",
       publishedTime: p ? metadataDate(p.date) : undefined,
       authors: ["Serhii Ziborov"],

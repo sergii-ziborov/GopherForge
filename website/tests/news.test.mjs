@@ -162,13 +162,27 @@ test("sync release record separates the public version from the next native upda
   } else {
     assert.equal(r.next.reviewSubmitted, false);
   }
-  const receipt = await read(
-    `../../docs/releases/${r.public.version}-build${r.public.build}-release.json`,
+  if (r.public.verificationPath) {
+    const verified = await read(`../../${r.public.verificationPath}`);
+    assert.equal(verified.version, r.public.version);
+    assert.equal(verified.storefront, "US");
+    assert.equal(String(verified.price), r.priceUSD);
+    const submitted = await read(`../../${verified.buildEvidence}`);
+    assert.equal(submitted.version, r.public.version);
+    assert.equal(Number(submitted.build), r.public.build);
+  } else {
+    const receipt = await read(
+      `../../docs/releases/${r.public.version}-build${r.public.build}-release.json`,
+    );
+    assert.equal(r.public.version, receipt.version);
+    assert.equal(r.public.build, Number(receipt.build));
+    assert.equal(receipt.state, "READY_FOR_SALE");
+  }
+  assert.ok(
+    r.next.released
+      ? r.next.build === r.public.build
+      : r.next.build > r.public.build,
   );
-  assert.equal(r.public.version, receipt.version);
-  assert.equal(r.public.build, Number(receipt.build));
-  assert.equal(receipt.state, "READY_FOR_SALE");
-  assert.ok(r.next.build > r.public.build);
 });
 
 test("October additions fill unused editions without inventing publication dates", async () => {

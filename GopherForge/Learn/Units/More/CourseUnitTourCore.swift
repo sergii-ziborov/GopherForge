@@ -1,3 +1,4 @@
+#if LESSON_CATALOG_EXPORT
 import Foundation
 
 /// Two pages from A Tour of Go's basics and flow-control modules that the
@@ -89,3 +90,5 @@ extension CourseUnitCore {
         idiomaticSolution: nil
     )
 }
+
+#endif

@@ -81,6 +81,9 @@
                <Test
                   Identifier = "AppStoreScreenshotUITests">
                </Test>
+               <Test
+                  Identifier = "PlaygroundRelease52UITests">
+               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference

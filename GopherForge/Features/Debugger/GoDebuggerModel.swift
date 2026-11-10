@@ -62,7 +62,7 @@ final class GoDebuggerModel {
 
     func selectFrame(_ index: Int) { selectedFrame = index }
 
-    func run(project: GoSourceSnapshot, compiler: WasmGoCompiler, onProgress: @escaping GoBuildProgressHandler, onPause: @escaping @MainActor (GoDebugPause) -> Void) async -> CompilationResult {
+    func run(project: GoSourceSnapshot, compiler: WasmGoCompiler, pauseAtStart: Bool = false, onProgress: @escaping GoBuildProgressHandler, onPause: @escaping @MainActor (GoDebugPause) -> Void) async -> CompilationResult {
         let current = UUID()
         generation = current
         state = .preparing
@@ -86,7 +86,7 @@ final class GoDebuggerModel {
                     bound.formUnion(candidates.filter { $0.line == next.line }.map(\.id))
                 }
             }
-            guard unresolved.isEmpty, !bound.isEmpty else { throw OfflineFrontendError.message("No executable statement for \(unresolved.joined(separator: ", ")). Move the breakpoint to executable Go code.") }
+            guard unresolved.isEmpty, !bound.isEmpty || pauseAtStart else { throw OfflineFrontendError.message("No executable statement for \(unresolved.joined(separator: ", ")). Move the breakpoint to executable Go code.") }
             let debug = GoDebugControl(points: prepared.points, breakpoints: bound) { [weak self] snapshot in
                 Task { @MainActor in
                     guard let self, self.generation == current else { return }
@@ -97,6 +97,7 @@ final class GoDebuggerModel {
                     onPause(snapshot)
                 }
             }
+            if pauseAtStart { debug.resume(step: .into) }
             control = debug
             state = .running
             message = "Source debugger running"

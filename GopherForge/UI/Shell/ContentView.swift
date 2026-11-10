@@ -243,11 +243,11 @@ struct ContentView: View {
                         destination(for: item)
                     } else {
                         NavigationStack { destination(for: item) }
-                            // Reading actions must not sit under the floating
-                            // phone landscape rail. Keep the workspace's own
-                            // full-width layout and Duo handling independent.
+                            // Keep ordinary screens and pushed Playground controls
+                            // clear of the floating phone landscape rail. The
+                            // workspace reserves its own space; Duo stays independent.
                             .padding(.trailing,
-                                item == .learn && usesLandscapeNavigation ? 72 : 0)
+                                item != .build && usesLandscapeNavigation ? 72 : 0)
                             .toolbar(usesLandscapeNavigation ? .hidden : .automatic, for: .tabBar)
                             .accessibilityIdentifier(AccessibilityID.section(item))
                     }
