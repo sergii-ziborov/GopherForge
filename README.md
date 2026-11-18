@@ -363,6 +363,10 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   SWIFT_SUPPRESS_WARNINGS=NO build
 ```
 
+Run the unit tests as a release is checked, in the optimized Gate
+configuration, with `scripts/test_gate.sh`. Debug runs skip the debugger and
+offline-preview checks, which execute the Go toolchain inside WasmKit.
+
 [Build, device installation and tests](docs/BUILDING.md) ·
 [Toolchain design](docs/TOOLCHAIN.md) ·
 [Report an issue](https://github.com/sergii-ziborov/GopherForge/issues)

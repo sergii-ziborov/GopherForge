@@ -6,6 +6,7 @@ import WebKit
 final class OfflineGitHubTests: XCTestCase {
     @MainActor
     func testPinnedGitHubReactAndGoCRUDWorkInsideTheOfflinePreview() async throws {
+        try GuestExecution.requireOptimizedInterpreter()
         // Developer-only fixture. Never a resource or an example in the app.
         let fixtureURL = try TestRepoRoot.url().appending(path: "build/test-fixtures/OfflineGitHubDogs.json")
         guard FileManager.default.fileExists(atPath: fixtureURL.path) else {

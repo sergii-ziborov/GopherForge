@@ -60,6 +60,12 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   SWIFT_SUPPRESS_WARNINGS=NO test
 ```
 
+`scripts/test_gate.sh` runs the unit tests this way, as release checks do; pass
+`-only-testing:…` to narrow it and `GOPHERFORGE_SIMULATOR=<simulator-UUID>` to
+pick the simulator. The debugger and offline-preview checks run the Go toolchain
+inside WasmKit's interpreter and need its optimized build: in Debug they skip
+themselves with that instruction instead of timing out.
+
 The ordinary scheme covers model and UI behavior. Run UI tests sequentially
 when checking keyboard focus. Native Duo posture checks require setting the
 owned simulator's actual orientation and fold in Device Hub. A forced layout

@@ -181,6 +181,10 @@ final class ThirdPartyNoticesTests: XCTestCase {
         XCTAssertTrue(families.contains { $0.heading == "MIT License"
             && $0.components.contains { $0.name.hasPrefix("WasmKit") && $0.licence.contains("MIT") }
         })
+        // The DevOps terminal's parser is a BSD component, not a licence family.
+        XCTAssertTrue(families.contains { $0.heading == "BSD 3-Clause"
+            && $0.components.contains { $0.name.hasPrefix("mvdan.cc/sh") && $0.licence.contains("BSD") }
+        })
         XCTAssertTrue(families.contains { $0.heading.hasPrefix("Apache")
             && $0.components.contains { $0.name.hasPrefix("swift-system") && $0.licence.contains("Apache") }
         })

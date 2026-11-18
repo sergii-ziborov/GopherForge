@@ -45,6 +45,18 @@ with no network. Its own `LICENSE` ships with it at
 
 <https://github.com/google/go-cmp>
 
+### mvdan.cc/sh v3.14.1 (DevOps shell parser)
+
+Copyright © 2016, Daniel Martí. **BSD 3-Clause License.**
+
+The DevOps terminal uses it for POSIX syntax parsing and word expansion. Its
+complete copyright and licence notice ships inside the app at
+`DevOpsShell/PARSER-LICENSE.txt`, and the licence of the Go standard library it
+is compiled with at `DevOpsShell/GO-LICENSE.txt`. The bounded executor, its
+commands and the private virtual filesystem are GopherForge code.
+
+<https://github.com/mvdan/sh/tree/v3.14.1>
+
 ---
 
 ## MIT License
@@ -164,7 +176,3 @@ ecosystem in advance. Each module's own `LICENSE`, `LICENCE` or `NOTICE`
 is vendored with it. Until that file is present, treat the terms as
 **unknown** and do not assume MIT or Apache. GopherForge neither relicenses
 them nor claims any rights in them.
-
-## DevOps shell parser
-
-The bundled GopherForge DevOps shell uses mvdan.cc/sh/v3 v3.14.1 for POSIX syntax parsing and word expansion (BSD 3-Clause). Its complete copyright and licence notice is bundled at DevOpsShell/PARSER-LICENSE.txt; the Go standard-library licence is at DevOpsShell/GO-LICENSE.txt. Source: https://github.com/mvdan/sh/tree/v3.14.1. The bounded executor, commands and private virtual filesystem are GopherForge code.

@@ -1,9 +1,24 @@
 import XCTest
 @testable import GopherForge
 
+/// End-to-end checks that run the bundled Go toolchain inside WasmKit's
+/// interpreter. An unoptimized (Debug) interpreter needs minutes for what the
+/// optimized build that ships does in seconds, so these checks belong to the
+/// Gate configuration (`scripts/test_gate.sh`). In Debug they are skipped with
+/// that instruction instead of failing on a timeout that says nothing about
+/// the app.
+enum GuestExecution {
+    static func requireOptimizedInterpreter() throws {
+        #if DEBUG
+        throw XCTSkip("Runs the Go toolchain inside WasmKit; run it in the optimized Gate configuration: scripts/test_gate.sh")
+        #endif
+    }
+}
+
 @MainActor
 final class GoDebuggerTests: XCTestCase {
     func testRunAutomaticallyChoosesDebuggingAndStepsThroughRealGo() async throws {
+        try GuestExecution.requireOptimizedInterpreter()
         let root = FileManager.default.temporaryDirectory.appending(path: "source-debug-\(UUID().uuidString)")
         let workspace = WorkspaceModel(library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
         let source = """
@@ -62,6 +77,7 @@ final class GoDebuggerTests: XCTestCase {
     }
 
     func testStopReleasesTheGuestAndAnUnusedLocalStillFailsBeforeInstrumentation() async throws {
+        try GuestExecution.requireOptimizedInterpreter()
         let root = FileManager.default.temporaryDirectory.appending(path: "stop-debug-\(UUID().uuidString)")
         let workspace = WorkspaceModel(library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
         defer { workspace.debugger.stop(); try? FileManager.default.removeItem(at: root) }
@@ -88,6 +104,7 @@ final class GoDebuggerTests: XCTestCase {
     }
 
     func testBreakpointInsideAnotherGoroutineHasItsOwnStack() async throws {
+        try GuestExecution.requireOptimizedInterpreter()
         let root = FileManager.default.temporaryDirectory.appending(path: "goroutine-debug-\(UUID().uuidString)")
         let workspace = WorkspaceModel(library: ProjectLibrary(storageURL: root.appending(path: "projects.json")))
         defer { workspace.debugger.stop(); try? FileManager.default.removeItem(at: root) }
