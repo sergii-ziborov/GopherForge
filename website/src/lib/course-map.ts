@@ -59,10 +59,36 @@ export const directions = [
       "devops",
       "datastores",
       "sql",
-      "gin",
-      "blockchain",
-      "security",
       "ai",
     ],
+  },
+  // Dedicated courses (see /courses). Each is also its own app download.
+  {
+    id: "gin",
+    title: "Gin web services",
+    description:
+      "A Gin tutorial from the first route to a tested REST API: binding, validation, middleware, auth, rate limits and streaming.",
+    units: ["gin-foundations", "gin", "gin-project", "gin-data", "gin-edge"],
+  },
+  {
+    id: "blockchain",
+    title: "Blockchain",
+    description:
+      "Hashes, Merkle proofs, signatures and RLP, then Ethereum RPC, fees, transactions, events and key custody.",
+    units: ["blockchain-foundations", "blockchain"],
+  },
+  {
+    id: "security",
+    title: "Security",
+    description:
+      "Authorization, injection, XSS, CSRF, sessions, secrets, encryption, tokens, fuzzing and supply chain.",
+    units: ["security", "security-web", "security-operations"],
+  },
+  {
+    id: "gamedev",
+    title: "Game development",
+    description:
+      "Game loops, Ebitengine structure, input, physics, collisions, pathfinding, procedural worlds and multiplayer.",
+    units: ["gamedev-loop", "gamedev-systems"],
   },
 ] as const;

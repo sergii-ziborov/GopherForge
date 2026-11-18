@@ -74,6 +74,56 @@ final class CourseDownloadsUITests: XCTestCase {
         terminal.name = "terminal-playground-public-course"; terminal.lifetime = .keepAlways; add(terminal)
     }
 
+    /// Reported from TestFlight 1.3.4 (57): after downloading dedicated
+    /// courses on Learn, their cards said "Offline" but the course never
+    /// became a path, so it could not be opened. Each course is downloaded
+    /// from Learn in turn and must open at its first unit right away.
+    func testDedicatedCoursesOpenRightAfterDownloadingOnLearn() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-GopherForgeSection", "learn", "-GopherForgeEmptyCourses"]
+        app.launch()
+        let courses = [("blockchain", "blockchain-foundations", "blockchain.hash-chains"),
+                       ("security", "security", "security.identity-authorization"),
+                       ("gamedev", "gamedev-loop", "gamedev.fixed-timestep")]
+        let titles = ["blockchain": "Blockchain infrastructure in Go", "security": "Secure Go services",
+                      "gamedev": "Game development in Go"]
+        XCTAssertTrue(app.buttons["learn.downloads"].waitForExistence(timeout: 25))
+        app.buttons["learn.downloads"].tap()
+        for (id, _, _) in courses {
+            let manage = app.buttons["courses.manage.\(id)"]
+            let download = app.buttons["courses.download.\(id)"]
+            for _ in 0..<6 where !manage.isHittable && !download.isHittable { app.swipeUp() }
+            if manage.exists {
+                manage.tap()
+                app.buttons["courses.remove.\(id)"].tap()
+                app.buttons["Remove \(titles[id]!)"].tap()
+            }
+            XCTAssertTrue(download.waitForExistence(timeout: 10), id)
+        }
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.segmentedControls["learn.area"].buttons["Course"].tap()
+        for (id, unitID, lessonID) in courses {
+            let download = app.buttons["courses.download.\(id)"]
+            XCTAssertTrue(app.waitForElement(download, scrollingUpTo: 40, timeout: 2), id)
+            download.tap()
+            let unit = app.buttons["unit.\(unitID)"]
+            XCTAssertTrue(unit.waitForExistence(timeout: 90), "\(id) did not become a path: \(app.debugDescription)")
+            XCTAssertFalse(download.exists, "\(id) still offers Download after installing")
+            XCTAssertTrue(app.waitForElement(unit, scrollingUpTo: 10, timeout: 1), id)
+            let opened = XCTAttachment(screenshot: app.screenshot())
+            opened.name = "dedicated-\(id)-path"; opened.lifetime = .keepAlways; add(opened)
+            unit.tap()
+            let lesson = app.buttons["lesson.\(lessonID)"]
+            XCTAssertTrue(app.waitForElement(lesson, scrollingUpTo: 5, timeout: 5), lessonID)
+            lesson.tap()
+            XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 10))
+            app.navigationBars.buttons.firstMatch.tap()
+            app.navigationBars.buttons.firstMatch.tap()
+            XCTAssertTrue(app.segmentedControls["learn.area"].waitForExistence(timeout: 10))
+        }
+    }
+
     /// The playground is a terminal: one prompt, state that carries between
     /// lines, Tab completion, continuation lines and an editor.
     func testTerminalPlaygroundIsAnInteractiveShell() {

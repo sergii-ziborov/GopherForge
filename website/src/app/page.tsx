@@ -49,7 +49,7 @@ export default function Home() {
           </p>
           <p className="small-note">
             Browser Playground: encrypted collaboration and GopherForge MCP.
-            Native encrypted rooms: {releases.beta.version} TestFlight.{" "}
+            Native encrypted rooms: App Store {releases.public.version}.{" "}
             <Link href="/guide/mcp">Connect your AI agent →</Link>
           </p>
         </div>

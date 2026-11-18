@@ -4,7 +4,8 @@ import XCTest
 final class InterviewCurriculumExpansionTests: XCTestCase {
     func testCoverageIsReachableWithIndependentReviewAndNoCompilerClaim() throws {
         XCTAssertEqual(InterviewCurriculumExpansion.lessonIDs.count, 34)
-        let counts = ["system-design": 9, "clean-code-production": 4, "gin": 6, "blockchain": 7, "security": 4]
+        // Dedicated courses later appended readings to gin and blockchain.
+        let counts = ["system-design": 9, "clean-code-production": 4, "gin": 14, "blockchain": 12, "security": 4]
         for (unitID, count) in counts {
             XCTAssertEqual(GoCourseCatalog.unit(id: unitID)?.teachingLessons.count, count, unitID)
         }

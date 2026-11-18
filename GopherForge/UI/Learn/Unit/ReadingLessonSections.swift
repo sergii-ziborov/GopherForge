@@ -38,7 +38,8 @@ struct ReadingLessonSections: View {
             LessonSection(title: "Remember", systemImage: "lightbulb", tint: tint) {
                 LearningProse(text: reading.takeaway)
             }
-            if ["operations", "containers", "kubernetes", "devops", "datastores", "modules", "services"].contains(reading.unitID) {
+            if ["operations", "containers", "kubernetes", "devops", "datastores", "modules", "services",
+                "gin-foundations", "gin", "gin-project", "gin-data", "gin-edge", "blockchain-foundations", "blockchain"].contains(reading.unitID) {
                 Text("Read these examples here; run shell commands, containers and network services in your own development environment.")
                     .font(.footnote).foregroundStyle(.secondary)
             }

@@ -158,7 +158,8 @@ test("sync release record separates the public version from the next native upda
     );
     assert.equal(r.next.version, review.version);
     assert.equal(r.next.build, Number(review.build));
-    assert.equal(review.releaseType, "AFTER_APPROVAL");
+    // MANUAL keeps an approved build unreleased until the owner publishes it.
+    assert.ok(["AFTER_APPROVAL", "MANUAL"].includes(review.releaseType));
   } else {
     assert.equal(r.next.reviewSubmitted, false);
   }

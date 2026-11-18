@@ -1,15 +1,57 @@
 import Link from "next/link";
 import courses from "@/content/course-downloads.json";
+import current from "@/content/course-downloads-1.3.3.json";
 import { pageMetadata } from "@/lib/page-metadata";
 import { Breadcrumbs } from "@/components/StructuredData";
 
 export const metadata = pageMetadata(
   "/downloads",
-  "Complete Go and DevOps Course Downloads",
-  "Download complete GopherForge courses for explicit offline installation: Go, DevOps terminal labs and interview preparation. Includes versioned files and SHA-256 checksums.",
+  "Complete Go, Gin, Security and DevOps Course Downloads",
+  "Download complete GopherForge courses for explicit offline installation: Go, DevOps terminal labs, interview preparation and the dedicated Gin, blockchain, security and game-development courses. Versioned files with SHA-256 checksums.",
 );
 
+type CourseFile = (typeof courses)[number];
+
+function CourseCards({ items }: { items: CourseFile[] }) {
+  return (
+    <div className="download-grid">
+      {items.map((course) => (
+        <section className="download-card" key={course.fileName}>
+          <h3>{course.title}</h3>
+          <p>{course.summary}</p>
+          <p>
+            {course.interviewCount > 0
+              ? `${course.interviewCount} interview guides and 12 algorithm walkthroughs.`
+              : `${course.unitCount} units, ${course.teachingCount} teaching lessons${course.challengeCount ? `, ${course.challengeCount} prediction challenges` : ""}${course.labCount ? ` and ${course.labCount} terminal labs` : ""}.`}
+          </p>
+          <p>
+            {(course.byteCount / 1024 / 1024).toFixed(2)} MiB · revision{" "}
+            {course.revision}
+          </p>
+          <p>
+            <a
+              className="button primary"
+              href={`/downloads/courses/${course.fileName}`}
+              download
+            >
+              Download complete course
+            </a>
+          </p>
+          <p>
+            <a href={`/downloads/courses/${course.fileName}.sha256`}>
+              SHA-256 checksum
+            </a>
+          </p>
+          <code style={{ overflowWrap: "anywhere" }}>{course.sha256}</code>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 export default function Downloads() {
+  const currentFiles = new Set(current.map((c) => c.fileName));
+  const upcoming = courses.filter((c) => !currentFiles.has(c.fileName));
   return (
     <div className="page downloads-page">
       <Breadcrumbs
@@ -28,38 +70,24 @@ export default function Downloads() {
         private Internal QA TestFlight. The public 1.3.2 app uses its bundled
         curriculum. The Go compiler stays part of the app.
       </p>
-      <div className="download-grid">
-        {courses.map((course) => (
-          <section className="download-card" key={course.id}>
-            <h2>{course.title}</h2>
-            <p>{course.summary}</p>
-            <p>
-              {course.interviewCount > 0
-                ? `${course.interviewCount} interview guides and 12 algorithm walkthroughs.`
-                : `${course.unitCount} units, ${course.teachingCount} teaching lessons, ${course.challengeCount} prediction challenges${course.labCount ? ` and ${course.labCount} terminal labs` : ""}.`}
-            </p>
-            <p>
-              {(course.byteCount / 1024 / 1024).toFixed(2)} MiB · revision{" "}
-              {course.revision}
-            </p>
-            <p>
-              <a
-                className="button primary"
-                href={`/downloads/courses/${course.fileName}`}
-                download
-              >
-                Download complete course
-              </a>
-            </p>
-            <p>
-              <a href={`/downloads/courses/${course.fileName}.sha256`}>
-                SHA-256 checksum
-              </a>
-            </p>
-            <code style={{ overflowWrap: "anywhere" }}>{course.sha256}</code>
-          </section>
-        ))}
-      </div>
+      <h2>For 1.3.3</h2>
+      <p>
+        Import these files into 1.3.3; the app accepts only the revisions in
+        its own pinned catalog.
+      </p>
+      <CourseCards items={current} />
+      {upcoming.length > 0 && (
+        <>
+          <h2>With the next app build</h2>
+          <p>
+            The dedicated <Link href="/courses">Gin, blockchain, security and
+            game-development courses</Link> and the matching Go course revision
+            install in 1.3.4 (58), now in private TestFlight and App Review. Every lesson is already
+            readable on the web.
+          </p>
+          <CourseCards items={upcoming} />
+        </>
+      )}
       <section className="reading-section download-instructions">
         <h2>Install, export and remove</h2>
         <p>

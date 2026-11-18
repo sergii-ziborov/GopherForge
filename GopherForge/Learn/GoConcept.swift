@@ -99,6 +99,42 @@ enum GoConcept {
     /// Each new environment topic has its own review evidence.
     static let devopsLessonTags: Set<String> = ["devops.delivery-loop", "devops.safe-cli", "devops.reconciliation", "devops.delivery-artifacts", "devops.slo-burn", "devops.incident-recovery", "devops.iam-boundaries", "devops.iac-state", "devops.network-evidence"]
 
+    /// Readings of the dedicated Gin, blockchain, security and game-development
+    /// courses. Each is its own review concept, like the DevOps readings.
+    static let specializedCourseTags: Set<String> = [
+        "gin.first-service", "gin.path-parameters", "gin.query-and-forms", "gin.route-groups",
+        "gin.json-responses", "gin.binding-sources", "gin.custom-validators", "gin.middleware-basics",
+        "gin.file-uploads", "gin.html-templates", "gin.not-found-and-methods",
+        "gin.auth-middleware", "gin.cors", "gin.rate-limiting", "gin.request-logging",
+        "gin.timeouts-cancellation", "gin.streaming-sse", "gin.metrics-health", "gin.conditional-requests",
+        "gin.project-layout", "gin.handler-dependencies", "gin.crud-resource", "gin.pagination-filtering",
+        "gin.problem-details", "gin.idempotency-keys", "gin.optimistic-concurrency", "gin.api-tests",
+        "gin.config-startup",
+        "gin.context-fallback", "gin.patch-merge", "gin.safe-filters", "gin.batched-includes",
+        "gin.response-cache", "gin.streaming-import", "gin.streaming-export", "gin.async-jobs",
+        "gin.webhook-receiver",
+        "gin.upstream-clients", "gin.retries-breakers", "gin.compression", "gin.downloads-ranges",
+        "gin.content-negotiation", "gin.api-versioning", "gin.contract-drift", "gin.admin-listener",
+        "gin.release-builds", "gin.rolling-deploys",
+        "blockchain.hash-chains", "blockchain.merkle-proofs", "blockchain.signatures",
+        "blockchain.addresses-checksums", "blockchain.accounts-utxo", "blockchain.rlp-encoding",
+        "blockchain.proof-of-work", "blockchain.fork-choice",
+        "blockchain.eip1559-fees", "blockchain.raw-transactions", "blockchain.receipts-logs",
+        "blockchain.message-signing", "blockchain.rpc-providers",
+        "security.sql-injection", "security.xss-templates", "security.csrf-protection",
+        "security.session-cookies", "security.path-traversal", "security.command-injection",
+        "security.open-redirects", "security.http-headers",
+        "security.secrets-redaction", "security.constant-time", "security.aead-encryption",
+        "security.password-storage", "security.token-design", "security.fuzzing-parsers",
+        "security.supply-chain",
+        "gamedev.fixed-timestep", "gamedev.ebitengine-structure", "gamedev.vectors-movement",
+        "gamedev.input-actions", "gamedev.state-machines", "gamedev.entity-components",
+        "gamedev.collisions", "gamedev.spatial-hash",
+        "gamedev.tilemaps-camera", "gamedev.pathfinding", "gamedev.procedural-generation",
+        "gamedev.tweening-animation", "gamedev.save-games", "gamedev.authoritative-server",
+        "gamedev.client-prediction", "gamedev.frame-budget",
+    ]
+
     static let environmentLessonTags: Set<String> = [
         "modules.identity-versions",
         "modules.version-graph",
@@ -215,5 +251,5 @@ enum GoConcept {
         serviceCapacity, serviceRedis, serviceGin, architectureBoundaries,
         architectureDesign, toolingGit, toolingGo, toolingNetworking, toolingLinux, toolingBash, toolingContainers, toolingKubernetes,
         "stdlib.borrowed-buffers", "runtime.pool-ownership",
-    ]).union(designLessonTags).union(environmentLessonTags).union(curriculumExpansionTags).union(InterviewCurriculumExpansion.lessonIDs).union(devopsLessonTags)
+    ]).union(designLessonTags).union(environmentLessonTags).union(curriculumExpansionTags).union(InterviewCurriculumExpansion.lessonIDs).union(devopsLessonTags).union(specializedCourseTags)
 }

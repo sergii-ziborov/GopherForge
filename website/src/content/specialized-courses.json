@@ -1,0 +1,88 @@
+{
+  "reviewedOn": "2026-11-18",
+  "appAvailability": "Every lesson is free on the web now. In the iPhone and iPad app the four dedicated courses arrive as separate downloads in 1.3.4 (58), now in private TestFlight and App Review; until it is released, App Store 1.3.3 keeps the earlier Gin, blockchain and security units inside the Go course download.",
+  "courses": [
+    {
+      "id": "gin",
+      "title": "Gin: web services in Go",
+      "seoTitle": "Gin tutorial: build Go web services and REST APIs",
+      "description": "A free Gin tutorial in five units: routes, binding, validation and JSON; production middleware, auth, CORS and rate limits; a complete REST API; data access, streaming and webhooks; then upstream clients, versioning, release builds and rolling deploys.",
+      "eyebrow": "GIN TUTORIAL · GO WEB SERVICES",
+      "lede": "Start with an engine and two routes, finish with a tested REST API that talks to storage and upstream services and survives retries, concurrent edits and rolling deploys. Every example runs against upstream Gin v1.12 with httptest, so you can follow along without opening a port.",
+      "audience": "Go programmers who want to build HTTP APIs with Gin — whether you are writing your first handler or hardening a service that already runs in production.",
+      "outcomes": [
+        "Route, bind and validate requests from paths, queries, headers, forms, JSON and file uploads.",
+        "Write middleware for authentication, CORS, rate limiting, request IDs, timeouts and metrics.",
+        "Design a REST resource with pagination, problem-details errors, idempotency keys and ETags.",
+        "Test the whole router in-process and run it behind an explicit http.Server with graceful shutdown.",
+        "Pass request contexts to storage, apply JSON Merge Patch, stream imports and exports, and verify signed webhooks.",
+        "Call upstream APIs with budgets, retries and circuit breakers, version the API and ship release builds through rolling deploys."
+      ],
+      "units": ["gin-foundations", "gin", "gin-project", "gin-data", "gin-edge"],
+      "related": ["services", "sql", "security-web"],
+      "searchLabel": "Gin tutorial",
+      "prerequisites": "Basic Go: functions, structs, interfaces, errors and the net/http request model.",
+      "keywords": ["gin tutorial", "gin golang", "gin framework", "go web services", "go rest api", "gin middleware"]
+    },
+    {
+      "id": "blockchain",
+      "title": "Blockchain infrastructure in Go",
+      "seoTitle": "Blockchain with Go: Ethereum RPC, signatures and transactions",
+      "description": "Learn blockchain engineering with Go: hash chains, Merkle proofs, secp256k1 signatures, addresses and RLP, then Ethereum RPC, exact token units, EIP-1559 fees, raw transactions, event logs and key custody.",
+      "eyebrow": "BLOCKCHAIN · ETHEREUM · GO",
+      "lede": "Build the primitives yourself first, then operate real protocol libraries safely. The examples use go-ethereum v1.17 with fixed test keys and in-memory models: nothing here creates a wallet, connects to a node or signs a real transaction.",
+      "audience": "Backend engineers who integrate with Ethereum or other chains, build indexers and wallets-adjacent services, or need to reason about finality and money-safe arithmetic.",
+      "outcomes": [
+        "Verify hash chains and Merkle inclusion proofs, and explain why canonical encoding matters.",
+        "Sign and recover with secp256k1, validate EIP-55 addresses and encode with RLP.",
+        "Bound Ethereum JSON-RPC calls, pin reads to a block and compare providers.",
+        "Compute EIP-1559 fees exactly, build and decode raw transactions, and index events through reorgs."
+      ],
+      "units": ["blockchain-foundations", "blockchain"],
+      "related": ["security-operations", "patterns-go"],
+      "searchLabel": "Go blockchain lesson",
+      "prerequisites": "Basic Go: slices, structs, errors and byte handling; no prior blockchain experience.",
+      "keywords": ["blockchain golang", "go-ethereum tutorial", "ethereum rpc go", "merkle proof", "eip-1559 fees", "rlp encoding"]
+    },
+    {
+      "id": "security",
+      "title": "Secure Go services",
+      "seoTitle": "Go security: secure web services, secrets and cryptography",
+      "description": "Secure Go services end to end: authorization, SSRF and TLS, SQL injection, XSS, CSRF, sessions, path traversal, command injection, secrets redaction, AEAD encryption, password storage, tokens, fuzzing and supply chain.",
+      "eyebrow": "SECURITY · GO SERVICES",
+      "lede": "Each lesson shows the attack against a small local model and fixes it with the standard library or x/crypto. You learn which component owns each decision, what to test and what a real deployment still needs.",
+      "audience": "Go developers who ship web services and APIs and want a practical, code-first security checklist they can apply in review.",
+      "outcomes": [
+        "Separate authentication from authorization and control outbound requests and TLS identity.",
+        "Prevent SQL injection, XSS, CSRF, open redirects, path traversal and command injection.",
+        "Keep secrets out of logs, compare tokens in constant time, encrypt records with AES-GCM and store passwords with argon2id.",
+        "Fuzz parsers, audit dependencies with govulncheck and pin your toolchain."
+      ],
+      "units": ["security", "security-web", "security-operations"],
+      "related": ["gin", "devops"],
+      "searchLabel": "Go security lesson",
+      "prerequisites": "Go web basics: handlers, middleware, templates and database access.",
+      "keywords": ["golang security", "go web security", "csrf protection go", "argon2id go", "aes-gcm go", "govulncheck"]
+    },
+    {
+      "id": "gamedev",
+      "title": "Game development in Go",
+      "seoTitle": "Game development in Go: game loops, Ebitengine and multiplayer",
+      "description": "Make 2D games with Go: fixed-timestep loops, Ebitengine structure, input and physics, collisions and spatial hashing, tilemaps, A* pathfinding, procedural worlds, save files and authoritative multiplayer.",
+      "eyebrow": "GAME DEVELOPMENT · GO",
+      "lede": "The core of a game is a deterministic simulation. These lessons build it as headless Go you can run and test, then show where Ebitengine's Update, Draw and Layout fit when you add a window.",
+      "audience": "Go programmers who want to build their own 2D games, simulations or game servers and care about determinism, performance and clean structure.",
+      "outcomes": [
+        "Run a fixed-timestep loop with interpolation and structure an Ebitengine game around it.",
+        "Model input, movement, state machines, components and collisions without frame-rate bugs.",
+        "Generate reproducible worlds, find paths with A* and version your save files.",
+        "Build an authoritative multiplayer tick loop with client prediction and a measured frame budget."
+      ],
+      "units": ["gamedev-loop", "gamedev-systems"],
+      "related": ["concurrency", "patterns-behavioral"],
+      "searchLabel": "Go game development lesson",
+      "prerequisites": "Basic Go: structs, methods, slices and interfaces; no engine experience needed.",
+      "keywords": ["golang game development", "ebitengine tutorial", "game loop in go", "a* pathfinding go", "multiplayer game server go"]
+    }
+  ]
+}

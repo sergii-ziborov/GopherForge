@@ -27,9 +27,18 @@ enum CourseUnitStyle {
         case "services": "network"
         case "architecture", "system-design": "square.stack.3d.up"
         case "clean-code-production": "checkmark.seal"
+        case "gin-foundations": "point.3.connected.trianglepath.dotted"
         case "gin": "network"
+        case "gin-project": "square.stack.3d.down.right"
+        case "gin-data": "cylinder.split.1x2"
+        case "gin-edge": "arrow.left.arrow.right.square"
+        case "blockchain-foundations": "number.square"
         case "blockchain": "link"
         case "security": "lock.shield"
+        case "security-web": "globe"
+        case "security-operations": "key"
+        case "gamedev-loop": "gamecontroller"
+        case "gamedev-systems": "map"
         case "clean-code": "checkmark.seal"
         case "patterns-creational": "cube.box"
         case "patterns-structural": "square.stack.3d.up"
@@ -60,9 +69,17 @@ enum CourseUnitStyle {
         case "services": GopherForgeTheme.aqua
         case "architecture", "system-design": Color(hex: 0x6B4FA8)
         case "clean-code-production": Color(hex: 0x4E8F3E)
+        case "gin-foundations": GopherForgeTheme.sky
         case "gin": GopherForgeTheme.aqua
+        case "gin-project": GopherForgeTheme.deepBlue
+        case "gin-data": GopherForgeTheme.sky
+        case "gin-edge": GopherForgeTheme.aqua
+        case "blockchain-foundations": Color(hex: 0x8A6100)
         case "blockchain": Color(hex: 0xB07B00)
-        case "security": GopherForgeTheme.berry
+        case "security", "security-operations": GopherForgeTheme.berry
+        case "security-web": Color(hex: 0xA8284F)
+        case "gamedev-loop": Color(hex: 0x6B4FA8)
+        case "gamedev-systems": GopherForgeTheme.aqua
         case "clean-code": Color(hex: 0x4E8F3E)
         case "patterns-creational": GopherForgeTheme.deepBlue
         case "patterns-structural": Color(hex: 0x6B4FA8)

@@ -25,7 +25,9 @@ struct LearnHomeView: View {
     private var stats: LearnerStats { progress.stats }
     private var mastery: [ConceptMastery] { progress.mastery }
 
-    private var units: [CourseUnit] { GoCourseCatalog.units.filter { !["operations", "containers", "kubernetes", "devops"].contains($0.id) } }
+    /// The Go path. Dedicated courses (Gin, blockchain, security, game
+    /// development) have their own paths below it.
+    private var units: [CourseUnit] { GoCourseCatalog.units.filter { CourseMembership.courseID(forUnit: $0.id) == "go" } }
 
     private var teachingLessons: [Lesson] {
         units.flatMap(\.teachingLessons)
@@ -36,9 +38,15 @@ struct LearnHomeView: View {
     }
 
     /// Return to the last opened lesson, including material outside the first
-    /// unfinished unit. New learners start at the first unfinished lesson.
+    /// unfinished unit and in a dedicated course. New learners start at the
+    /// first unfinished lesson.
     private var resumeInThisCourse: Lesson? {
-        guard let lesson = progress.resumeLesson, teachingLessons.contains(where: { $0.id == lesson.id }) else { return nil }; return lesson
+        guard let lesson = progress.resumeLesson,
+              GoCourseCatalog.units.contains(where: { unit in
+                  !CourseMembership.devopsUnits.contains(unit.id) && unit.teachingLessons.contains { $0.id == lesson.id }
+              })
+        else { return nil }
+        return lesson
     }
 
     private var nextLesson: Lesson? {
@@ -72,7 +80,7 @@ struct LearnHomeView: View {
             if learningTab == 2 { DevOpsHomeView() }
             else if learningTab == 1 {
                 if downloads.library.isInstalled("interview") { InterviewPrepView() } else { CourseDownloadPrompt(courseID: "interview") }
-            } else if units.isEmpty { CourseDownloadPrompt(courseID: "go") } else { course }
+            } else if units.isEmpty { withoutGoCourse } else { course }
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
@@ -118,6 +126,8 @@ struct LearnHomeView: View {
                 .accessibilityIdentifier("learn.practiceLibrary")
 
                 unitPath
+
+                specializedCourses
 
                 if !weakest.isEmpty {
                     WeakestConceptsCard(concepts: weakest)
@@ -191,19 +201,33 @@ struct LearnHomeView: View {
         }
     }
 
-    private func state(for unit: CourseUnit) -> CoursePathState {
-        let lessons = unit.teachingLessons
-        guard !lessons.isEmpty else { return .upcoming }
-        if lessons.allSatisfy({ completed.contains($0.id) }) {
-            return lessons.allSatisfy { progress.isCompilerVerified($0.id) } ? .verified : .done
+    private var specializedCourses: some View { DedicatedCoursesList() }
+
+    /// The Go course's card, with the dedicated courses still reachable: each
+    /// one downloads and opens on its own.
+    private var withoutGoCourse: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                if let go = downloads.library.catalog.first(where: { $0.id == "go" }) {
+                    CourseDownloadCard(course: go)
+                }
+                Text("Download once, then study offline. Lessons never download on their own.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                DedicatedCoursesList()
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 20)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
         }
-        return unit.id == nextUnitID ? .next : .upcoming
+    }
+
+    private func state(for unit: CourseUnit) -> CoursePathState {
+        CoursePathState.of(unit, next: nextUnitID, progress: progress)
     }
 
     private func badge(for unit: CourseUnit) -> String {
-        let lessons = unit.teachingLessons
-        let done = lessons.count { completed.contains($0.id) }
-        return "\(done) / \(lessons.count) lessons"
+        CoursePathState.badge(for: unit, completed: completed)
     }
 
     // MARK: - Recording
@@ -222,6 +246,90 @@ struct LearnHomeView: View {
 
     private var weakest: [ConceptMastery] {
         mastery.sorted { $0.strength < $1.strength }.prefix(5).map { $0 }
+    }
+}
+
+extension CoursePathState {
+    @MainActor
+    static func of(_ unit: CourseUnit, next: String?, progress: LearnProgress) -> CoursePathState {
+        let lessons = unit.teachingLessons
+        guard !lessons.isEmpty else { return .upcoming }
+        if lessons.allSatisfy({ progress.completed.contains($0.id) }) {
+            return lessons.allSatisfy { progress.isCompilerVerified($0.id) } ? .verified : .done
+        }
+        return unit.id == next ? .next : .upcoming
+    }
+
+    static func badge(for unit: CourseUnit, completed: Set<String>) -> String {
+        let lessons = unit.teachingLessons
+        return "\(lessons.count { completed.contains($0.id) }) / \(lessons.count) lessons"
+    }
+}
+
+/// The dedicated courses below the Go path, and in place of it when the Go
+/// course is not downloaded.
+struct DedicatedCoursesList: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Dedicated courses")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+            ForEach(CourseMembership.specialized, id: \.id) { course in
+                DedicatedCourseSection(course: course)
+            }
+        }
+    }
+}
+
+/// One dedicated course: its path once its units are on the device, its
+/// download card until then. A unit still carried by an older Go download
+/// stays reachable with the card beside it.
+///
+/// Its own view with its own observation of the downloads model, like the
+/// card: decided inside a parent's ForEach, a finished download updated the
+/// card to "Offline" while the section kept showing the card instead of the
+/// path, and nothing could be opened.
+private struct DedicatedCourseSection: View {
+    @Environment(LearnProgress.self) private var progress
+    @State private var downloads = CourseDownloadsModel.shared
+    let course: CourseMembership.Course
+
+    var body: some View {
+        let _ = downloads.revision
+        let units = course.units.compactMap { GoCourseCatalog.unit(id: $0) }
+        let descriptor = downloads.library.catalog.first { $0.id == course.id }
+        let next = units.first { unit in unit.teachingLessons.contains { !progress.completed.contains($0.id) } }?.id
+        VStack(alignment: .leading, spacing: 10) {
+            if !units.isEmpty {
+                Text(descriptor?.title ?? units[0].title).font(.headline)
+                CourseJourneyView(items: units.map { item(for: $0, next: next) }) { item in
+                    if let unit = GoCourseCatalog.unit(id: item.id) {
+                        UnitDetailView(unit: unit)
+                    }
+                }
+            }
+            if let descriptor, !downloads.library.isInstalled(course.id) {
+                CourseDownloadCard(course: descriptor)
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("learn.dedicated.\(course.id)")
+    }
+
+    private func item(for unit: CourseUnit, next: String?) -> CoursePathItem {
+        let state = CoursePathState.of(unit, next: next, progress: progress)
+        return CoursePathItem(
+            id: unit.id,
+            title: unit.title,
+            subtitle: unit.summary,
+            badge: CoursePathState.badge(for: unit, completed: progress.completed),
+            symbol: CourseUnitStyle.symbol(for: unit.id),
+            state: state,
+            tint: CourseUnitStyle.tint(for: unit.id),
+            accessibilityIdentifier: AccessibilityID.unit(unit.id),
+            accessibilityValue: state.spoken
+        )
     }
 }
 

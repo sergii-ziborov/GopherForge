@@ -5,7 +5,7 @@ import { releases } from "@/lib/releases";
 export const metadata: Metadata = pageMetadata(
   "/updates",
   "Version history",
-  "GopherForge release history: App Store 1.3.2, private TestFlight 1.3.3, encrypted Go Playground, JavaScript MCP and Go-for-DevOps lessons.",
+  "GopherForge release history: 1.3.4 with dedicated Gin, blockchain, security and game-development courses; App Store 1.3.3 with course downloads, encrypted rooms and a DevOps terminal.",
 );
 export default function Updates() {
   return (
@@ -16,6 +16,29 @@ export default function Updates() {
         <br />
         <em>What’s next.</em>
       </h1>
+      <section className="release" id="v134">
+        <span className="release-badge">
+          NATIVE {releases.next.version} ({releases.next.build}) ·{" "}
+          {releases.next.status.toUpperCase()}
+        </span>
+        <h2>Four dedicated courses: Gin, blockchain, security and games.</h2>
+        <p>
+          Gin grows from six lessons to a 34-lesson course: foundations, production
+          middleware and a complete REST API with tests. Blockchain
+          infrastructure has 20 lessons, Secure Go services 19 and the new Game
+          development in Go course 16. Every new lesson has a runnable Go
+          program checked against its exact output.
+        </p>
+        <p>
+          Each course is its own download on Learn and has its own path below
+          the Go course. The Go course download no longer carries these units;
+          an older installed copy keeps them until you update it, and progress
+          stays with the same lesson IDs. All lessons are free on the web now.
+        </p>
+        <Link className="button" href="/courses">
+          Open the dedicated courses →
+        </Link>
+      </section>
       <section className="release" id="web20261105">
         <span className="release-badge muted">5 NOVEMBER 2026 · WEBSITE</span>
         <h2>A full Go workspace in your browser.</h2>
@@ -48,10 +71,7 @@ export default function Updates() {
           These refinements first appeared in native TestFlight build 53 and
           remain in the current candidate.
         </p>
-        <span className="release-badge muted">
-          NATIVE {releases.beta.version} ({releases.beta.build}) · PRIVATE
-          TESTFLIGHT
-        </span>
+        <span className="release-badge muted">APP STORE 1.3.3 (56)</span>
         <h2>Complete offline courses. A local DevOps terminal.</h2>
         <p>
           Open Learn → Course downloads to deliberately install the complete Go,
@@ -84,22 +104,17 @@ export default function Updates() {
           Existing lesson IDs and progress remain valid.
         </p>
         <p>
-          The public App Store app remains {releases.public.version} (
-          {releases.public.build}). Build {releases.beta.build} is available to
-          Internal QA in TestFlight. It has not been submitted for App Review or
-          publicly released.
+          Apple released 1.3.3 (56) after review; it is the current App Store
+          version.
         </p>
         <a className="button" href="/learn/units/devops">
           Study Go for DevOps →
         </a>
       </section>
       <section className="release" id="v132">
-        <span className="release-badge muted">
-          {releases.public.status.toUpperCase()}
-        </span>
+        <span className="release-badge muted">EARLIER NATIVE RELEASE</span>
         <h2>
-          GopherForge {releases.public.version}{" "}
-          <small>build {releases.public.build}</small>
+          GopherForge 1.3.2 <small>build 51</small>
         </h2>
         <p>
           Version 1.3.2 adds a guest Playground for people and AI, a Streamable
@@ -117,9 +132,8 @@ export default function Updates() {
           retained.
         </p>
         <p>
-          Version {releases.next.version} ({releases.next.build}) is{" "}
-          {releases.next.status.toLowerCase()}. Room expiry, source revisions,
-          local copies and provider boundaries are explained in the MCP guide.
+          Room expiry, source revisions, local copies and provider boundaries
+          are explained in the MCP guide.
         </p>
         <Link className="button" href="/learn?direction=design">
           Explore the expanded learning map →

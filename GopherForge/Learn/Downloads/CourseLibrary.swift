@@ -11,13 +11,39 @@ final class CourseLibrary: @unchecked Sendable {
     private let lock = NSLock()
     private var installed: [String: CoursePackage] = [:]
     private var installedDescriptors: [String: CourseDownload] = [:]
+    /// Installed documents with every unit present exactly once. Rebuilt on
+    /// install and removal, not on each read: the catalog reads this often.
+    private var resolved: [CoursePackage] = []
     private struct InstalledCourse: Codable {
         let descriptor: CourseDownload
         let document: Data
     }
 
     var packages: [CoursePackage] {
-        lock.withLock { catalog.compactMap { installed[$0.id] } }
+        lock.withLock { resolved }
+    }
+
+    /// Call with the lock held.
+    private func refreshResolved() {
+        resolved = Self.resolvingSharedUnits(catalog.compactMap { installed[$0.id] })
+    }
+
+    /// An offline revision installed before a unit moved into a dedicated
+    /// course still carries that unit, and is kept until the learner updates
+    /// it. Each unit is shown from the newest revision that provides it, so the
+    /// path, review pairs and hints never see a lesson twice.
+    static func resolvingSharedUnits(_ packages: [CoursePackage]) -> [CoursePackage] {
+        var owner: [String: Int] = [:]
+        for (index, package) in packages.enumerated() {
+            for unit in package.units {
+                if let current = owner[unit.id], packages[current].revision >= package.revision { continue }
+                owner[unit.id] = index
+            }
+        }
+        return packages.enumerated().map { index, package in
+            let superseded = Set(package.units.map(\.id).filter { owner[$0] != index })
+            return superseded.isEmpty ? package : package.removing(units: superseded)
+        }
     }
     var knownLessonIDs: Set<String> { Set(catalog.flatMap(\.lessonIDs)) }
     var knownInterviewIDs: Set<String> { Set(catalog.flatMap { $0.interviewIDs ?? [] }) }
@@ -51,6 +77,7 @@ final class CourseLibrary: @unchecked Sendable {
             }
         }
         #endif
+        lock.withLock { refreshResolved() }
     }
 
     private static func bundledCatalog() -> [CourseDownload] {
@@ -121,6 +148,7 @@ final class CourseLibrary: @unchecked Sendable {
             try JSONEncoder().encode(saved).write(to: directory.appending(path: descriptor.id + ".installed.json"), options: .atomic)
             installed[descriptor.id] = package
             installedDescriptors[descriptor.id] = descriptor
+            refreshResolved()
         }
     }
 
@@ -131,6 +159,7 @@ final class CourseLibrary: @unchecked Sendable {
             if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
             installed[descriptor.id] = nil
             installedDescriptors[descriptor.id] = nil
+            refreshResolved()
         }
     }
 

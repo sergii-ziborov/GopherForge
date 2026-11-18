@@ -4,9 +4,14 @@ import json,hashlib,shutil,sys
 root=Path(__file__).resolve().parents[1]
 out=root/'website/public/downloads/courses';out.mkdir(parents=True,exist_ok=True)
 labels={
- 'go':('Go: language and services','Go language, runtime, service design, patterns, security and coding agents.'),
+ 'go':('Go: language and services','Go language, runtime, services, architecture, patterns, data stores and coding agents.'),
  'devops':('DevOps and reliability','Command line, containers, Kubernetes, delivery, SLOs and incident recovery.'),
- 'interview':('Interview preparation','Worked interview guides and interactive algorithm walkthroughs.')}
+ 'interview':('Interview preparation','Worked interview guides and interactive algorithm walkthroughs.'),
+ # Dedicated courses. Older catalogs published their first units inside the Go course.
+ 'gin':('Gin: web services in Go','From the first route to a deployed REST API: binding, middleware, auth, rate limits, data access, streaming, upstream clients, versioning and rolling deploys.'),
+ 'blockchain':('Blockchain infrastructure in Go','Hashes, Merkle proofs, signatures and RLP, then Ethereum RPC, exact units, fees, transactions, events and key custody.'),
+ 'security':('Secure Go services','Authorization, injection, XSS, CSRF, sessions, file and command safety, secrets, encryption, tokens and supply chain.'),
+ 'gamedev':('Game development in Go','Game loops, Ebitengine structure, input, physics, collisions, pathfinding, procedural worlds and multiplayer.')}
 manifest=[]
 source_dir=Path(sys.argv[1]) if len(sys.argv)>1 else root/'build/Resources/CourseFixtures'
 fixtures=root/'build/Resources/CourseFixtures'

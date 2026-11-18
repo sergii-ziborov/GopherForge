@@ -17,9 +17,11 @@ with a bundled Go 1.27.1 toolchain.
 
 ## Releases
 
-| Version | Status, checked 10 November 2026 | Changes |
+| Version | Status, checked 18 November 2026 | Changes |
 | --- | --- | --- |
-| **1.3.3 (56)** | In App Review · private TestFlight | Named cursors, encrypted browser/native live rooms, shared change history, Playground debug/tools, complete course downloads and a local DevOps terminal. |
+| **1.3.4 (58)** | In App Review · private TestFlight | Dedicated Gin (53 lessons), blockchain (20), security (19) and game-development (16) courses as separate downloads; 91 new readings with executed Go examples; a downloaded course opens on Learn right away. |
+| **1.3.4 (57)** | Superseded by build 58 | First build of the dedicated courses, with Gin at 34 lessons. |
+| **1.3.3 (56)** | Available on the App Store | Named cursors, encrypted browser/native live rooms, shared change history, Playground debug/tools, complete course downloads and a local DevOps terminal. |
 | **1.3.2 (51)** | Available on the App Store | Compatible MCP Playground, local execution, shared Output and progress links. |
 | **1.3.1 (49)** | Available on the App Store | Expanded curriculum: 220 teaching lessons, 132 interview guides, Gin, blockchain, security and production design. |
 | **1.3.0 (48)** | Earlier TestFlight · Superseded by 1.3.1 | Direct web preview, restored lesson drafts and Practice, source-safety/import audit, offline React/npm subset and source debugger. |
@@ -31,9 +33,13 @@ with a bundled Go 1.27.1 toolchain.
 | **1.1.3 (37)** | Previous App Store release | Architecture comparisons, clean Go, all 23 classic patterns and six concurrent Go patterns. |
 | **1.1.2 (36)** | Previous App Store release | Practical command-line, container and Kubernetes lessons. |
 
-**1.3.2** is the current App Store release, published 29 October 2026.
+**1.3.3 (56)** is the current App Store release. **1.3.4 (58)**, with the
+dedicated courses below, is in private TestFlight and App Review.
 
-**1.3.3 (56)** is in App Review and not yet released on the App Store. Its native/web course has **229 lessons for guided study, including 182 readings,
+The 1.3.4 source has **320 lessons for guided study, including 273 readings,
+in 38 units**, and the same 22 question-and-answer challenges.
+
+The 1.3.3 course has **229 lessons for guided study, including 182 readings,
 and 22 question-and-answer challenges in 29 units**, with the previous 220 teaching lessons and
 all stable IDs retained. Existing public 1.3.2 has compatible MCP sharing and
 132 interview guides.
@@ -83,6 +89,39 @@ exercise solutions pass their hidden tests, all unfinished starters are rejected
 and 98 complete reading programs compile with native Go. These lesson refinements
 are available on the web and in build 56. Stable lesson IDs and progress formats are preserved.
 
+### Dedicated courses: Gin, blockchain, security and game development
+
+Four focused courses, free on the web at [gopherforge.app/courses](https://gopherforge.app/courses)
+and published as separate app downloads in 1.3.4 (58):
+
+| Course | Units | Lessons |
+| --- | --- | --- |
+| [Gin: web services in Go](https://gopherforge.app/courses/gin) | Gin foundations · Gin in production · Gin project: a complete REST API · Gin and your data · Gin in the wider system | 53 |
+| [Blockchain infrastructure in Go](https://gopherforge.app/courses/blockchain) | Blockchain foundations in Go · Blockchain infrastructure | 20 |
+| [Secure Go services](https://gopherforge.app/courses/security) | Service security foundations · Web application security · Secrets, cryptography and supply chain | 19 |
+| [Game development in Go](https://gopherforge.app/courses/gamedev) | Game loop, input and physics · Worlds, AI and multiplayer | 16 |
+
+91 new readings join the earlier Gin, blockchain and security lessons, whose IDs
+and progress are unchanged. Every new lesson has a complete program that
+`scripts/verify_specialized_courses.py` runs with Go 1.27 against pinned Gin
+v1.12.0, go-ethereum v1.17.10 and x/crypto, comparing exact output; other
+complete programs are vetted. Examples use httptest recorders and in-memory
+models only: no public network, no real node or key, no graphics engine.
+
+The Go course download no longer carries these units (revision 2026-11-18.1).
+An older installed Go revision keeps them until it is updated, and the app
+shows each unit once, from the newest document. Gin is at revision
+2026-11-18.2 in build 58. Every file a shipped build pins stays published: the
+2026-11-07.1 files of 1.3.3 (56) and the 2026-11-18.1 files of build 57.
+
+In build 58 each dedicated course on Learn follows its own download, so its
+path appears and opens as soon as the download finishes, and the dedicated
+courses stay reachable when the Go course is not installed.
+
+On the web, each course page carries `Course` structured data with a syllabus
+per unit, prerequisites and keywords, plus its own share image; unit and lesson
+pages link back to their course in breadcrumbs and structured data.
+
 
 ## What you can do
 
@@ -94,8 +133,8 @@ are available on the web and in build 56. Stable lesson IDs and progress formats
 - **Use the screen you have.** A compact iPhone editor, an iPad file tree and
   resizable dock, and adaptive Duo layouts. In laptop posture, code or Terminal
   stays above the hinge while keyboard or results occupy the lower display.
-- **Learn Go.** The 1.3.3 source has 229 teaching lessons in 29 units, including 182 readings,
-  plus 22 prediction challenges. Worked Go programs, diagrams, matching
+- **Learn Go.** The 1.3.4 source has 320 teaching lessons in 38 units, including 273 readings,
+  plus 22 prediction challenges, across the Go course and four dedicated courses. Worked Go programs, diagrams, matching
   reviews and three-choice mistake practice accompany the material.
 - **Continue studying.** Reopen the last course lesson or interview guide.
   The selected learning area, lesson completion, compiler-verified evidence

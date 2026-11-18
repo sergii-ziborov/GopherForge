@@ -1,8 +1,18 @@
 import expansion from "@/content/interview-expansion.json";
 import latestAudit from "@/content/curriculum-audit.json";
 import downloadReview from "@/content/course-downloads-review.json";
+import {
+  specializedLessonIDs,
+  specializedReviewedOn,
+  specializedUnitIDs,
+} from "@/lib/specialized-courses";
 // Dates describe content edits, not the date the page was requested.
-export const curriculumUpdatedOn = downloadReview.reviewedOn;
+export const curriculumUpdatedOn = [
+  downloadReview.reviewedOn,
+  specializedReviewedOn,
+]
+  .sort()
+  .at(-1)!;
 const expansionUpdatedOn = "2026-10-28";
 const earlierCurriculumOn = "2026-10-27";
 const auditChangedLessons = new Set([
@@ -92,6 +102,10 @@ export function lessonUpdatedOn(id: string) {
   if (latestAudit.changedLessons.includes(id)) return latestAudit.reviewedOn;
   if (id.startsWith("devops.")) return "2026-11-05";
   if (id.startsWith("ai.")) return "2026-10-29";
+  // Lessons written for the dedicated courses; earlier Gin, blockchain and
+  // security readings keep their own dates below.
+  if (specializedLessonIDs.has(id) && !expansion.lessons.includes(id))
+    return specializedReviewedOn;
   return id === "collections.make-and-new" ||
     expansion.lessons.includes(id) ||
     auditChangedLessons.has(id)
@@ -122,6 +136,7 @@ export function unitUpdatedOn(id: string) {
     return downloadReview.reviewedOn;
   if (latestAudit.changedUnits.includes(id)) return latestAudit.reviewedOn;
   if (id === "ai") return "2026-10-29";
+  if (specializedUnitIDs.has(id)) return specializedReviewedOn;
   return [
     "system-design",
     "clean-code-production",

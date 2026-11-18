@@ -54,7 +54,7 @@ final class CourseDownloadsTests: XCTestCase {
         XCTAssertEqual(library.knownLessonIDs, Set(descriptor.lessonIDs), "Progress identifiers survive content removal")
     }
     func testEveryOfficialPackIncludesItsCompleteReadingAndPracticeContent() throws {
-        XCTAssertEqual(Set(CourseLibrary.shared.catalog.map(\.id)), ["go", "devops", "interview"])
+        XCTAssertEqual(Set(CourseLibrary.shared.catalog.map(\.id)), ["go", "devops", "interview", "gin", "blockchain", "security", "gamedev"])
         for descriptor in CourseLibrary.shared.catalog {
             let (_, data) = try fixture(descriptor.id)
             let pack = try CourseLibrary.validate(data, against: descriptor)
@@ -65,6 +65,31 @@ final class CourseDownloadsTests: XCTestCase {
             XCTAssertTrue(Set(pack.solutions.keys).isSubset(of: lessonIDs))
             if let bank = pack.interview { XCTAssertEqual(bank.questions.count, 132); XCTAssertEqual(bank.demonstrations.count, 12) }
         }
+    }
+
+    /// An older Go download still carries the Gin unit after it moved into the
+    /// dedicated course. With both installed, each unit appears exactly once,
+    /// from the newer document, and the older one keeps everything else.
+    func testUnitsMovedIntoADedicatedCourseAppearOnceFromTheNewestRevision() throws {
+        let (_, ginData) = try fixture("gin")
+        let (goDescriptor, goData) = try fixture("go")
+        let gin = try JSONDecoder().decode(CoursePackage.self, from: ginData)
+        let go = try JSONDecoder().decode(CoursePackage.self, from: goData)
+        XCTAssertNil(go.units.first { $0.id == "gin" }, "The current Go course no longer publishes Gin")
+        let movedUnit = try XCTUnwrap(gin.units.first { $0.id == "gin" })
+        let movedReadings = gin.readings.filter { reading in movedUnit.lessons.contains { $0.id == reading.id } }
+        let olderGo = CoursePackage(schemaVersion: 1, id: "go", revision: "2026-11-07.1", units: go.units + [movedUnit],
+                                    readings: go.readings + movedReadings, guides: go.guides, hints: go.hints,
+                                    solutions: go.solutions, interview: nil, labs: [], practice: go.practice)
+        let resolved = CourseLibrary.resolvingSharedUnits([olderGo, gin])
+        XCTAssertEqual(resolved[0].units.map(\.id), go.units.map(\.id))
+        XCTAssertEqual(resolved[0].readings.count, go.readings.count)
+        XCTAssertEqual(resolved[1].units.map(\.id), gin.units.map(\.id))
+        let lessonIDs = resolved.flatMap(\.units).flatMap(\.lessons).map(\.id)
+        XCTAssertEqual(lessonIDs.count, Set(lessonIDs).count)
+        // Without the dedicated course, the older download keeps the unit reachable.
+        XCTAssertTrue(CourseLibrary.resolvingSharedUnits([olderGo])[0].units.contains { $0.id == "gin" })
+        XCTAssertEqual(goDescriptor.revision, go.revision)
     }
 
     func testNewCatalogPreservesInstalledOfflineRevisionUntilExplicitUpdate() throws {

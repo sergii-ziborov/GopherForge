@@ -4,6 +4,11 @@ import guide from "@/content/app-guide.json";
 import { lessons, units } from "@/lib/course";
 import { interview, interviewURL } from "@/lib/interview";
 import { posts } from "@/lib/posts";
+import {
+  courseURL,
+  specializedCourses,
+  specializedReviewedOn,
+} from "@/lib/specialized-courses";
 import { news, newsURL, newsImage, newsImageSuffixes } from "@/lib/news";
 import { newsPageCount, newsPageURL } from "@/lib/news-pagination";
 import {
@@ -23,6 +28,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "",
     "/learn",
+    "/courses",
+    ...specializedCourses.map((c) => courseURL(c.id)),
     "/interview",
     "/architectures",
     "/blog",
@@ -56,7 +63,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
         ? releases.websiteUpdatedOn
         : ["/learn", "/interview"].includes(path)
           ? curriculumUpdatedOn
-          : path === "/news/feed"
+          : path === "/courses" || path.startsWith("/courses/")
+            ? specializedReviewedOn
+            : path === "/news/feed"
             ? "2026-10-28"
             : path === "/news" ||
                 path === "/blog" ||
@@ -105,7 +114,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
           : {}),
       changeFrequency:
         path === "/news/feed" ? ("daily" as const) : ("monthly" as const),
-      priority: path === "" ? 1 : path.startsWith("/learn") ? 0.8 : 0.6,
+      priority:
+        path === ""
+          ? 1
+          : path.startsWith("/learn") || path.startsWith("/courses")
+            ? 0.8
+            : 0.6,
     })),
     ...posts.map((p) => ({
       url: origin + `/blog/${p.slug}`,

@@ -12,6 +12,11 @@ import { Prose } from "@/components/Prose";
 import { Quiz } from "@/components/Quiz";
 import { LessonProgress } from "@/components/LessonProgress";
 import { LessonVisual } from "@/components/LessonVisual";
+import {
+  courseForLesson,
+  courseImageURL,
+  courseURL,
+} from "@/lib/specialized-courses";
 export function generateStaticParams() {
   return lessons.map((l) => ({ id: l.id }));
 }
@@ -22,15 +27,25 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const l = lessonByID.get(id);
+  const course = courseForLesson(id);
   return {
-    title: l ? `${l.title} — Go lesson` : "Lesson not found",
+    title: l
+      ? `${l.title} — ${course ? course.searchLabel : "Go lesson"}`
+      : "Lesson not found",
     description: l?.objective,
+    keywords: course?.keywords,
     alternates: { canonical: lessonURL(id) },
     openGraph: {
       title: l?.title,
       description: l?.objective,
       url: lessonURL(id),
-      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+      images: [
+        {
+          url: course ? courseImageURL(course.id) : "/opengraph-image",
+          width: 1200,
+          height: 630,
+        },
+      ],
       type: "article",
       modifiedTime: metadataDate(lessonUpdatedOn(id)),
     },
@@ -49,12 +64,24 @@ export default async function LessonPage({
     next = lessons[index + 1];
   const guide = l.reading?.designGuide;
   const relatedArticles = newsForLesson(l.id);
+  const course = courseForLesson(id);
+  const unitPath = {
+    "@type": "LearningResource",
+    learningResourceType: "Learning path",
+    name: l.unitTitle,
+    url: `https://gopherforge.app/learn/units/${l.unitID}`,
+  };
   return (
     <div className="lesson-layout">
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
-          { name: "Learn Go", path: "/learn" },
+          ...(course
+            ? [
+                { name: "Dedicated courses", path: "/courses" },
+                { name: course.title, path: courseURL(course.id) },
+              ]
+            : [{ name: "Learn Go", path: "/learn" }]),
           { name: l.unitTitle, path: `/learn/units/${l.unitID}` },
           { name: l.title, path: lessonURL(id) },
         ]}
@@ -73,12 +100,17 @@ export default async function LessonPage({
             l.kind === "predict" ? "Practice problem" : "Lesson",
           educationalUse: "Self-study",
           timeRequired: `PT${minutes(l)}M`,
-          isPartOf: {
-            "@type": "LearningResource",
-            learningResourceType: "Learning path",
-            name: l.unitTitle,
-            url: `https://gopherforge.app/learn/units/${l.unitID}`,
-          },
+          isPartOf: course
+            ? [
+                unitPath,
+                {
+                  "@type": "Course",
+                  name: course.title,
+                  url: "https://gopherforge.app" + courseURL(course.id),
+                },
+              ]
+            : unitPath,
+          ...(course && { keywords: course.keywords.join(", ") }),
           provider: {
             "@type": "Organization",
             name: "GopherForge",
@@ -91,6 +123,11 @@ export default async function LessonPage({
         <Link href={`/learn/units/${l.unitID}`} className="back">
           ← {l.unitTitle}
         </Link>
+        {course ? (
+          <p className="small-note">
+            Part of <Link href={courseURL(course.id)}>{course.title}</Link>
+          </p>
+        ) : null}
         <p className="eyebrow">IN THIS LESSON</p>
         <nav aria-label="Lesson sections">
           <a href="#overview">Overview</a>

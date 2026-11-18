@@ -71,6 +71,7 @@ export default function RootLayout({
           </Link>
           <nav aria-label="Main">
             <Link href="/learn">Learn Go</Link>
+            <Link href="/courses">Courses</Link>
             <Link href="/interview">Interview</Link>
             <Link href="/news">News</Link>
             <Link href="/guide">App guide</Link>
@@ -96,6 +97,7 @@ export default function RootLayout({
           <div>
             <h2>Explore</h2>
             <Link href="/learn">Course</Link>
+            <Link href="/courses">Dedicated courses</Link>
             <Link href="/interview">Interview</Link>
             <Link href="/news">News</Link>
             <Link href="/blog">Field notes</Link>

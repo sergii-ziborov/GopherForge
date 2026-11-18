@@ -242,14 +242,20 @@ struct CourseDownloadCard: View {
         case "go": "chevron.left.forwardslash.chevron.right"
         case "devops": "terminal"
         case "interview": "person.crop.rectangle.stack"
+        case "gin": "network"
+        case "blockchain": "link"
+        case "security": "lock.shield"
+        case "gamedev": "gamecontroller"
         default: "book.closed"
         }
     }
 
     private static func tint(_ id: String) -> Color {
         switch id {
-        case "devops": GopherForgeTheme.aqua
-        case "interview": GopherForgeTheme.berry
+        case "devops", "gin": GopherForgeTheme.aqua
+        case "interview", "security": GopherForgeTheme.berry
+        case "blockchain": Color(hex: 0xB07B00)
+        case "gamedev": Color(hex: 0x6B4FA8)
         default: GopherForgeTheme.gopherBlue
         }
     }

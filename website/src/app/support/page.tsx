@@ -152,16 +152,16 @@ export default function Support() {
             {releases.public.version} ({releases.public.build}) is available on
             the App Store.
           </strong>{" "}
-          It includes 220 teaching lessons in 28 units, 173 readings, 22
-          prediction challenges and 132 interview guides, plus native Playground
-          and progress sharing.
+          Its downloadable courses hold 229 teaching lessons in 29 units, 182
+          readings, 22 prediction challenges and 132 interview guides, plus
+          encrypted live rooms and a local DevOps terminal.
         </p>
         <p>
-          The expanded web library has 220 teaching lessons, 173 readings and 22
-          challenges in 28 units. Interview has 132 guides across 15 topics and
-          twelve interactive algorithm labs. New blocks cover Gin, blockchain
-          infrastructure, security and production system design; they are
-          included in native {releases.curriculum.version}. See{" "}
+          The web library has 301 teaching lessons, 254 readings and 22
+          challenges in 36 units. Interview has 132 guides across 15 topics and
+          twelve interactive algorithm labs. The dedicated Gin, blockchain,
+          security and game-development courses install as separate downloads
+          in native {releases.curriculum.version}. See{" "}
           <Link href="/updates">version history</Link>
           and the <Link href="/guide">complete app guide</Link>.
         </p>

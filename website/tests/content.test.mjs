@@ -140,3 +140,52 @@ test("interview directions contain every topic exactly once", async () => {
   assert.equal(ids.length, new Set(ids).size);
   assert.deepEqual([...ids].sort(), interview.topics.map((t) => t.id).sort());
 });
+
+test("dedicated courses cover their units, link real lessons and match the app catalog", async () => {
+  const data = await read("../src/content/specialized-courses.json");
+  const catalog = await read("../src/content/course-downloads.json");
+  const current = await read("../src/content/course-downloads-1.3.3.json");
+  // Build 57 (1.3.4 TestFlight) pins its own catalog; its files stay published too.
+  const build57 = await read("../src/content/course-downloads-1.3.4-57.json");
+  const { directions } = await import("../src/lib/course-map.ts");
+  assert.deepEqual(
+    data.courses.map((c) => c.id),
+    ["gin", "blockchain", "security", "gamedev"],
+  );
+  const owned = data.courses.flatMap((c) => c.units);
+  assert.equal(new Set(owned).size, owned.length);
+  for (const course of data.courses) {
+    const pack = catalog.find((c) => c.id === course.id);
+    assert.ok(pack, course.id);
+    const courseUnits = course.units.map((id) => units.find((u) => u.id === id));
+    assert.ok(courseUnits.every(Boolean), course.id);
+    assert.deepEqual(
+      pack.lessonIDs,
+      courseUnits.flatMap((u) => u.lessons.map((l) => l.id)),
+      course.id,
+    );
+    assert.equal(pack.unitCount, course.units.length);
+    assert.deepEqual(
+      [...directions.find((d) => d.id === course.id).units],
+      course.units,
+    );
+    assert.ok(course.seoTitle.length <= 70, course.seoTitle);
+    assert.ok(course.description.length <= 300, course.id);
+    for (const id of course.related) assert.ok(ids.has(units.find((u) => u.id === id)?.lessons[0].id), id);
+  }
+  // Gin is at least four times its original six-lesson unit.
+  const gin = data.courses.find((c) => c.id === "gin");
+  const ginLessons = gin.units.flatMap(
+    (id) => units.find((u) => u.id === id).lessons,
+  );
+  assert.ok(ginLessons.length >= 24, String(ginLessons.length));
+  // The Go course no longer publishes dedicated units; 1.3.3 files stay downloadable.
+  const go = catalog.find((c) => c.id === "go");
+  for (const id of owned)
+    for (const lesson of units.find((u) => u.id === id).lessons)
+      assert.equal(go.lessonIDs.includes(lesson.id), false, lesson.id);
+  for (const item of [...current, ...build57])
+    await readFile(
+      new URL(`../public/downloads/courses/${item.fileName}`, import.meta.url),
+    );
+});

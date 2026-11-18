@@ -9,10 +9,11 @@ import { units, lessons, minutes, readings, teachingCount } from "@/lib/course";
 import { pageMetadata } from "@/lib/page-metadata";
 import { CourseBrowser } from "@/components/CourseBrowser";
 import { EditorialIllustration } from "@/components/EditorialIllustration";
+import { specializedCourses } from "@/lib/specialized-courses";
 export const metadata: Metadata = pageMetadata(
   "/learn",
   `Learn Go — ${teachingCount} practical lessons`,
-  `Learn Go with ${teachingCount} lessons across ${units.length} units: concurrency, architecture, DevOps, databases and security. Worked code and self-checks; no account.`,
+  `Learn Go with ${teachingCount} lessons across ${units.length} units: concurrency, architecture, DevOps, databases, Gin, security, blockchain and game development. Worked code and self-checks; no account.`,
 );
 export default function Learn() {
   return (
@@ -47,12 +48,13 @@ export default function Learn() {
           </span>
         </div>
         <p className="availability">
-          The expanded web library includes Gin, blockchain infrastructure,
-          service security and production system design, prepared for native{" "}
-          {releases.curriculum.version}. App Store {releases.public.version}{" "}
-          includes the expanded course and Continue. The AI lessons now also
-          describe the development MCP Playground in 1.3.2; those additions are
-          not in build 49. See <Link href="/updates">version history</Link> for
+          Gin, blockchain, security and game development are now{" "}
+          <Link href="/courses">dedicated courses</Link> of their own; the
+          production system-design units remain part of the Go course. App
+          Store {releases.public.version} includes complete course downloads and
+          Continue; the dedicated courses install in native{" "}
+          {releases.curriculum.version}. See{" "}
+          <Link href="/updates">version history</Link> for
           release status. Continue saves your lesson and section in this
           browser. Web and app progress are stored separately.
         </p>
@@ -81,6 +83,17 @@ export default function Learn() {
           })),
         }}
       />
+      <aside className="agent-study-callout">
+        <p className="eyebrow">DEDICATED COURSES</p>
+        <p>
+          {specializedCourses
+            .map((c) => `${c.title} (${c.lessonCount} lessons)`)
+            .join(" · ")}
+          .{" "}
+          <Link href="/courses/gin">Start the Gin tutorial →</Link>{" "}
+          <Link href="/courses">All dedicated courses →</Link>
+        </p>
+      </aside>
       <aside className="agent-study-callout">
         <p className="eyebrow">GO WITH CODING AGENTS</p>
         <p>

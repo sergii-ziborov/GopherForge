@@ -95,13 +95,14 @@ export default function AppGuide() {
           </p>
           <p className="small-note">
             App Store: {releases.public.version} ({releases.public.build}) ·
-            native Playground and progress sharing are available. Go 1.27.1 runs
-            locally in the app and browser.{" "}
+            encrypted live collaboration, complete course downloads and DevOps
+            terminal labs are available. Go 1.27.1 runs locally in the app and
+            browser.{" "}
             <Link href="/updates">Release details →</Link> Web rooms include
             nicknames, visible cursors and change history. Native{" "}
-            {releases.beta.version} ({releases.beta.build}) with encrypted live
-            collaboration, complete course downloads and DevOps terminal labs is
-            available in private Internal QA TestFlight.
+            {releases.beta.version} ({releases.beta.build}) adds the dedicated
+            Gin, blockchain, security and game-development courses; it is in
+            private Internal QA TestFlight and App Review.
           </p>
         </div>
       </header>
